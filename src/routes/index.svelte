@@ -21,6 +21,14 @@
 		-moz-osx-font-smoothing: grayscale
 		display: flex
 
+	::-webkit-scrollbar
+		width: 12px
+		height: 12px
+
+	::-webkit-scrollbar-thumb
+		border-radius: 0
+		background-color: $scheme-main-ter
+
 	.input.is-static
 		color: $text
 

@@ -4,7 +4,7 @@
 	import SocialArticleView from "./articles/SocialArticleView.svelte";
 	import Fa from 'svelte-fa/src/fa.svelte';
 	import { faRandom, faScroll, faSyncAlt, faArrowDown, faArrowUp, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
-	import { articles as twitterArticles } from '../services/twitter/service.js';
+	import {getTweet} from '../services/twitter/service.ts';
 
 	export let title;
 	export let fullscreen = false;
@@ -24,9 +24,11 @@
 		console.log('Scrolling!');
 	}
 
-	function refresh() {
+	async function refresh() {
 		console.log('Refreshing!');
-		articles = [...articles, ...twitterArticles];
+		const tweet = await getTweet("1504842554591772678");
+		if (tweet !== undefined)
+			articles = [...articles, tweet];
 		console.dir(articles);
 	}
 

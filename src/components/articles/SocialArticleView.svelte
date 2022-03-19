@@ -1,5 +1,6 @@
-<script>
-	export let article;
+<script lang='ts'>
+	import Article from '../../services/article';
+	export let article: Article;
 
 	let actualArticle = article;
 
@@ -15,10 +16,11 @@
 	<div class="media-content">
 		<div class="content">
 			<div class="articleHeader">
-				<a class="names" href={actualArticle.authorUrl} target="_blank" rel="noopener noreferrer" onclick={onUsernameClick}>
-					<strong>{ actualArticle.authorName }</strong>
-					<small>@{ actualArticle.authorUsername }</small>
+				<a class="names" href={$actualArticle.author?.url} target="_blank" rel="noopener noreferrer" onclick={onUsernameClick}>
+					<strong>{ $actualArticle.author?.name }</strong>
+					<small>@{ $actualArticle.author?.username }</small>
 				</a>
+				{$actualArticle.text}
 				<!--{ self.view_timestamp(&actualArticle) }-->
 			</div>
 			<!--{ match ctx.props().hide_text || self.is_minimized(ctx) {-->

@@ -1,5 +1,6 @@
 <script>
 	import TimelineContainer from "../TimelineContainer.svelte";
+	import Sidebar from "../sidebar/Sidebar.svelte";
 
 	//chrome.runtime.sendMessage("ialpimkfmdjoekolcmhnajfkmhchkmbd", "message to extension", response => console.dir(response));
 </script>
@@ -23,13 +24,13 @@
 	.input.is-static
 		color: $text
 
-	.icon
+	.svelte-fa
 		color: $white-ter
 
-	.icon.darkIcon
+	.svelte-fa.darkIcon
 		color: $black-ter
 
-	.dropdown-trigger .icon
+	.dropdown-trigger .svelte-fa
 		color: $button-color
 
 	.favviewer
@@ -59,4 +60,5 @@
 	//	-moz-osx-font-smoothing: grayscale
 </style>
 
+<Sidebar/>
 <TimelineContainer/>

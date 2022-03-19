@@ -1,5 +1,13 @@
 <script>
 	import Timeline from './Timeline.svelte';
+
+	let timelines = [{
+		title: 'Home',
+	}, {
+		title: 'misabiko',
+	}, {
+		title: 'Likes',
+	}];
 </script>
 
 <style lang='sass'>
@@ -12,5 +20,7 @@
 </style>
 
 <div id='timelineContainer'>
-	<Timeline title='Timeline43!'/>
+	{#each timelines as timelineData}
+		<Timeline {...timelineData}/>
+	{/each}
 </div>

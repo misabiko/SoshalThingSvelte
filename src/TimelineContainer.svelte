@@ -12,7 +12,6 @@
 
 <style lang='sass'>
 	#timelineContainer
-		@include pretty-scrollbar
 		height: 100%
 		overflow-x: auto
 		display: flex

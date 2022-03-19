@@ -1,15 +1,23 @@
 <script>
-	import ColumnContainer from "./ColumnContainer.svelte";
+	import ColumnContainer from "./containers/ColumnContainer.svelte";
+	import RowContainer from "./containers/RowContainer.svelte";
+	import SocialArticleView from "./articles/SocialArticleView.svelte";
 
 	export let title;
+
+	let container = ColumnContainer;
+	let articleView = SocialArticleView;
+	let articles = [
+		{},
+		{},
+		{},
+	]
 </script>
 
 <style lang='sass'>
 	@use 'styles/core' as *
 
 	.timeline
-		@include pretty-scrollbar
-
 		color: $text
 		height: 100%
 		padding: 0 5px
@@ -82,5 +90,5 @@
 
 		</div>
 	</div>
-	<ColumnContainer/>
+	<svelte:component this={container} {articles} articleView={articleView}/>
 </div>

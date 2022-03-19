@@ -15,7 +15,8 @@ export async function getTweet(id: Id) {
 			const timeoutId = setTimeout(() => reject(new Error(`Extension didn't respond in ${timeout} ms.`)), timeout);
 
 			//TODO Cancel request on timeout
-			chrome.runtime.sendMessage("ialpimkfmdjoekolcmhnajfkmhchkmbd", {
+			//TODO Add setting or detect extension id
+			chrome.runtime.sendMessage("nlbklcaopkjjncgjikklggigffbjfloe", {
 				soshalthing: true,
 				service: serviceName,
 				request: 'singleTweet',

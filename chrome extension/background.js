@@ -1,3 +1,5 @@
+import {twitter} from '../credentials.json';
+
 chrome.action.onClicked.addListener((tab) => {
 	console.log("onClicked!");
 	fetch("https://api.twitter.com/2/tweets/1485090838539653121")
@@ -41,7 +43,7 @@ chrome.runtime.onMessageExternal.addListener(
 				//TODO Use got/browser alternative?
 				fetch(url.toString(), {
 					headers: {
-						'Authorization': `Bearer <insert bearer>`
+						'Authorization': `Bearer ${twitter.bearer}`
 					}
 				})
 					.then(response => response.json())

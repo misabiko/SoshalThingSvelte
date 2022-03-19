@@ -2,6 +2,7 @@ export default class Article {
 	readonly id: string;
 	readonly text: string;
 	readonly author?: ArticleAuthor;
+	readonly creationTime?: Date;
 
 	constructor(id: string, text: string) {
 		this.id = id;
@@ -12,5 +13,6 @@ export default class Article {
 export interface ArticleAuthor {
 	username: string;
 	name: string;
-	url: string;
+	url: string;	//TODO delegate to service
+	avatarUrl?: string;
 }

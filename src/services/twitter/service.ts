@@ -35,7 +35,8 @@ export async function getTweet(id: Id) {
 				name: response.includes.users[0].name,
 				username: response.includes.users[0].username,
 				url: "https://twitter.com/" + response.includes.users[0].username,
-			})))
+				avatarUrl: response.includes.users[0].profile_image_url,
+			}, new Date(response.data.created_at))))
 			return articles.at(-1);
 		}else {
 			console.error('Error fetching single tweet', response)
@@ -75,6 +76,7 @@ interface TweetResponse {
 			name: string;
 			url: string;
 			username: string;
+			profile_image_url: string;
 		}[]
 	};
 }

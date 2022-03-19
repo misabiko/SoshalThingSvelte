@@ -36,7 +36,7 @@ chrome.runtime.onMessageExternal.addListener(
 			if (request.request === 'singleTweet') {
 				const url = new URL("https://api.twitter.com/2/tweets/" + request.id);
 				url.searchParams.set('tweet.fields', "id,created_at,entities,in_reply_to_user_id,referenced_tweets,text");
-				url.searchParams.set('user.fields', "id,name,url,username");
+				url.searchParams.set('user.fields', "id,name,url,username,profile_image_url");
 				url.searchParams.set('expansions', "author_id,attachments.media_keys,in_reply_to_user_id,referenced_tweets.id");
 
 				console.log('Fetching ' + url.toString());

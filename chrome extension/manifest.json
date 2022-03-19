@@ -1,0 +1,29 @@
+{
+	"name": "SoshalThing Svelte",
+	"manifest_version": 3,
+	"version": "0.1",
+	"action": {},
+	"background": {
+		"service_worker": "background.js",
+		"type": "module"
+	},
+	"declarative_net_request": {
+		"rule_resources": [
+			{
+				"id": "ruleset_1",
+				"enabled": true,
+				"path": "rule.json"
+			}
+		]
+	},
+	"permissions": [
+		"declarativeNetRequest",
+		"declarativeNetRequestFeedback"
+	],
+	"host_permissions": [
+		"*://*/*"
+	],
+	"externally_connectable": {
+		"matches": ["*://localhost/*"]
+	}
+}

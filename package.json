@@ -14,12 +14,22 @@
   "devDependencies": {
     "@playwright/test": "^1.20.0",
     "@sveltejs/adapter-auto": "next",
+    "@sveltejs/adapter-static": "^1.0.0-next.29",
     "@sveltejs/kit": "next",
+    "node-sass": "^7.0.1",
+    "rollup-plugin-postcss": "^4.0.2",
     "svelte": "^3.44.0",
     "svelte-check": "^2.2.6",
-    "svelte-preprocess": "^4.10.1",
+    "svelte-preprocess": "^4.10.4",
     "tslib": "^2.3.1",
     "typescript": "~4.6.2"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "bulma": "^0.9.3",
+    "cross-fetch": "^3.1.5",
+    "oauth-1.0a": "^2.2.6",
+    "svelma": "^0.4.5",
+    "twitter-lite": "file:../twitter-lite"
+  }
 }

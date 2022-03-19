@@ -1,10 +1,10 @@
-export default class Article {
+export default abstract class Article {
 	readonly id: string;
 	readonly text: string;
 	readonly author?: ArticleAuthor;
 	readonly creationTime?: Date;
 
-	constructor(id: string, text: string) {
+	protected constructor(id: string, text: string) {
 		this.id = id;
 		this.text = text;
 	}

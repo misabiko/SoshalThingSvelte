@@ -1,11 +1,22 @@
-import type {Readable} from 'svelte/store'
 import type {Id} from './article'
 import {readable} from 'svelte/store'
 import TwitterArticle from './article';
+import type {Service} from '../service'
+import {registerEndpoints} from '../service'
+import {HomeTimelineEndpoint, LikesEndpoint, ListEndpoint, SearchEndpoint, UserTimelineEndpoint} from './endpoints'
 
-export const articles: Readable<TwitterArticle>[] = [];
+export const TwitterService: Service = {
+	name: 'Twitter',
+	articles: {},
+};
 
-export const serviceName = 'Twitter';
+registerEndpoints([
+	HomeTimelineEndpoint.constructorInfo,
+	UserTimelineEndpoint.constructorInfo,
+	ListEndpoint.constructorInfo,
+	LikesEndpoint.constructorInfo,
+	SearchEndpoint.constructorInfo,
+]);
 
 export async function getTweet(id: Id) {
 	console.log("Fetching " + id);
@@ -18,7 +29,7 @@ export async function getTweet(id: Id) {
 			//TODO Add setting or detect extension id
 			chrome.runtime.sendMessage("nlbklcaopkjjncgjikklggigffbjfloe", {
 				soshalthing: true,
-				service: serviceName,
+				service: TwitterService.name,
 				request: 'singleTweet',
 				id,
 			}, response => {
@@ -30,14 +41,14 @@ export async function getTweet(id: Id) {
 
 		console.dir(response);
 		if ('data' in (response as object)) {
-			articles.push(readable(new TwitterArticle(response.data.id, response.data.text, {
+			TwitterService.articles[response.data.id] = (readable(new TwitterArticle(response.data.id, response.data.text, {
 				id: response.includes.users[0].id,
 				name: response.includes.users[0].name,
 				username: response.includes.users[0].username,
 				url: "https://twitter.com/" + response.includes.users[0].username,
 				avatarUrl: response.includes.users[0].profile_image_url,
 			}, new Date(response.data.created_at))))
-			return articles.at(-1);
+			return TwitterService.articles[response.data.id];
 		}else {
 			console.error('Error fetching single tweet', response)
 			return undefined

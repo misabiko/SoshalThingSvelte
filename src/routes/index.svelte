@@ -21,4 +21,4 @@
 		display: flex
 </style>
 
-<FavViewer showSidebar={true}/>
+<FavViewer isInjected={false} showSidebar={true}/>

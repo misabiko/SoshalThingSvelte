@@ -3,11 +3,15 @@
 	import RowContainer from "./containers/RowContainer.svelte";
 	import SocialArticleView from "./articles/SocialArticleView.svelte";
 	import Fa from 'svelte-fa/src/fa.svelte';
-	import { faRandom, faScroll, faSyncAlt, faArrowDown, faArrowUp, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
+	import { faRandom, faScroll, faSyncAlt, faArrowDown, faArrowUp, faEllipsisV, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 	import {getTweet} from '../services/twitter/service';
 
 	export let title;
 	export let fullscreen = false;
+
+	export let favviewerButtons = false;
+	export let favviewerHidden;
+	export let showSidebar;
 
 	let container = ColumnContainer;
 	let width = 1;
@@ -112,6 +116,16 @@
 	<div class='timelineHeader'>
 		<div class='timelineLeftHeader'>
 			<strong>{title}</strong>
+			{#if favviewerButtons}
+				<div class='timelineButtons'>
+					<button title='Toggle FavViewer' on:click={() => favviewerHidden = !favviewerHidden}>
+						<Fa icon={faEyeSlash} size='large'/>
+					</button>
+					<button title='Show Sidebar' on:click={() => showSidebar = !showSidebar}>
+						<Fa icon={faEllipsisV} size='large'/>
+					</button>
+				</div>
+			{/if}
 		</div>
 		<div class='timelineButtons'>
 			<button title="Shuffle" on:click={shuffle}>

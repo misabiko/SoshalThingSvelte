@@ -1,12 +1,15 @@
-<script lang="ts">
-	import Sidebar from "./sidebar/Sidebar.svelte";
+<script lang='ts'>
+	import {setContext} from 'svelte'
+	import Sidebar from "./sidebar/Sidebar.svelte"
 	import type {TimelineData} from "./TimelineContainer.svelte"
 	import TimelineContainer from "./TimelineContainer.svelte"
 
-	export let initTimelines: TimelineData[];
-	export let isInjected = false;
+	export let initTimelines: TimelineData[]
+	export let isInjected = true
+	export let favviewerHidden = false
 
-	let showSidebar = !isInjected;
+	setContext('isInjected', isInjected)
+	let showSidebar = !isInjected
 </script>
 
 <style lang='sass' global>
@@ -59,5 +62,5 @@
 	{#if showSidebar}
 		<Sidebar/>
 	{/if}
-	<TimelineContainer {initTimelines}/>
+	<TimelineContainer bind:favviewerHidden={favviewerHidden} bind:showSidebar={showSidebar} {initTimelines}/>
 </div>

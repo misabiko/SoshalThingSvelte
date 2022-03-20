@@ -15,7 +15,11 @@ const config = {
 	kit: {
 		adapter: adapter({
 			fallback: 'index.html',
-		})
+		}),
+		browser: {
+			router: false,
+		},
+		files: {}
 	},
 
 	plugins: [postcss()]

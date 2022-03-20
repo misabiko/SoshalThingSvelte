@@ -1,6 +1,5 @@
 {
   "name": "soshalthing-svelte",
-  "version": "0.0.1",
   "scripts": {
     "dev": "svelte-kit dev",
     "build": "svelte-kit build",
@@ -13,6 +12,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.20.0",
+    "@rollup/plugin-typescript": "^8.3.1",
     "@sveltejs/adapter-auto": "next",
     "@sveltejs/adapter-static": "^1.0.0-next.29",
     "@sveltejs/kit": "next",
@@ -20,6 +20,7 @@
     "node-sass": "^7.0.1",
     "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-postcss": "^4.0.2",
+    "rollup-plugin-svelte": "^7.1.0",
     "svelte": "^3.44.0",
     "svelte-check": "^2.2.6",
     "svelte-preprocess": "^4.10.4",
@@ -35,10 +36,7 @@
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^13.1.3",
     "bulma": "^0.9.3",
-    "cross-fetch": "^3.1.5",
-    "oauth-1.0a": "^2.2.6",
     "svelma": "^0.4.5",
-    "svelte-fa": "^2.4.0",
-    "twitter-lite": "file:../twitter-lite"
+    "svelte-fa": "^2.4.0"
   }
 }

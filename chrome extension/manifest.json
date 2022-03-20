@@ -2,9 +2,8 @@
 	"name": "SoshalThing Svelte",
 	"manifest_version": 3,
 	"version": "0.1",
-	"action": {},
 	"background": {
-		"service_worker": "background.js",
+		"service_worker": "dist/background.js",
 		"type": "module"
 	},
 	"declarative_net_request": {
@@ -25,5 +24,14 @@
 	],
 	"externally_connectable": {
 		"matches": ["*://localhost/*"]
-	}
+	},
+	"content_scripts": [
+		{
+			"matches": [
+				"https://*.pixiv.net/bookmark_new_illust*",
+				"https://*.pixiv.net/*/users/*"
+			],
+			"js": ["dist/favviewer.js"]
+		}
+	]
 }

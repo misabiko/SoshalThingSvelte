@@ -6,6 +6,10 @@
       <excludeFolder url="file://$MODULE_DIR$/.tmp" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
       <excludeFolder url="file://$MODULE_DIR$/.svelte-kit" />
+      <excludeFolder url="file://$MODULE_DIR$/chrome extension/_metadata" />
+      <excludeFolder url="file://$MODULE_DIR$/chrome extension/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/build" />
+      <excludeFolder url="file://$MODULE_DIR$/package" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

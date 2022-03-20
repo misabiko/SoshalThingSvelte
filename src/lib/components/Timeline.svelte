@@ -4,7 +4,7 @@
 	import SocialArticleView from "./articles/SocialArticleView.svelte";
 	import Fa from 'svelte-fa/src/fa.svelte';
 	import { faRandom, faScroll, faSyncAlt, faArrowDown, faArrowUp, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
-	import {getTweet} from '../services/twitter/service.ts';
+	import {getTweet} from '../services/twitter/service';
 
 	export let title;
 	export let fullscreen = false;
@@ -57,55 +57,55 @@
 		&:first-child
 			padding: 0
 
-		.timeline.fullscreenTimeline
-			flex-grow: 2
-			width: unset
+	.timeline.fullscreenTimeline
+		flex-grow: 2
+		width: unset
+		max-width: 100%
+
+	.timelineHeader
+		height: 50px
+		line-height: 50px
+		padding-left: 25px
+		background-color: $dark
+		display: flex
+		justify-content: space-between
+
+		strong
+			vertical-align: middle
+
+		&.timelineInvalid
+			background-color: $dark-error
+
+	.timelineLeftHeader
+		display: flex
+		flex-shrink: 8
+
+	.timelineButtons
+		display: flex
+		flex-wrap: nowrap
+
+	.timelineButtons > button
+		@include borderless-button(0 1rem)
+		height: 100%
+
+	.timelineOptions
+		background-color: $scheme-main-ter
+		padding: 1rem
+		display: flex
+		flex-direction: column
+		align-items: flex-start
+		overflow-x: hidden
+		overflow-y: scroll
+
+		& input[type="number"]
+			width: 200px
+
+		& > .box
 			max-width: 100%
+			width: 100%
 
-		.timelineHeader
-			height: 50px
-			line-height: 50px
-			padding-left: 25px
-			background-color: $dark
-			display: flex
-			justify-content: space-between
-
-			strong
-				vertical-align: middle
-
-			&.timelineInvalid
-				background-color: $dark-error
-
-		.timelineLeftHeader
-			display: flex
-			flex-shrink: 8
-
-		.timelineButtons
-			display: flex
-			flex-wrap: nowrap
-
-		.timelineButtons > button
-			@include borderless-button(0 1rem)
-			height: 100%
-
-		.timelineOptions
-			background-color: $scheme-main-ter
-			padding: 1rem
-			display: flex
-			flex-direction: column
-			align-items: flex-start
-			overflow-x: hidden
-			overflow-y: scroll
-
-			& input[type="number"]
-				width: 200px
-
-			& > .box
-				max-width: 100%
-				width: 100%
-
-		#timelineContainer .timelineOptions::-webkit-scrollbar-thumb
-			background-color: $dark
+	#timelineContainer .timelineOptions::-webkit-scrollbar-thumb
+		background-color: $dark
 </style>
 
 <div class='timeline' class:fullscreenTimeline={fullscreen} style='{width > 1 ? `width: ${width * 500}px` : ""}'>

@@ -8,7 +8,7 @@ const config = {
 	// for more information about preprocessors
 	preprocess: preprocess({
 		sass: {
-			prependData: `@import 'src/styles/_core.sass';`,
+			prependData: `@import 'src/lib/styles/_core.sass';`,
 		}
 	}),
 

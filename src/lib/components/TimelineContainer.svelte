@@ -1,13 +1,16 @@
-<script>
+<script lang='ts' context="module">
+	export interface TimelineData {
+		title: string;
+		fullscreen?: boolean;
+	}
+</script>
+
+<script lang="ts">
 	import Timeline from './Timeline.svelte';
 
-	let timelines = [{
-		title: 'Home',
-	}, {
-		title: 'misabiko',
-	}, {
-		title: 'Likes',
-	}];
+	export let initTimelines: TimelineData[] = [];
+
+	let timelines: TimelineData[] = initTimelines;
 </script>
 
 <style lang='sass'>

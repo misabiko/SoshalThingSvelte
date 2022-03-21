@@ -6,6 +6,7 @@
 
 	export let article: Article;
 	export let hideText: boolean;
+	export let style: string = '';
 
 	let actualArticle = article;
 	let minimized = false;
@@ -275,7 +276,7 @@
 				white-space: pre-line
 </style>
 
-<article class='socialArticle' articleId={article.id}>
+<article class='socialArticle' articleId={article.id} {style}>
 	<!--{ self.view_repost_label(ctx) }-->
 	<!--{ self.view_reply_label(ctx) }-->
 	<div class='media'>
@@ -293,9 +294,11 @@
 						<strong>{ $actualArticle.author?.name }</strong>
 						<small>@{ $actualArticle.author?.username }</small>
 					</a>
-					<span class='timestamp'>
-						<small title={$actualArticle.creationTime.toString()}>{shortTimestamp()}</small>
-					</span>
+					{#if $actualArticle.creationTime !== undefined}
+						<span class='timestamp'>
+							<small title={$actualArticle.creationTime.toString()}>{shortTimestamp()}</small>
+						</span>
+					{/if}
 				</div>
 				{#if !hideText && !minimized}
 					<p class='articleParagraph'>
@@ -326,10 +329,13 @@
 		</div>
 	</div>
 	{#if !minimized}
-
+		<div class='postMedia postImages'>
+			{#each $actualArticle.medias as media}
+				<div class='mediaHolder'>
+					<div class='is-hidden imgPlaceHolder'></div>
+					<img alt={$actualArticle.id} src={media.src}/>
+				</div>
+			{/each}
+		</div>
 	{/if}
-	<!--{ match self.is_minimized(ctx) {-->
-	<!--	false => self.view_media(ctx, &actualArticle),-->
-	<!--	true => html! {},-->
-	<!--} }-->
 </article>

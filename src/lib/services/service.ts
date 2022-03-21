@@ -1,9 +1,20 @@
 import type Article from './article';
 import type {Readable} from 'svelte/store'
+import {readable} from 'svelte/store'
 
 export interface Service {
 	readonly name: string;
 	readonly articles: {[id: string | number]: Readable<Article>};
+}
+
+export function addArticles(service: Service, ...articles: Article[]): Readable<Article>[] {
+	const readables: Readable<Article>[] = [];
+	for (const article of articles) {
+		readables.push(readable(article));
+		service.articles[article.id] = readables.at(-1);
+	}
+
+	return readables;
 }
 
 export abstract class Endpoint {
@@ -19,24 +30,26 @@ export abstract class Endpoint {
 		}
 	}
 
-	abstract refresh(refreshTime: RefreshTime);
+	abstract refresh(refreshTime: RefreshTime): Promise<Article[]>;
 
-	loadTop(refreshTime: RefreshTime) {
+	async loadTop(refreshTime: RefreshTime): Promise<Article[]> {
 		console.debug(`${this.name} doesn't implement loadTop()`);
-		this.refresh(refreshTime);
+		return await this.refresh(refreshTime);
 	}
 
-	loadBottom(refreshTime: RefreshTime) {
+	async loadBottom(refreshTime: RefreshTime): Promise<Article[]> {
 		console.debug(`${this.name} doesn't implement loadBottom()`);
-		this.refresh(refreshTime);
+		return await this.refresh(refreshTime);
 	}
 }
 
 interface EndpointConstructorInfo {
 	readonly name: string;
 	readonly paramTemplate: [string, ParamType][];
-	readonly constructor: new (params: { [param: string]: ParamType }) => Endpoint;
+	readonly constructor: (params: EndpointConstructorParams) => Endpoint;
 }
+
+export type EndpointConstructorParams = { [param: string]: ParamType };
 
 export enum RefreshTime {
 	OnStart,

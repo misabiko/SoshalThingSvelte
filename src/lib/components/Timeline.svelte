@@ -5,20 +5,25 @@
 	import Fa from 'svelte-fa/src/fa.svelte';
 	import { faRandom, faScroll, faSyncAlt, faArrowDown, faArrowUp, faEllipsisV, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 	import {getTweet} from '../services/twitter/service';
+	import {Select, Field} from 'svelma';
 
 	export let title;
 	export let fullscreen = false;
+	export let initArticles = [];
+	export let initContainer = undefined;
+	export let initArticleView = undefined;
 
 	export let favviewerButtons = false;
 	export let favviewerHidden;
 	export let showSidebar;
 
-	let container = ColumnContainer;
+	let container = initContainer || ColumnContainer;
+	let columnCount = 5;
 	let width = 1;
-	let articleView = SocialArticleView;
+	let articleView = initArticleView || SocialArticleView;
 	let showOptions = false;
 
-	let articles = [];
+	let articles = initArticles;
 
 	function shuffle() {
 		console.log('Shuffling!');
@@ -110,6 +115,13 @@
 
 	#timelineContainer .timelineOptions::-webkit-scrollbar-thumb
 		background-color: $dark
+
+	.articlesContainer
+		overflow-y: scroll
+		overflow-x: hidden
+		flex-grow: 1
+		height: 100%
+		background-color: $background
 </style>
 
 <div class='timeline' class:fullscreenTimeline={fullscreen} style='{width > 1 ? `width: ${width * 500}px` : ""}'>
@@ -151,10 +163,16 @@
 	{#if showOptions}
 		<div class='timelineOptions'>
 			<div class='box'>
+				<Field label='Container'>
+					<Select bind:selected={container}>
+						<option value={ColumnContainer}>Column</option>
+						<option value={RowContainer}>Row</option>
+					</Select>
+				</Field>
 				{#if container !== ColumnContainer}
 					<div class='block control'>
 						<label class='label'>Column Count</label>
-						<input class='input' type='number' min='1'/>
+						<input class='input' type='number' bind:value={columnCount} min=1/>
 					</div>
 				{/if}
 				{#if !fullscreen}
@@ -166,5 +184,5 @@
 			</div>
 		</div>
 	{/if}
-	<svelte:component this={container} {articles} articleView={articleView}/>
+	<svelte:component this={container} {articles} articleView={articleView} {columnCount}/>
 </div>

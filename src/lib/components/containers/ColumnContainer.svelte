@@ -5,7 +5,7 @@
 	export let articleView;
 </script>
 
-<div class='articlesContainer columnContainer'>
+<div class='columnContainer'>
 	{#each articles as article}
 		<ArticleComponent {article} view={articleView}/>
 	{/each}

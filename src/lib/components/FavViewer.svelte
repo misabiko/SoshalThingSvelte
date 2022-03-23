@@ -13,7 +13,11 @@
 </script>
 
 <style lang='sass' global>
+	@use '../styles/core' as *
+
 	.favviewer
+		@import 'bulma/bulma'
+
 		.injected
 			height: 100%
 			display: flex

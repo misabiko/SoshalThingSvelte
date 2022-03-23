@@ -6,7 +6,9 @@
 	export let columnCount: number;
 </script>
 
-<style lang='sass'>
+<style lang='sass' global>
+	@use '../../styles/core' as *
+
 	.articlesContainer.rowContainer
 		display: flex
 		flex-wrap: wrap

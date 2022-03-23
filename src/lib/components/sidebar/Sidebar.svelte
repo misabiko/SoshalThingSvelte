@@ -7,7 +7,9 @@
 	let expanded = false;
 </script>
 
-<style lang='sass'>
+<style lang='sass' global>
+	@use '../../styles/core' as *
+
 	#sidebar
 		background-color: $dark
 		z-index: 1

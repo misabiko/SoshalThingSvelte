@@ -9,7 +9,9 @@
 	let actualArticle = article
 </script>
 
-<style lang='sass'>
+<style lang='sass' global>
+	@use '../../styles/core' as *
+
 	article
 		padding: 1rem
 		background-color: $scheme-main-bis
@@ -72,47 +74,49 @@
 </style>
 
 <article class='galleryArticle' articleId={article.id} {style}>
-	{#each $actualArticle.medias as media}
-		<img alt={$actualArticle.id} class="articleThumb" src={media.src}/><!--key={i}--> <!-- on:click={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::OnMediaClick))}-->
-	{/each}
-	<div class="holderBox holderBoxTop">
-		<a class="button" title="External Link" href={$actualArticle.url} target="_blank">
-			<Fa icon={faExternalLinkAlt} class='darkIcon is-small'/>
-		</a>
-		<!--{#if !modal}-->
-			<button class="button"><!--onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::ToggleInModal))}-->
-				<Fa icon={faExpandArrowsAlt} class='darkIcon is-small'/>
-			</button>
-		<!--{/if}-->
+	<div>
+		{#each $actualArticle.medias as media}
+			<img alt={$actualArticle.id} class="articleThumb" src={media.src}/><!--key={i}--> <!-- on:click={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::OnMediaClick))}-->
+		{/each}
+		<div class="holderBox holderBoxTop">
+			<a class="button" title="External Link" href={$actualArticle.url} target="_blank">
+				<Fa icon={faExternalLinkAlt} class='darkIcon is-small'/>
+			</a>
+			<!--{#if !modal}-->
+				<button class="button"><!--onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::ToggleInModal))}-->
+					<Fa icon={faExpandArrowsAlt} class='darkIcon is-small'/>
+				</button>
+			<!--{/if}-->
 
-<!--		<Dropdown on_expanded_change={ctx.link().callback(Msg::SetDrawOnTop)} is_right=true current_label={DropdownLabel::Icon(yew::props! { FAProps {icon: "ellipsis-h".to_owned()}})} label_classes={classes!("articleButton")}>-->
-<!--			<a class="dropdown-item" onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::ToggleMarkAsRead))}> {"Mark as read"} </a>-->
-<!--			<a class="dropdown-item" onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::ToggleHide))}> {"Hide"} </a>-->
-<!--			{ if let Some(index) = ctx.props().media_load_states.iter().enumerate().find_map(|(i, m)| if *m == MediaLoadState::NotLoaded { Some(i) } else { None }) {-->
-<!--				html! {-->
-<!--				<a class="dropdown-item" onclick={ctx.link().callback(move |_| Msg::ParentCallback(ParentMsg::LoadMedia(index)))}>{"Load Media"}</a>-->
-<!--			}-->
-<!--			}else {-->
-<!--				html! {}-->
-<!--			} }-->
-<!--			<a-->
-<!--				class="dropdown-item"-->
-<!--				href={ $actualArticle.url() }-->
-<!--				target="_blank" rel="noopener noreferrer"-->
-<!--			>-->
-<!--				{ "External Link" }-->
-<!--			</a>-->
-<!--			<a class="dropdown-item" onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::LogData))}>{"Log Data"}</a>-->
-<!--			<a class="dropdown-item" onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::LogJsonData))}>{"Log Json Data"}</a>-->
-<!--			<a class="dropdown-item" onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::FetchData))}>{"Fetch Data"}</a>-->
-<!--		</Dropdown>-->
-	</div>
-	<div class="holderBox holderBoxBottom">
-		<button class="button"> <!--onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::Like))}-->
-			<Fa icon={faHeart} class='darkIcon is-small'/>
-		</button>
-		<button class="button"> <!--onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::Repost))}-->
-			<Fa icon={faRetweet} class='darkIcon is-small'/>
-		</button>
+	<!--		<Dropdown on_expanded_change={ctx.link().callback(Msg::SetDrawOnTop)} is_right=true current_label={DropdownLabel::Icon(yew::props! { FAProps {icon: "ellipsis-h".to_owned()}})} label_classes={classes!("articleButton")}>-->
+	<!--			<a class="dropdown-item" onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::ToggleMarkAsRead))}> {"Mark as read"} </a>-->
+	<!--			<a class="dropdown-item" onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::ToggleHide))}> {"Hide"} </a>-->
+	<!--			{ if let Some(index) = ctx.props().media_load_states.iter().enumerate().find_map(|(i, m)| if *m == MediaLoadState::NotLoaded { Some(i) } else { None }) {-->
+	<!--				html! {-->
+	<!--				<a class="dropdown-item" onclick={ctx.link().callback(move |_| Msg::ParentCallback(ParentMsg::LoadMedia(index)))}>{"Load Media"}</a>-->
+	<!--			}-->
+	<!--			}else {-->
+	<!--				html! {}-->
+	<!--			} }-->
+	<!--			<a-->
+	<!--				class="dropdown-item"-->
+	<!--				href={ $actualArticle.url() }-->
+	<!--				target="_blank" rel="noopener noreferrer"-->
+	<!--			>-->
+	<!--				{ "External Link" }-->
+	<!--			</a>-->
+	<!--			<a class="dropdown-item" onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::LogData))}>{"Log Data"}</a>-->
+	<!--			<a class="dropdown-item" onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::LogJsonData))}>{"Log Json Data"}</a>-->
+	<!--			<a class="dropdown-item" onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::FetchData))}>{"Fetch Data"}</a>-->
+	<!--		</Dropdown>-->
+		</div>
+		<div class="holderBox holderBoxBottom">
+			<button class="button"> <!--onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::Like))}-->
+				<Fa icon={faHeart} class='darkIcon is-small'/>
+			</button>
+			<button class="button"> <!--onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::Repost))}-->
+				<Fa icon={faRetweet} class='darkIcon is-small'/>
+			</button>
+		</div>
 	</div>
 </article>

@@ -22,7 +22,9 @@
 	let timelines: TimelineData[] = initTimelines;
 </script>
 
-<style lang='sass'>
+<style lang='sass' global>
+	@use '../styles/core' as *
+
 	#timelineContainer
 		height: 100%
 		overflow-x: auto

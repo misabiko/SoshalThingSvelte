@@ -4,6 +4,7 @@ export default abstract class Article {
 	readonly text?: string;
 	readonly author?: ArticleAuthor;
 	readonly creationTime?: Date;
+	readonly url: string;
 	readonly medias: ArticleMedia[];
 	markedAsRead: boolean;
 	hidden: boolean;
@@ -11,12 +12,14 @@ export default abstract class Article {
 	protected constructor(params: {
 		id: string | number,
 		text?: string,
+		url: string,
 		medias: ArticleMedia[],
 		markedAsRead: boolean,
 		hidden: boolean,
 	}) {
 		this.id = params.id;
 		this.text = params.text;
+		this.url = params.url;
 		this.medias = params.medias || [];
 		this.markedAsRead = params.markedAsRead;
 		this.hidden = params.hidden;

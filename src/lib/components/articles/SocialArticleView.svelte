@@ -34,7 +34,9 @@
 	}
 </script>
 
-<style lang='sass'>
+<style lang='sass' global>
+	@use '../../styles/core' as *
+
 	article
 		padding: 1rem
 		background-color: $scheme-main-bis

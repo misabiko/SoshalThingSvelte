@@ -50,7 +50,7 @@
 	}
 </script>
 
-<style lang='sass'>
+<style lang='sass' global>
 	@use '../styles/core' as *
 
 	.timeline
@@ -120,7 +120,7 @@
 		overflow-y: scroll
 		overflow-x: hidden
 		flex-grow: 1
-		height: 100%
+		height: 20%
 		background-color: $background
 </style>
 

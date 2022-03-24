@@ -1,5 +1,7 @@
 //TODO interface?
 export default abstract class Article {
+	static readonly service: string;
+
 	readonly id: string | number;
 	readonly text?: string;
 	readonly author?: ArticleAuthor;
@@ -36,7 +38,7 @@ export interface ArticleAuthor {
 export interface ArticleMedia {
 	src: string;
 	ratio: ValidRatio;
-	//queueLoadInfo
+	queueLoadInfo: MediaQueueInfo;
 	mediaType: MediaType;
 }
 
@@ -59,4 +61,10 @@ export enum MediaType {
 	Video,
 	VideoGif,
 	Gif,
+}
+
+export enum MediaQueueInfo {
+	DirectLoad,
+	Thumbnail,
+	//LazyLoad,
 }

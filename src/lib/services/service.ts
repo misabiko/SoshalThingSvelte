@@ -4,14 +4,20 @@ import {readable} from 'svelte/store'
 
 export interface Service {
 	readonly name: string;
-	readonly articles: {[id: string | number]: Readable<Article>};
+	//TODO readonly articles: {[id: string | number]: [Article, Readable<Article>]};
+	readonly articles: {[id: string | number]: { article: Article, store: Readable<Article> }};
+	requestImageLoad?: (id: string | number, index: number) => void;
 }
 
 export function addArticles(service: Service, ...articles: Article[]): Readable<Article>[] {
 	const readables: Readable<Article>[] = [];
 	for (const article of articles) {
-		readables.push(readable(article));
-		service.articles[article.id] = readables.at(-1);
+		const obj = {
+			article,
+			store: readable(article),
+		}
+		readables.push(obj.store);
+		service.articles[article.id] = obj;
 	}
 
 	return readables;
@@ -59,8 +65,10 @@ export enum RefreshTime {
 type ParamType = string | number | boolean;
 
 const endpoints: Endpoint[] = [];
+const services: Service[] = [];
 const endpointConstructors: EndpointConstructorInfo[] = [];
 
-export function registerEndpoints(constructors: EndpointConstructorInfo[]) {
+export function registerService(service: Service, constructors: EndpointConstructorInfo[]) {
+	services.push(service);
 	endpointConstructors.push(...constructors);
 }

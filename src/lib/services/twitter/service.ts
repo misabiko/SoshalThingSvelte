@@ -2,15 +2,16 @@ import type {Id} from './article'
 import {readable} from 'svelte/store'
 import TwitterArticle from './article';
 import type {Service} from '../service'
-import {registerEndpoints} from '../service'
+import {registerService} from '../service'
 import {HomeTimelineEndpoint, LikesEndpoint, ListEndpoint, SearchEndpoint, UserTimelineEndpoint} from './endpoints'
 
 export const TwitterService: Service = {
 	name: 'Twitter',
 	articles: {},
 };
+TwitterArticle.service = TwitterService.name;
 
-registerEndpoints([
+registerService(TwitterService, [
 	HomeTimelineEndpoint.constructorInfo,
 	UserTimelineEndpoint.constructorInfo,
 	ListEndpoint.constructorInfo,

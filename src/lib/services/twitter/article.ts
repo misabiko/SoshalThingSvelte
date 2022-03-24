@@ -2,11 +2,20 @@ import type {ArticleAuthor} from '../article'
 import Article from '../article'
 
 export default class TwitterArticle extends Article {
+	static service: string;
+
 	readonly author: TwitterUser;
 	readonly creationTime: Date;
 
 	constructor(id: string, text: string, user: TwitterUser, creationTime: Date) {
-		super(id, text);
+		super({
+			id,
+			text,
+			url: `https://twitter.com/${user.username}/${id}`,
+			medias: [],
+			markedAsRead: false,
+			hidden: false,
+		});
 
 		this.author = user;
 		this.creationTime = creationTime;

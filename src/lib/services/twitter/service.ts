@@ -8,6 +8,7 @@ import {HomeTimelineEndpoint, LikesEndpoint, ListEndpoint, SearchEndpoint, UserT
 export const TwitterService: Service = {
 	name: 'Twitter',
 	articles: {},
+	articleActions: {},
 }
 TwitterArticle.service = TwitterService.name
 

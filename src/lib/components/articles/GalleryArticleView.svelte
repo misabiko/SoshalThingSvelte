@@ -117,7 +117,7 @@
 	<!--		</Dropdown>-->
 		</div>
 		<div class="holderBox holderBoxBottom">
-			<button class="button"> <!--onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::Like))}-->
+			<button class="button" on:click={() => dispatch('action', 'favorite')}>
 				<Fa icon={faHeart} class='darkIcon is-small'/>
 			</button>
 			<button class="button"> <!--onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::Repost))}-->

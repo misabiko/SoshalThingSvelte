@@ -324,7 +324,7 @@
 							<span>{actualArticle.repostCount}</span>
 						{/if}
 					</a>
-					<a class='level-item articleButton likeButton' class:likedPostButton={actualArticle.liked}>
+					<a class='level-item articleButton likeButton' class:likedPostButton={actualArticle.liked} on:click={() => dispatch('action', 'favorite')}>
 						<Fa icon={faHeart}/>
 						{#if actualArticle.likeCount}
 							<span>{actualArticle.likeCount}</span>

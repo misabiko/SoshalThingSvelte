@@ -1,7 +1,6 @@
 import type Article from './article'
 import type {Writable} from 'svelte/store'
 import {get, writable} from 'svelte/store'
-import {TwitterService} from './twitter/service'
 
 const endpoints: Endpoint[] = []
 const services: { [name: string]: Service } = {}
@@ -10,8 +9,19 @@ const endpointConstructors: EndpointConstructorInfo[] = []
 export interface Service {
 	readonly name: string;
 	readonly articles: { [id: string | number]: Writable<Article> };
+	articleActions: { [name: string]: ArticleAction };
 	requestImageLoad?: (id: string | number, index: number) => void;
 }
+
+type ArticleAction = {
+	action: (idPair: ArticleIdPair) => void;
+	togglable: boolean;
+};
+
+export type ArticleIdPair = {
+	service: string;
+	id: string | number
+};
 
 export function addArticles(service: Service, ...articles: Article[]): { idPair: ArticleIdPair, store: Writable<Article> }[] {
 	const readables = []
@@ -73,9 +83,9 @@ export function toggleMarkAsRead(idPair: ArticleIdPair) {
 	getWritable(idPair).update(a => {
 		a.markedAsRead = !a.markedAsRead
 		return a
-	});
+	})
 
-	updateMarkAsReadStorage();
+	updateMarkAsReadStorage()
 }
 
 export function toggleHide(idPair: ArticleIdPair) {
@@ -89,11 +99,6 @@ export function getWritable(idPair: ArticleIdPair) {
 	return services[idPair.service].articles[idPair.id]
 }
 
-export type ArticleIdPair = {
-	service: string;
-	id: string | number
-};
-
 function updateMarkAsReadStorage() {
 	const key = 'SoshalThingSvelte'
 	let storage = JSON.parse(sessionStorage.getItem(key))
@@ -106,20 +111,28 @@ function updateMarkAsReadStorage() {
 				const value = get(a)
 				return value.markedAsRead ? value.id : undefined
 			})
-			.filter(id => id !== undefined);
+			.filter(id => id !== undefined)
 
 		if (storage.services.hasOwnProperty(service.name))
-			storage.services[service.name].articlesMarkedAsRead = articlesMarkedAsRead;
+			storage.services[service.name].articlesMarkedAsRead = articlesMarkedAsRead
 		else
 			storage.services[service.name] = {
 				articlesMarkedAsRead,
-				cachedArticles: {}
+				cachedArticles: {},
 			}
 	}
 
-	sessionStorage.setItem('SoshalThingSvelte', JSON.stringify(storage));
+	sessionStorage.setItem('SoshalThingSvelte', JSON.stringify(storage))
 }
 
+//TODO Profile passing service vs service name
 export function getMarkedAsReadStorage(service: Service): (string | number)[] {
-	return JSON.parse(sessionStorage.getItem('SoshalThingSvelte'))?.services[service.name]?.articlesMarkedAsRead || [];
+	return JSON.parse(sessionStorage.getItem('SoshalThingSvelte'))?.services[service.name]?.articlesMarkedAsRead || []
+}
+
+export function articleAction(action: string, idPair: ArticleIdPair) {
+	if (services[idPair.service].articleActions.hasOwnProperty(action))
+		services[idPair.service].articleActions[action].action(idPair);
+	else
+		console.warn(`${idPair.service} doesn't have action ${action}.`);
 }

@@ -158,7 +158,7 @@ function endpointRefreshed(endpointName: string, articles: Article[]): ArticleId
 
 	return addArticles(services[service], ...articles).map(({idPair}) => idPair)
 		.filter(idPair => {
-			if (!endpoints[endpointName].articleIdPairs.includes(idPair)) {
+			if (endpoints[endpointName].articleIdPairs.findIndex(pair => pair.service === idPair.service && pair.id === idPair.id) === -1) {
 				endpoints[endpointName].articleIdPairs.push(idPair)
 				return true;
 			}else

@@ -18,12 +18,13 @@ export default abstract class Article {
 		medias: ArticleMedia[],
 		markedAsRead: boolean,
 		hidden: boolean,
+		markedAsReadStorage: (string | number)[],	//Actually (string[] | number[])
 	}) {
 		this.id = params.id;
 		this.text = params.text;
 		this.url = params.url;
 		this.medias = params.medias || [];
-		this.markedAsRead = params.markedAsRead;
+		this.markedAsRead = params.markedAsRead || params.markedAsReadStorage.includes(this.id);
 		this.hidden = params.hidden;
 	}
 

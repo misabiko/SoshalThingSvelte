@@ -2,7 +2,7 @@ import type {Id} from './article'
 import {writable} from 'svelte/store'
 import TwitterArticle from './article'
 import type {Service} from '../service'
-import {addArticles, registerService} from '../service'
+import {addArticles, getMarkedAsReadStorage, registerService} from '../service'
 import {HomeTimelineEndpoint, LikesEndpoint, ListEndpoint, SearchEndpoint, UserTimelineEndpoint} from './endpoints'
 
 export const TwitterService: Service = {
@@ -42,13 +42,19 @@ export async function getTweet(id: Id) {
 
 		console.dir(response)
 		if ('data' in (response as object)) {
-			const [readableArticle] = addArticles(TwitterService, new TwitterArticle(response.data.id, response.data.text, {
-				id: response.includes.users[0].id,
-				name: response.includes.users[0].name,
-				username: response.includes.users[0].username,
-				url: "https://twitter.com/" + response.includes.users[0].username,
-				avatarUrl: response.includes.users[0].profile_image_url,
-			}, new Date(response.data.created_at)))
+			const [readableArticle] = addArticles(TwitterService, new TwitterArticle(
+				response.data.id,
+				response.data.text,
+				{
+					id: response.includes.users[0].id,
+					name: response.includes.users[0].name,
+					username: response.includes.users[0].username,
+					url: "https://twitter.com/" + response.includes.users[0].username,
+					avatarUrl: response.includes.users[0].profile_image_url,
+				},
+				new Date(response.data.created_at),
+				getMarkedAsReadStorage(TwitterService),
+			))
 
 			return readableArticle
 		}else {

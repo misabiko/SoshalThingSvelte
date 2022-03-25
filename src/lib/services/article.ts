@@ -26,6 +26,15 @@ export default abstract class Article {
 		this.markedAsRead = params.markedAsRead;
 		this.hidden = params.hidden;
 	}
+
+	//TODO Unit test this
+	get idPair() {
+		return {
+			// @ts-ignore
+			service: this.constructor.service,
+			id: this.id,
+		}
+	}
 }
 
 export interface ArticleAuthor {

@@ -4,6 +4,9 @@ import postcss from 'rollup-plugin-postcss';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
+	compilerOptions: {
+		dev: true
+	},
 	// Consult https://github.com/sveltejs/svelte-preprocess
 	// for more information about preprocessors
 	preprocess: preprocess({

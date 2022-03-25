@@ -1,15 +1,22 @@
-<script>
+<script context="module">
+	import {Select, Field} from 'svelma';
+</script>
+
+<script lang="ts">
 	import ColumnContainer from "./containers/ColumnContainer.svelte";
 	import RowContainer from "./containers/RowContainer.svelte";
 	import SocialArticleView from "./articles/SocialArticleView.svelte";
 	import Fa from 'svelte-fa/src/fa.svelte';
 	import { faRandom, faScroll, faSyncAlt, faArrowDown, faArrowUp, faEllipsisV, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 	import {getTweet} from '../services/twitter/service';
-	import {Select, Field} from 'svelma';
+	import {derived, writable} from 'svelte/store'
+	import type {ArticleIdPair} from '../services/service'
+	import {getWritable} from '../services/service'
+	import Article from '../services/article'
 
 	export let title;
 	export let fullscreen = false;
-	export let initArticles = [];
+	export let initArticles: ArticleIdPair[] = [];
 	export let initContainer = undefined;
 	export let initArticleView = undefined;
 
@@ -23,7 +30,16 @@
 	let articleView = initArticleView || SocialArticleView;
 	let showOptions = false;
 
-	let articles = initArticles;
+	const articleIdPairs: ArticleIdPair[] = [...initArticles];
+
+	const filteredArticles = derived(articleIdPairs.map(idPair => getWritable(idPair)),
+		(articles: Article[]) => articles
+			.filter((a: Article) => !a.markedAsRead && !a.hidden)
+			.map((a: Article) => a.idPair)
+	);
+	/*$: const filteredArticles = derived([articles, ...$articles], ([$articles, ...arr]) => {
+		return arr.filter((a/!*: Article*!/) => !a.markedAsRead && !a.hidden)
+	});*/
 
 	function shuffle() {
 		console.log('Shuffling!');
@@ -35,10 +51,10 @@
 
 	async function refresh() {
 		console.log('Refreshing!');
-		const tweet = await getTweet("1504842554591772678");
+		/*const tweet = await getTweet("1504842554591772678");
 		if (tweet !== undefined)
-			articles = [...articles, tweet];
-		console.dir(articles);
+			articles.set([...$articles, tweet]);
+		console.dir(articles);*/
 	}
 
 	function loadBottom() {
@@ -184,5 +200,5 @@
 			</div>
 		</div>
 	{/if}
-	<svelte:component this={container} {articles} articleView={articleView} {columnCount}/>
+	<svelte:component this={container} idPairs={$filteredArticles} articleView={articleView} {columnCount}/>
 </div>

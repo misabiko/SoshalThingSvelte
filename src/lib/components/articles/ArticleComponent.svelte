@@ -1,11 +1,13 @@
-<script>
-	export let article;
-	export let view;
-	export let style;
+<script lang="ts">
+	import {ArticleIdPair, toggleMarkAsRead} from "../../services/service"
 
-	function onMediaClick() {
-		console.log('')
+	export let idPair: ArticleIdPair;
+	export let view;
+	export let style: string;
+
+	function onMediaClick(event: {detail: number}) {
+		toggleMarkAsRead(idPair)
 	}
 </script>
 
-<svelte:component this={view} {article} {style}/>
+<svelte:component this={view} {idPair} {style} on:mediaClick={onMediaClick}/>

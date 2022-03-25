@@ -2,17 +2,23 @@
 	import Article from '../../services/article'
 	import Fa from 'svelte-fa/src/fa.svelte'
 	import { faExternalLinkAlt, faExpandArrowsAlt, faHeart, faRetweet } from '@fortawesome/free-solid-svg-icons'
+	import {createEventDispatcher} from 'svelte'
+	import {ArticleIdPair, getWritable} from '../../services/service'
 
-	export let article: Article
+	export let idPair: ArticleIdPair;
 	export let style: string = '';
 
-	let actualArticle = article
+	let article: Article;
+	const unsubscribe = getWritable(idPair).subscribe(_ => article = _);
+	$: actualArticle = article
+
+	const dispatch = createEventDispatcher();
 </script>
 
 <style lang='sass' global>
 	@use '../../styles/core' as *
 
-	article
+	.favviewer article
 		padding: 1rem
 		background-color: $scheme-main-bis
 		margin-bottom: 2px
@@ -75,11 +81,11 @@
 
 <article class='galleryArticle' articleId={article.id} {style}>
 	<div>
-		{#each $actualArticle.medias as media}
-			<img alt={$actualArticle.id} class="articleThumb" src={media.src}/><!--key={i}--> <!-- on:click={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::OnMediaClick))}-->
+		{#each actualArticle.medias as media}
+			<img alt={actualArticle.id} class="articleThumb" src={media.src} on:click={() => dispatch('mediaClick', 0)}/><!--key={i}--> <!-- on:click={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::OnMediaClick))}-->
 		{/each}
 		<div class="holderBox holderBoxTop">
-			<a class="button" title="External Link" href={$actualArticle.url} target="_blank">
+			<a class="button" title="External Link" href={actualArticle.url} target="_blank">
 				<Fa icon={faExternalLinkAlt} class='darkIcon is-small'/>
 			</a>
 			<!--{#if !modal}-->
@@ -100,7 +106,7 @@
 	<!--			} }-->
 	<!--			<a-->
 	<!--				class="dropdown-item"-->
-	<!--				href={ $actualArticle.url() }-->
+	<!--				href={ actualArticle.url() }-->
 	<!--				target="_blank" rel="noopener noreferrer"-->
 	<!--			>-->
 	<!--				{ "External Link" }-->

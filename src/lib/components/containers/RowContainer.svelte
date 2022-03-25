@@ -1,7 +1,7 @@
 <script lang="ts">
 	import ArticleComponent from "../articles/ArticleComponent.svelte";
 
-	export let articles;
+	export let idPairs;
 	export let articleView;
 	export let columnCount: number;
 </script>
@@ -16,9 +16,9 @@
 </style>
 
 <div class='articlesContainer rowContainer'>
-	{#each articles as article}
+	{#each idPairs as idPair (idPair)}
 		<ArticleComponent
-			{article}
+			{idPair}
 			view={articleView}
 			style={`width: calc(100% / ${columnCount})`}
 		/>

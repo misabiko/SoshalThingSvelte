@@ -3,12 +3,17 @@
 	import Fa from 'svelte-fa/src/fa.svelte';
 	import { faHeart } from '@fortawesome/free-regular-svg-icons';
 	import { faRetweet, faHeart as faHeartFilled, faCompress, faExpand, faEye, faEyeSlash, faExpandAlt, faEllipsisH } from '@fortawesome/free-solid-svg-icons';
+	import {createEventDispatcher} from 'svelte'
+	import {ArticleIdPair, getWritable} from '../../services/service'
 
-	export let article: Article;
+	export let idPair: ArticleIdPair;
 	export let hideText: boolean;
 	export let style: string = '';
 
-	let actualArticle = article;
+	let article: Article;
+	const unsubscribe = getWritable(idPair).subscribe(_ => article = _);
+
+	$: actualArticle = article;
 	let minimized = false;
 
 	const MONTH_ABBREVS: string[] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -32,12 +37,14 @@
 	function onUsernameClick() {
 
 	}
+
+	const dispatch = createEventDispatcher();
 </script>
 
 <style lang='sass' global>
 	@use '../../styles/core' as *
 
-	article
+	.favviewer article
 		padding: 1rem
 		background-color: $scheme-main-bis
 		margin-bottom: 2px
@@ -282,45 +289,45 @@
 	<!--{ self.view_repost_label(ctx) }-->
 	<!--{ self.view_reply_label(ctx) }-->
 	<div class='media'>
-		{#if $actualArticle.author?.url}
+		{#if actualArticle.author?.url}
 			<figure class='media-left'>
 				<p class='image is-64x64'>
-					<img src={$actualArticle.author.avatarUrl} alt={`${$actualArticle.author.username}'s avatar`}/>
+					<img src={actualArticle.author.avatarUrl} alt={`{actualArticle.author.username}'s avatar`}/>
 				</p>
 			</figure>
 		{/if}
 		<div class='media-content'>
 			<div class='content'>
 				<div class='articleHeader'>
-					<a class='names' href={$actualArticle.author?.url} target='_blank' onclick={onUsernameClick}>
-						<strong>{ $actualArticle.author?.name }</strong>
-						<small>@{ $actualArticle.author?.username }</small>
+					<a class='names' href={actualArticle.author?.url} target='_blank' onclick={onUsernameClick}>
+						<strong>{ actualArticle.author?.name }</strong>
+						<small>@{ actualArticle.author?.username }</small>
 					</a>
-					{#if $actualArticle.creationTime !== undefined}
+					{#if actualArticle.creationTime !== undefined}
 						<span class='timestamp'>
-							<small title={$actualArticle.creationTime.toString()}>{shortTimestamp()}</small>
+							<small title={actualArticle.creationTime.toString()}>{shortTimestamp()}</small>
 						</span>
 					{/if}
 				</div>
 				{#if !hideText && !minimized}
 					<p class='articleParagraph'>
-						{$actualArticle.text}
+						{actualArticle.text}
 					</p>
 				{/if}
 			</div>
 			<!--{ quoted_post }-->
 			<nav class='level is-mobile'>
 				<div class='level-left'>
-					<a class='level-item articleButton repostButton' class:repostedPostButton={$actualArticle.reposted}>
+					<a class='level-item articleButton repostButton' class:repostedPostButton={actualArticle.reposted}>
 						<Fa icon={faRetweet}/>
-						{#if $actualArticle.repostCount}
-							<span>{$actualArticle.repostCount}</span>
+						{#if actualArticle.repostCount}
+							<span>{actualArticle.repostCount}</span>
 						{/if}
 					</a>
-					<a class='level-item articleButton likeButton' class:likedPostButton={$actualArticle.liked}>
+					<a class='level-item articleButton likeButton' class:likedPostButton={actualArticle.liked}>
 						<Fa icon={faHeart}/>
-						{#if $actualArticle.likeCount}
-							<span>{$actualArticle.likeCount}</span>
+						{#if actualArticle.likeCount}
+							<span>{actualArticle.likeCount}</span>
 						{/if}
 					</a>
 					<a class='level-item articleButton'>
@@ -332,10 +339,10 @@
 	</div>
 	{#if !minimized}
 		<div class='postMedia postImages'>
-			{#each $actualArticle.medias as media}
+			{#each actualArticle.medias as media}
 				<div class='mediaHolder'>
 					<div class='is-hidden imgPlaceHolder'></div>
-					<img alt={$actualArticle.id} src={media.src}/>
+					<img alt={actualArticle.id} src={media.src} on:click={() => dispatch('mediaClick', 0)}/>
 				</div>
 			{/each}
 		</div>

@@ -1,69 +1,115 @@
-<script context="module">
-	import {Select, Field} from 'svelma';
+<script context='module'>
+	import {Field, Select} from 'svelma';
 </script>
 
-<script lang="ts">
-	import ColumnContainer from "./containers/ColumnContainer.svelte";
-	import RowContainer from "./containers/RowContainer.svelte";
-	import SocialArticleView from "./articles/SocialArticleView.svelte";
-	import Fa from 'svelte-fa/src/fa.svelte';
-	import { faRandom, faScroll, faSyncAlt, faArrowDown, faArrowUp, faEllipsisV, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-	import {getTweet} from '../services/twitter/service';
-	import {derived, writable} from 'svelte/store'
+<script lang='ts'>
+	import ColumnContainer from "./containers/ColumnContainer.svelte"
+	import RowContainer from "./containers/RowContainer.svelte"
+	import SocialArticleView from "./articles/SocialArticleView.svelte"
+	import Fa from 'svelte-fa/src/fa.svelte'
+	import {
+		faRandom,
+		faScroll,
+		faSyncAlt,
+		faArrowDown,
+		faArrowUp,
+		faEllipsisV,
+		faEyeSlash,
+	} from '@fortawesome/free-solid-svg-icons'
+	import {derived, get, Writable, writable} from 'svelte/store'
 	import type {ArticleIdPair} from '../services/service'
-	import {getWritable} from '../services/service'
+	import {
+		getWritable,
+		loadBottomEndpoints,
+		loadTopEndpoints,
+		refreshEndpoints,
+		RefreshTime,
+	} from '../services/service'
 	import Article from '../services/article'
+	import {onMount} from 'svelte'
 
-	export let title;
-	export let fullscreen = false;
-	export let initArticles: ArticleIdPair[] = [];
-	export let initContainer = undefined;
-	export let initArticleView = undefined;
+	export interface TimelineData {
+		title: string;
+		fullscreen?: boolean;
+		endpoints: string[];
+		initArticles?: Article[];
+		initContainer?: any;
+		initArticleView?: any;
+	}
 
-	export let favviewerButtons = false;
-	export let favviewerHidden;
-	export let showSidebar;
+	export let title
+	export let fullscreen = false
+	export let endpoints: string[]
+	export let initArticles: ArticleIdPair[] = []
+	export let initContainer = undefined
+	export let initArticleView = undefined
 
-	let container = initContainer || ColumnContainer;
-	let columnCount = 5;
-	let width = 1;
-	let articleView = initArticleView || SocialArticleView;
-	let showOptions = false;
+	export let favviewerButtons = false
+	export let favviewerHidden
+	export let showSidebar
 
-	const articleIdPairs: ArticleIdPair[] = [...initArticles];
+	let container = initContainer || ColumnContainer
+	let columnCount = 5
+	let width = 1
+	let articleView = initArticleView || SocialArticleView
+	let showOptions = false
 
-	const filteredArticles = derived(articleIdPairs.map(idPair => getWritable(idPair)),
-		(articles: Article[]) => articles
-			.filter((a: Article) => !a.markedAsRead && !a.hidden)
-			.map((a: Article) => a.idPair)
-	);
-	/*$: const filteredArticles = derived([articles, ...$articles], ([$articles, ...arr]) => {
-		return arr.filter((a/!*: Article*!/) => !a.markedAsRead && !a.hidden)
-	});*/
+	let articleIdPairs: Writable<ArticleIdPair[]> = writable([...initArticles])
+
+	$: filteredArticles = derived($articleIdPairs.map(idPair => getWritable(idPair)),
+		(articles: Article[]) => articles?.filter((a: Article) => !a.markedAsRead && !a.hidden)
+			.map((a: Article) => a.idPair) || [],
+	)
 
 	function shuffle() {
-		console.log('Shuffling!');
+		console.log('Shuffling!')
 	}
 
 	function autoscroll() {
-		console.log('Scrolling!');
+		console.log('Scrolling!')
 	}
 
 	async function refresh() {
-		console.log('Refreshing!');
+		console.log('Refreshing!')
+		const newArticles = await refreshEndpoints(endpoints, RefreshTime.OnRefresh)
+		articleIdPairs.update(idPairs => {
+			idPairs.push(...newArticles)
+			return idPairs
+		})
 		/*const tweet = await getTweet("1504842554591772678");
 		if (tweet !== undefined)
 			articles.set([...$articles, tweet]);
 		console.dir(articles);*/
 	}
 
-	function loadBottom() {
-		console.log('Loading Bottom!');
+	async function loadBottom() {
+		console.log('Loading Bottom!')
+		const newArticles = await loadBottomEndpoints(endpoints, RefreshTime.OnRefresh)
+		articleIdPairs.update(idPairs => {
+			idPairs.push(...newArticles)
+			return idPairs
+		})
 	}
 
-	function loadTop() {
-		console.log('Loading Top!');
+	async function loadTop() {
+		console.log('Loading Top!')
+		const newArticles = await loadTopEndpoints(endpoints, RefreshTime.OnRefresh)
+		articleIdPairs.update(idPairs => {
+			idPairs.push(...newArticles)
+			return idPairs
+		})
 	}
+
+	onMount(async () => {
+		if (!endpoints.length)
+			return;
+
+		const newArticles = await refreshEndpoints(endpoints, RefreshTime.OnStart)
+		articleIdPairs.update(idPairs => {
+			idPairs.push(...newArticles)
+			return idPairs
+		})
+	})
 </script>
 
 <style lang='sass' global>
@@ -156,22 +202,22 @@
 			{/if}
 		</div>
 		<div class='timelineButtons'>
-			<button title="Shuffle" on:click={shuffle}>
+			<button title='Shuffle' on:click={shuffle}>
 				<Fa icon={faRandom} size='large'/>
 			</button>
-			<button title="Autoscroll" on:click={autoscroll}>
+			<button title='Autoscroll' on:click={autoscroll}>
 				<Fa icon={faScroll} size='large'/>
 			</button>
-			<button title="Refresh" on:click={refresh}>
+			<button title='Refresh' on:click={refresh}>
 				<Fa icon={faSyncAlt} size='large'/>
 			</button>
-			<button title="Load Bottom" on:click={loadBottom}>
+			<button title='Load Bottom' on:click={loadBottom}>
 				<Fa icon={faArrowDown} size='large'/>
 			</button>
-			<button title="Load Top" on:click={loadTop}>
+			<button title='Load Top' on:click={loadTop}>
 				<Fa icon={faArrowUp} size='large'/>
 			</button>
-			<button title="Expand options" on:click='{() => showOptions = !showOptions}'>
+			<button title='Expand options' on:click='{() => showOptions = !showOptions}'>
 				<Fa icon={faEllipsisV} size='large'/>
 			</button>
 		</div>
@@ -188,13 +234,13 @@
 				{#if container !== ColumnContainer}
 					<div class='block control'>
 						<label class='label'>Column Count</label>
-						<input class='input' type='number' bind:value={columnCount} min=1/>
+						<input class='input' type='number' bind:value={columnCount} min='1/'>
 					</div>
 				{/if}
 				{#if !fullscreen}
 					<div class='block control'>
 						<label class='label'>Timeline Width</label>
-						<input class='input' type='number' bind:value={width} min=1/>
+						<input class='input' type='number' bind:value={width} min='1/'>
 					</div>
 				{/if}
 			</div>

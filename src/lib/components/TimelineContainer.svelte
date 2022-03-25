@@ -1,16 +1,5 @@
-<script lang='ts' context="module">
-	import Article from '../services/article'
-
-	export interface TimelineData {
-		title: string;
-		fullscreen?: boolean;
-		initArticles?: Article[];
-		initContainer?: any;
-		initArticleView?: any;
-	}
-</script>
-
 <script lang="ts">
+	import type {TimelineData} from './Timeline.svelte';
 	import Timeline from './Timeline.svelte';
 	import {getContext} from 'svelte'
 

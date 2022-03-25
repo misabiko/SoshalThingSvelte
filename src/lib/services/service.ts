@@ -2,9 +2,9 @@ import type Article from './article'
 import type {Writable} from 'svelte/store'
 import {get, writable} from 'svelte/store'
 
-const endpoints: Endpoint[] = []
+const endpoints: { [name: string]: Endpoint } = {}
 const services: { [name: string]: Service } = {}
-const endpointConstructors: EndpointConstructorInfo[] = []
+const endpointConstructors: { [service: string]: EndpointConstructorInfo[] } = {}
 
 export interface Service {
 	readonly name: string;
@@ -35,16 +35,9 @@ export function addArticles(service: Service, ...articles: Article[]): { idPair:
 
 export abstract class Endpoint {
 	readonly name: string
-	readonly articleIds: string[]
+	readonly articleIdPairs: ArticleIdPair[] = []
 
 	static readonly constructorInfo: EndpointConstructorInfo
-
-	addArticles(ids: string[]) {
-		for (const id of ids) {
-			if (!this.articleIds.includes(id))
-				this.articleIds.push(id)
-		}
-	}
 
 	abstract refresh(refreshTime: RefreshTime): Promise<Article[]>;
 
@@ -76,7 +69,7 @@ type ParamType = string | number | boolean;
 
 export function registerService(service: Service, constructors: EndpointConstructorInfo[]) {
 	services[service.name] = service
-	endpointConstructors.push(...constructors)
+	endpointConstructors[service.name] = constructors
 }
 
 export function toggleMarkAsRead(idPair: ArticleIdPair) {
@@ -132,7 +125,43 @@ export function getMarkedAsReadStorage(service: Service): (string | number)[] {
 
 export function articleAction(action: string, idPair: ArticleIdPair) {
 	if (services[idPair.service].articleActions.hasOwnProperty(action))
-		services[idPair.service].articleActions[action].action(idPair);
+		services[idPair.service].articleActions[action].action(idPair)
 	else
-		console.warn(`${idPair.service} doesn't have action ${action}.`);
+		console.warn(`${idPair.service} doesn't have action ${action}.`)
+}
+
+export function addEndpoint(endpoint: Endpoint) {
+	if (endpoints.hasOwnProperty(endpoint.name))
+		console.warn(`Endpoint ${endpoint.name} already exists`);
+	else
+		endpoints[endpoint.name] = endpoint;
+}
+
+export async function refreshEndpoints(endpointNames: string[], refreshTime: RefreshTime): Promise<ArticleIdPair[]> {
+	return endpointRefreshed(endpointNames[0], await endpoints[endpointNames[0]].refresh(refreshTime));
+}
+
+export async function loadTopEndpoints(endpointNames: string[], refreshTime: RefreshTime): Promise<ArticleIdPair[]> {
+	return endpointRefreshed(endpointNames[0], await endpoints[endpointNames[0]].loadTop(refreshTime));
+}
+
+export async function loadBottomEndpoints(endpointNames: string[], refreshTime: RefreshTime): Promise<ArticleIdPair[]> {
+	return endpointRefreshed(endpointNames[0], await endpoints[endpointNames[0]].loadBottom(refreshTime));
+}
+
+function endpointRefreshed(endpointName: string, articles: Article[]): ArticleIdPair[] {
+	if (!articles.length)
+		return [];
+	//TODO Store service name on endpoint
+	// @ts-ignore
+	const service = articles[0].constructor.service;
+
+	return addArticles(services[service], ...articles).map(({idPair}) => idPair)
+		.filter(idPair => {
+			if (!endpoints[endpointName].articleIdPairs.includes(idPair)) {
+				endpoints[endpointName].articleIdPairs.push(idPair)
+				return true;
+			}else
+				return false
+		});
 }

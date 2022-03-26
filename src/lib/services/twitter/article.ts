@@ -1,4 +1,4 @@
-import type {ArticleAuthor, ArticleIdPair, ArticleRefIdPair} from '../article'
+import type {ArticleAuthor, ArticleIdPair, ArticleMedia, ArticleRefIdPair} from '../article'
 import Article from '../article'
 
 export default class TwitterArticle extends Article {
@@ -7,13 +7,22 @@ export default class TwitterArticle extends Article {
 	readonly author: TwitterUser;
 	readonly creationTime: Date;
 
-	constructor(id: string, text: string, textHtml: string, user: TwitterUser, creationTime: Date, markedAsReadStorage: string[], articleRefs: ArticleRefIdPair[]) {
+	constructor(
+		id: string,
+		text: string,
+		textHtml: string,
+		user: TwitterUser,
+		creationTime: Date,
+		markedAsReadStorage: string[],
+		articleRefs: ArticleRefIdPair[],
+		medias: ArticleMedia[]
+	) {
 		super({
 			id,
-			url: `https://twitter.com/${user.username}/${id}`,
+			url: `https://twitter.com/${user.username}/status/${id}`,
 			text,
 			textHtml,
-			medias: [],
+			medias,
 			markedAsRead: false,
 			hidden: false,
 			markedAsReadStorage,

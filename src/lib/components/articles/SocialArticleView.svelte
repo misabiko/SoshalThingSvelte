@@ -14,6 +14,7 @@
 	import {createEventDispatcher} from 'svelte'
 	import Article from '../../services/article'
 	import Dropdown from '../../components/Dropdown.svelte'
+	import {toggleMarkAsRead, toggleHide, articleAction, getWritable} from "../../services/service"
 
 	export let article: Article
 	export let actualArticle: Article
@@ -22,6 +23,7 @@
 	export let style: string = ''
 
 	let minimized = false
+	$: isReposted = article.id !== actualArticle.id
 
 	const MONTH_ABBREVS: string[] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
@@ -65,7 +67,7 @@
 			img
 				border-radius: 4px
 
-			p.sharedAvatar
+			&.sharedAvatar
 				position: relative
 
 				img:first-child
@@ -294,31 +296,42 @@
 </style>
 
 <article class='socialArticle' {style}>
-	<div class='repostLabel' href={article.url} target='_blank'>
-		<a on:click|preventDefault={() => onUsernameClick(article)}>
+	<div class='repostLabel'>
+		<a href={article.author.url} target='_blank' on:click|preventDefault={() => onUsernameClick(article)}>
 			{article.author.name} reposted - {shortTimestamp(article.creationTime)}
 		</a>
 	</div>
 	<!--{ self.view_reply_label(ctx) }-->
 	<div class='media'>
-		{#if actualArticle.author?.url}
-			<figure class='media-left'>
-				<p class='image is-64x64'>
-					<img src={actualArticle.author.avatarUrl} alt={`{actualArticle.author.username}'s avatar`}/>
-				</p>
+		<div class='media-left'>
+			<figure class='image is-64x64' class:sharedAvatar={isReposted}>
+				{#if actualArticle.author?.url}
+					{#if isReposted}
+						<img src={actualArticle.author.avatarUrl} alt={`${actualArticle.author.username}'s avatar`}/>
+						<img src={article.author.avatarUrl} alt={`${article.author.username}'s avatar`}/>
+					{:else}
+						<img src={actualArticle.author.avatarUrl} alt={`${actualArticle.author.username}'s avatar`}/>
+					{/if}
+				{/if}
 			</figure>
-		{/if}
+		</div>
 		<div class='media-content'>
 			<div class='content'>
 				<div class='articleHeader'>
-					<a class='names' href={actualArticle.author?.url} target='_blank' on:click|preventDefault={() => onUsernameClick(actualArticle)}>
+					<a
+						class='names'
+						href={actualArticle.author?.url}
+						target='_blank'
+						on:click|preventDefault={() => onUsernameClick(actualArticle)}
+					>
 						<strong>{ actualArticle.author?.name }</strong>
 						<small>@{ actualArticle.author?.username }</small>
 					</a>
 					{#if actualArticle.creationTime !== undefined}
-					<span class='timestamp'>
-						<small title={actualArticle.creationTime.toString()}>{shortTimestamp(actualArticle.creationTime)}</small>
-					</span>
+						<span class='timestamp'>
+							<small
+								title={actualArticle.creationTime.toString()}>{shortTimestamp(actualArticle.creationTime)}</small>
+						</span>
 					{/if}
 				</div>
 				{#if !hideText && !minimized}
@@ -335,14 +348,14 @@
 			<nav class='level is-mobile'>
 				<div class='level-left'>
 					<button class='level-item articleButton repostButton'
-					   class:repostedPostButton={actualArticle.reposted}>
+							class:repostedPostButton={actualArticle.reposted}>
 						<Fa icon={faRetweet}/>
 						{#if actualArticle.repostCount}
 							<span>{actualArticle.repostCount}</span>
 						{/if}
 					</button>
 					<button class='level-item articleButton likeButton' class:likedPostButton={actualArticle.liked}
-					   on:click={() => dispatch('action', 'favorite')}>
+							on:click={() => dispatch('action', 'favorite')}>
 						<Fa icon={faHeart}/>
 						{#if actualArticle.likeCount}
 							<span>{actualArticle.likeCount}</span>
@@ -354,28 +367,32 @@
 					<Dropdown labelClasses='articleButton'>
 						<Fa slot='triggerIcon' icon={faEllipsisH} class='level-item'/>
 
-						<a class='dropdown-item'><!--on:click={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::ToggleMarkAsRead))}-->
+						<a class='dropdown-item' on:click={() => toggleMarkAsRead(actualArticle.idPair)}>
 							Mark as read
 						</a>
-						<a class='dropdown-item'><!--on:click={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::ToggleHide))}-->
+						<a class='dropdown-item' on:click={() => toggleHide(actualArticle.idPair)}>
 							Hide
 						</a>
-						<a class='dropdown-item'><!--on:click={&ontoggle_compact}-->
+						<a class='dropdown-item' on:click={() => compact = !compact}>
 							{ compact ? 'Show expanded' : 'Show compact' }
 						</a>
-						<a class='dropdown-item' href={ actualArticle.url } target="_blank">
+						<a class='dropdown-item' href={ actualArticle.url } target='_blank'>
 							External Link
 						</a>
-						<!--{ dropdown_buttons }-->
-						<a class='dropdown-item'><!--on:click={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::LogData))}-->
+						{#if isReposted}
+							<a class='dropdown-item' href={ article.url } target='_blank'>
+								Repost's external Link
+							</a>
+						{/if}
+						<a class='dropdown-item' on:click={() => console.dir(article)}>
 							Log Data
 						</a>
-						<a class='dropdown-item'><!--on:click={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::LogJsonData))}-->
-							Log Json Data
-						</a>
-						<a class='dropdown-item'><!--on:click={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::FetchData))}-->
-							Fetch Data
-						</a>
+						<!--						<a class='dropdown-item'>-->
+						<!--							Log Json Data-->
+						<!--						</a>-->
+						<!--						<a class='dropdown-item'>-->
+						<!--							Fetch Data-->
+						<!--						</a>-->
 					</Dropdown>
 				</div>
 			</nav>

@@ -1,7 +1,8 @@
+import type {ArticleMedia} from '../article'
 import {Endpoint, getMarkedAsReadStorage, RefreshTime, registerEndpoint} from '../service'
 import {TwitterService} from './service'
 import TwitterArticle from './article'
-import {articleRefToIdPair, ArticleRefType} from '../article'
+import {articleRefToIdPair, ArticleRefType, getRatio, MediaQueueInfo, MediaType} from '../article'
 
 export class HomeTimelineEndpoint extends Endpoint {
 	readonly name = 'Home Timeline'
@@ -138,7 +139,8 @@ function articleFromV1(json: TweetResponse) {
 			},
 			new Date(json.created_at),
 			getMarkedAsReadStorage(TwitterService) as string[],
-			articleRefs.map(articleRefToIdPair)
+			articleRefs.map(articleRefToIdPair),
+			parseMedia(json.extended_entities),
 		),
 		refs: articleRefs,
 		actualArticleIndex,
@@ -197,6 +199,33 @@ function parseText(rawText: string, entities: Entities, extendedEntities?: Exten
 			text: finalText,
 			textHtml: finalText,
 		}
+	}
+}
+
+function parseMedia(extendedEntities?: ExtendedEntities): ArticleMedia[] {
+	return extendedEntities?.media.map(media => {
+		switch (media.type) {
+			case 'photo':
+				return {
+					mediaType: MediaType.Image,
+					src: media.media_url_https,
+					ratio: getRatio(media.sizes.large.w, media.sizes.large.h),
+					queueLoadInfo: MediaQueueInfo.DirectLoad
+				}
+			case 'video':
+				return getMP4(media.video_info, MediaType.VideoGif)
+			case 'animated_gif':
+				return getMP4(media.video_info, MediaType.Video)
+		}
+	}) || []
+}
+
+function getMP4(videoInfo: VideoInfo, mediaType: MediaType): ArticleMedia {
+	return {
+		mediaType,
+		src: videoInfo.variants.find(v => v.content_type === 'video/mp4').url,
+		ratio: getRatio(videoInfo.aspect_ratio[0], videoInfo.aspect_ratio[1]),
+		queueLoadInfo: MediaQueueInfo.DirectLoad,
 	}
 }
 
@@ -313,22 +342,53 @@ type Entities = {
 }
 
 type ExtendedEntities = {
-	media: {
-		id: number;
-		id_str: string;
-		indices: Indices;
-		media_url: string;
-		media_url_https: string;
-		url: string;
-		display_url: string;
-		expanded_url: string;
-		type: MediaType;
-		sizes: MediaSizes;
-		source_status_id: number;
-		source_status_id_str: string;
-		source_user_id: number;
-		source_user_id_str: string
-	}[];
+	media: ExtendedMedia[];
+}
+
+type ExtendedMedia = {
+	id: number;
+	id_str: string;
+	indices: Indices;
+	media_url: string;
+	media_url_https: string;
+	url: string;
+	display_url: string;
+	expanded_url: string;
+	type: 'photo';
+	sizes: MediaSizes;
+	source_status_id: number;
+	source_status_id_str: string;
+	source_user_id: number;
+	source_user_id_str: string;
+	video_info: null
+} | {
+	id: number;
+	id_str: string;
+	indices: Indices;
+	media_url: string;
+	media_url_https: string;
+	url: string;
+	display_url: string;
+	expanded_url: string;
+	type: 'video' | 'animated_gif';
+	sizes: MediaSizes;
+	source_status_id: number;
+	source_status_id_str: string;
+	source_user_id: number;
+	source_user_id_str: string;
+	video_info: VideoInfo
+}
+
+type VideoInfo = {
+	aspect_ratio: [number, number];
+	duration_millis: number;
+	variants: VideoVariant[]
+}
+
+type VideoVariant = {
+	bitrate: number;
+	content_type: string;	//enum?
+	url: string
 }
 
 type UserEntities = {
@@ -344,8 +404,6 @@ type UserEntities = {
 		urls: []
 	}
 }
-
-type MediaType = 'photo' | 'video' | 'animated_gif'
 
 type MediaSizes = {
 	thumb: MediaSize;

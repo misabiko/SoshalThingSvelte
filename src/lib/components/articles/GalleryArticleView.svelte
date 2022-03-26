@@ -9,7 +9,6 @@
 	export let actualArticle: Article
 	export let style: string = ''
 
-
 	const dispatch = createEventDispatcher()
 </script>
 

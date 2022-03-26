@@ -7,11 +7,12 @@ export default class TwitterArticle extends Article {
 	readonly author: TwitterUser;
 	readonly creationTime: Date;
 
-	constructor(id: string, text: string, user: TwitterUser, creationTime: Date, markedAsReadStorage: string[]) {
+	constructor(id: string, text: string, textHtml: string, user: TwitterUser, creationTime: Date, markedAsReadStorage: string[]) {
 		super({
 			id,
-			text,
 			url: `https://twitter.com/${user.username}/${id}`,
+			text,
+			textHtml,
 			medias: [],
 			markedAsRead: false,
 			hidden: false,
@@ -21,7 +22,6 @@ export default class TwitterArticle extends Article {
 		this.author = user;
 		this.creationTime = creationTime;
 	}
-
 }
 
 export interface TwitterUser extends ArticleAuthor {

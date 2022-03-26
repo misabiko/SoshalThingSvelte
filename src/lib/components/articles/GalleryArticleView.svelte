@@ -1,22 +1,23 @@
 <script lang='ts'>
 	import Article from '../../services/article'
 	import Fa from 'svelte-fa/src/fa.svelte'
-	import { faExternalLinkAlt, faExpandArrowsAlt, faHeart, faRetweet } from '@fortawesome/free-solid-svg-icons'
+	import {faExternalLinkAlt, faExpandArrowsAlt, faHeart, faRetweet} from '@fortawesome/free-solid-svg-icons'
 	import {createEventDispatcher} from 'svelte'
-	import {ArticleIdPair, getWritable} from '../../services/service'
+	import type {ArticleIdPair} from "../../services/service"
+	import {getWritable} from '../../services/service'
 
-	export let idPair: ArticleIdPair;
-	export let style: string = '';
+	export let idPair: ArticleIdPair
+	export let style: string = ''
 
-	let article: Article;
-	const unsubscribe = getWritable(idPair).subscribe(_ => article = _);
+	let article: Article
+	const unsubscribe = getWritable(idPair).subscribe(_ => article = _)
 	$: actualArticle = article
 
-	const dispatch = createEventDispatcher();
+	const dispatch = createEventDispatcher()
 </script>
 
 <style lang='sass' global>
-	@use '../../styles/core' as *
+	@import '../../styles/core'
 
 	.favviewer article
 		padding: 1rem

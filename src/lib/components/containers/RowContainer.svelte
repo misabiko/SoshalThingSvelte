@@ -4,10 +4,11 @@
 	export let idPairs;
 	export let articleView;
 	export let columnCount: number;
+	export let socialSettings
 </script>
 
 <style lang='sass' global>
-	@use '../../styles/core' as *
+	@import '../../styles/core'
 
 	.articlesContainer.rowContainer
 		display: flex
@@ -20,6 +21,7 @@
 		<ArticleComponent
 			{idPair}
 			view={articleView}
+			{socialSettings}
 			style={`width: calc(100% / ${columnCount})`}
 		/>
 	{/each}

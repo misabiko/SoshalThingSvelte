@@ -3,6 +3,8 @@
 </script>
 
 <script lang='ts'>
+	import type {Writable} from 'svelte/store'
+	import type {ArticleIdPair} from '../services/service'
 	import ColumnContainer from "./containers/ColumnContainer.svelte"
 	import RowContainer from "./containers/RowContainer.svelte"
 	import SocialArticleView from "./articles/SocialArticleView.svelte"
@@ -16,8 +18,7 @@
 		faEllipsisV,
 		faEyeSlash,
 	} from '@fortawesome/free-solid-svg-icons'
-	import {derived, get, Writable, writable} from 'svelte/store'
-	import type {ArticleIdPair} from '../services/service'
+	import {derived, writable} from 'svelte/store'
 	import {
 		getWritable,
 		loadBottomEndpoints,
@@ -45,14 +46,17 @@
 	export let initArticleView = undefined
 
 	export let favviewerButtons = false
-	export let favviewerHidden
-	export let showSidebar
+	export let favviewerHidden = false
+	export let showSidebar = true
 
 	let container = initContainer || ColumnContainer
 	let columnCount = 5
 	let width = 1
 	let articleView = initArticleView || SocialArticleView
 	let showOptions = false
+	const socialSettings = {
+		hideText: false,
+	}
 
 	let articleIdPairs: Writable<ArticleIdPair[]> = writable([...initArticles])
 
@@ -76,10 +80,6 @@
 			idPairs.push(...newArticles)
 			return idPairs
 		})
-		/*const tweet = await getTweet("1504842554591772678");
-		if (tweet !== undefined)
-			articles.set([...$articles, tweet]);
-		console.dir(articles);*/
 	}
 
 	async function loadBottom() {
@@ -102,7 +102,7 @@
 
 	onMount(async () => {
 		if (!endpoints.length)
-			return;
+			return
 
 		const newArticles = await refreshEndpoints(endpoints, RefreshTime.OnStart)
 		articleIdPairs.update(idPairs => {
@@ -113,7 +113,7 @@
 </script>
 
 <style lang='sass' global>
-	@use '../styles/core' as *
+	@import '../styles/core'
 
 	.timeline
 		color: $text
@@ -244,7 +244,16 @@
 					</div>
 				{/if}
 			</div>
+			<div class='box'>
+				<Field label='Endpoints'>
+					<ul>
+						{#each endpoints as endpoint (endpoint)}
+							<li>{endpoint}</li>
+						{/each}
+					</ul>
+				</Field>
+			</div>
 		</div>
 	{/if}
-	<svelte:component this={container} idPairs={$filteredArticles} articleView={articleView} {columnCount}/>
+	<svelte:component this={container} idPairs={$filteredArticles} articleView={articleView} {columnCount} {socialSettings}/>
 </div>

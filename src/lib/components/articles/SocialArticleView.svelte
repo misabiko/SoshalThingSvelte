@@ -1,27 +1,38 @@
 <script lang='ts'>
+	import type {ArticleIdPair} from "../../services/service"
 	import Article from '../../services/article'
-	import Fa from 'svelte-fa/src/fa.svelte';
-	import { faHeart } from '@fortawesome/free-regular-svg-icons';
-	import { faRetweet, faHeart as faHeartFilled, faCompress, faExpand, faEye, faEyeSlash, faExpandAlt, faEllipsisH } from '@fortawesome/free-solid-svg-icons';
+	import Fa from 'svelte-fa/src/fa.svelte'
+	import {faHeart} from '@fortawesome/free-regular-svg-icons'
+	import {
+		faRetweet,
+		faHeart as faHeartFilled,
+		faCompress,
+		faExpand,
+		faEye,
+		faEyeSlash,
+		faExpandAlt,
+		faEllipsisH,
+	} from '@fortawesome/free-solid-svg-icons'
 	import {createEventDispatcher} from 'svelte'
-	import {ArticleIdPair, getWritable} from '../../services/service'
+	import {getWritable} from '../../services/service'
 
-	export let idPair: ArticleIdPair;
-	export let hideText: boolean;
-	export let style: string = '';
+	export let idPair: ArticleIdPair
+	export let hideText: boolean
+	export let style: string = ''
 
-	let article: Article;
-	const unsubscribe = getWritable(idPair).subscribe(_ => article = _);
+	let article: Article
+	const unsubscribe = getWritable(idPair).subscribe(_ => article = _)
 
-	$: actualArticle = article;
-	let minimized = false;
+	$: actualArticle = article
+	let minimized = false
 
-	const MONTH_ABBREVS: string[] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+	const MONTH_ABBREVS: string[] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
 	function shortTimestamp() {
-		const timeSince = Date.now() - $actualArticle.creationTime.getTime();
+		const timeSince = Date.now() - actualArticle.creationTime.getTime()
 
 		if (timeSince < 1000)
-			return 'just now';
+			return 'just now'
 		else if (timeSince < 60_000)
 			return `${Math.floor(timeSince / 1000)}s`
 		else if (timeSince < 3_600_000)
@@ -31,18 +42,18 @@
 		else if (timeSince < 604_800_000)
 			return `${Math.floor(timeSince / 86_400_000)}d`
 		else
-			return `${MONTH_ABBREVS[$actualArticle.creationTime.getMonth()]} ${$actualArticle.creationTime.getDate()} ${$actualArticle.creationTime.getFullYear()}`
+			return `${MONTH_ABBREVS[actualArticle.creationTime.getMonth()]} ${actualArticle.creationTime.getDate()} ${actualArticle.creationTime.getFullYear()}`
 	}
 
 	function onUsernameClick() {
 
 	}
 
-	const dispatch = createEventDispatcher();
+	const dispatch = createEventDispatcher()
 </script>
 
 <style lang='sass' global>
-	@use '../../styles/core' as *
+	@import '../../styles/core'
 
 	.favviewer article
 		padding: 1rem
@@ -304,27 +315,33 @@
 						<small>@{ actualArticle.author?.username }</small>
 					</a>
 					{#if actualArticle.creationTime !== undefined}
-						<span class='timestamp'>
-							<small title={actualArticle.creationTime.toString()}>{shortTimestamp()}</small>
-						</span>
+					<span class='timestamp'>
+						<small title={actualArticle.creationTime.toString()}>{shortTimestamp()}</small>
+					</span>
 					{/if}
 				</div>
 				{#if !hideText && !minimized}
 					<p class='articleParagraph'>
-						{actualArticle.text}
+						{#if actualArticle.textHtml}
+							{@html actualArticle.textHtml}
+						{:else}
+							{actualArticle.text}
+						{/if}
 					</p>
 				{/if}
 			</div>
 			<!--{ quoted_post }-->
 			<nav class='level is-mobile'>
 				<div class='level-left'>
-					<a class='level-item articleButton repostButton' class:repostedPostButton={actualArticle.reposted}>
+					<a class='level-item articleButton repostButton'
+					   class:repostedPostButton={actualArticle.reposted}>
 						<Fa icon={faRetweet}/>
 						{#if actualArticle.repostCount}
 							<span>{actualArticle.repostCount}</span>
 						{/if}
 					</a>
-					<a class='level-item articleButton likeButton' class:likedPostButton={actualArticle.liked} on:click={() => dispatch('action', 'favorite')}>
+					<a class='level-item articleButton likeButton' class:likedPostButton={actualArticle.liked}
+					   on:click={() => dispatch('action', 'favorite')}>
 						<Fa icon={faHeart}/>
 						{#if actualArticle.likeCount}
 							<span>{actualArticle.likeCount}</span>

@@ -23,18 +23,18 @@ export type ArticleIdPair = {
 	id: string | number
 };
 
-export function addArticles(service: Service, ...articles: Article[]): { idPair: ArticleIdPair, store: Writable<Article> }[] {
-	const readables = []
+export function addArticles(service: Service, ...articles: Article[]): ArticleIdPair[] {
+	const idPairs = []
 	for (const article of articles) {
-		const store = service.articles[article.id] = writable(article)
-		readables.push({idPair: {service: service.name, id: article.id}, store})
+		service.articles[article.id] = writable(article)
+		idPairs.push({service: service.name, id: article.id})
 	}
 
-	return readables
+	return idPairs
 }
 
 export abstract class Endpoint {
-	readonly name: string
+	abstract readonly name: string
 	readonly articleIdPairs: ArticleIdPair[] = []
 
 	static readonly constructorInfo: EndpointConstructorInfo
@@ -67,9 +67,13 @@ export enum RefreshTime {
 
 type ParamType = string | number | boolean;
 
-export function registerService(service: Service, constructors: EndpointConstructorInfo[]) {
+export function registerService(service: Service) {
 	services[service.name] = service
-	endpointConstructors[service.name] = constructors
+}
+
+export function registerEndpoint(service: Service, ...endpointInfos: EndpointConstructorInfo[]) {
+	endpointConstructors[service.name] ??= []
+	endpointConstructors[service.name].push(...endpointInfos)
 }
 
 export function toggleMarkAsRead(idPair: ArticleIdPair) {
@@ -132,36 +136,36 @@ export function articleAction(action: string, idPair: ArticleIdPair) {
 
 export function addEndpoint(endpoint: Endpoint) {
 	if (endpoints.hasOwnProperty(endpoint.name))
-		console.warn(`Endpoint ${endpoint.name} already exists`);
+		console.warn(`Endpoint ${endpoint.name} already exists`)
 	else
-		endpoints[endpoint.name] = endpoint;
+		endpoints[endpoint.name] = endpoint
 }
 
 export async function refreshEndpoints(endpointNames: string[], refreshTime: RefreshTime): Promise<ArticleIdPair[]> {
-	return endpointRefreshed(endpointNames[0], await endpoints[endpointNames[0]].refresh(refreshTime));
+	return endpointRefreshed(endpointNames[0], await endpoints[endpointNames[0]].refresh(refreshTime))
 }
 
 export async function loadTopEndpoints(endpointNames: string[], refreshTime: RefreshTime): Promise<ArticleIdPair[]> {
-	return endpointRefreshed(endpointNames[0], await endpoints[endpointNames[0]].loadTop(refreshTime));
+	return endpointRefreshed(endpointNames[0], await endpoints[endpointNames[0]].loadTop(refreshTime))
 }
 
 export async function loadBottomEndpoints(endpointNames: string[], refreshTime: RefreshTime): Promise<ArticleIdPair[]> {
-	return endpointRefreshed(endpointNames[0], await endpoints[endpointNames[0]].loadBottom(refreshTime));
+	return endpointRefreshed(endpointNames[0], await endpoints[endpointNames[0]].loadBottom(refreshTime))
 }
 
 function endpointRefreshed(endpointName: string, articles: Article[]): ArticleIdPair[] {
 	if (!articles.length)
-		return [];
+		return []
 	//TODO Store service name on endpoint
 	// @ts-ignore
-	const service = articles[0].constructor.service;
+	const service = articles[0].constructor.service
 
-	return addArticles(services[service], ...articles).map(({idPair}) => idPair)
+	return addArticles(services[service], ...articles)
 		.filter(idPair => {
 			if (endpoints[endpointName].articleIdPairs.findIndex(pair => pair.service === idPair.service && pair.id === idPair.id) === -1) {
 				endpoints[endpointName].articleIdPairs.push(idPair)
-				return true;
+				return true
 			}else
 				return false
-		});
+		})
 }

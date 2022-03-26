@@ -25,7 +25,12 @@ const config = {
 		files: {}
 	},
 
-	plugins: [postcss()]
+	plugins: [postcss()],
+	vite: {
+		server: {
+			hmr: false,
+		}
+	}
 };
 
 export default config;

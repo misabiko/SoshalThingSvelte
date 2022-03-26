@@ -1,6 +1,4 @@
 <script lang='ts'>
-	import type {ArticleIdPair} from "../../services/service"
-	import Article from '../../services/article'
 	import Fa from 'svelte-fa/src/fa.svelte'
 	import {faHeart} from '@fortawesome/free-regular-svg-icons'
 	import {
@@ -14,16 +12,12 @@
 		faEllipsisH,
 	} from '@fortawesome/free-solid-svg-icons'
 	import {createEventDispatcher} from 'svelte'
-	import {getWritable} from '../../services/service'
 
-	export let idPair: ArticleIdPair
+	export let article
+	export let actualArticle
 	export let hideText: boolean
 	export let style: string = ''
 
-	let article: Article
-	const unsubscribe = getWritable(idPair).subscribe(_ => article = _)
-
-	$: actualArticle = article
 	let minimized = false
 
 	const MONTH_ABBREVS: string[] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]

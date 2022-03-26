@@ -1,6 +1,7 @@
 import adapter from '@sveltejs/adapter-static';
 import preprocess from 'svelte-preprocess';
 import postcss from 'rollup-plugin-postcss';
+import {reactivePreprocess} from 'svelte-reactive-preprocessor';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -9,11 +10,14 @@ const config = {
 	},
 	// Consult https://github.com/sveltejs/svelte-preprocess
 	// for more information about preprocessors
-	preprocess: preprocess({
-		sass: {
-			prependData: `@import 'src/lib/styles/_core.sass';`,
-		}
-	}),
+	preprocess: [
+		preprocess({
+			sass: {
+				prependData: `@import 'src/lib/styles/_core.sass';`,
+			}
+		}),
+		reactivePreprocess(),
+	],
 
 	kit: {
 		adapter: adapter({
@@ -26,11 +30,6 @@ const config = {
 	},
 
 	plugins: [postcss()],
-	vite: {
-		server: {
-			hmr: false,
-		}
-	}
 };
 
 export default config;

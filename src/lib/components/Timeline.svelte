@@ -50,7 +50,7 @@
 	export let showSidebar = true
 
 	let container = initContainer || ColumnContainer
-	let columnCount = 5
+	let columnCount = 3
 	let width = 1
 	let articleView = initArticleView || SocialArticleView
 	let showOptions = false
@@ -61,7 +61,7 @@
 	let articleIdPairs: Writable<ArticleIdPair[]> = writable([...initArticles])
 
 	$: filteredArticles = derived($articleIdPairs.map(idPair => getWritable(idPair)),
-		(articles: Article[]) => articles?.filter((a: Article) => !a.markedAsRead && !a.hidden)
+		(articles: Article[]) => articles?.filter((a: Article) => !a.markedAsRead && !a.hidden && a.articleRefs.length)
 			.map((a: Article) => a.idPair) || [],
 	)
 
@@ -101,7 +101,7 @@
 	}
 
 	onMount(async () => {
-		if (!endpoints.length)
+		if (import.meta.hot || !endpoints.length)
 			return
 
 		const newArticles = await refreshEndpoints(endpoints, RefreshTime.OnStart)

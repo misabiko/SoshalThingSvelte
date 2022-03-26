@@ -1,11 +1,31 @@
 <script lang='ts'>
-	import type {ArticleIdPair} from "../../services/service"
-	import {toggleMarkAsRead, articleAction} from "../../services/service"
+	import type {Writable} from 'svelte/store'
+	import type {ArticleIdPair, ArticleRefIdPair} from "../../services/article"
+	import {toggleMarkAsRead, articleAction, getWritable} from "../../services/service"
+	import Article, {ArticleRefType} from '../../services/article'
+	import {derived} from 'svelte/store'
 
 	export let idPair: ArticleIdPair
 	export let view
 	export let style: string
 	export let socialSettings
+
+	let article: Writable<Article> = getWritable(idPair)
+	let actualArticle = derived(
+		[
+			article,
+			getRepostedStore($article.articleRefs[0]),
+		]
+			.filter(store => store !== undefined),
+		([a, ref]) => ref === undefined ? a : ref,
+	)
+
+	function getRepostedStore(ref: ArticleRefIdPair): Writable<Article> | undefined {
+		if (ref.type === ArticleRefType.Repost || ref.type === ArticleRefType.QuoteRepost)
+			return getWritable(ref.reposted)
+		else
+			return undefined
+	}
 
 	function onMediaClick(event: { detail: number }) {
 		toggleMarkAsRead(idPair)
@@ -16,4 +36,4 @@
 	}
 </script>
 
-<svelte:component this={view} {idPair} {style} on:mediaClick={onMediaClick} on:action={onArticleAction} {...socialSettings}/>
+<svelte:component this={view} article={$article} actualArticle={$actualArticle} {style} on:mediaClick={onMediaClick} on:action={onArticleAction} {...socialSettings}/>

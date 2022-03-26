@@ -4,14 +4,11 @@
 	import {faExternalLinkAlt, faExpandArrowsAlt, faHeart, faRetweet} from '@fortawesome/free-solid-svg-icons'
 	import {createEventDispatcher} from 'svelte'
 	import type {ArticleIdPair} from "../../services/service"
-	import {getWritable} from '../../services/service'
 
-	export let idPair: ArticleIdPair
+	export let article: Article
+	export let actualArticle: Article
 	export let style: string = ''
 
-	let article: Article
-	const unsubscribe = getWritable(idPair).subscribe(_ => article = _)
-	$: actualArticle = article
 
 	const dispatch = createEventDispatcher()
 </script>

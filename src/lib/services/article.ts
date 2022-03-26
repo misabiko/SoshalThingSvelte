@@ -1,16 +1,17 @@
 //TODO interface?
 export default abstract class Article {
-	static readonly service: string;
+	static readonly service: string
 
-	readonly id: string | number;
-	readonly text?: string;
-	readonly textHtml?: string;
-	readonly author?: ArticleAuthor;
-	readonly creationTime?: Date;
-	readonly url: string;
-	readonly medias: ArticleMedia[];
-	markedAsRead: boolean;
-	hidden: boolean;
+	readonly id: string | number
+	readonly text?: string
+	readonly textHtml?: string
+	readonly author?: ArticleAuthor
+	readonly creationTime?: Date
+	readonly url: string
+	readonly medias: ArticleMedia[]
+	markedAsRead: boolean
+	hidden: boolean
+	readonly articleRefs: ArticleRefIdPair[]
 
 	protected constructor(params: {
 		id: string | number,
@@ -21,14 +22,16 @@ export default abstract class Article {
 		markedAsRead: boolean,
 		hidden: boolean,
 		markedAsReadStorage: (string | number)[],	//Actually (string[] | number[])
+		articleRefs: ArticleRefIdPair[],
 	}) {
-		this.id = params.id;
-		this.text = params.text;
-		this.textHtml = params.textHtml;
-		this.url = params.url;
-		this.medias = params.medias || [];
-		this.markedAsRead = params.markedAsRead || params.markedAsReadStorage.includes(this.id);
-		this.hidden = params.hidden;
+		this.id = params.id
+		this.text = params.text
+		this.textHtml = params.textHtml
+		this.url = params.url
+		this.medias = params.medias || []
+		this.markedAsRead = params.markedAsRead || params.markedAsReadStorage.includes(this.id)
+		this.hidden = params.hidden
+		this.articleRefs = params.articleRefs
 	}
 
 	//TODO Unit test this
@@ -56,17 +59,18 @@ export interface ArticleMedia {
 }
 
 type ValidRatio = number;
+
 export function getRatio(width: number, height: number): ValidRatio {
 	if (isNaN(width))
-		throw 'Width is NaN';
+		throw 'Width is NaN'
 	if (isNaN(height))
-		throw 'Height is NaN';
+		throw 'Height is NaN'
 	if (width <= 0)
-		throw "Width isn't positive";
+		throw "Width isn't positive"
 	if (height <= 0)
-		throw "Height isn't positive";
+		throw "Height isn't positive"
 
-	return height / width;
+	return height / width
 }
 
 export enum MediaType {
@@ -80,4 +84,93 @@ export enum MediaQueueInfo {
 	DirectLoad,
 	Thumbnail,
 	//LazyLoad,
+}
+
+export enum ArticleRefType {
+	Repost,
+	Quote,
+	QuoteRepost,
+	Reply,
+}
+
+export type ArticleRef =
+	{
+		type: ArticleRefType.Repost,
+		reposted: Article,
+	} |
+	{
+		type: ArticleRefType.Quote,
+		quoted: Article,
+	} |
+	{
+		type: ArticleRefType.QuoteRepost,
+		reposted: Article,
+		quoted: Article,
+	} |
+	{
+		type: ArticleRefType.Reply,
+		replied: Article,
+	}
+
+export type ArticleIdPair = {
+	service: string;
+	id: string | number
+};
+
+export type ArticleRefIdPair =
+	{
+		type: ArticleRefType.Repost,
+		reposted: ArticleIdPair,
+	} |
+	{
+		type: ArticleRefType.Quote,
+		quoted: ArticleIdPair,
+	} |
+	{
+		type: ArticleRefType.QuoteRepost,
+		reposted: ArticleIdPair,
+		quoted: ArticleIdPair,
+	} |
+	{
+		type: ArticleRefType.Reply,
+		replied: ArticleIdPair,
+	}
+
+export function articleRefToIdPair(ref: ArticleRef): ArticleRefIdPair {
+	switch (ref.type) {
+		case ArticleRefType.Repost:
+			return {
+				type: ref.type,
+				reposted: ref.reposted.idPair,
+			}
+		case ArticleRefType.Quote:
+			return {
+				type: ref.type,
+				quoted: ref.quoted.idPair,
+			}
+		case ArticleRefType.QuoteRepost:
+			return {
+				type: ref.type,
+				reposted: ref.reposted.idPair,
+				quoted: ref.quoted.idPair,
+			}
+		case ArticleRefType.Reply:
+			return {
+				type: ref.type,
+				replied: ref.replied.idPair,
+			}
+	}
+}
+
+export function getRefed(ref: ArticleRef | ArticleRefIdPair): (Article | ArticleIdPair)[] {
+	switch (ref.type) {
+		case ArticleRefType.Repost:
+			return [ref.reposted]
+		case ArticleRefType.Quote:
+			return [ref.quoted]
+		case ArticleRefType.QuoteRepost:
+			return [ref.reposted, ref.quoted]
+		case ArticleRefType.Reply:
+			return [ref.replied]
+	}
 }

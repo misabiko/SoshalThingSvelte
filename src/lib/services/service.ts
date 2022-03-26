@@ -1,6 +1,8 @@
+import type {ArticleIdPair, ArticleRef} from './article'
 import type Article from './article'
 import type {Writable} from 'svelte/store'
 import {get, writable} from 'svelte/store'
+import {getRefed} from './article'
 
 const endpoints: { [name: string]: Endpoint } = {}
 const services: { [name: string]: Service } = {}
@@ -18,16 +20,14 @@ type ArticleAction = {
 	togglable: boolean;
 };
 
-export type ArticleIdPair = {
-	service: string;
-	id: string | number
-};
-
-export function addArticles(service: Service, ...articles: Article[]): ArticleIdPair[] {
+export function addArticles(service: Service, ...articles: ArticleWithRefs[]): ArticleIdPair[] {
 	const idPairs = []
-	for (const article of articles) {
+	for (const {article, refs} of articles) {
 		service.articles[article.id] = writable(article)
 		idPairs.push({service: service.name, id: article.id})
+		for (const ref of refs.flatMap(getRefed) as Article[]) {
+			service.articles[ref.id] = writable(ref)
+		}
 	}
 
 	return idPairs
@@ -39,18 +39,20 @@ export abstract class Endpoint {
 
 	static readonly constructorInfo: EndpointConstructorInfo
 
-	abstract refresh(refreshTime: RefreshTime): Promise<Article[]>;
+	abstract refresh(refreshTime: RefreshTime): Promise<ArticleWithRefs[]>;
 
-	async loadTop(refreshTime: RefreshTime): Promise<Article[]> {
+	async loadTop(refreshTime: RefreshTime): Promise<ArticleWithRefs[]> {
 		console.debug(`${this.name} doesn't implement loadTop()`)
 		return await this.refresh(refreshTime)
 	}
 
-	async loadBottom(refreshTime: RefreshTime): Promise<Article[]> {
+	async loadBottom(refreshTime: RefreshTime): Promise<ArticleWithRefs[]> {
 		console.debug(`${this.name} doesn't implement loadBottom()`)
 		return await this.refresh(refreshTime)
 	}
 }
+
+type ArticleWithRefs = { article: Article, refs: ArticleRef[] }
 
 interface EndpointConstructorInfo {
 	readonly name: string;
@@ -153,12 +155,12 @@ export async function loadBottomEndpoints(endpointNames: string[], refreshTime: 
 	return endpointRefreshed(endpointNames[0], await endpoints[endpointNames[0]].loadBottom(refreshTime))
 }
 
-function endpointRefreshed(endpointName: string, articles: Article[]): ArticleIdPair[] {
+function endpointRefreshed(endpointName: string, articles: ArticleWithRefs[]): ArticleIdPair[] {
 	if (!articles.length)
 		return []
 	//TODO Store service name on endpoint
 	// @ts-ignore
-	const service = articles[0].constructor.service
+	const service = articles[0].article.constructor.service
 
 	return addArticles(services[service], ...articles)
 		.filter(idPair => {

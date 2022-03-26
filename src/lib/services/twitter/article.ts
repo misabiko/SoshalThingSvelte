@@ -1,4 +1,4 @@
-import type {ArticleAuthor} from '../article'
+import type {ArticleAuthor, ArticleIdPair, ArticleRefIdPair} from '../article'
 import Article from '../article'
 
 export default class TwitterArticle extends Article {
@@ -7,7 +7,7 @@ export default class TwitterArticle extends Article {
 	readonly author: TwitterUser;
 	readonly creationTime: Date;
 
-	constructor(id: string, text: string, textHtml: string, user: TwitterUser, creationTime: Date, markedAsReadStorage: string[]) {
+	constructor(id: string, text: string, textHtml: string, user: TwitterUser, creationTime: Date, markedAsReadStorage: string[], articleRefs: ArticleRefIdPair[]) {
 		super({
 			id,
 			url: `https://twitter.com/${user.username}/${id}`,
@@ -17,6 +17,7 @@ export default class TwitterArticle extends Article {
 			markedAsRead: false,
 			hidden: false,
 			markedAsReadStorage,
+			articleRefs,
 		});
 
 		this.author = user;

@@ -1,6 +1,7 @@
 import {Endpoint, getMarkedAsReadStorage, RefreshTime, registerEndpoint} from '../service'
 import {TwitterService} from './service'
 import TwitterArticle from './article'
+import {articleRefToIdPair, ArticleRefType} from '../article'
 
 export class HomeTimelineEndpoint extends Endpoint {
 	readonly name = 'Home Timeline'
@@ -93,20 +94,55 @@ registerEndpoint(TwitterService,
 
 function articleFromV1(json: TweetResponse) {
 	const {text, textHtml} = parseText(json.text, json.entities, json.extended_entities)
-	return new TwitterArticle(
-		json.id_str,
-		text,
-		textHtml,
-		{
-			id: json.user.id_str,
-			name: json.user.name,
-			username: json.user.name,
-			url: "https://twitter.com/" + json.user.screen_name,
-			avatarUrl: json.user.profile_image_url,
-		},
-		new Date(json.created_at),
-		getMarkedAsReadStorage(TwitterService) as string[],
-	)
+
+	const articleRefs = []
+	let actualArticleIndex: number | undefined
+	{
+		if (json.retweeted_status !== undefined) {
+			const retweet = articleFromV1(json.retweeted_status)
+			if (retweet.actualArticleIndex !== undefined && retweet.refs[retweet.actualArticleIndex].type === ArticleRefType.Quote) {
+				articleRefs.push({
+					type: ArticleRefType.QuoteRepost,
+					reposted: retweet.article,
+					quoted: retweet.refs[retweet.actualArticleIndex].article
+				})
+			}else {
+				articleRefs.push({
+					type: ArticleRefType.Repost,
+					reposted: retweet.article,
+				})
+			}
+			actualArticleIndex = 0
+		}else if (json.is_quote_status) {
+			const quote = articleFromV1(json.quoted_status)
+			if (quote.actualArticleIndex !== undefined && quote.refs[quote.actualArticleIndex].type === ArticleRefType.Quote)
+				console.warn(`Quote(${json.id_str}) of a quote(${quote.refs[quote.actualArticleIndex].article.id})?`)
+
+			articleRefs.push({
+				type: ArticleRefType.Quote,
+				quoted: quote.article,
+			})
+		}
+	}
+	return {
+		article: new TwitterArticle(
+			json.id_str,
+			text,
+			textHtml,
+			{
+				id: json.user.id_str,
+				name: json.user.name,
+				username: json.user.screen_name,
+				url: "https://twitter.com/" + json.user.screen_name,
+				avatarUrl: json.user.profile_image_url,
+			},
+			new Date(json.created_at),
+			getMarkedAsReadStorage(TwitterService) as string[],
+			articleRefs.map(articleRefToIdPair)
+		),
+		refs: articleRefs,
+		actualArticleIndex,
+	}
 }
 
 function parseText(rawText: string, entities: Entities, extendedEntities?: ExtendedEntities): { text: string, textHtml: string } {
@@ -229,6 +265,7 @@ type TweetResponse = {
 	contributors: null;
 	retweeted_status?: TweetResponse;
 	is_quote_status: boolean;
+	quoted_status?: TweetResponse;
 	retweet_count: number;
 	favorite_count: number;
 	favorited: boolean;

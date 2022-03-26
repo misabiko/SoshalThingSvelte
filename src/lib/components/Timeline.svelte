@@ -1,13 +1,14 @@
 <script context='module'>
-	import {Field, Select, Input} from 'svelma';
+	import {Field, Select, Input, Switch} from 'svelma';
 </script>
 
 <script lang='ts'>
 	import type {Writable} from 'svelte/store'
-	import type {ArticleIdPair} from '../services/service'
+	import type {ArticleIdPair} from '../services/article'
 	import ColumnContainer from "./containers/ColumnContainer.svelte"
 	import RowContainer from "./containers/RowContainer.svelte"
 	import SocialArticleView from "./articles/SocialArticleView.svelte"
+	import GalleryArticleView from "./articles/GalleryArticleView.svelte"
 	import Fa from 'svelte-fa/src/fa.svelte'
 	import {
 		faRandom,
@@ -49,13 +50,15 @@
 	export let favviewerHidden = false
 	export let showSidebar = true
 
+	let showOptions = false
 	let container = initContainer || ColumnContainer
 	let columnCount = 3
 	let width = 1
 	let articleView = initArticleView || SocialArticleView
-	let showOptions = false
+	let animatedAsGifs = false
 	const socialSettings = {
 		hideText: false,
+		compact: false,
 	}
 
 	let articleIdPairs: Writable<ArticleIdPair[]> = writable([...initArticles])
@@ -240,6 +243,28 @@
 					<Field label='Timeline Width'>
 						<Input type='number' bind:value={width} min={1}/>
 					</Field>
+				{/if}
+			</div>
+			<div class='box'>
+				<Field label='Article View'>
+					<Select bind:selected={articleView}>
+						<option value={SocialArticleView}>Social</option>
+						<option value={GalleryArticleView}>Gallery</option>
+					</Select>
+				</Field>
+				<div class='field'>
+					<Switch bind:checked={animatedAsGifs}>Show all animated as gifs</Switch>
+				</div>
+<!--				<div class='field'>-->
+<!--					<Switch bind:checked={lazyLoading}>Lazy media loading</Switch>-->
+<!--				</div>-->
+				{#if articleView === SocialArticleView}
+					<div class='field'>
+						<Switch bind:checked={socialSettings.compact}>Compact articles</Switch>
+					</div>
+					<div class='field'>
+						<Switch bind:checked={socialSettings.hideText}>Hide text</Switch>
+					</div>
 				{/if}
 			</div>
 			<div class='box'>

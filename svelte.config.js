@@ -1,7 +1,7 @@
 import adapter from '@sveltejs/adapter-static';
 import preprocess from 'svelte-preprocess';
 import postcss from 'rollup-plugin-postcss';
-import {reactivePreprocess} from 'svelte-reactive-preprocessor';
+//import {reactivePreprocess} from 'svelte-reactive-preprocessor';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -16,7 +16,7 @@ const config = {
 				prependData: `@import 'src/lib/styles/_core.sass';`,
 			}
 		}),
-		reactivePreprocess(),
+		//reactivePreprocess(),
 	],
 
 	kit: {

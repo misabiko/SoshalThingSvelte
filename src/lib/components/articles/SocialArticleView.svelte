@@ -12,9 +12,12 @@
 		faEllipsisH,
 	} from '@fortawesome/free-solid-svg-icons'
 	import {createEventDispatcher} from 'svelte'
+	import Article from '../../services/article'
+	import Dropdown from '../../components/Dropdown.svelte'
 
-	export let article
-	export let actualArticle
+	export let article: Article
+	export let actualArticle: Article
+	export let compact: boolean
 	export let hideText: boolean
 	export let style: string = ''
 
@@ -22,8 +25,8 @@
 
 	const MONTH_ABBREVS: string[] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
-	function shortTimestamp() {
-		const timeSince = Date.now() - actualArticle.creationTime.getTime()
+	function shortTimestamp(date: Date) {
+		const timeSince = Date.now() - date.getTime()
 
 		if (timeSince < 1000)
 			return 'just now'
@@ -36,11 +39,11 @@
 		else if (timeSince < 604_800_000)
 			return `${Math.floor(timeSince / 86_400_000)}d`
 		else
-			return `${MONTH_ABBREVS[actualArticle.creationTime.getMonth()]} ${actualArticle.creationTime.getDate()} ${actualArticle.creationTime.getFullYear()}`
+			return `${MONTH_ABBREVS[date.getMonth()]} ${date.getDate()} ${date.getFullYear()}`
 	}
 
-	function onUsernameClick() {
-
+	function onUsernameClick(clickedArticle: Article) {
+		console.log(clickedArticle.author?.username + ' click')
 	}
 
 	const dispatch = createEventDispatcher()
@@ -290,8 +293,12 @@
 				white-space: pre-line
 </style>
 
-<article class='socialArticle' articleId={article.id} {style}>
-	<!--{ self.view_repost_label(ctx) }-->
+<article class='socialArticle' {style}>
+	<div class='repostLabel' href={article.url} target='_blank'>
+		<a on:click|preventDefault={() => onUsernameClick(article)}>
+			{article.author.name} reposted - {shortTimestamp(article.creationTime)}
+		</a>
+	</div>
 	<!--{ self.view_reply_label(ctx) }-->
 	<div class='media'>
 		{#if actualArticle.author?.url}
@@ -304,13 +311,13 @@
 		<div class='media-content'>
 			<div class='content'>
 				<div class='articleHeader'>
-					<a class='names' href={actualArticle.author?.url} target='_blank' onclick={onUsernameClick}>
+					<a class='names' href={actualArticle.author?.url} target='_blank' on:click|preventDefault={() => onUsernameClick(actualArticle)}>
 						<strong>{ actualArticle.author?.name }</strong>
 						<small>@{ actualArticle.author?.username }</small>
 					</a>
 					{#if actualArticle.creationTime !== undefined}
 					<span class='timestamp'>
-						<small title={actualArticle.creationTime.toString()}>{shortTimestamp()}</small>
+						<small title={actualArticle.creationTime.toString()}>{shortTimestamp(actualArticle.creationTime)}</small>
 					</span>
 					{/if}
 				</div>
@@ -327,23 +334,49 @@
 			<!--{ quoted_post }-->
 			<nav class='level is-mobile'>
 				<div class='level-left'>
-					<a class='level-item articleButton repostButton'
+					<button class='level-item articleButton repostButton'
 					   class:repostedPostButton={actualArticle.reposted}>
 						<Fa icon={faRetweet}/>
 						{#if actualArticle.repostCount}
 							<span>{actualArticle.repostCount}</span>
 						{/if}
-					</a>
-					<a class='level-item articleButton likeButton' class:likedPostButton={actualArticle.liked}
+					</button>
+					<button class='level-item articleButton likeButton' class:likedPostButton={actualArticle.liked}
 					   on:click={() => dispatch('action', 'favorite')}>
 						<Fa icon={faHeart}/>
 						{#if actualArticle.likeCount}
 							<span>{actualArticle.likeCount}</span>
 						{/if}
-					</a>
-					<a class='level-item articleButton'>
+					</button>
+					<button class='level-item articleButton'>
 						<Fa icon={faEyeSlash}/>
-					</a>
+					</button>
+					<Dropdown labelClasses='articleButton'>
+						<Fa slot='triggerIcon' icon={faEllipsisH} class='level-item'/>
+
+						<a class='dropdown-item'><!--on:click={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::ToggleMarkAsRead))}-->
+							Mark as read
+						</a>
+						<a class='dropdown-item'><!--on:click={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::ToggleHide))}-->
+							Hide
+						</a>
+						<a class='dropdown-item'><!--on:click={&ontoggle_compact}-->
+							{ compact ? 'Show expanded' : 'Show compact' }
+						</a>
+						<a class='dropdown-item' href={ actualArticle.url } target="_blank">
+							External Link
+						</a>
+						<!--{ dropdown_buttons }-->
+						<a class='dropdown-item'><!--on:click={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::LogData))}-->
+							Log Data
+						</a>
+						<a class='dropdown-item'><!--on:click={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::LogJsonData))}-->
+							Log Json Data
+						</a>
+						<a class='dropdown-item'><!--on:click={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::FetchData))}-->
+							Fetch Data
+						</a>
+					</Dropdown>
 				</div>
 			</nav>
 		</div>

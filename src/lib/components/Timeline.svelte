@@ -1,5 +1,5 @@
 <script context='module'>
-	import {Field, Select} from 'svelma';
+	import {Field, Select, Input} from 'svelma';
 </script>
 
 <script lang='ts'>
@@ -232,16 +232,14 @@
 					</Select>
 				</Field>
 				{#if container !== ColumnContainer}
-					<div class='block control'>
-						<label class='label'>Column Count</label>
-						<input class='input' type='number' bind:value={columnCount} min='1/'>
-					</div>
+					<Field label='Column Count'>
+						<Input type='number' bind:value={columnCount} min={1}/>
+					</Field>
 				{/if}
 				{#if !fullscreen}
-					<div class='block control'>
-						<label class='label'>Timeline Width</label>
-						<input class='input' type='number' bind:value={width} min='1/'>
-					</div>
+					<Field label='Timeline Width'>
+						<Input type='number' bind:value={width} min={1}/>
+					</Field>
 				{/if}
 			</div>
 			<div class='box'>

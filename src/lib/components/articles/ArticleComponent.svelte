@@ -8,6 +8,7 @@
 	export let idPair: ArticleIdPair
 	export let view
 	export let style: string
+	export let animatedAsGifs
 	export let socialSettings
 
 	let article: Writable<Article> = getWritable(idPair)
@@ -20,8 +21,8 @@
 		([a, ref]) => ref === undefined ? a : ref,
 	)
 
-	function getRepostedStore(ref: ArticleRefIdPair): Writable<Article> | undefined {
-		if (ref.type === ArticleRefType.Repost || ref.type === ArticleRefType.QuoteRepost)
+	function getRepostedStore(ref?: ArticleRefIdPair): Writable<Article> | undefined {
+		if (ref !== undefined && (ref.type === ArticleRefType.Repost || ref.type === ArticleRefType.QuoteRepost))
 			return getWritable(ref.reposted)
 		else
 			return undefined
@@ -36,4 +37,13 @@
 	}
 </script>
 
-<svelte:component this={view} article={$article} actualArticle={$actualArticle} {style} on:mediaClick={onMediaClick} on:action={onArticleAction} {...socialSettings}/>
+<svelte:component
+	this={view}
+	article={$article}
+	actualArticle={$actualArticle}
+	{style}
+	{animatedAsGifs}
+	on:mediaClick={onMediaClick}
+	on:action={onArticleAction}
+	{...socialSettings}
+/>

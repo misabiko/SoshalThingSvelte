@@ -4,6 +4,7 @@
 	export let idPairs;
 	export let articleView;
 	export let columnCount: number;
+	export let animatedAsGifs
 	export let socialSettings
 </script>
 
@@ -21,6 +22,7 @@
 		<ArticleComponent
 			{idPair}
 			view={articleView}
+			{animatedAsGifs}
 			{socialSettings}
 			style={`width: calc(100% / ${columnCount})`}
 		/>

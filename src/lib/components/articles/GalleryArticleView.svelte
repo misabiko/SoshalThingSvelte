@@ -1,15 +1,34 @@
 <script lang='ts'>
-	import Article from '../../services/article'
+	import Article, {MediaQueueInfo, MediaType} from '../../services/article'
 	import Fa from 'svelte-fa/src/fa.svelte'
-	import {faExternalLinkAlt, faExpandArrowsAlt, faHeart, faRetweet} from '@fortawesome/free-solid-svg-icons'
-	import {createEventDispatcher} from 'svelte'
-	import type {ArticleIdPair} from "../../services/service"
+	import {faExpandArrowsAlt, faExternalLinkAlt, faHeart, faRetweet} from '@fortawesome/free-solid-svg-icons'
+	import {afterUpdate, createEventDispatcher} from 'svelte'
+	import {LoadingState, loadingStore} from '../../bufferedMediaLoading'
+	import {derived} from 'svelte/store'
 
-	export let article: Article
-	export let actualArticle: Article
+	export let article: Readonly<Article>
+	export let actualArticle: Readonly<Article>
 	export let style: string = ''
+	export let animatedAsGifs: boolean
 
 	const dispatch = createEventDispatcher()
+	const mediaRefs: HTMLImageElement[] = []
+	const loadingStates = derived(loadingStore, loadingSet => {
+		const states = []
+		for (let mediaIndex = 0; mediaIndex < actualArticle.medias.length; ++mediaIndex)
+			states.push(loadingStore.getLoadingState(actualArticle, mediaIndex, true))
+		return states
+	})
+
+	afterUpdate(() => {
+		const count = actualArticle.medias.length;
+		for (let i = 0; i < count; ++i) {
+			if (actualArticle.medias[i].queueLoadInfo === MediaQueueInfo.LazyLoad && !actualArticle.medias[i].loaded) {
+				if (mediaRefs[i]?.complete)
+					loadingStore.mediaLoaded(actualArticle.idPair, i);
+			}
+		}
+	})
 </script>
 
 <style lang='sass' global>
@@ -78,8 +97,54 @@
 
 <article class='galleryArticle' articleId={article.id} {style}>
 	<div>
-		{#each actualArticle.medias as media}
-			<img alt={actualArticle.id} class="articleThumb" src={media.src} on:click={() => dispatch('mediaClick', 0)}/><!--key={i}--> <!-- on:click={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::OnMediaClick))}-->
+		{#each actualArticle.medias as media, i (i)}
+			{@const isLoading = $loadingStates[i] === LoadingState.Loading}
+			{#if media.thumbnail !== undefined && $loadingStates[i] === LoadingState.NotLoaded}
+				<img
+					alt={`${actualArticle.id} thumbnail`}
+					class='articleThumb'
+					src={media.thumbnail}
+				 	on:click={() => dispatch('mediaClick', i)}
+				/>
+			{:else if media.mediaType === MediaType.Image}
+				<img
+					alt={actualArticle.id}
+					src={media.src}
+					on:click={() => dispatch('mediaClick', i)}
+					on:load={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
+					class:articleMediaLoading={isLoading}
+					bind:this={mediaRefs[i]}
+				/>
+				{#if isLoading}
+					<img
+						alt={`${actualArticle.id} thumbnail`}
+						class='articleThumb'
+						src={media.thumbnail}
+						on:click={() => dispatch('mediaClick', i)}
+					/>
+				{/if}
+			{:else if !animatedAsGifs && media.mediaType === MediaType.Video}
+				<video
+					controls
+					on:click={() => dispatch('mediaClick', i)}
+					on:loadeddata={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
+					on:load={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
+				>
+					<source src={media.src} type='video/mp4'/>
+				</video>
+			{:else}
+				<video
+					controls
+					autoplay
+					loop
+					muted
+					on:click={() => dispatch('mediaClick', i)}
+					on:loadeddata={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
+					on:load={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
+				>
+					<source src={media.src} type='video/mp4'/>
+				</video>
+			{/if}
 		{/each}
 		<div class="holderBox holderBoxTop">
 			<a class="button" title="External Link" href={actualArticle.url} target="_blank">

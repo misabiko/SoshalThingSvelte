@@ -5,7 +5,6 @@
 	import RowContainer from '../lib/components/containers/RowContainer.svelte'
 	import {HomeTimelineEndpoint} from '../lib/services/twitter/endpoints'
 
-
 	const endpoint = new HomeTimelineEndpoint()
 	addEndpoint(endpoint)
 	const timeline: TimelineData = {

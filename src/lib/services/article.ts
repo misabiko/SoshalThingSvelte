@@ -51,11 +51,20 @@ export interface ArticleAuthor {
 	avatarUrl?: string;
 }
 
-export interface ArticleMedia {
+export type ArticleMedia = {
 	src: string;
 	ratio: ValidRatio;
-	queueLoadInfo: MediaQueueInfo;
+	queueLoadInfo: MediaQueueInfo.DirectLoad | MediaQueueInfo.Thumbnail;
 	mediaType: MediaType;
+	thumbnail?: undefined;
+	loaded?: undefined;
+} | {
+	src: string;
+	ratio: ValidRatio;
+	queueLoadInfo: MediaQueueInfo.LazyLoad;
+	mediaType: MediaType;
+	thumbnail: string;
+	loaded: boolean;
 }
 
 type ValidRatio = number;
@@ -80,10 +89,11 @@ export enum MediaType {
 	Gif,
 }
 
+//TODO Rename to MediaLoadType?
 export enum MediaQueueInfo {
 	DirectLoad,
 	Thumbnail,
-	//LazyLoad,
+	LazyLoad,
 }
 
 export enum ArticleRefType {
@@ -112,7 +122,7 @@ export type ArticleRef =
 		replied: Article,
 	}
 
-export type ArticleIdPair = {
+export interface ArticleIdPair {
 	service: string;
 	id: string | number
 };

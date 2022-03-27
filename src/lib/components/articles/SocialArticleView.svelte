@@ -16,8 +16,8 @@
 	import Dropdown from '../../components/Dropdown.svelte'
 	import {toggleMarkAsRead, toggleHide, articleAction, getWritable} from "../../services/service"
 
-	export let article: Article
-	export let actualArticle: Article
+	export let article: Readonly<Article>
+	export let actualArticle: Readonly<Article>
 	export let compact: boolean
 	export let hideText: boolean
 	export let style: string = ''

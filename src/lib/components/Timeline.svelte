@@ -37,6 +37,7 @@
 		initArticles?: Article[];
 		initContainer?: any;
 		initArticleView?: any;
+		columnCount?: number;
 	}
 
 	export let title
@@ -45,14 +46,14 @@
 	export let initArticles: ArticleIdPair[] = []
 	export let initContainer = undefined
 	export let initArticleView = undefined
+	export let columnCount = 3
 
 	export let favviewerButtons = false
 	export let favviewerHidden = false
-	export let showSidebar = true
 
+	export let showSidebar = true
 	let showOptions = false
 	let container = initContainer || ColumnContainer
-	let columnCount = 3
 	let width = 1
 	let articleView = initArticleView || SocialArticleView
 	let animatedAsGifs = false
@@ -64,7 +65,7 @@
 	let articleIdPairs: Writable<ArticleIdPair[]> = writable([...initArticles])
 
 	$: filteredArticles = derived($articleIdPairs.map(idPair => getWritable(idPair)),
-		(articles: Article[]) => articles?.filter((a: Article) => !a.markedAsRead && !a.hidden && a.articleRefs.length)
+		(articles: Article[]) => articles?.filter((a: Article) => !a.markedAsRead && !a.hidden)
 			.map((a: Article) => a.idPair) || [],
 	)
 
@@ -278,5 +279,12 @@
 			</div>
 		</div>
 	{/if}
-	<svelte:component this={container} idPairs={$filteredArticles} articleView={articleView} {columnCount} {socialSettings}/>
+	<svelte:component
+		this={container}
+		idPairs={$filteredArticles}
+		articleView={articleView}
+		{columnCount}
+		{socialSettings}
+		{animatedAsGifs}
+	/>
 </div>

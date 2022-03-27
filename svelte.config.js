@@ -18,6 +18,9 @@ const config = {
 		}),
 		//reactivePreprocess(),
 	],
+	package: {
+		exports: () => true,
+	},
 
 	kit: {
 		adapter: adapter({

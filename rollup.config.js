@@ -45,12 +45,7 @@ export default [
 					dedupe: ['svelte']
 				}),
 				postcss(),
-			],
-			vite: {
-				server: {
-					hmr: false,
-				}
-			}
+			]
 		}
 	})
 ];

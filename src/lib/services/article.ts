@@ -12,6 +12,8 @@ export default abstract class Article {
 	markedAsRead: boolean
 	hidden: boolean
 	readonly articleRefs: ArticleRefIdPair[]
+	fetched: boolean
+	json: any
 
 	protected constructor(params: {
 		id: string | number,
@@ -23,6 +25,8 @@ export default abstract class Article {
 		hidden: boolean,
 		markedAsReadStorage: (string | number)[],	//Actually (string[] | number[])
 		articleRefs: ArticleRefIdPair[],
+		fetched?: boolean,
+		json?: any,
 	}) {
 		this.id = params.id
 		this.text = params.text
@@ -32,6 +36,8 @@ export default abstract class Article {
 		this.markedAsRead = params.markedAsRead || params.markedAsReadStorage.includes(this.id)
 		this.hidden = params.hidden
 		this.articleRefs = params.articleRefs
+		this.fetched = params.fetched || false
+		this.json = params.json
 	}
 
 	//TODO Unit test this

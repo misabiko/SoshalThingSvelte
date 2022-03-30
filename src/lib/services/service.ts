@@ -13,6 +13,8 @@ export interface Service {
 	readonly articles: { [id: string | number]: Writable<Article> };
 	articleActions: { [name: string]: ArticleAction };
 	requestImageLoad?: (id: string | number, index: number) => void;
+	fetchArticle?: (id: string | number) => void;
+	getCachedArticles?: () => {[id: string | number]: object}
 }
 
 type ArticleAction = {
@@ -30,6 +32,7 @@ export function addArticles(service: Service, ...articles: ArticleWithRefs[]): A
 		}
 	}
 
+	updateCachedArticlesStorage()
 	return idPairs
 }
 
@@ -124,9 +127,36 @@ function updateMarkAsReadStorage() {
 	sessionStorage.setItem('SoshalThingSvelte', JSON.stringify(storage))
 }
 
+export function updateCachedArticlesStorage() {
+	const key = 'SoshalThingSvelte'
+	let storage = JSON.parse(sessionStorage.getItem(key))
+	if (storage === null)
+		storage = {services: {}}
+
+	for (const service of Object.values(services)) {
+		if ('getCachedArticles' in service) {
+			const cachedArticles = service.getCachedArticles()
+
+			if (storage.services.hasOwnProperty(service.name))
+				storage.services[service.name].cachedArticles = cachedArticles
+			else
+				storage.services[service.name] = {
+					articlesMarkedAsRead: [],
+					cachedArticles,
+				}
+		}
+	}
+
+	sessionStorage.setItem('SoshalThingSvelte', JSON.stringify(storage))
+}
+
 //TODO Profile passing service vs service name
 export function getMarkedAsReadStorage(service: Service): (string | number)[] {
 	return JSON.parse(sessionStorage.getItem('SoshalThingSvelte'))?.services[service.name]?.articlesMarkedAsRead || []
+}
+
+export function getCachedArticlesStorage(service: Service): {[id: string | number]: object} {
+	return JSON.parse(sessionStorage.getItem('SoshalThingSvelte'))?.services[service.name]?.cachedArticles || {}
 }
 
 export function articleAction(action: string, idPair: ArticleIdPair) {
@@ -170,4 +200,10 @@ function endpointRefreshed(endpointName: string, articles: ArticleWithRefs[]): A
 			}else
 				return false
 		})
+}
+
+export function fetchArticle(idPair: ArticleIdPair) {
+	const service = services[idPair.service]
+	if ('fetchArticle' in service)
+		service.fetchArticle(idPair.id);
 }

@@ -28,7 +28,7 @@
 		RefreshTime,
 	} from '../services/service'
 	import Article from '../services/article'
-	import {onMount} from 'svelte'
+	import {afterUpdate, onMount} from 'svelte'
 
 	export interface TimelineData {
 		title: string;
@@ -70,7 +70,23 @@
 	)
 
 	function shuffle() {
-		console.log('Shuffling!')
+		articleIdPairs.update(array => {
+			let currentIndex = array.length,  randomIndex;
+
+			// While there remain elements to shuffle...
+			while (currentIndex != 0) {
+
+				// Pick a remaining element...
+				randomIndex = Math.floor(Math.random() * currentIndex);
+				currentIndex--;
+
+				// And swap it with the current element.
+				[array[currentIndex], array[randomIndex]] = [
+					array[randomIndex], array[currentIndex]];
+			}
+
+			return array;
+		})
 	}
 
 	function autoscroll() {
@@ -114,6 +130,10 @@
 			return idPairs
 		})
 	})
+
+	/*afterUpdate(async () => {
+		for (const idPair of)
+	})*/
 </script>
 
 <style lang='sass' global>

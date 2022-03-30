@@ -1,7 +1,7 @@
 <script lang='ts'>
 	import type {Writable} from 'svelte/store'
 	import type {ArticleIdPair, ArticleRefIdPair} from "../../services/article"
-	import {toggleMarkAsRead, articleAction, getWritable} from "../../services/service"
+	import {toggleMarkAsRead, articleAction, getWritable, fetchArticle} from "../../services/service"
 	import Article, {ArticleRefType} from '../../services/article'
 	import {derived} from 'svelte/store'
 
@@ -35,6 +35,9 @@
 	function onArticleAction(event: { detail: string }) {
 		articleAction(event.detail, idPair)
 	}
+
+	if (!$actualArticle.fetched)
+		fetchArticle($actualArticle.idPair)
 </script>
 
 <svelte:component

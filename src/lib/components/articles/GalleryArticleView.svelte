@@ -1,10 +1,18 @@
 <script lang='ts'>
 	import Article, {MediaQueueInfo, MediaType} from '../../services/article'
 	import Fa from 'svelte-fa/src/fa.svelte'
-	import {faExpandArrowsAlt, faExternalLinkAlt, faHeart, faRetweet} from '@fortawesome/free-solid-svg-icons'
+	import {
+		faExpandArrowsAlt,
+		faExternalLinkAlt,
+		faHeart,
+		faRetweet,
+		faEllipsisH,
+	} from '@fortawesome/free-solid-svg-icons'
 	import {afterUpdate, createEventDispatcher} from 'svelte'
 	import {LoadingState, loadingStore} from '../../bufferedMediaLoading'
 	import {derived} from 'svelte/store'
+	import Dropdown from "../Dropdown.svelte"
+	import {fetchArticle, toggleHide, toggleMarkAsRead} from "../../services/service.js"
 
 	export let article: Readonly<Article>
 	export let actualArticle: Readonly<Article>
@@ -21,11 +29,11 @@
 	})
 
 	afterUpdate(() => {
-		const count = actualArticle.medias.length;
+		const count = actualArticle.medias.length
 		for (let i = 0; i < count; ++i) {
 			if (actualArticle.medias[i].queueLoadInfo === MediaQueueInfo.LazyLoad && !actualArticle.medias[i].loaded) {
 				if (mediaRefs[i]?.complete)
-					loadingStore.mediaLoaded(actualArticle.idPair, i);
+					loadingStore.mediaLoaded(actualArticle.idPair, i)
 			}
 		}
 	})
@@ -104,7 +112,7 @@
 					alt={`${actualArticle.id} thumbnail`}
 					class='articleThumb'
 					src={media.thumbnail}
-				 	on:click={() => dispatch('mediaClick', i)}
+					on:click={() => dispatch('mediaClick', i)}
 				/>
 			{:else if media.mediaType === MediaType.Image}
 				<img
@@ -146,43 +154,49 @@
 				</video>
 			{/if}
 		{/each}
-		<div class="holderBox holderBoxTop">
-			<a class="button" title="External Link" href={actualArticle.url} target="_blank">
+		<div class='holderBox holderBoxTop'>
+			<a class='button' title='External Link' href={actualArticle.url} target='_blank'>
 				<Fa icon={faExternalLinkAlt} class='darkIcon is-small'/>
 			</a>
 			<!--{#if !modal}-->
-				<button class="button"><!--onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::ToggleInModal))}-->
-					<Fa icon={faExpandArrowsAlt} class='darkIcon is-small'/>
-				</button>
+			<button class='button'>
+				<!--onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::ToggleInModal))}-->
+				<Fa icon={faExpandArrowsAlt} class='darkIcon is-small'/>
+			</button>
 			<!--{/if}-->
 
-	<!--		<Dropdown on_expanded_change={ctx.link().callback(Msg::SetDrawOnTop)} is_right=true current_label={DropdownLabel::Icon(yew::props! { FAProps {icon: "ellipsis-h".to_owned()}})} label_classes={classes!("articleButton")}>-->
-	<!--			<a class="dropdown-item" onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::ToggleMarkAsRead))}> {"Mark as read"} </a>-->
-	<!--			<a class="dropdown-item" onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::ToggleHide))}> {"Hide"} </a>-->
-	<!--			{ if let Some(index) = ctx.props().media_load_states.iter().enumerate().find_map(|(i, m)| if *m == MediaLoadState::NotLoaded { Some(i) } else { None }) {-->
-	<!--				html! {-->
-	<!--				<a class="dropdown-item" onclick={ctx.link().callback(move |_| Msg::ParentCallback(ParentMsg::LoadMedia(index)))}>{"Load Media"}</a>-->
-	<!--			}-->
-	<!--			}else {-->
-	<!--				html! {}-->
-	<!--			} }-->
-	<!--			<a-->
-	<!--				class="dropdown-item"-->
-	<!--				href={ actualArticle.url() }-->
-	<!--				target="_blank" rel="noopener noreferrer"-->
-	<!--			>-->
-	<!--				{ "External Link" }-->
-	<!--			</a>-->
-	<!--			<a class="dropdown-item" onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::LogData))}>{"Log Data"}</a>-->
-	<!--			<a class="dropdown-item" onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::LogJsonData))}>{"Log Json Data"}</a>-->
-	<!--			<a class="dropdown-item" onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::FetchData))}>{"Fetch Data"}</a>-->
-	<!--		</Dropdown>-->
+			<Dropdown isRight={true} labelClasses='articleButton'>
+				<!--on_expanded_change={ctx.link().callback(Msg::SetDrawOnTop)}-->
+				<Fa slot='triggerIcon' icon={faEllipsisH} class='level-item'/>
+
+				<a class='dropdown-item' on:click={() => toggleMarkAsRead(actualArticle.idPair)}>
+					Mark as read
+				</a>
+				<a class='dropdown-item' on:click={() => toggleHide(actualArticle.idPair)}>
+					Hide
+				</a>
+				{#if !actualArticle.fetched }
+					<a class='dropdown-item' on:click={() => fetchArticle(actualArticle.idPair)}>{"Load Media"}</a>
+				{/if}
+				<a
+					class='dropdown-item'
+					href={ actualArticle.url }
+					target='_blank'
+				>
+					External Link
+				</a>
+				<a class='dropdown-item' on:click={() => console.dir(article)}>
+					Log Data
+				</a>
+				<!--				<a class='dropdown-item' on:click={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::LogJsonData))}>{"Log Json Data"}</a>-->
+				<!--				<a class='dropdown-item' on:click={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::FetchData))}>{"Fetch Data"}</a>-->
+			</Dropdown>
 		</div>
-		<div class="holderBox holderBoxBottom">
-			<button class="button" on:click={() => dispatch('action', 'favorite')}>
+		<div class='holderBox holderBoxBottom'>
+			<button class='button' on:click={() => dispatch('action', 'favorite')}>
 				<Fa icon={faHeart} class='darkIcon is-small'/>
 			</button>
-			<button class="button"> <!--onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::Repost))}-->
+			<button class='button'> <!--onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::Repost))}-->
 				<Fa icon={faRetweet} class='darkIcon is-small'/>
 			</button>
 		</div>

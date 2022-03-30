@@ -3,6 +3,7 @@
 
 	export let idPairs;
 	export let articleView;
+	export let containerRef;
 	export let columnCount: number;
 	export let animatedAsGifs
 	export let socialSettings
@@ -17,7 +18,7 @@
 		align-items: flex-start
 </style>
 
-<div class='articlesContainer rowContainer'>
+<div class='articlesContainer rowContainer' bind:this={containerRef}>
 	{#each idPairs as idPair (idPair)}
 		<ArticleComponent
 			{idPair}

@@ -54,9 +54,11 @@
 	export let showSidebar = true
 	let showOptions = false
 	let container = initContainer || ColumnContainer
+	let containerRef: HTMLElement | undefined = undefined
 	let width = 1
 	let articleView = initArticleView || SocialArticleView
 	let animatedAsGifs = false
+	let scrollSpeed = 3
 	const socialSettings = {
 		hideText: false,
 		compact: false,
@@ -68,6 +70,19 @@
 		(articles: Article[]) => articles?.filter((a: Article) => !a.markedAsRead && !a.hidden)
 			.map((a: Article) => a.idPair) || [],
 	)
+
+	enum ScrollDirection {
+		Up,
+		Down,
+	}
+
+	let autoscrollInfo: {
+		direction: ScrollDirection,
+		anim?: () => void,
+		scrollRequestId?: number,
+	} = {
+		direction: ScrollDirection.Down,
+	}
 
 	function shuffle() {
 		articleIdPairs.update(array => {
@@ -91,6 +106,32 @@
 
 	function autoscroll() {
 		console.log('Scrolling!')
+		let oldDirection = autoscrollInfo.direction;
+		autoscrollInfo.direction = oldDirection === ScrollDirection.Down ? ScrollDirection.Up : ScrollDirection.Down;
+
+		const scrollStep = () => {
+			if ((autoscrollInfo.direction && containerRef.scrollTop > 0) ||
+				(!autoscrollInfo.direction && containerRef.scrollTop < containerRef.scrollHeight - containerRef.clientHeight))
+				containerRef.scrollBy(0, autoscrollInfo.direction ? -scrollSpeed : scrollSpeed)
+			else
+				autoscrollInfo.direction = autoscrollInfo.direction === ScrollDirection.Down ? ScrollDirection.Up : ScrollDirection.Down
+			autoscrollInfo.scrollRequestId = window.requestAnimationFrame(scrollStep)
+		}
+		autoscrollInfo.scrollRequestId = window.requestAnimationFrame(scrollStep)
+
+		window.addEventListener(
+			'mousedown',
+			stopScroll,
+			{once: true},
+		);
+	}
+
+	function stopScroll() {
+		if (autoscrollInfo.scrollRequestId === undefined)
+			return
+
+		window.cancelAnimationFrame(autoscrollInfo.scrollRequestId)
+		autoscrollInfo.scrollRequestId = undefined
 	}
 
 	async function refresh() {
@@ -265,6 +306,9 @@
 						<Input type='number' bind:value={width} min={1}/>
 					</Field>
 				{/if}
+				<Field label='AutoScroll Speed'>
+					<Input type='number' bind:value={scrollSpeed} min={0}/>
+				</Field>
 			</div>
 			<div class='box'>
 				<Field label='Article View'>
@@ -301,6 +345,7 @@
 	{/if}
 	<svelte:component
 		this={container}
+		bind:containerRef={containerRef}
 		idPairs={$filteredArticles}
 		articleView={articleView}
 		{columnCount}

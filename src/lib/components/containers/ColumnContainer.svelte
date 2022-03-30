@@ -3,11 +3,12 @@
 
 	export let idPairs;
 	export let articleView;
+	export let containerRef;
 	export let animatedAsGifs;
 	export let socialSettings;
 </script>
 
-<div class='columnContainer'>
+<div class='columnContainer' bind:this={containerRef}>
 	{#each idPairs as idPair (idPair)}
 		<ArticleComponent {idPair} view={articleView} {socialSettings} {animatedAsGifs}/>
 	{/each}

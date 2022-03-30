@@ -114,7 +114,7 @@
 					src={media.thumbnail}
 					on:click={() => dispatch('mediaClick', i)}
 				/>
-			{:else if media.mediaType === MediaType.Image}
+			{:else if media.mediaType === MediaType.Image || media.mediaType === MediaType.Gif}
 				<img
 					alt={actualArticle.id}
 					src={media.src}

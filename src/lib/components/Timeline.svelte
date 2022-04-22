@@ -7,6 +7,7 @@
 	import type {ArticleIdPair} from '../services/article'
 	import ColumnContainer from "./containers/ColumnContainer.svelte"
 	import RowContainer from "./containers/RowContainer.svelte"
+	import MasonryContainer from "./containers/MasonryContainer.svelte"
 	import SocialArticleView from "./articles/SocialArticleView.svelte"
 	import GalleryArticleView from "./articles/GalleryArticleView.svelte"
 	import Fa from 'svelte-fa/src/fa.svelte'
@@ -53,16 +54,14 @@
 
 	export let showSidebar = true
 	let showOptions = false
-	let container = initContainer || ColumnContainer
+	let container = initContainer || MasonryContainer
 	let containerRef: HTMLElement | undefined = undefined
 	let width = 1
 	let articleView = initArticleView || SocialArticleView
 	let animatedAsGifs = false
 	let scrollSpeed = 3
-	const socialSettings = {
-		hideText: false,
-		compact: false,
-	}
+	let hideText = false
+	let compact = false
 
 	let articleIdPairs: Writable<ArticleIdPair[]> = writable([...initArticles])
 
@@ -294,6 +293,7 @@
 					<Select bind:selected={container}>
 						<option value={ColumnContainer}>Column</option>
 						<option value={RowContainer}>Row</option>
+						<option value={MasonryContainer}>Masonry</option>
 					</Select>
 				</Field>
 				{#if container !== ColumnContainer}
@@ -325,10 +325,10 @@
 <!--				</div>-->
 				{#if articleView === SocialArticleView}
 					<div class='field'>
-						<Switch bind:checked={socialSettings.compact}>Compact articles</Switch>
+						<Switch bind:checked={compact}>Compact articles</Switch>
 					</div>
 					<div class='field'>
-						<Switch bind:checked={socialSettings.hideText}>Hide text</Switch>
+						<Switch bind:checked={hideText}>Hide text</Switch>
 					</div>
 				{/if}
 			</div>
@@ -349,7 +349,8 @@
 		idPairs={$filteredArticles}
 		articleView={articleView}
 		{columnCount}
-		{socialSettings}
+		{hideText}
+		{compact}
 		{animatedAsGifs}
 	/>
 </div>

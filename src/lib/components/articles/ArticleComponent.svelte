@@ -7,9 +7,10 @@
 
 	export let idPair: ArticleIdPair
 	export let view
-	export let style: string
+	export let style = ''
 	export let animatedAsGifs
-	export let socialSettings
+	export let compact
+	export let hideText
 
 	let article: Writable<Article> = getWritable(idPair)
 	let actualArticle = derived(
@@ -48,5 +49,6 @@
 	{animatedAsGifs}
 	on:mediaClick={onMediaClick}
 	on:action={onArticleAction}
-	{...socialSettings}
+	{hideText}
+	{compact}
 />

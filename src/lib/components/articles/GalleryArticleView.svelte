@@ -12,7 +12,7 @@
 	import {LoadingState, loadingStore} from '../../bufferedMediaLoading'
 	import {derived} from 'svelte/store'
 	import Dropdown from "../Dropdown.svelte"
-	import {fetchArticle, toggleHide, toggleMarkAsRead} from "../../services/service.js"
+	import {fetchArticle, toggleHide, toggleMarkAsRead} from "../../services/service"
 
 	export let article: Readonly<Article>
 	export let actualArticle: Readonly<Article>

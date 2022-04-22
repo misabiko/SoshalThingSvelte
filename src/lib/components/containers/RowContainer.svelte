@@ -6,7 +6,8 @@
 	export let containerRef;
 	export let columnCount: number;
 	export let animatedAsGifs
-	export let socialSettings
+	export let compact
+	export let hideText
 </script>
 
 <style lang='sass' global>
@@ -24,7 +25,8 @@
 			{idPair}
 			view={articleView}
 			{animatedAsGifs}
-			{socialSettings}
+			{compact}
+			{hideText}
 			style={`width: calc(100% / ${columnCount})`}
 		/>
 	{/each}

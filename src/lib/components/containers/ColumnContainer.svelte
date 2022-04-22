@@ -5,11 +5,18 @@
 	export let articleView;
 	export let containerRef;
 	export let animatedAsGifs;
-	export let socialSettings;
+	export let compact;
+	export let hideText;
 </script>
 
 <div class='columnContainer' bind:this={containerRef}>
 	{#each idPairs as idPair (idPair)}
-		<ArticleComponent {idPair} view={articleView} {socialSettings} {animatedAsGifs}/>
+		<ArticleComponent
+			{idPair}
+			view={articleView}
+			{compact}
+			{hideText}
+			{animatedAsGifs}
+		/>
 	{/each}
 </div>

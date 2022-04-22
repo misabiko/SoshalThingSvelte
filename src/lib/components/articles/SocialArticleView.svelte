@@ -18,6 +18,7 @@
 
 	export let article: Readonly<Article>
 	export let actualArticle: Readonly<Article>
+	export let animatedAsGifs: boolean
 	export let compact: boolean
 	export let hideText: boolean
 	export let style: string = ''

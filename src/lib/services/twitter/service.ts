@@ -1,18 +1,24 @@
-import type {Id} from './article'
+import type {ArticleIdPair} from '../article'
 import TwitterArticle from './article'
 import type {Service} from '../service'
-import {addArticles, getMarkedAsReadStorage, registerService} from '../service'
+import {registerService, STANDARD_ACTIONS} from '../service'
+import {get} from 'svelte/store'
 
 export const TwitterService: Service = {
 	name: 'Twitter',
 	articles: {},
-	articleActions: {},
+	articleActions: {
+		[STANDARD_ACTIONS.favorite]: {
+			action: toggleFavorite,
+			togglable: true,
+		},
+	},
 }
 TwitterArticle.service = TwitterService.name
 
 registerService(TwitterService)
 
-export async function getTweet(id: Id) {
+/*export async function getTweet(id: Id) {
 	console.log("Fetching " + id)
 	try {
 		const response: TweetResponseV2 = await new Promise((resolve, reject) => {

@@ -33,6 +33,7 @@
 		toggleMarkAsRead(idPair)
 	}
 
+	//TODO Use articleAction directly in article view?
 	function onArticleAction(event: { detail: string }) {
 		articleAction(event.detail, idPair)
 	}

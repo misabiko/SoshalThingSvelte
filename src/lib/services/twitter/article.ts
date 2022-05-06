@@ -4,22 +4,24 @@ import Article from '../article'
 export default class TwitterArticle extends Article {
 	static service: string;
 
-	readonly author: TwitterUser;
-	readonly creationTime: Date;
 
 	constructor(
 		id: string,
 		text: string,
 		textHtml: string,
-		user: TwitterUser,
-		creationTime: Date,
+		readonly author: TwitterUser,
+		readonly creationTime: Date,
 		markedAsReadStorage: string[],
 		articleRefs: ArticleRefIdPair[],
-		medias: ArticleMedia[]
+		medias: ArticleMedia[],
+		public liked: boolean,
+		public likeCount: number,
+		public retweeted: boolean,
+		public retweetCount: number,
 	) {
 		super({
 			id,
-			url: `https://twitter.com/${user.username}/status/${id}`,
+			url: `https://twitter.com/${author.username}/status/${id}`,
 			text,
 			textHtml,
 			medias,
@@ -28,9 +30,6 @@ export default class TwitterArticle extends Article {
 			markedAsReadStorage,
 			articleRefs,
 		});
-
-		this.author = user;
-		this.creationTime = creationTime;
 	}
 }
 

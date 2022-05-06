@@ -14,7 +14,7 @@
 	import {createEventDispatcher} from 'svelte'
 	import Article from '../../services/article'
 	import Dropdown from '../../components/Dropdown.svelte'
-	import {toggleMarkAsRead, toggleHide, articleAction, getWritable} from "../../services/service"
+	import {toggleMarkAsRead, toggleHide, articleAction, getWritable, STANDARD_ACTIONS} from "../../services/service"
 
 	export let article: Readonly<Article>
 	export let actualArticle: Readonly<Article>
@@ -356,7 +356,7 @@
 						{/if}
 					</button>
 					<button class='level-item articleButton likeButton' class:likedPostButton={actualArticle.liked}
-							on:click={() => dispatch('action', 'favorite')}>
+							on:click={() => dispatch('action', STANDARD_ACTIONS.favorite)}>
 						<Fa icon={faHeart}/>
 						{#if actualArticle.likeCount}
 							<span>{actualArticle.likeCount}</span>

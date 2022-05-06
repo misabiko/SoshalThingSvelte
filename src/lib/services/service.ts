@@ -22,6 +22,18 @@ type ArticleAction = {
 	togglable: boolean;
 };
 
+export const STANDARD_ACTIONS = {
+	favorite: 'favorite',
+	repost: 'repost',
+};
+
+export function articleAction(action: string, idPair: ArticleIdPair) {
+	if (services[idPair.service].articleActions.hasOwnProperty(action))
+		services[idPair.service].articleActions[action].action(idPair)
+	else
+		console.warn(`${idPair.service} doesn't have action ${action}.`)
+}
+
 export function addArticles(service: Service, ...articles: ArticleWithRefs[]): ArticleIdPair[] {
 	const idPairs = []
 	for (const {article, refs} of articles) {
@@ -157,13 +169,6 @@ export function getMarkedAsReadStorage(service: Service): (string | number)[] {
 
 export function getCachedArticlesStorage(service: Service): {[id: string | number]: object} {
 	return JSON.parse(sessionStorage.getItem('SoshalThingSvelte'))?.services[service.name]?.cachedArticles || {}
-}
-
-export function articleAction(action: string, idPair: ArticleIdPair) {
-	if (services[idPair.service].articleActions.hasOwnProperty(action))
-		services[idPair.service].articleActions[action].action(idPair)
-	else
-		console.warn(`${idPair.service} doesn't have action ${action}.`)
 }
 
 export function addEndpoint(endpoint: Endpoint) {

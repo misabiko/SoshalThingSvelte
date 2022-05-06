@@ -60,9 +60,10 @@ chrome.runtime.onMessageExternal.addListener(
 							sendResponse(err)
 						})
 					break;
-				case 'fetch':
+				case 'fetchV1':
 					fetch(request.url, {
-						headers: twitterAuthHeaders(request.resource)
+						headers: twitterAuthHeaders(request.resource),
+						method: request.method,
 					})
 						.then(response => response.json())
 						.then(json => {

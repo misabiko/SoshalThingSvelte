@@ -1,6 +1,6 @@
 import type {ArticleMedia} from '../article'
 import {Endpoint, getMarkedAsReadStorage, RefreshTime, registerEndpoint} from '../service'
-import {TwitterService} from './service'
+import {fetchExtensionV1, TwitterService} from './service'
 import TwitterArticle from './article'
 import {articleRefToIdPair, ArticleRefType, getRatio, MediaQueueInfo, MediaType} from '../article'
 
@@ -9,27 +9,8 @@ export class HomeTimelineEndpoint extends Endpoint {
 
 	async refresh(refreshTime: RefreshTime) {
 		try {
-			const response: TweetResponse[] = await new Promise((resolve, reject) => {
-				const timeout = 5000
-				const timeoutId = setTimeout(() => reject(new Error(`Extension didn't respond in ${timeout} ms.`)), timeout)
-
-				//TODO Cancel request on timeout
-				//TODO Add setting or detect extension id
-				chrome.runtime.sendMessage("ialpimkfmdjoekolcmhnajfkmhchkmbd", {
-					soshalthing: true,
-					service: TwitterService.name,
-					request: 'fetch',
-					url: 'https://api.twitter.com/1.1/statuses/home_timeline.json',
-					resource: 'statuses/home_timeline',
-				}, response => {
-					clearTimeout(timeoutId)
-					console.log('Response!')
-					resolve(response)
-				})
-			})
-
-			console.dir(response)
-			return response.map(articleFromV1)
+			return (await fetchExtensionV1<TweetResponse[]>('https://api.twitter.com/1.1/statuses/home_timeline.json', 'statuses/home_timeline'))
+				.map(articleFromV1)
 		}catch (errorResponse) {
 			console.error('Error fetching', errorResponse)
 		}

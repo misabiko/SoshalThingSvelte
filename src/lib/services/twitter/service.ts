@@ -57,6 +57,47 @@ export async function getTweet(id: Id) {
 	}catch (errorResponse) {
 		console.error('Error fetching single tweet', errorResponse)
 	}
+}*/
+
+async function toggleFavorite(idPair: ArticleIdPair) {
+	const writable = TwitterService.articles[idPair.id];
+	const action = (get(writable) as TwitterArticle).liked ? 'destroy' : 'create';
+	const response = await fetchExtensionV1(
+		`https://api.twitter.com/1.1/favorites/${action}.json`,
+		`favorites/${action}`,
+		'POST'
+	);
+
+	//TODO Update article with response
+}
+
+export async function fetchExtensionV1<T>(url: string, resource: string, method = 'GET'): Promise<T> {
+	try {
+		const response: T = await new Promise((resolve, reject) => {
+			const timeout = 5000
+			const timeoutId = setTimeout(() => reject(new Error(`Extension didn't respond in ${timeout} ms.`)), timeout)
+
+			//TODO Cancel request on timeout
+			//TODO Add setting or detect extension id
+			chrome.runtime.sendMessage("ialpimkfmdjoekolcmhnajfkmhchkmbd", {
+				soshalthing: true,
+				service: TwitterService.name,
+				request: 'fetchV1',
+				url,
+				resource,
+				method,
+			}, response => {
+				clearTimeout(timeoutId)
+				console.log('Response!')
+				resolve(response)
+			})
+		})
+
+		console.dir(response)
+		return response;
+	}catch (cause) {
+		throw new Error(`Failed to fetch from extension\n${cause.toString()}`);
+	}
 }
 
 interface TweetResponseV2 {

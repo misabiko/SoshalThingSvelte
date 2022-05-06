@@ -2,7 +2,7 @@
 	import FavViewer from "../lib/components/FavViewer.svelte"
 	import {addEndpoint} from "../lib/services/service"
 	import type {TimelineData} from '../lib/components/Timeline.svelte'
-	import RowContainer from '../lib/components/containers/RowContainer.svelte'
+	import MasonryContainer from '../lib/components/containers/MasonryContainer.svelte'
 	import {HomeTimelineEndpoint} from '../lib/services/twitter/endpoints'
 
 	const endpoint = new HomeTimelineEndpoint()
@@ -12,7 +12,7 @@
 		fullscreen: true,
 		endpoints: [endpoint.name],
 		initArticles: [],
-		initContainer: RowContainer,
+		initContainer: MasonryContainer,
 	}
 </script>
 

@@ -1,4 +1,4 @@
-import FavViewer from '../../lib/components/FavViewer.svelte';
+import FavViewer from '../../components/FavViewer.svelte';
 
 const favviewer = new FavViewer({
 	target: document.body,

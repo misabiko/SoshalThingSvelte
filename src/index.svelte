@@ -1,9 +1,9 @@
 <script lang='ts'>
-	import FavViewer from "../lib/components/FavViewer.svelte"
-	import {addEndpoint} from "../lib/services/service"
-	import type {TimelineData} from '../lib/components/Timeline.svelte'
-	import MasonryContainer from '../lib/components/containers/MasonryContainer.svelte'
-	import {HomeTimelineEndpoint} from '../lib/services/twitter/endpoints'
+	import FavViewer from "./components/FavViewer.svelte"
+	import {addEndpoint} from "./services/service"
+	import type {TimelineData} from './components/Timeline.svelte'
+	import MasonryContainer from './components/containers/MasonryContainer.svelte'
+	import {HomeTimelineEndpoint} from './services/twitter/endpoints'
 
 	const endpoint = new HomeTimelineEndpoint()
 	addEndpoint(endpoint)
@@ -17,7 +17,7 @@
 </script>
 
 <style lang='sass' global>
-	@import "../../node_modules/bulma/bulma.sass"
+	@import "../node_modules/bulma/bulma"
 
 	html
 		overflow-y: hidden

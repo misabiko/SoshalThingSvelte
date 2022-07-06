@@ -8,7 +8,7 @@
 </script>
 
 <style lang='sass' global>
-	@import '../../styles/core'
+	@import '../../styles/variables'
 
 	#sidebar
 		background-color: $dark

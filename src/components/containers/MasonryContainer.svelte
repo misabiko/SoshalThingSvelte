@@ -42,7 +42,7 @@
 </script>
 
 <style lang='sass' global>
-	@import '../../styles/core'
+	@import '../../styles/variables'
 
 	.masonryContainer
 		display: flex

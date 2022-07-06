@@ -13,10 +13,10 @@
 </script>
 
 <style lang='sass' global>
-	@import '../styles/core'
+	@import '../styles/variables'
 
 	.favviewer
-		@import 'bulma/bulma'
+		@import '../../node_modules/bulma/bulma'
 
 		.injected
 			height: 100%

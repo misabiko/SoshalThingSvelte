@@ -13,7 +13,7 @@
 	} from '@fortawesome/free-solid-svg-icons'
 	import {createEventDispatcher} from 'svelte'
 	import Article from '../../services/article'
-	import Dropdown from '../../components/Dropdown.svelte'
+	import Dropdown from '../Dropdown.svelte'
 	import {toggleMarkAsRead, toggleHide, articleAction, getWritable, STANDARD_ACTIONS} from "../../services/service"
 
 	export let article: Readonly<Article>
@@ -53,7 +53,7 @@
 </script>
 
 <style lang='sass' global>
-	@import '../../styles/core'
+	@import '../../styles/variables'
 
 	.favviewer article
 		padding: 1rem

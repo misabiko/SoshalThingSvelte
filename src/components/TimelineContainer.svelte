@@ -12,7 +12,7 @@
 </script>
 
 <style lang='sass' global>
-	@import '../styles/core'
+	@import '../styles/variables'
 
 	#timelineContainer
 		height: 100%

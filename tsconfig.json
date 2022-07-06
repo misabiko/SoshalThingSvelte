@@ -6,7 +6,7 @@
 		/* Visit https://aka.ms/tsconfig to read more about this file */
 
 		/* Language and Environment */
-		"target": "es2016" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
+		"target": "esnext" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
 		// "lib": [],                                        /* Specify a set of bundled library declaration files that describe the target runtime environment. */
 
 		/* Modules */
@@ -41,6 +41,6 @@
 		// "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
 		"skipLibCheck": true /* Skip type checking all .d.ts files. */
 	},
-	"include": ["src/entry.ts"],
+	"include": ["src/**/*.ts"],
 	"exclude": ["node_modules/**", "dist/**"]
 }

@@ -67,7 +67,7 @@ export abstract class Endpoint {
 	}
 }
 
-type ArticleWithRefs = { article: Article, refs: ArticleRef[] }
+export type ArticleWithRefs = { article: Article, refs: ArticleRef[] }
 
 interface EndpointConstructorInfo {
 	readonly name: string;

@@ -1,4 +1,4 @@
-<script>
+<script lang='ts'>
 	import ArticleComponent from "../articles/ArticleComponent.svelte";
 
 	export let idPairs;
@@ -7,6 +7,7 @@
 	export let animatedAsGifs;
 	export let compact;
 	export let hideText;
+	export let shouldLoadMedia: boolean;
 </script>
 
 <div class='columnContainer' bind:this={containerRef}>
@@ -17,6 +18,7 @@
 			{compact}
 			{hideText}
 			{animatedAsGifs}
+			{shouldLoadMedia}
 		/>
 	{/each}
 </div>

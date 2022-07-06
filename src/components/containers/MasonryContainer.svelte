@@ -12,6 +12,7 @@
 	export let animatedAsGifs;
 	export let compact;
 	export let hideText;
+	export let shouldLoadMedia: boolean;
 
 	const canvas = document.createElement('canvas');
 	const canvasContext = canvas.getContext('2d');
@@ -72,6 +73,7 @@
 					{animatedAsGifs}
 					{compact}
 					{hideText}
+					{shouldLoadMedia}
 				/>
 			{/each}
 		</div>

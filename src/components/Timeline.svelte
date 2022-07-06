@@ -62,6 +62,7 @@
 	let scrollSpeed = 3
 	let hideText = false
 	let compact = false
+	let shouldLoadMedia = true;
 
 	let articleIdPairs: Writable<ArticleIdPair[]> = writable([...initArticles])
 
@@ -161,7 +162,7 @@
 	}
 
 	onMount(async () => {
-		if (import.meta.hot || !endpoints.length)
+		if (!endpoints.length)
 			return
 
 		const newArticles = await refreshEndpoints(endpoints, RefreshTime.OnStart)
@@ -352,5 +353,6 @@
 		{hideText}
 		{compact}
 		{animatedAsGifs}
+		{shouldLoadMedia}
 	/>
 </div>

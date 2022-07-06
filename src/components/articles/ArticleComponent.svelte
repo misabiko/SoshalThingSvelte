@@ -11,6 +11,7 @@
 	export let animatedAsGifs
 	export let compact
 	export let hideText
+	export let shouldLoadMedia: boolean
 
 	let article: Writable<Article> = getWritable(idPair)
 	let actualArticle = derived(
@@ -52,4 +53,5 @@
 	on:action={onArticleAction}
 	{hideText}
 	{compact}
+	{shouldLoadMedia}
 />

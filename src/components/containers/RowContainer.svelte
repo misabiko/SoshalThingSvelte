@@ -8,6 +8,7 @@
 	export let animatedAsGifs
 	export let compact
 	export let hideText
+	export let shouldLoadMedia: boolean;
 </script>
 
 <style lang='sass' global>
@@ -27,6 +28,7 @@
 			{animatedAsGifs}
 			{compact}
 			{hideText}
+			{shouldLoadMedia}
 			style={`width: calc(100% / ${columnCount})`}
 		/>
 	{/each}

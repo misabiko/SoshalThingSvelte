@@ -18,13 +18,14 @@
 	export let actualArticle: Readonly<Article>
 	export let style: string = ''
 	export let animatedAsGifs: boolean
+	export let shouldLoadMedia: boolean
 
 	const dispatch = createEventDispatcher()
 	const mediaRefs: HTMLImageElement[] = []
 	const loadingStates = derived(loadingStore, loadingSet => {
 		const states = []
 		for (let mediaIndex = 0; mediaIndex < actualArticle.medias.length; ++mediaIndex)
-			states.push(loadingStore.getLoadingState(actualArticle, mediaIndex, true))
+			states.push(loadingStore.getLoadingState(actualArticle, mediaIndex, shouldLoadMedia))
 		return states
 	})
 

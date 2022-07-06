@@ -1,5 +1,6 @@
-import type {ArticleMedia} from '../article'
+import type {ArticleMedia, ArticleRef} from '../article'
 import {Endpoint, getMarkedAsReadStorage, RefreshTime, registerEndpoint} from '../service'
+import type {ArticleWithRefs} from '../service'
 import {fetchExtensionV1, TwitterService} from './service'
 import TwitterArticle from './article'
 import {articleRefToIdPair, ArticleRefType, getRatio, MediaQueueInfo, MediaType} from '../article'
@@ -19,10 +20,12 @@ export class HomeTimelineEndpoint extends Endpoint {
 }
 
 export class UserTimelineEndpoint extends Endpoint {
-	readonly name = `User Timeline ${this.username}`
+	readonly name;
 
 	constructor(readonly username: string) {
 		super()
+
+		this.name = `User Timeline ${this.username}`
 	}
 
 	async refresh(refreshTime: RefreshTime) {
@@ -31,10 +34,12 @@ export class UserTimelineEndpoint extends Endpoint {
 }
 
 export class ListEndpoint extends Endpoint {
-	readonly name = `List Endpoint ${this.username}/${this.slug}`
+	readonly name;
 
 	constructor(readonly username: string, readonly slug: string) {
 		super()
+
+		this.name = `List Endpoint ${this.username}/${this.slug}`
 	}
 
 	async refresh(refreshTime: RefreshTime) {
@@ -43,10 +48,12 @@ export class ListEndpoint extends Endpoint {
 }
 
 export class LikesEndpoint extends Endpoint {
-	readonly name = `Likes ${this.username}`
+	readonly name
 
 	constructor(readonly username: string) {
 		super()
+
+		this.name = `Likes ${this.username}`
 	}
 
 	async refresh(refreshTime: RefreshTime) {
@@ -55,10 +62,12 @@ export class LikesEndpoint extends Endpoint {
 }
 
 export class SearchEndpoint extends Endpoint {
-	readonly name = `Search ${this.query}`
+	readonly name
 
 	constructor(readonly query: string) {
 		super()
+
+		this.name = `Search ${this.query}`
 	}
 
 	async refresh(refreshTime: RefreshTime) {
@@ -74,19 +83,21 @@ registerEndpoint(TwitterService,
 	SearchEndpoint.constructorInfo,
 )
 
-function articleFromV1(json: TweetResponse) {
+function articleFromV1(json: TweetResponse): ArticleWithRefs {
 	const {text, textHtml} = parseText(json.text, json.entities, json.extended_entities)
 
-	const articleRefs = []
+	const articleRefs: ArticleRef[] = []
 	let actualArticleIndex: number | undefined
 	{
 		if (json.retweeted_status !== undefined) {
 			const retweet = articleFromV1(json.retweeted_status)
-			if (retweet.actualArticleIndex !== undefined && retweet.refs[retweet.actualArticleIndex].type === ArticleRefType.Quote) {
+			const actualRef = retweet.actualArticleIndex !== undefined ? retweet.refs[retweet.actualArticleIndex] : undefined
+
+			if (actualRef?.type === ArticleRefType.Quote) {
 				articleRefs.push({
 					type: ArticleRefType.QuoteRepost,
 					reposted: retweet.article,
-					quoted: retweet.refs[retweet.actualArticleIndex].article
+					quoted: actualRef.quoted
 				})
 			}else {
 				articleRefs.push({
@@ -96,9 +107,11 @@ function articleFromV1(json: TweetResponse) {
 			}
 			actualArticleIndex = 0
 		}else if (json.is_quote_status) {
-			const quote = articleFromV1(json.quoted_status)
-			if (quote.actualArticleIndex !== undefined && quote.refs[quote.actualArticleIndex].type === ArticleRefType.Quote)
-				console.warn(`Quote(${json.id_str}) of a quote(${quote.refs[quote.actualArticleIndex].article.id})?`)
+			//TODO Have is_quote_status imply not undefined quoted_status
+			const quote = articleFromV1(json.quoted_status as TweetResponse)
+			const actualRef = quote.actualArticleIndex !== undefined ? quote.refs[quote.actualArticleIndex] : undefined
+			if (actualRef?.type === ArticleRefType.Quote)
+				console.warn(`Quote(${json.id_str}) of a quote(${actualRef.quoted.id})?`)
 
 			articleRefs.push({
 				type: ArticleRefType.Quote,
@@ -141,7 +154,7 @@ function parseText(rawText: string, entities: Entities, extendedEntities?: Exten
 	}
 
 	let finalText = trimmedText
-	let htmlParts = []
+	let htmlParts: [Indices, string][] = []
 
 	for (const {display_url, expanded_url, indices, url} of entities.urls) {
 		finalText = finalText.replace(url, display_url)
@@ -162,7 +175,7 @@ function parseText(rawText: string, entities: Entities, extendedEntities?: Exten
 		let i = 0
 		let length = trimmedText.length
 		let newHtmlParts = ''
-		let lastIndex = htmlParts.at(-1)[0][1]
+		let lastIndex = (htmlParts.at(-1) as [Indices, string])[0][1]
 
 		for (const [[first, last], html] of htmlParts) {
 			if (i < first)
@@ -206,9 +219,13 @@ function parseMedia(extendedEntities?: ExtendedEntities): ArticleMedia[] {
 }
 
 function getMP4(videoInfo: VideoInfo, mediaType: MediaType): ArticleMedia {
+	const variant = videoInfo.variants.find(v => v.content_type === 'video/mp4');
+	if (variant === undefined)
+		throw Error("Couldn't find video/mp4 variant.");
+
 	return {
 		mediaType,
-		src: videoInfo.variants.find(v => v.content_type === 'video/mp4').url,
+		src: variant.url,
 		ratio: getRatio(videoInfo.aspect_ratio[0], videoInfo.aspect_ratio[1]),
 		queueLoadInfo: MediaQueueInfo.DirectLoad,
 	}

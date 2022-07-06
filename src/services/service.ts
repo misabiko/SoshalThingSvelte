@@ -8,6 +8,8 @@ const endpoints: { [name: string]: Endpoint } = {}
 const services: { [name: string]: Service } = {}
 const endpointConstructors: { [service: string]: EndpointConstructorInfo[] } = {}
 
+const STORAGE_KEY = 'SoshalThingSvelte'
+
 export interface Service {
 	readonly name: string;
 	readonly articles: { [id: string | number]: Writable<Article> };
@@ -67,7 +69,11 @@ export abstract class Endpoint {
 	}
 }
 
-export type ArticleWithRefs = { article: Article, refs: ArticleRef[] }
+export type ArticleWithRefs = {
+	article: Article,
+	refs: ArticleRef[],
+	actualArticleIndex?: number,
+}
 
 interface EndpointConstructorInfo {
 	readonly name: string;
@@ -114,8 +120,8 @@ export function getWritable(idPair: ArticleIdPair) {
 }
 
 function updateMarkAsReadStorage() {
-	const key = 'SoshalThingSvelte'
-	let storage = JSON.parse(sessionStorage.getItem(key))
+	const item = sessionStorage.getItem(STORAGE_KEY)
+	let storage = item !== null ? JSON.parse(item) : null
 	if (storage === null)
 		storage = {services: {}}
 
@@ -136,18 +142,19 @@ function updateMarkAsReadStorage() {
 			}
 	}
 
-	sessionStorage.setItem('SoshalThingSvelte', JSON.stringify(storage))
+	sessionStorage.setItem(STORAGE_KEY, JSON.stringify(storage))
 }
 
 export function updateCachedArticlesStorage() {
-	const key = 'SoshalThingSvelte'
-	let storage = JSON.parse(sessionStorage.getItem(key))
+	const item = sessionStorage.getItem(STORAGE_KEY)
+	let storage = item !== null ? JSON.parse(item) : null
 	if (storage === null)
 		storage = {services: {}}
 
 	for (const service of Object.values(services)) {
-		if ('getCachedArticles' in service) {
-			const cachedArticles = service.getCachedArticles()
+		const getCachedArticles = service.getCachedArticles
+		if (getCachedArticles !== undefined) {
+			const cachedArticles = getCachedArticles()
 
 			if (storage.services.hasOwnProperty(service.name))
 				storage.services[service.name].cachedArticles = cachedArticles
@@ -159,16 +166,20 @@ export function updateCachedArticlesStorage() {
 		}
 	}
 
-	sessionStorage.setItem('SoshalThingSvelte', JSON.stringify(storage))
+	sessionStorage.setItem(STORAGE_KEY, JSON.stringify(storage))
 }
 
 //TODO Profile passing service vs service name
 export function getMarkedAsReadStorage(service: Service): (string | number)[] {
-	return JSON.parse(sessionStorage.getItem('SoshalThingSvelte'))?.services[service.name]?.articlesMarkedAsRead || []
+	const item = sessionStorage.getItem(STORAGE_KEY)
+	const parsed = item !== null ? JSON.parse(item) : null
+	return parsed?.services[service.name]?.articlesMarkedAsRead || []
 }
 
 export function getCachedArticlesStorage(service: Service): {[id: string | number]: object} {
-	return JSON.parse(sessionStorage.getItem('SoshalThingSvelte'))?.services[service.name]?.cachedArticles || {}
+	const item = sessionStorage.getItem(STORAGE_KEY)
+	const parsed = item !== null ? JSON.parse(item) : null
+	return parsed?.services[service.name]?.cachedArticles || {}
 }
 
 export function addEndpoint(endpoint: Endpoint) {
@@ -209,6 +220,7 @@ function endpointRefreshed(endpointName: string, articles: ArticleWithRefs[]): A
 
 export function fetchArticle(idPair: ArticleIdPair) {
 	const service = services[idPair.service]
-	if ('fetchArticle' in service)
-		service.fetchArticle(idPair.id);
+	const fetchArticle = service.fetchArticle
+	if (fetchArticle !== undefined)
+		fetchArticle(idPair.id);
 }

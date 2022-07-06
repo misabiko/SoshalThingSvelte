@@ -109,6 +109,7 @@ export enum ArticleRefType {
 	Reply,
 }
 
+//TODO Have reply as its own member
 export type ArticleRef =
 	{
 		type: ArticleRefType.Repost,

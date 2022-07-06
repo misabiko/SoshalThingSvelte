@@ -101,7 +101,7 @@ export async function fetchExtensionV1<T>(url: string, resource: string, method 
 
 		console.dir(response)
 		return response;
-	}catch (cause) {
+	}catch (cause: any) {
 		throw new Error(`Failed to fetch from extension\n${cause.toString()}`);
 	}
 }

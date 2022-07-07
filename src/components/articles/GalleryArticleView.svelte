@@ -59,50 +59,50 @@
 		& > div
 			position: relative
 
-		img, video
-			width: 100%
-
 		&:hover .holderBox
 			display: flex
 
-		.holderBox
-			justify-content: space-between
-			flex-wrap: nowrap
-			position: absolute
-			height: 56px
-			width: 100%
-			opacity: 0.5
-			display: none
-			direction: ltr
-			pointer-events: none
+	img, video
+		width: 100%
 
-			& > *
-				height: inherit
-				padding-top: unset
-				padding-bottom: unset
+	.holderBox
+		justify-content: space-between
+		flex-wrap: nowrap
+		position: absolute
+		height: 56px
+		width: 100%
+		opacity: 0.5
+		display: none
+		direction: ltr
+		pointer-events: none
 
-			:global(*)
-				pointer-events: auto
+		& > *
+			height: inherit
+			padding-top: unset
+			padding-bottom: unset
 
-			//TODO Hack
-			:global(.dropdown-content)
-				overflow-x: hidden
+		:global(*)
+			pointer-events: auto
 
-		.holderBoxTop
-			top: 0px
+		//TODO Hack
+		:global(.dropdown-content)
+			overflow-x: hidden
 
-		.holderBoxBottom
-			bottom: 0px
-			justify-content: space-around
+	.holderBoxTop
+		top: 0px
 
-		img.articleMediaLoading
-			position: absolute
+	.holderBoxBottom
+		bottom: 0px
+		justify-content: space-around
 
-		.articleThumb
-			z-index: -1
+	img.articleMediaLoading
+		position: absolute
 
-		//ul.articleTags
-		//	list-style-type: none
+	.articleThumb
+		z-index: -1
+
+	//ul.articleTags
+	//	list-style-type: none
 </style>
 
 <article class='galleryArticle' articleId={article.id} {style}>

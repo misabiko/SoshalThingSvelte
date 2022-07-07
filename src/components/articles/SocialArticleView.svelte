@@ -63,234 +63,233 @@
 		//TODO &.transparent
 		//	opacity: 0.5
 
-	article.socialArticle
-		figure
-			img
-				border-radius: 4px
+	figure
+		img
+			border-radius: 4px
 
-			&.sharedAvatar
-				position: relative
+		&.sharedAvatar
+			position: relative
 
-				img:first-child
-					position: absolute
-					width: 85%
+			img:first-child
+				position: absolute
+				width: 85%
 
-				img:last-child
-					position: absolute
-					width: 40%
-					bottom: 0
-					right: 0
+			img:last-child
+				position: absolute
+				width: 40%
+				bottom: 0
+				right: 0
 
-		.postMedia
-			margin-top: 1rem
+	.postMedia
+		margin-top: 1rem
 
-		//TODO .postVideo video
+	//TODO .postVideo video
+	//	width: 100%
+
+	.articleHeader *
+		vertical-align: middle
+
+		small
+			color: $light
+
+	.names
+		text-overflow: ellipsis
+		white-space: nowrap
+		overflow: hidden
+		display: inline-block
+		max-width: 300px
+
+		strong
+			margin-right: 0.5rem
+			color: $white-ter
+
+		&:hover > *
+			text-decoration: underline
+
+	.timestamp
+		float: right
+
+	//TODO .postImagesCompact
+	//	display: flex
+	//	flex-wrap: wrap
+
+	.mediaHolder
+		overflow: hidden
+		display: flex
+		justify-content: center
+		border-radius: 8px
+
+		&:not(:last-child)
+			margin-bottom: 2px
+
+		img
+			align-self: center
+			width: 100%
+
+		//&.mediaHolderCompact
+		//	max-height: 16vh
 		//	width: 100%
-
-		.articleHeader *
-			vertical-align: middle
-
-			small
-				color: $light
-
-		.names
-			text-overflow: ellipsis
-			white-space: nowrap
-			overflow: hidden
-			display: inline-block
-			max-width: 300px
-
-			strong
-				margin-right: 0.5rem
-				color: $white-ter
-
-			&:hover > *
-				text-decoration: underline
-
-		.timestamp
-			float: right
-
-		//TODO .postImagesCompact
-		//	display: flex
-		//	flex-wrap: wrap
-
-		.mediaHolder
-			overflow: hidden
-			display: flex
-			justify-content: center
-			border-radius: 8px
-
-			&:not(:last-child)
-				margin-bottom: 2px
-
-			img
-				align-self: center
-				width: 100%
-
-			//&.mediaHolderCompact
-			//	max-height: 16vh
-			//	width: 100%
-			//
-			//	&:not(:only-child)
-			//		margin: 2px
-			//		max-width: 49%
-			//
-			//		&.landscape img
-			//			width: unset
-			//			height: 110%
-			//
-			//		&.portrait img
-			//			width: 110%
-			//			height: unset
-			//
-			//	img
-			//		object-fit: cover
-			//
-			//	&.thirdImage
-			//		max-width: unset
-			//
-			//		&.landscape img
-			//			width: unset
-			//			height: 175%
-			//
-			//		&.portrait img
-			//			width: 175%
-			//			height: unset
-
-		p.articleParagraph
-			white-space: pre-line
-			overflow-wrap: anywhere
-
-
-		.articleButton
-			color: $light
-
-			&:focus
-				outline: none
-
-			&:hover span
-				color: $primary
-
-			&:hover.commentButton span
-				color: $comment-color
-
-		.dropdown-trigger .articleButton
-			width: 24px
-			height: unset
-
-			//i
-			//	color: $white-ter
-
-		//TODO .svg-inline--fa.fa-w-14
-		//	width: 0.875em
 		//
-		//.svg-inline--fa.fa-w-18
-		//	width: 1.125em
+		//	&:not(:only-child)
+		//		margin: 2px
+		//		max-width: 49%
 		//
-		//.svg-inline--fa.fa-w-20
-		//	width: 1em
+		//		&.landscape img
+		//			width: unset
+		//			height: 110%
+		//
+		//		&.portrait img
+		//			width: 110%
+		//			height: unset
+		//
+		//	img
+		//		object-fit: cover
+		//
+		//	&.thirdImage
+		//		max-width: unset
+		//
+		//		&.landscape img
+		//			width: unset
+		//			height: 175%
+		//
+		//		&.portrait img
+		//			width: 175%
+		//			height: unset
 
-		//.fade-enter-active, .fade-leave-active
-		//	transition: opacity .5s
-		//
-		//.fade-enter, .fade-leave-to
-		//	opacity: 0
+	p.articleParagraph
+		white-space: pre-line
+		overflow-wrap: anywhere
 
 
-		//.svg-inline--fa.fa-w-16
-		//	width: 1em
+	.articleButton
+		color: $light
 
-		.likeButton
-			color: $light
+		&:focus
+			outline: none
 
-			&:hover, &.likedPostButton
-				span
-					color: $like-color
+		&:hover span
+			color: $primary
 
-		//@keyframes heart
-		//	0%, 17.5%
-		//		width: 0
-		//
-		//.heart-enter-active
-		//	will-change: width
-		//	animation: heart .5s cubic-bezier(.17, .89, .32, 1.49)
-		//
-		//.heart-enter
-		//	width: 0
-		//
-		//$bubble-d: 2em
-		//$bubble-r: .5 * $bubble-d
+		&:hover.commentButton span
+			color: $comment-color
 
-		//.icon > svg
-		//	position: relative
-		//
-		//	&:before, &:after
-		//		position: absolute
-		//		z-index: -1
-		//		top: 50%
-		//		left: 50%
-		//		border-radius: 50%
-		//		content: ''
-		//
-		//	&::before
-		//		margin: -$bubble-r
-		//		width: $bubble-d
-		//		height: $bubble-d
-		//		background: gold
+	.dropdown-trigger .articleButton
+		width: 24px
+		height: unset
 
-		//.svg-inline--fa.fa-w-20
-		//	width: 1.25em
+		//i
+		//	color: $white-ter
 
-		.repostButton
-			color: $light
+	//TODO .svg-inline--fa.fa-w-14
+	//	width: 0.875em
+	//
+	//.svg-inline--fa.fa-w-18
+	//	width: 1.125em
+	//
+	//.svg-inline--fa.fa-w-20
+	//	width: 1em
 
-			&:hover, &.repostedPostButton
-				span
-					color: $repost-color
+	//.fade-enter-active, .fade-leave-active
+	//	transition: opacity .5s
+	//
+	//.fade-enter, .fade-leave-to
+	//	opacity: 0
 
-		//.icon > svg
-		//	will-change: transform
-		//	transition: transform .5s ease-in-out
-		//
-		//.repostedPostButton .icon > svg
-		//	transform: rotate(360deg)
 
-		//TODO .repostLabel, .replyLabel
-		//	margin-left: 64px
-		//	color: $light
-		//	font-size: smaller
-		//
-		//	a
-		//		margin-left: 1rem
-		//		color: $light
-		//
-		//		&:hover
-		//			text-decoration: underline
+	//.svg-inline--fa.fa-w-16
+	//	width: 1em
 
-		//TODO .quotedPost
-		//	border: 2px solid $scheme-main-ter
-		//	border-radius: 6px
-		//	padding: 16px
-		//
-		//	.names
-		//		text-overflow: ellipsis
-		//		white-space: nowrap
-		//		overflow: hidden
-		//		display: inline-block
-		//		max-width: 300px
-		//
-		//		strong
-		//			margin-right: 0.5rem
-		//			color: $white-ter
-		//
-		//		&:hover > *
-		//			text-decoration: underline
-		//
-		//	span *
-		//		vertical-align: middle
-		//
-		//	p
-		//		white-space: pre-line
+	.likeButton
+		color: $light
+
+		&:hover, &.likedPostButton
+			span
+				color: $like-color
+
+	//@keyframes heart
+	//	0%, 17.5%
+	//		width: 0
+	//
+	//.heart-enter-active
+	//	will-change: width
+	//	animation: heart .5s cubic-bezier(.17, .89, .32, 1.49)
+	//
+	//.heart-enter
+	//	width: 0
+	//
+	//$bubble-d: 2em
+	//$bubble-r: .5 * $bubble-d
+
+	//.icon > svg
+	//	position: relative
+	//
+	//	&:before, &:after
+	//		position: absolute
+	//		z-index: -1
+	//		top: 50%
+	//		left: 50%
+	//		border-radius: 50%
+	//		content: ''
+	//
+	//	&::before
+	//		margin: -$bubble-r
+	//		width: $bubble-d
+	//		height: $bubble-d
+	//		background: gold
+
+	//.svg-inline--fa.fa-w-20
+	//	width: 1.25em
+
+	.repostButton
+		color: $light
+
+		&:hover, &.repostedPostButton
+			span
+				color: $repost-color
+
+	//.icon > svg
+	//	will-change: transform
+	//	transition: transform .5s ease-in-out
+	//
+	//.repostedPostButton .icon > svg
+	//	transform: rotate(360deg)
+
+	//TODO .repostLabel, .replyLabel
+	//	margin-left: 64px
+	//	color: $light
+	//	font-size: smaller
+	//
+	//	a
+	//		margin-left: 1rem
+	//		color: $light
+	//
+	//		&:hover
+	//			text-decoration: underline
+
+	//TODO .quotedPost
+	//	border: 2px solid $scheme-main-ter
+	//	border-radius: 6px
+	//	padding: 16px
+	//
+	//	.names
+	//		text-overflow: ellipsis
+	//		white-space: nowrap
+	//		overflow: hidden
+	//		display: inline-block
+	//		max-width: 300px
+	//
+	//		strong
+	//			margin-right: 0.5rem
+	//			color: $white-ter
+	//
+	//		&:hover > *
+	//			text-decoration: underline
+	//
+	//	span *
+	//		vertical-align: middle
+	//
+	//	p
+	//		white-space: pre-line
 </style>
 
 <article class='socialArticle' {style}>

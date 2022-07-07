@@ -8,7 +8,7 @@ import path from "path";
 
 //From https://github.com/evanw/esbuild/issues/2093#issuecomment-1062461380
 //To make sure Soshal library uses the same svelte runtime as this one
-const DedupSvelteInternalPlugin = {
+export const DedupSvelteInternalPlugin = {
 	name: 'dedup-svelte',
 	async setup({ onResolve }) {
 		const svelteInternal = path.join(process.cwd(), '/node_modules/svelte/internal/index.mjs');
@@ -19,7 +19,7 @@ const DedupSvelteInternalPlugin = {
 	},
 };
 
-const buildOptions = {
+export const buildOptions = {
 	entryPoints: [`./src/entry.ts`],
 	bundle: true,
 	outdir: `./dist`,
@@ -41,7 +41,7 @@ const buildOptions = {
 	],
 };
 
-const errorHandler = (error, location) => {
+export const errorHandler = (error, location) => {
 	console.warn(`Errors: `, error, location);
 	process.exit(1);
 };

@@ -8,7 +8,7 @@ import path from "path";
 
 //From https://github.com/evanw/esbuild/issues/2093#issuecomment-1062461380
 //To make sure Soshal library uses the same svelte runtime as this one
-export const DedupSvelteInternalPlugin = {
+const DedupSvelteInternalPlugin = {
 	name: 'dedup-svelte',
 	async setup({ onResolve }) {
 		const svelteInternal = path.join(process.cwd(), '/node_modules/svelte/internal/index.mjs');
@@ -19,10 +19,12 @@ export const DedupSvelteInternalPlugin = {
 	},
 };
 
+const outdir = './dist';
+
 export const buildOptions = {
 	entryPoints: [`./src/entry.ts`],
 	bundle: true,
-	outdir: `./dist`,
+	outdir,
 	mainFields: ['svelte', 'browser', 'module', 'main', 'exports'],
 	// logLevel: `debug`,
 	minify: false, //so the resulting code is easier to understand
@@ -47,14 +49,14 @@ export const errorHandler = (error, location) => {
 };
 
 //make sure the directoy exists before stuff gets put into it
-if (!fs.existsSync('./dist/')) {
-	fs.mkdirSync('./dist/');
-}
+if (!fs.existsSync(outdir))
+	fs.mkdirSync(outdir);
+
 if (process.argv.includes('--serve'))
 	esbuild
 		.serve({
 			port: 8081,
-			servedir: './dist'
+			servedir: outdir,
 		}, buildOptions)
 		.catch(errorHandler);
 else

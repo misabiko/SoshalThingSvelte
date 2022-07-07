@@ -13,7 +13,7 @@ const extensionBuildOptions = {
 	outdir,
 	splitting: false,
 	format: `iife`,
-}
+};
 
 if (!fs.existsSync(outdir))
 	fs.mkdirSync(outdir);

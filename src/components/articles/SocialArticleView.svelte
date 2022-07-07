@@ -170,24 +170,27 @@
 		&:hover span
 			color: $primary
 
-		&:hover.commentButton span
-			color: $comment-color
+		//&:hover.commentButton span
+		//	color: $comment-color
 
-	.dropdown-trigger .articleButton
+	:global(.dropdown-trigger .articleButton)
 		width: 24px
 		height: unset
 
-		//i
-		//	color: $white-ter
+		:global(i)
+			color: $white-ter
 
-	//TODO .svg-inline--fa.fa-w-14
-	//	width: 0.875em
-	//
-	//.svg-inline--fa.fa-w-18
-	//	width: 1.125em
-	//
-	//.svg-inline--fa.fa-w-20
-	//	width: 1em
+	:global(.svg-inline--fa.fa-w-14)
+		width: 0.875em
+
+	:global(.svg-inline--fa.fa-w-18)
+		width: 1.125em
+
+	:global(.svg-inline--fa.fa-w-20, .svg-inline--fa.fa-w-16)
+		width: 1em
+
+	:global(.svg-inline--fa.fa-w-20)
+		width: 1.25em
 
 	//.fade-enter-active, .fade-leave-active
 	//	transition: opacity .5s
@@ -195,15 +198,11 @@
 	//.fade-enter, .fade-leave-to
 	//	opacity: 0
 
-
-	//.svg-inline--fa.fa-w-16
-	//	width: 1em
-
-	.likeButton
+	button.likeButton
 		color: $light
 
 		&:hover, &.likedPostButton
-			span
+			span, :global(span > svg)
 				color: $like-color
 
 	//@keyframes heart
@@ -219,7 +218,7 @@
 	//
 	//$bubble-d: 2em
 	//$bubble-r: .5 * $bubble-d
-
+	//
 	//.icon > svg
 	//	position: relative
 	//
@@ -237,34 +236,32 @@
 	//		height: $bubble-d
 	//		background: gold
 
-	//.svg-inline--fa.fa-w-20
-	//	width: 1.25em
-
-	.repostButton
+	button.repostButton
 		color: $light
 
 		&:hover, &.repostedPostButton
-			span
+			span, :global(span > svg)
 				color: $repost-color
 
-	//.icon > svg
-	//	will-change: transform
-	//	transition: transform .5s ease-in-out
-	//
-	//.repostedPostButton .icon > svg
-	//	transform: rotate(360deg)
+	:global(article.socialArticle .icon > svg)
+		will-change: transform
+		transition: transform .5s ease-in-out
 
-	//TODO .repostLabel, .replyLabel
-	//	margin-left: 64px
-	//	color: $light
-	//	font-size: smaller
-	//
-	//	a
-	//		margin-left: 1rem
-	//		color: $light
-	//
-	//		&:hover
-	//			text-decoration: underline
+	:global(.repostedPostButton .icon > svg)
+		transform: rotate(360deg)
+
+	//, .replyLabel
+	.repostLabel
+		margin-left: 64px
+		color: $light
+		font-size: smaller
+
+		a
+			margin-left: 1rem
+			color: $light
+
+			&:hover
+				text-decoration: underline
 
 	//TODO .quotedPost
 	//	border: 2px solid $scheme-main-ter
@@ -346,23 +343,31 @@
 				<div class='level-left'>
 					<button class='level-item articleButton repostButton borderless-button'
 							class:repostedPostButton={actualArticle.reposted}>
-						<Fa icon={faRetweet}/>
+						<span class='icon'>
+							<Fa icon={faRetweet}/>
+						</span>
 						{#if actualArticle.repostCount}
 							<span>{actualArticle.repostCount}</span>
 						{/if}
 					</button>
 					<button class='level-item articleButton likeButton borderless-button' class:likedPostButton={actualArticle.liked}
 							on:click={() => dispatch('action', STANDARD_ACTIONS.favorite)}>
-						<Fa icon={faHeart}/>
+						<span class='icon'>
+							<Fa icon={faHeart}/>
+						</span>
 						{#if actualArticle.likeCount}
 							<span>{actualArticle.likeCount}</span>
 						{/if}
 					</button>
 					<button class='level-item articleButton borderless-button'>
-						<Fa icon={faEyeSlash}/>
+						<span class='icon'>
+							<Fa icon={faEyeSlash}/>
+						</span>
 					</button>
 					<Dropdown labelClasses='articleButton borderless-button'>
-						<Fa slot='triggerIcon' icon={faEllipsisH} class='level-item'/>
+						<span class='icon'>
+							<Fa slot='triggerIcon' icon={faEllipsisH} class='level-item'/>
+						</span>
 
 						<!-- svelte-ignore a11y-missing-attribute -->
 						<a class='dropdown-item' on:click={() => toggleMarkAsRead(actualArticle.idPair)}>

@@ -1,8 +1,5 @@
-<script context='module'>
-	import {Field, Select, Input, Switch} from 'svelma';
-</script>
-
 <script lang='ts'>
+	import {Field, Select, Input, Switch} from 'svelma';
 	import type {Writable} from 'svelte/store'
 	import type {ArticleIdPair} from '../services/article'
 	import ColumnContainer from "./containers/ColumnContainer.svelte"

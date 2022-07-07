@@ -19,39 +19,48 @@ const DedupSvelteInternalPlugin = {
 	},
 };
 
+const buildOptions = {
+	entryPoints: [`./src/entry.ts`],
+	bundle: true,
+	outdir: `./dist`,
+	mainFields: ['svelte', 'browser', 'module', 'main', 'exports'],
+	// logLevel: `debug`,
+	minify: false, //so the resulting code is easier to understand
+	sourcemap: 'inline',
+	splitting: true,
+	write: true,
+	format: `esm`,
+	watch: process.argv.includes(`--watch`),
+	plugins: [
+		esbuildSvelte({
+			preprocess: sveltePreprocess(),
+		}),
+		DedupSvelteInternalPlugin,
+		sassPlugin(),
+		postcss(),
+	],
+};
+
+const errorHandler = (error, location) => {
+	console.warn(`Errors: `, error, location);
+	process.exit(1);
+};
+
 //make sure the directoy exists before stuff gets put into it
 if (!fs.existsSync('./dist/')) {
 	fs.mkdirSync('./dist/');
 }
-esbuild
-	.serve({
-		port: 8081,
-		servedir: './dist'
-	}, {
-		entryPoints: [`./src/entry.ts`],
-		bundle: true,
-		outdir: `./dist`,
-		mainFields: ['svelte', 'browser', 'module', 'main', 'exports'],
-		// logLevel: `debug`,
-		minify: false, //so the resulting code is easier to understand
-		sourcemap: 'inline',
-		splitting: true,
-		write: true,
-		format: `esm`,
-		watch: process.argv.includes(`--watch`),
-		plugins: [
-			esbuildSvelte({
-				preprocess: sveltePreprocess(),
-			}),
-			DedupSvelteInternalPlugin,
-			sassPlugin(),
-			postcss(),
-		],
-	})
-	.catch((error, location) => {
-		console.warn(`Errors: `, error, location);
-		process.exit(1);
-	});
+if (process.argv.includes('--serve'))
+	esbuild
+		.serve({
+			port: 8081,
+			servedir: './dist'
+		}, buildOptions)
+		.catch(errorHandler);
+else
+	esbuild
+		.build(buildOptions)
+		.catch(errorHandler);
 
 //use a basic html file to test with
 fs.copyFileSync('./src/index.html', './dist/index.html');

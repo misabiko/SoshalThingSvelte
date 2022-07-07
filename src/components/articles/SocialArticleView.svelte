@@ -243,12 +243,12 @@
 			span, :global(span > svg)
 				color: $repost-color
 
-	:global(article.socialArticle .icon > svg)
-		will-change: transform
-		transition: transform .5s ease-in-out
+	//:global(article.socialArticle .icon > svg)
+	//	will-change: transform
+	//	transition: transform .5s ease-in-out
 
-	:global(.repostedPostButton .icon > svg)
-		transform: rotate(360deg)
+	//:global(.repostedPostButton .icon > svg)
+	//	transform: rotate(360deg)
 
 	//, .replyLabel
 	.repostLabel
@@ -365,8 +365,8 @@
 						</span>
 					</button>
 					<Dropdown labelClasses='articleButton borderless-button'>
-						<span class='icon'>
-							<Fa slot='triggerIcon' icon={faEllipsisH} class='level-item'/>
+						<span slot='triggerIcon' class='icon'>
+							<Fa icon={faEllipsisH} class='level-item'/>
 						</span>
 
 						<!-- svelte-ignore a11y-missing-attribute -->
@@ -404,7 +404,7 @@
 			</nav>
 		</div>
 	</div>
-	{#if !minimized}
+	{#if actualArticle.medias.length && !minimized}
 		<div class='postMedia postImages'>
 			{#each actualArticle.medias as media}
 				<div class='mediaHolder'>

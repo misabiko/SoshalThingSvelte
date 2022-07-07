@@ -10,3 +10,4 @@ node_modules
 /chrome extension/dist/
 /chrome extension/_metadata/
 /dist/
+/types/

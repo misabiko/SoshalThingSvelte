@@ -4,7 +4,6 @@ import Article from '../article'
 export default class TwitterArticle extends Article {
 	static service: string;
 
-
 	constructor(
 		id: string,
 		text: string,
@@ -30,6 +29,20 @@ export default class TwitterArticle extends Article {
 			markedAsReadStorage,
 			articleRefs,
 		});
+	}
+
+	getLikeCount(): number {
+		return this.likeCount
+	}
+	getLiked(): boolean {
+		return this.liked
+	}
+
+	getRepostCount(): number {
+		return this.retweetCount
+	}
+	getReposted(): boolean {
+		return this.retweeted
 	}
 }
 

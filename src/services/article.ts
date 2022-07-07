@@ -48,6 +48,21 @@ export default abstract class Article {
 			id: this.id,
 		}
 	}
+
+	//TODO Replace with dynamic action buttons
+	getLikeCount() {
+		return 0
+	}
+	getLiked() {
+		return false
+	}
+
+	getRepostCount() {
+		return 0
+	}
+	getReposted() {
+		return false
+	}
 }
 
 export interface ArticleAuthor {

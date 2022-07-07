@@ -342,21 +342,21 @@
 			<nav class='level is-mobile'>
 				<div class='level-left'>
 					<button class='level-item articleButton repostButton borderless-button'
-							class:repostedPostButton={actualArticle.reposted}>
+							class:repostedPostButton={actualArticle.getReposted()}>
 						<span class='icon'>
 							<Fa icon={faRetweet}/>
 						</span>
-						{#if actualArticle.repostCount}
-							<span>{actualArticle.repostCount}</span>
+						{#if actualArticle.getRepostCount()}
+							<span>{actualArticle.getRepostCount()}</span>
 						{/if}
 					</button>
-					<button class='level-item articleButton likeButton borderless-button' class:likedPostButton={actualArticle.liked}
+					<button class='level-item articleButton likeButton borderless-button' class:likedPostButton={actualArticle.getLiked()}
 							on:click={() => dispatch('action', STANDARD_ACTIONS.favorite)}>
 						<span class='icon'>
 							<Fa icon={faHeart}/>
 						</span>
-						{#if actualArticle.likeCount}
-							<span>{actualArticle.likeCount}</span>
+						{#if actualArticle.getLikeCount()}
+							<span>{actualArticle.getLikeCount()}</span>
 						{/if}
 					</button>
 					<button class='level-item articleButton borderless-button'>

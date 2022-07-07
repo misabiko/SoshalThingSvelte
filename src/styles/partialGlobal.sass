@@ -1,0 +1,48 @@
+@use 'variables' as *
+@import 'bulma/bulma'
+
+.input.is-static
+	color: $text
+
+.icon, svg.svelte-fa
+	color: $white-ter
+
+.icon.darkIcon svg.svelte-fa.darkIcon
+	color: $black-ter
+
+.dropdown-trigger .icon
+	color: $button-color
+
+img.emoji
+	height: 1em
+	width: 1em
+	margin: 0 .05em 0 .1em
+	vertical-align: -0.1em
+
+::-webkit-scrollbar
+	width: 12px
+	height: 12px
+
+::-webkit-scrollbar-thumb
+	border-radius: 0
+	background-color: $scheme-main-ter
+
+
+.borderless-button
+	padding: 0
+	border: none
+	background: none
+	outline: none
+	cursor: pointer
+
+	&:hover:not(:disabled) svg
+		color: $link
+
+	&:disabled svg
+		color: $grey
+
+	&:not(:active)
+		margin-bottom: 1px
+
+	&:active
+		margin-top: 1px

@@ -31,7 +31,8 @@
 				"https://*.pixiv.net/bookmark_new_illust*",
 				"https://*.pixiv.net/*/users/*"
 			],
-			"js": ["dist/favviewer.js"]
+			"js": ["dist/favviewer/pixiv.js"],
+			"css": ["dist/favviewer/pixiv.css"]
 		}
 	]
 }

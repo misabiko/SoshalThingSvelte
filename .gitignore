@@ -9,3 +9,4 @@ node_modules
 /credentials.json
 /chrome extension/dist/
 /chrome extension/_metadata/
+/dist/

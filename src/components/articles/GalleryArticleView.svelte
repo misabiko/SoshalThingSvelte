@@ -41,20 +41,20 @@
 	})
 </script>
 
-<style lang='sass' global>
-	@import '../../styles/variables'
+<style lang='sass'>
+	@use '../../styles/variables' as *
 
-	.favviewer article
+	article
 		padding: 1rem
 		background-color: $scheme-main-bis
 		margin-bottom: 2px
 
-		&.transparent
-			opacity: 0.5
+		//TODO &.transparent
+		//	opacity: 0.5
 
 	article.galleryArticle
-		padding: 0px
-		margin-bottom: 0px
+		padding: 0
+		margin-bottom: 0
 
 		& > div
 			position: relative
@@ -81,11 +81,11 @@
 				padding-top: unset
 				padding-bottom: unset
 
-			*
+			:global(*)
 				pointer-events: auto
 
 			//TODO Hack
-			.dropdown-content
+			:global(.dropdown-content)
 				overflow-x: hidden
 
 		.holderBoxTop
@@ -101,8 +101,8 @@
 		.articleThumb
 			z-index: -1
 
-		ul.articleTags
-			list-style-type: none
+		//ul.articleTags
+		//	list-style-type: none
 </style>
 
 <article class='galleryArticle' articleId={article.id} {style}>

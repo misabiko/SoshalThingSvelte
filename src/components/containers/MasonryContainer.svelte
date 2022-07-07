@@ -42,9 +42,7 @@
 	}
 </script>
 
-<style lang='sass' global>
-	@import '../../styles/variables'
-
+<style lang='sass'>
 	.masonryContainer
 		display: flex
 		flex-wrap: nowrap
@@ -55,10 +53,10 @@
 	.masonryColumn
 		flex: 1 1 0
 
-	.masonryColumn .postMedia img
-		width: 100%
+	//.masonryColumn .postMedia img
+	//	width: 100%
 
-	.fullscreenTimeline .masonryColumn
+	:global(.fullscreenTimeline .masonryColumn)
 		width: unset
 </style>
 

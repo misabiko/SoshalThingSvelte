@@ -45,19 +45,3 @@ $dropdown-item-hover-color: $white
 $dropdown-item-hover-background-color: $primary
 
 $colors: ("white": ($white, $black), "black": ($black, $white),	"light": ($light, $light-invert), "dark": ($dark, $dark-invert), "primary": ($primary, $primary-invert), "info": ($info, $info-invert),	"success": ($success, $success-invert),	"warning": ($warning, $warning-invert),	"danger": ($danger, $danger-invert))
-
-@mixin borderless-button($pad: 0)
-	padding: $pad
-	border: none
-	background: none
-	outline: none
-	cursor: pointer
-
-	&:hover:not(:disabled) svg
-		color: $link
-
-	&:disabled svg
-		color: $grey
-
-	&:active
-		margin-top: 1px

@@ -11,8 +11,8 @@
 	export let shouldLoadMedia: boolean;
 </script>
 
-<style lang='sass' global>
-	@import '../../styles/variables'
+<style lang='sass'>
+	@use '../../styles/variables' as *
 
 	.articlesContainer.rowContainer
 		display: flex

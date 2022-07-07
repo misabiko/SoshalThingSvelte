@@ -7,16 +7,16 @@
 	let expanded = false;
 </script>
 
-<style lang='sass' global>
-	@import '../../styles/variables'
+<style lang='sass'>
+	@use '../../styles/variables' as *
 
 	#sidebar
 		background-color: $dark
 		z-index: 1
 		display: flex
 
-	.collapse-content
-		height: 100%
+	//.collapse-content
+	//	height: 100%
 
 	#sidebarButtons
 		width: 60px
@@ -31,14 +31,13 @@
 			flex-direction: column
 
 		button
-			@include borderless-button
 			height: 45px
 
 			&:not(:last-child)
 				margin-bottom: 1rem
 
-			span
-				vertical-align: middle
+			//span
+			//	vertical-align: middle
 
 	.sidebarMenu
 		width: $sidebar-menu-width
@@ -61,20 +60,20 @@
 	{/if}
 	<div id='sidebarButtons'>
 		<div>
-			<button title="Expand sidebar" on:click='{() => expanded = !expanded}'>
+			<button class='borderless-button' title="Expand sidebar" on:click='{() => expanded = !expanded}'>
 				<Fa icon={expanded ? faAngleDoubleLeft : faAngleDoubleRight} size='2x'/>
 			</button>
-			<button title="Add new timeline"> <!-- onclick={ctx.link().callback(|_| Msg::AddTimeline)}-->
+			<button class='borderless-button' title="Add new timeline"> <!-- onclick={ctx.link().callback(|_| Msg::AddTimeline)}-->
 				<Fa icon={faPlus} size='2x'/>
 			</button>
 			<!--{ for ctx.props().children.iter() }-->
 		</div>
 		<div>
-			<button title="Settings"> <!-- onclick={ctx.link().callback(|_| Msg::ShowSettings)}-->
+			<button class='borderless-button' title="Settings"> <!-- onclick={ctx.link().callback(|_| Msg::ShowSettings)}-->
 				<Fa icon={faCog} size='2x'/>
 			</button>
 			<a href="https://github.com/misabiko/SoshalThingSvelte" title="Github">
-				<button>
+				<button class='borderless-button'>
 					<Fa icon={faGithub} size='2x'/>
 				</button>
 			</a>

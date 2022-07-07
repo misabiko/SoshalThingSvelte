@@ -52,16 +52,16 @@
 	const dispatch = createEventDispatcher()
 </script>
 
-<style lang='sass' global>
-	@import '../../styles/variables'
+<style lang='sass'>
+	@use '../../styles/variables' as *
 
-	.favviewer article
+	article
 		padding: 1rem
 		background-color: $scheme-main-bis
 		margin-bottom: 2px
 
-		&.transparent
-			opacity: 0.5
+		//TODO &.transparent
+		//	opacity: 0.5
 
 	article.socialArticle
 		figure
@@ -84,8 +84,8 @@
 		.postMedia
 			margin-top: 1rem
 
-		.postVideo video
-			width: 100%
+		//TODO .postVideo video
+		//	width: 100%
 
 		.articleHeader *
 			vertical-align: middle
@@ -110,9 +110,9 @@
 		.timestamp
 			float: right
 
-		.postImagesCompact
-			display: flex
-			flex-wrap: wrap
+		//TODO .postImagesCompact
+		//	display: flex
+		//	flex-wrap: wrap
 
 		.mediaHolder
 			overflow: hidden
@@ -127,35 +127,35 @@
 				align-self: center
 				width: 100%
 
-			&.mediaHolderCompact
-				max-height: 16vh
-				width: 100%
-
-				&:not(:only-child)
-					margin: 2px
-					max-width: 49%
-
-					&.landscape img
-						width: unset
-						height: 110%
-
-					&.portrait img
-						width: 110%
-						height: unset
-
-				img
-					object-fit: cover
-
-				&.thirdImage
-					max-width: unset
-
-					&.landscape img
-						width: unset
-						height: 175%
-
-					&.portrait img
-						width: 175%
-						height: unset
+			//&.mediaHolderCompact
+			//	max-height: 16vh
+			//	width: 100%
+			//
+			//	&:not(:only-child)
+			//		margin: 2px
+			//		max-width: 49%
+			//
+			//		&.landscape img
+			//			width: unset
+			//			height: 110%
+			//
+			//		&.portrait img
+			//			width: 110%
+			//			height: unset
+			//
+			//	img
+			//		object-fit: cover
+			//
+			//	&.thirdImage
+			//		max-width: unset
+			//
+			//		&.landscape img
+			//			width: unset
+			//			height: 175%
+			//
+			//		&.portrait img
+			//			width: 175%
+			//			height: unset
 
 		p.articleParagraph
 			white-space: pre-line
@@ -178,30 +178,27 @@
 			width: 24px
 			height: unset
 
-			i
-				color: $white-ter
+			//i
+			//	color: $white-ter
 
-		button.articleButton
-			@include borderless-button
+		//TODO .svg-inline--fa.fa-w-14
+		//	width: 0.875em
+		//
+		//.svg-inline--fa.fa-w-18
+		//	width: 1.125em
+		//
+		//.svg-inline--fa.fa-w-20
+		//	width: 1em
 
-		.svg-inline--fa.fa-w-14
-			width: 0.875em
-
-		.svg-inline--fa.fa-w-18
-			width: 1.125em
-
-		.svg-inline--fa.fa-w-20
-			width: 1em
-
-		.fade-enter-active, .fade-leave-active
-			transition: opacity .5s
-
-		.fade-enter, .fade-leave-to
-			opacity: 0
+		//.fade-enter-active, .fade-leave-active
+		//	transition: opacity .5s
+		//
+		//.fade-enter, .fade-leave-to
+		//	opacity: 0
 
 
-		.svg-inline--fa.fa-w-16
-			width: 1em
+		//.svg-inline--fa.fa-w-16
+		//	width: 1em
 
 		.likeButton
 			color: $light
@@ -210,39 +207,39 @@
 				span
 					color: $like-color
 
-		@keyframes heart
-			0%, 17.5%
-				width: 0
+		//@keyframes heart
+		//	0%, 17.5%
+		//		width: 0
+		//
+		//.heart-enter-active
+		//	will-change: width
+		//	animation: heart .5s cubic-bezier(.17, .89, .32, 1.49)
+		//
+		//.heart-enter
+		//	width: 0
+		//
+		//$bubble-d: 2em
+		//$bubble-r: .5 * $bubble-d
 
-		.heart-enter-active
-			will-change: width
-			animation: heart .5s cubic-bezier(.17, .89, .32, 1.49)
+		//.icon > svg
+		//	position: relative
+		//
+		//	&:before, &:after
+		//		position: absolute
+		//		z-index: -1
+		//		top: 50%
+		//		left: 50%
+		//		border-radius: 50%
+		//		content: ''
+		//
+		//	&::before
+		//		margin: -$bubble-r
+		//		width: $bubble-d
+		//		height: $bubble-d
+		//		background: gold
 
-		.heart-enter
-			width: 0
-
-		$bubble-d: 2em
-		$bubble-r: .5 * $bubble-d
-
-		.icon > svg
-			position: relative
-
-			&:before, &:after
-				position: absolute
-				z-index: -1
-				top: 50%
-				left: 50%
-				border-radius: 50%
-				content: ''
-
-			&::before
-				margin: -$bubble-r
-				width: $bubble-d
-				height: $bubble-d
-				background: gold
-
-		.svg-inline--fa.fa-w-20
-			width: 1.25em
+		//.svg-inline--fa.fa-w-20
+		//	width: 1.25em
 
 		.repostButton
 			color: $light
@@ -251,49 +248,49 @@
 				span
 					color: $repost-color
 
-		.icon > svg
-			will-change: transform
-			transition: transform .5s ease-in-out
+		//.icon > svg
+		//	will-change: transform
+		//	transition: transform .5s ease-in-out
+		//
+		//.repostedPostButton .icon > svg
+		//	transform: rotate(360deg)
 
-		.repostedPostButton .icon > svg
-			transform: rotate(360deg)
+		//TODO .repostLabel, .replyLabel
+		//	margin-left: 64px
+		//	color: $light
+		//	font-size: smaller
+		//
+		//	a
+		//		margin-left: 1rem
+		//		color: $light
+		//
+		//		&:hover
+		//			text-decoration: underline
 
-		.repostLabel, .replyLabel
-			margin-left: 64px
-			color: $light
-			font-size: smaller
-
-			a
-				margin-left: 1rem
-				color: $light
-
-				&:hover
-					text-decoration: underline
-
-		.quotedPost
-			border: 2px solid $scheme-main-ter
-			border-radius: 6px
-			padding: 16px
-
-			.names
-				text-overflow: ellipsis
-				white-space: nowrap
-				overflow: hidden
-				display: inline-block
-				max-width: 300px
-
-				strong
-					margin-right: 0.5rem
-					color: $white-ter
-
-				&:hover > *
-					text-decoration: underline
-
-			span *
-				vertical-align: middle
-
-			p
-				white-space: pre-line
+		//TODO .quotedPost
+		//	border: 2px solid $scheme-main-ter
+		//	border-radius: 6px
+		//	padding: 16px
+		//
+		//	.names
+		//		text-overflow: ellipsis
+		//		white-space: nowrap
+		//		overflow: hidden
+		//		display: inline-block
+		//		max-width: 300px
+		//
+		//		strong
+		//			margin-right: 0.5rem
+		//			color: $white-ter
+		//
+		//		&:hover > *
+		//			text-decoration: underline
+		//
+		//	span *
+		//		vertical-align: middle
+		//
+		//	p
+		//		white-space: pre-line
 </style>
 
 <article class='socialArticle' {style}>
@@ -348,24 +345,24 @@
 			<!--{ quoted_post }-->
 			<nav class='level is-mobile'>
 				<div class='level-left'>
-					<button class='level-item articleButton repostButton'
+					<button class='level-item articleButton repostButton borderless-button'
 							class:repostedPostButton={actualArticle.reposted}>
 						<Fa icon={faRetweet}/>
 						{#if actualArticle.repostCount}
 							<span>{actualArticle.repostCount}</span>
 						{/if}
 					</button>
-					<button class='level-item articleButton likeButton' class:likedPostButton={actualArticle.liked}
+					<button class='level-item articleButton likeButton borderless-button' class:likedPostButton={actualArticle.liked}
 							on:click={() => dispatch('action', STANDARD_ACTIONS.favorite)}>
 						<Fa icon={faHeart}/>
 						{#if actualArticle.likeCount}
 							<span>{actualArticle.likeCount}</span>
 						{/if}
 					</button>
-					<button class='level-item articleButton'>
+					<button class='level-item articleButton borderless-button'>
 						<Fa icon={faEyeSlash}/>
 					</button>
-					<Dropdown labelClasses='articleButton'>
+					<Dropdown labelClasses='articleButton borderless-button'>
 						<Fa slot='triggerIcon' icon={faEllipsisH} class='level-item'/>
 
 						<!-- svelte-ignore a11y-missing-attribute -->

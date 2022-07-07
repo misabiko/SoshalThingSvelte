@@ -12,48 +12,21 @@
 	let showSidebar = !isInjected
 </script>
 
-<style lang='sass' global>
-	@import '../styles/variables'
-
+<style lang='sass'>
 	.soshalthing
-		@import '../../node_modules/bulma/bulma'
+		display: flex
+		width: 100%
 
-		.injected
-			height: 100%
-			display: flex
+		//.injected
+		//	height: 100%
+		//	display: flex
 
-		::-webkit-scrollbar
-			width: 12px
-			height: 12px
-
-		::-webkit-scrollbar-thumb
-			border-radius: 0
-			background-color: $scheme-main-ter
-
-		.input.is-static
-			color: $text
-
-		.svelte-fa
-			color: $white-ter
-
-		.svelte-fa.darkIcon
-			color: $black-ter
-
-		.dropdown-trigger .svelte-fa
-			color: $button-color
-
-		#soshal-notifications
-			position: absolute
-			right: 0
-			bottom: 0
-			padding: 15px
-			z-index: 1
-
-		img.emoji
-			height: 1em
-			width: 1em
-			margin: 0 .05em 0 .1em
-			vertical-align: -0.1em
+		//#soshal-notifications
+		//	position: absolute
+		//	right: 0
+		//	bottom: 0
+		//	padding: 15px
+		//	z-index: 1
 
 		//#favviewer
 		//	width: 100vw

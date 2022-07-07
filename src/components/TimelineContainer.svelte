@@ -11,9 +11,7 @@
 	let timelines: TimelineData[] = initTimelines;
 </script>
 
-<style lang='sass' global>
-	@import '../styles/variables'
-
+<style lang='sass'>
 	#timelineContainer
 		height: 100%
 		overflow-x: auto

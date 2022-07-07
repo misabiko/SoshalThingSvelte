@@ -174,8 +174,8 @@
 	})*/
 </script>
 
-<style lang='sass' global>
-	@import '../styles/variables'
+<style lang='sass'>
+	@use '../styles/variables' as *
 
 	.timeline
 		color: $text
@@ -206,8 +206,8 @@
 		strong
 			vertical-align: middle
 
-		&.timelineInvalid
-			background-color: $dark-error
+		//TODO &.timelineInvalid
+		//	background-color: $dark-error
 
 	.timelineLeftHeader
 		display: flex
@@ -218,8 +218,8 @@
 		flex-wrap: nowrap
 
 	.timelineButtons > button
-		@include borderless-button(0 1rem)
 		height: 100%
+		padding: 0 1rem
 
 	.timelineOptions
 		background-color: $scheme-main-ter
@@ -230,17 +230,17 @@
 		overflow-x: hidden
 		overflow-y: scroll
 
-		& input[type="number"]
-			width: 200px
+		//TODO & input[type="number"]
+		//	width: 200px
 
 		& > .box
 			max-width: 100%
 			width: 100%
 
-	#timelineContainer .timelineOptions::-webkit-scrollbar-thumb
+	:global(#timelineContainer .timelineOptions::-webkit-scrollbar-thumb)
 		background-color: $dark
 
-	.articlesContainer
+	:global(.articlesContainer)
 		overflow-y: scroll
 		overflow-x: hidden
 		flex-grow: 1
@@ -254,32 +254,32 @@
 			<strong>{title}</strong>
 			{#if favviewerButtons}
 				<div class='timelineButtons'>
-					<button title='Toggle FavViewer' on:click={() => favviewerHidden = !favviewerHidden}>
+					<button class='borderless-button' title='Toggle FavViewer' on:click={() => favviewerHidden = !favviewerHidden}>
 						<Fa icon={faEyeSlash} size='large'/>
 					</button>
-					<button title='Show Sidebar' on:click={() => showSidebar = !showSidebar}>
+					<button class='borderless-button' title='Show Sidebar' on:click={() => showSidebar = !showSidebar}>
 						<Fa icon={faEllipsisV} size='large'/>
 					</button>
 				</div>
 			{/if}
 		</div>
 		<div class='timelineButtons'>
-			<button title='Shuffle' on:click={shuffle}>
+			<button class='borderless-button' title='Shuffle' on:click={shuffle}>
 				<Fa icon={faRandom} size='large'/>
 			</button>
-			<button title='Autoscroll' on:click={autoscroll}>
+			<button class='borderless-button' title='Autoscroll' on:click={autoscroll}>
 				<Fa icon={faScroll} size='large'/>
 			</button>
-			<button title='Refresh' on:click={refresh}>
+			<button class='borderless-button' title='Refresh' on:click={refresh}>
 				<Fa icon={faSyncAlt} size='large'/>
 			</button>
-			<button title='Load Bottom' on:click={loadBottom}>
+			<button class='borderless-button' title='Load Bottom' on:click={loadBottom}>
 				<Fa icon={faArrowDown} size='large'/>
 			</button>
-			<button title='Load Top' on:click={loadTop}>
+			<button class='borderless-button' title='Load Top' on:click={loadTop}>
 				<Fa icon={faArrowUp} size='large'/>
 			</button>
-			<button title='Expand options' on:click='{() => showOptions = !showOptions}'>
+			<button class='borderless-button' title='Expand options' on:click='{() => showOptions = !showOptions}'>
 				<Fa icon={faEllipsisV} size='large'/>
 			</button>
 		</div>

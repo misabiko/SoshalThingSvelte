@@ -14,11 +14,11 @@ const oauthClient = OAuth({
 	},
 });
 
-function twitterAuthHeaders(resource) {
+function twitterAuthHeaders(url, method) {
 	return oauthClient.toHeader(
 		oauthClient.authorize({
-			url: `https://api.twitter.com/1.1/${resource}.json`,
-			method: 'GET',
+			url,
+			method,
 		}, {
 			key: twitter.access_key,
 			secret: twitter.access_secret,
@@ -62,7 +62,7 @@ chrome.runtime.onMessageExternal.addListener(
 					break;
 				case 'fetchV1':
 					fetch(request.url, {
-						headers: twitterAuthHeaders(request.resource),
+						headers: twitterAuthHeaders(request.url, request.method),
 						method: request.method,
 					})
 						.then(response => response.json())

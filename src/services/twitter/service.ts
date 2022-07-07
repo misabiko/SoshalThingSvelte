@@ -69,7 +69,7 @@ async function toggleFavorite(idPair: ArticleIdPair) {
 	const writable = TwitterService.articles[idPair.id];
 	const action = (get(writable) as TwitterArticle).liked ? 'destroy' : 'create';
 	const response = await fetchExtensionV1(
-		`https://api.twitter.com/1.1/favorites/${action}.json`,
+		`https://api.twitter.com/1.1/favorites/${action}.json?id=${idPair.id}`,
 		`favorites/${action}`,
 		'POST'
 	);

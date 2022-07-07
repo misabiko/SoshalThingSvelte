@@ -81,6 +81,9 @@
 			padding-top: unset
 			padding-bottom: unset
 
+		:global(.dropdown-trigger > button)
+			height: 100%
+
 		:global(*)
 			pointer-events: auto
 
@@ -159,18 +162,24 @@
 		{/each}
 		<div class='holderBox holderBoxTop'>
 			<a class='button' title='External Link' href={actualArticle.url} target='_blank'>
-				<Fa icon={faExternalLinkAlt} class='darkIcon is-small'/>
+				<span class='icon darkIcon'>
+					<Fa icon={faExternalLinkAlt} class='is-small'/>
+				</span>
 			</a>
 			{#if !modal}
 				<button class='button'>
 					<!--onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::ToggleInModal))}-->
-					<Fa icon={faExpandArrowsAlt} class='darkIcon is-small'/>
+					<span class='icon darkIcon'>
+						<Fa icon={faExpandArrowsAlt} class='is-small'/>
+					</span>
 				</button>
 			{/if}
 
 			<Dropdown isRight={true} labelClasses='articleButton'>
 				<!--on_expanded_change={ctx.link().callback(Msg::SetDrawOnTop)}-->
-				<Fa slot='triggerIcon' icon={faEllipsisH} class='level-item'/>
+				<span slot='triggerIcon' class='icon darkIcon'>
+					<Fa icon={faEllipsisH} class='level-item'/>
+				</span>
 				<!-- svelte-ignore a11y-missing-attribute -->
 				<a class='dropdown-item' on:click={() => toggleMarkAsRead(actualArticle.idPair)}>
 					Mark as read
@@ -202,10 +211,14 @@
 		</div>
 		<div class='holderBox holderBoxBottom'>
 			<button class='button' on:click={() => dispatch('action', 'favorite')}>
-				<Fa icon={faHeart} class='darkIcon is-small'/>
+				<span class='icon darkIcon'>
+					<Fa icon={faHeart} class='is-small'/>
+				</span>
 			</button>
 			<button class='button'> <!--onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::Repost))}-->
-				<Fa icon={faRetweet} class='darkIcon is-small'/>
+				<span class='icon darkIcon'>
+					<Fa icon={faRetweet} class='is-small'/>
+				</span>
 			</button>
 		</div>
 	</div>

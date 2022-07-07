@@ -63,6 +63,29 @@
 		//TODO &.transparent
 		//	opacity: 0.5
 
+	article.socialArticle
+		:global(.dropdown-trigger .articleButton)
+			width: 24px
+			height: unset
+
+		:global(i)
+			color: $white-ter
+
+		:global(.svg-inline--fa.fa-w-14)
+			width: 0.875em
+
+		:global(.svg-inline--fa.fa-w-18)
+			width: 1.125em
+
+		:global(.svg-inline--fa.fa-w-20)
+			width: 1em
+
+		:global(.svg-inline--fa.fa-w-16)
+			width: 1em
+
+		:global(.svg-inline--fa.fa-w-20)
+			width: 1.25em
+
 	figure
 		img
 			border-radius: 4px
@@ -172,25 +195,6 @@
 
 		//&:hover.commentButton span
 		//	color: $comment-color
-
-	:global(.dropdown-trigger .articleButton)
-		width: 24px
-		height: unset
-
-		:global(i)
-			color: $white-ter
-
-	:global(.svg-inline--fa.fa-w-14)
-		width: 0.875em
-
-	:global(.svg-inline--fa.fa-w-18)
-		width: 1.125em
-
-	:global(.svg-inline--fa.fa-w-20, .svg-inline--fa.fa-w-16)
-		width: 1em
-
-	:global(.svg-inline--fa.fa-w-20)
-		width: 1.25em
 
 	//.fade-enter-active, .fade-leave-active
 	//	transition: opacity .5s

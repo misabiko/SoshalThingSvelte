@@ -15,7 +15,7 @@
 <style lang='sass' global>
 	@import '../styles/variables'
 
-	.favviewer
+	.soshalthing
 		@import '../../node_modules/bulma/bulma'
 
 		.injected
@@ -63,7 +63,7 @@
 		//	-moz-osx-font-smoothing: grayscale
 </style>
 
-<div class='favviewer' class:injected={isInjected}>
+<div class='soshalthing' class:injected={isInjected}>
 	{#if showSidebar}
 		<Sidebar/>
 	{/if}

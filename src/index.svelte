@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import FavViewer from "./components/FavViewer.svelte"
+	import SoshalThing from "./components/SoshalThing.svelte"
 	import {addEndpoint} from "./services/service"
 	import type {TimelineData} from './components/Timeline.svelte'
 	import MasonryContainer from './components/containers/MasonryContainer.svelte'
@@ -32,9 +32,9 @@
 		-moz-osx-font-smoothing: grayscale
 		display: flex
 
-	.favviewer
+	.soshalthing
 		display: flex
 		width: 100%
 </style>
 
-<FavViewer isInjected={false} initTimelines={[timeline]}/>
+<SoshalThing isInjected={false} initTimelines={[timeline]}/>

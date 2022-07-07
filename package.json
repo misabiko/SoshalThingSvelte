@@ -9,9 +9,6 @@
     "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch"
   },
   "type": "module",
-  "exports": {
-    "./": "./src/"
-  },
   "devDependencies": {
     "@playwright/test": "^1.23.1",
     "@tsconfig/svelte": "^3.0.0",

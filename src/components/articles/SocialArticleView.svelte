@@ -18,7 +18,7 @@
 
 	export let article: Readonly<Article>
 	export let actualArticle: Readonly<Article>
-	export let animatedAsGifs: boolean
+	//TODO export let animatedAsGifs: boolean
 	export let compact: boolean
 	export let hideText: boolean
 	export let style: string = ''
@@ -368,12 +368,15 @@
 					<Dropdown labelClasses='articleButton'>
 						<Fa slot='triggerIcon' icon={faEllipsisH} class='level-item'/>
 
+						<!-- svelte-ignore a11y-missing-attribute -->
 						<a class='dropdown-item' on:click={() => toggleMarkAsRead(actualArticle.idPair)}>
 							Mark as read
 						</a>
+						<!-- svelte-ignore a11y-missing-attribute -->
 						<a class='dropdown-item' on:click={() => toggleHide(actualArticle.idPair)}>
 							Hide
 						</a>
+						<!-- svelte-ignore a11y-missing-attribute -->
 						<a class='dropdown-item' on:click={() => compact = !compact}>
 							{ compact ? 'Show expanded' : 'Show compact' }
 						</a>
@@ -385,15 +388,16 @@
 								Repost's external Link
 							</a>
 						{/if}
+						<!-- svelte-ignore a11y-missing-attribute -->
 						<a class='dropdown-item' on:click={() => console.dir(article)}>
 							Log Data
 						</a>
-						<!--						<a class='dropdown-item'>-->
-						<!--							Log Json Data-->
-						<!--						</a>-->
-						<!--						<a class='dropdown-item'>-->
-						<!--							Fetch Data-->
-						<!--						</a>-->
+						<!--	<a class='dropdown-item'>-->
+						<!--		Log Json Data-->
+						<!--	</a>-->
+						<!--	<a class='dropdown-item'>-->
+						<!--		Fetch Data-->
+						<!--	</a>-->
 					</Dropdown>
 				</div>
 			</nav>

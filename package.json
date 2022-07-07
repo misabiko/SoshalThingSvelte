@@ -32,7 +32,7 @@
     "esbuild": "^0.14.48",
     "esbuild-svelte": "^0.7.1",
     "oauth-1.0a": "^2.2.6",
-    "svelma": "^0.4.5",
+    "svelma": "file:../svelma",
     "svelte-fa": "^3.0.2"
   }
 }

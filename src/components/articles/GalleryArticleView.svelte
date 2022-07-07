@@ -19,6 +19,7 @@
 	export let style: string = ''
 	export let animatedAsGifs: boolean
 	export let shouldLoadMedia: boolean
+	export let modal = false
 
 	const dispatch = createEventDispatcher()
 	const mediaRefs: HTMLImageElement[] = []
@@ -133,6 +134,7 @@
 					/>
 				{/if}
 			{:else if !animatedAsGifs && media.mediaType === MediaType.Video}
+				<!-- svelte-ignore a11y-media-has-caption -->
 				<video
 					controls
 					on:click={() => dispatch('mediaClick', i)}
@@ -159,25 +161,29 @@
 			<a class='button' title='External Link' href={actualArticle.url} target='_blank'>
 				<Fa icon={faExternalLinkAlt} class='darkIcon is-small'/>
 			</a>
-			<!--{#if !modal}-->
-			<button class='button'>
-				<!--onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::ToggleInModal))}-->
-				<Fa icon={faExpandArrowsAlt} class='darkIcon is-small'/>
-			</button>
-			<!--{/if}-->
+			{#if !modal}
+				<button class='button'>
+					<!--onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::ToggleInModal))}-->
+					<Fa icon={faExpandArrowsAlt} class='darkIcon is-small'/>
+				</button>
+			{/if}
 
 			<Dropdown isRight={true} labelClasses='articleButton'>
 				<!--on_expanded_change={ctx.link().callback(Msg::SetDrawOnTop)}-->
 				<Fa slot='triggerIcon' icon={faEllipsisH} class='level-item'/>
-
+				<!-- svelte-ignore a11y-missing-attribute -->
 				<a class='dropdown-item' on:click={() => toggleMarkAsRead(actualArticle.idPair)}>
 					Mark as read
 				</a>
+				<!-- svelte-ignore a11y-missing-attribute -->
 				<a class='dropdown-item' on:click={() => toggleHide(actualArticle.idPair)}>
 					Hide
 				</a>
 				{#if !actualArticle.fetched }
-					<a class='dropdown-item' on:click={() => fetchArticle(actualArticle.idPair)}>{"Load Media"}</a>
+					<!-- svelte-ignore a11y-missing-attribute -->
+					<a class='dropdown-item' on:click={() => fetchArticle(actualArticle.idPair)}>
+						Load Media
+					</a>
 				{/if}
 				<a
 					class='dropdown-item'
@@ -186,6 +192,7 @@
 				>
 					External Link
 				</a>
+				<!-- svelte-ignore a11y-missing-attribute -->
 				<a class='dropdown-item' on:click={() => console.dir(article)}>
 					Log Data
 				</a>

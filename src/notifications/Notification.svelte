@@ -10,6 +10,5 @@
 	<button class='delete' on:click={() => notifications.delete(id)}></button>
 	<div class='block'>
 		<span>{data.text}</span>
-		<span>Id: {id}</span>
 	</div>
 </div>

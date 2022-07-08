@@ -57,7 +57,13 @@ if (process.argv.includes('--serve'))
 		.serve({
 			port: 8081,
 			servedir: outdir,
-		}, buildOptions)
+		}, {
+			...buildOptions,
+			logLevel: `debug`,
+		})
+		.then(({host, port}) => {
+			console.log(`Serving at ${host}:${port}...`)
+		})
 		.catch(errorHandler);
 else
 	esbuild

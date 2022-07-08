@@ -349,7 +349,7 @@
 							<span>{actualArticle.getLikeCount()}</span>
 						{/if}
 					</button>
-					<button class='level-item articleButton borderless-button'>
+					<button class='level-item articleButton borderless-button' on:click={() => toggleMarkAsRead(actualArticle.idPair)}>
 						<span class='icon'>
 							<Fa icon={faEyeSlash}/>
 						</span>

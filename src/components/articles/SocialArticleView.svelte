@@ -68,23 +68,8 @@
 			width: 24px
 			height: unset
 
-		:global(i)
+		:global(i), :global(svg)
 			color: $white-ter
-
-		:global(.svg-inline--fa.fa-w-14)
-			width: 0.875em
-
-		:global(.svg-inline--fa.fa-w-18)
-			width: 1.125em
-
-		:global(.svg-inline--fa.fa-w-20)
-			width: 1em
-
-		:global(.svg-inline--fa.fa-w-16)
-			width: 1em
-
-		:global(.svg-inline--fa.fa-w-20)
-			width: 1.25em
 
 	figure
 		img
@@ -186,6 +171,7 @@
 
 	.articleButton
 		color: $light
+		font-size: unset
 
 		&:focus
 			outline: none

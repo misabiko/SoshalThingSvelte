@@ -16,6 +16,10 @@
 		initContainer: MasonryContainer,
 		columnCount: 4,
 	}
+
+	//TODO Column count won't update
+	//TODO notif
+	//TODO scroll wrong direction
 </script>
 
 <SoshalThing isInjected={false} initTimelines={[timeline]}/>

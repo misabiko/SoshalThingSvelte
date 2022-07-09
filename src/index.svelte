@@ -1,12 +1,13 @@
 <script lang='ts'>
 	import 'styles/global.sass'
 	import SoshalThing from "./components/SoshalThing.svelte"
-	import {loadTimelines} from './storages'
+	import {loadMainStorage, loadTimelines} from './storages'
 
+	const {fullscreen} = loadMainStorage();
 	const initTimelines = loadTimelines();
 
 	//TODO Column count won't update
 	//TODO scroll wrong direction
 </script>
 
-<SoshalThing isInjected={false} {initTimelines}/>
+<SoshalThing isInjected={false} {initTimelines} {fullscreen}/>

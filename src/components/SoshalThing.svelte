@@ -7,6 +7,7 @@
 	import Notification from "../notifications/Notification.svelte";
 
 	export let initTimelines: TimelineData[]
+	export let fullscreen: number | undefined
 	export let isInjected = true
 	export let favviewerHidden = false
 
@@ -49,5 +50,10 @@
 	{#if showSidebar}
 		<Sidebar/>
 	{/if}
-	<TimelineContainer bind:favviewerHidden={favviewerHidden} bind:showSidebar={showSidebar} {initTimelines}/>
+	<TimelineContainer
+		bind:favviewerHidden={favviewerHidden}
+		bind:showSidebar={showSidebar}
+		{initTimelines}
+		{fullscreen}
+	/>
 </div>

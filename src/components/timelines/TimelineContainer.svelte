@@ -4,6 +4,7 @@
 	import {getContext} from 'svelte'
 
 	export let initTimelines: TimelineData[] = [];
+	export let fullscreen: number | undefined;
 	export let favviewerHidden;
 	export let showSidebar;
 
@@ -27,9 +28,10 @@
 				bind:favviewerHidden={favviewerHidden}
 				bind:showSidebar={showSidebar}
 				{data}
+				fullscreen={fullscreen === i}
 			/>
 		{:else}
-			<Timeline {data}/>
+			<Timeline {data} fullscreen={fullscreen === i}/>
 		{/if}
 	{/each}
 </div>

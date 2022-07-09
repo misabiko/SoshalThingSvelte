@@ -5,7 +5,42 @@ const MAIN_STORAGE_KEY = 'SoshalThingSvelte'
 const TIMELINE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Timelines'
 
 test.describe('app options', () => {
+	test('fullscreen true', async ({page}) => {
+		await loadWithLocalStorage(page, {
+			[MAIN_STORAGE_KEY]: {
+				fullscreen: true
+			},
+			[TIMELINE_STORAGE_KEY]: [
+				{}, {}, {}
+			]
+		})
 
+		await expect(page.locator('.timeline').first()).toHaveClass(/fullscreenTimeline/);
+	});
+	test('fullscreen false', async ({page}) => {
+		await loadWithLocalStorage(page, {
+			[MAIN_STORAGE_KEY]: {
+				fullscreen: false
+			},
+			[TIMELINE_STORAGE_KEY]: [
+				{}, {}, {}
+			]
+		})
+
+		await expect(page.locator('.timeline').first()).not.toHaveClass(/fullscreenTimeline/);
+	});
+	test('fullscreen index', async ({page}) => {
+		await loadWithLocalStorage(page, {
+			[MAIN_STORAGE_KEY]: {
+				fullscreen: 1
+			},
+			[TIMELINE_STORAGE_KEY]: [
+				{}, {}, {}
+			]
+		})
+
+		await expect(page.locator('.timeline').nth(1)).toHaveClass(/fullscreenTimeline/);
+	});
 })
 
 test.describe('timelines', () => {

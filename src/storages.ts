@@ -6,32 +6,19 @@ import MasonryContainer from './components/containers/MasonryContainer.svelte'
 import SocialArticleView from './components/articles/SocialArticleView.svelte'
 import GalleryArticleView from './components/articles/GalleryArticleView.svelte'
 
-export const TIMELINE_STORAGE_KEY = 'SoshalThingSvelte Timelines';
+export const MAIN_STORAGE_KEY = 'SoshalThingSvelte'
+export const TIMELINE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Timelines'
 
-type TimelineStorage = {
-	title: string
-	container?: string
-	articleView?: string
-	endpoints: string[]//EndpointSerialized[]
-	columnCount: number
-	width: number
-	//filters: Option<FilterCollection>,
-	//sortMethod: Option<(SortMethod, bool)>,
-	compact: boolean
-	animatedAsGifs: boolean
-	hideText: boolean
-}
+export function loadMainStorage(): { fullscreen: number | undefined } {
+	const item = localStorage.getItem(MAIN_STORAGE_KEY)
+	const mainStorage = item ? JSON.parse(item) : {}
 
-const DEFAULT_TIMELINE: TimelineStorage = {
-	title: 'Timeline',
-	endpoints: [],
-	columnCount: 1,
-	width: 1,
-	//filters: Option<FilterCollection>,
-	//sortMethod: Option<(SortMethod, bool)>,
-	compact: false,
-	animatedAsGifs: false,
-	hideText: false,
+	if (mainStorage.fullscreen === false)
+		delete mainStorage.fullscreen
+	else if (mainStorage.fullscreen === true)
+		mainStorage.fullscreen = 0
+
+	return mainStorage
 }
 
 export function loadTimelines(): TimelineData[] {
@@ -84,4 +71,34 @@ export function loadTimelines(): TimelineData[] {
 			width: defaulted.width,
 		}
 	})
+}
+
+type MainStorage = {
+	fullscreen?: boolean | number
+}
+
+type TimelineStorage = {
+	title: string
+	container?: string
+	articleView?: string
+	endpoints: string[]//EndpointSerialized[]
+	columnCount: number
+	width: number
+	//filters: Option<FilterCollection>,
+	//sortMethod: Option<(SortMethod, bool)>,
+	compact: boolean
+	animatedAsGifs: boolean
+	hideText: boolean
+}
+
+const DEFAULT_TIMELINE: TimelineStorage = {
+	title: 'Timeline',
+	endpoints: [],
+	columnCount: 1,
+	width: 1,
+	//filters: Option<FilterCollection>,
+	//sortMethod: Option<(SortMethod, bool)>,
+	compact: false,
+	animatedAsGifs: false,
+	hideText: false,
 }

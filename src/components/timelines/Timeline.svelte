@@ -30,6 +30,7 @@
 	import {type TimelineData} from './index'
 
 	export let data: TimelineData
+	export let fullscreen: boolean
 
 	export let favviewerButtons = false
 	export let favviewerHidden = false
@@ -233,7 +234,7 @@
 		background-color: $background
 </style>
 
-<div class='timeline' class:fullscreenTimeline={data.fullscreen} style='{width > 1 ? `width: ${width * 500}px` : ""}'>
+<div class='timeline' class:fullscreenTimeline={fullscreen} style='{width > 1 ? `width: ${width * 500}px` : ""}'>
 	<div class='timelineHeader'>
 		<div class='timelineLeftHeader'>
 			<strong>{data.title}</strong>
@@ -284,7 +285,7 @@
 						<Input type='number' bind:value={data.columnCount} min={1}/>
 					</Field>
 				{/if}
-				{#if !data.fullscreen}
+				{#if !fullscreen}
 					<Field label='Timeline Width'>
 						<Input type='number' bind:value={width} min={1}/>
 					</Field>

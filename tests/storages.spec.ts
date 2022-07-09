@@ -74,7 +74,9 @@ test.describe('timelines', () => {
 				[TIMELINE_STORAGE_KEY]: [{}],
 			});
 
-			const endpointOptionGroup = page.locator('.timelineOptions box', {hasText: 'Endpoints'})
+			await page.click('.timeline .timelineButtons button[title = "Expand options"]');
+
+			const endpointOptionGroup = page.locator('.timelineOptions .box', {hasText: 'Endpoints'})
 
 			await expect(endpointOptionGroup.locator('ul > *')).toHaveCount(0);
 			//TODO Assert sidebar
@@ -96,7 +98,9 @@ test.describe('timelines', () => {
 				}],
 			});
 
-			const endpointOptionGroup = page.locator('.timelineOptions box', {hasText: 'Endpoints'})
+			await page.click('.timeline .timelineButtons button[title = "Expand options"]');
+
+			const endpointOptionGroup = page.locator('.timelineOptions .box', {hasText: 'Endpoints'})
 
 			const endpointList = endpointOptionGroup.locator('ul > *');
 			await expect(endpointList).toHaveCount(2);
@@ -105,24 +109,43 @@ test.describe('timelines', () => {
 
 		test('with duplicate non-duplicatable endpoints', async ({ page }) => {
 			await loadWithLocalStorage(page, {
-				[TIMELINE_STORAGE_KEY]: [{
-					endpoints: [
-						{
-							service: 'Dummy',
-							endpointType: 0,
-						},
-						{
-							service: 'Dummy',
-							endpointType: 0,
-						}
-					]
-				}],
-			});
+				[TIMELINE_STORAGE_KEY]: [
+					{
+						endpoints: [
+							{
+								service: 'Dummy',
+								endpointType: 0,
+							},
+							{
+								service: 'Dummy',
+								endpointType: 0,
+							},
+						],
+					}, {
+						endpoints: [
+							{
+								service: 'Dummy',
+								endpointType: 0,
+							},
+							{
+								service: 'Dummy',
+								endpointType: 0,
+							},
+						],
+					}],
+			})
 
-			const endpointOptionGroup = page.locator('.timelineOptions box', {hasText: 'Endpoints'})
+			for (const i of [1, 2]) {
+				await page.click(`.timeline:nth-child(${i}) .timelineButtons button[title = "Expand options"]`)
 
-			const endpointList = endpointOptionGroup.locator('ul > *');
-			await expect(endpointList).toHaveCount(1);
+				const endpointOptionGroup = page.locator('.timelineOptions .box', {hasText: 'Endpoints'})
+
+				const endpointList = endpointOptionGroup.locator('ul > *')
+				await expect(endpointList).toHaveCount(1)
+
+				await page.click(`.timeline:nth-child(${i}) .timelineButtons button[title = "Expand options"]`)
+			}
+
 			//TODO Assert sidebar
 		});
 	});

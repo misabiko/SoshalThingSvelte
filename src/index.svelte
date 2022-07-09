@@ -5,21 +5,25 @@
 	import type {TimelineData} from './components/Timeline.svelte'
 	import MasonryContainer from './components/containers/MasonryContainer.svelte'
 	import {HomeTimelineEndpoint} from './services/twitter/endpoints'
+	import {loadTimelines} from './storages'
 
-	const endpoint = new HomeTimelineEndpoint()
-	addEndpoint(endpoint)
-	const timeline: TimelineData = {
-		title: 'Home',
-		fullscreen: true,
-		endpoints: [endpoint.name],
-		initArticles: [],
-		initContainer: MasonryContainer,
-		columnCount: 4,
-	}
+	// const endpoint = new HomeTimelineEndpoint()
+	// addEndpoint(endpoint)
+	// const timeline: TimelineData = {
+	// 	title: 'Home',
+	// 	fullscreen: true,
+	// 	endpoints: [endpoint.name],
+	// 	initArticles: [],
+	// 	initContainer: MasonryContainer,
+	// 	columnCount: 4,
+	// }
 
 	//TODO Column count won't update
-	//TODO notif
 	//TODO scroll wrong direction
 </script>
 
-<SoshalThing isInjected={false} initTimelines={[timeline]}/>
+{#await loadTimelines()}
+	<SoshalThing isInjected={false}/>
+{:then initTimelines}
+	<SoshalThing isInjected={false} {initTimelines}/>
+{/await}

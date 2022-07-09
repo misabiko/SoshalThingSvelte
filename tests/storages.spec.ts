@@ -1,36 +1,53 @@
 import {expect, test, type Page} from '@playwright/test'
 
 //TODO import from ../src/storages.js
-const TIMELINE_STORAGE_KEY = 'SoshalThingSvelte Timelines'
+const MAIN_STORAGE_KEY = 'SoshalThingSvelte'
+const TIMELINE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Timelines'
 
-test('empty', async ({ page }) => {
-	await evaluateFrame(page, (key: string) => {
-		window.localStorage.removeItem(key);
+test.describe('app options', () => {
+
+})
+
+test.describe('timelines', () => {
+	test("no storage doesn't add any timelines", async ({ page }) => {
+		await clearLocalStorages(page, [TIMELINE_STORAGE_KEY]);
+
+		await expect(page.locator('.timeline')).toHaveCount(0);
 	});
 
-	await expect(page.locator('.timeline')).toHaveCount(0);
-});
+	test("empty objects add empty timelines", async ({ page }) => {
+		await loadWithLocalStorage(page, {[TIMELINE_STORAGE_KEY]: [{}, {}, {}, {}]});
 
-test('title', async ({ page }) => {
-	const title = 'Timeline Title';
+		await expect(page.locator('.timeline')).toHaveCount(4);
+	});
 
-	await loadWithLocalStorage(page, [
-		{'title': title}
-	]);
+	test('title', async ({ page }) => {
+		const title = 'Timeline Title';
 
-	await expect(page.locator('.timelineLeftHeader strong')).toHaveText(title);
-});
+		await loadWithLocalStorage(page, {
+			[TIMELINE_STORAGE_KEY]: [
+				{'title': title},
+			],
+		});
 
-async function loadWithLocalStorage(page: Page, storage: any) {
+		await expect(page.locator('.timelineLeftHeader strong')).toHaveText(title);
+	});
+})
+
+async function loadWithLocalStorage(page: Page, storages: {[key: string]: any}) {
 	await page.goto('/');
-	await page.mainFrame().evaluate(([key, storage]) => {
-		window.localStorage.setItem(key, JSON.stringify(storage));
-	}, [TIMELINE_STORAGE_KEY, storage]);
+	await page.mainFrame().evaluate((storages) => {
+		for (const [key, storage] of Object.entries(storages))
+			window.localStorage.setItem(key, JSON.stringify(storage));
+	}, storages);
 	await page.reload();
 }
 
-async function evaluateFrame(page: Page, pageFunction: (key: string) => void) {
+async function clearLocalStorages(page: Page, keys: string[]) {
 	await page.goto('/');
-	await page.mainFrame().evaluate(pageFunction, TIMELINE_STORAGE_KEY);
+	await page.mainFrame().evaluate((keys) => {
+		for (const key of keys)
+			window.localStorage.removeItem(key);
+	}, keys);
 	await page.reload();
 }

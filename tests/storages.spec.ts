@@ -67,6 +67,65 @@ test.describe('timelines', () => {
 
 		await expect(page.locator('.timelineLeftHeader strong')).toHaveText(title);
 	});
+
+	test.describe.only('endpoint', () => {
+		test('without endpoint', async ({ page }) => {
+			await loadWithLocalStorage(page, {
+				[TIMELINE_STORAGE_KEY]: [{}],
+			});
+
+			const endpointOptionGroup = page.locator('.timelineOptions box', {hasText: 'Endpoints'})
+
+			await expect(endpointOptionGroup.locator('ul > *')).toHaveCount(0);
+			//TODO Assert sidebar
+		});
+
+		test('with endpoints', async ({ page }) => {
+			await loadWithLocalStorage(page, {
+				[TIMELINE_STORAGE_KEY]: [{
+					endpoints: [
+						{
+							service: 'Dummy',
+							endpointType: 0,
+						},
+						{
+							service: 'Dummy',
+							endpointType: 1,
+						}
+					]
+				}],
+			});
+
+			const endpointOptionGroup = page.locator('.timelineOptions box', {hasText: 'Endpoints'})
+
+			const endpointList = endpointOptionGroup.locator('ul > *');
+			await expect(endpointList).toHaveCount(2);
+			//TODO Assert sidebar
+		});
+
+		test('with duplicate non-duplicatable endpoints', async ({ page }) => {
+			await loadWithLocalStorage(page, {
+				[TIMELINE_STORAGE_KEY]: [{
+					endpoints: [
+						{
+							service: 'Dummy',
+							endpointType: 0,
+						},
+						{
+							service: 'Dummy',
+							endpointType: 0,
+						}
+					]
+				}],
+			});
+
+			const endpointOptionGroup = page.locator('.timelineOptions box', {hasText: 'Endpoints'})
+
+			const endpointList = endpointOptionGroup.locator('ul > *');
+			await expect(endpointList).toHaveCount(1);
+			//TODO Assert sidebar
+		});
+	});
 })
 
 export async function loadWithLocalStorage(page: Page, storages: {[key: string]: any}) {

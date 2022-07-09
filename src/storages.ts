@@ -31,46 +31,50 @@ export function loadTimelines(): TimelineData[] {
 			...t,
 		}
 
-		let initContainer: typeof SvelteComponent
-		switch(defaulted.container) {
-			case 'Row':
-			case 'RowContainer':
-				initContainer = RowContainer
-				break
-			case 'Masonry':
-			case 'MasonryContainer':
-				initContainer = MasonryContainer
-				break
-			case 'Column':
-			case 'ColumnContainer':
-			default:
-				initContainer = ColumnContainer
-				break
-		}
-		let initArticleView: typeof SvelteComponent
-		switch (defaulted.articleView) {
-			case 'Gallery':
-			case 'GalleryArticle':
-			case 'GalleryArticleView':
-				initArticleView = GalleryArticleView
-			case 'Social':
-			case 'SocialArticle':
-			case 'SocialArticleView':
-			default:
-				initArticleView = SocialArticleView
-		}
-
 		return {
 			title: defaulted.title,
 			fullscreen: false,
-			endpoints: defaulted.endpoints,
+			endpoints: defaulted.endpoints.map(parseAndLoadEndpoint).filter(e => e !== undefined) as string[],
 			initArticles: [],
-			initContainer,
-			initArticleView,
+			initContainer: parseContainer(defaulted.container),
+			initArticleView: parseArticleView(defaulted.articleView),
 			columnCount: defaulted.columnCount,
 			width: defaulted.width,
 		}
 	})
+}
+
+function parseContainer(container: string | undefined): typeof SvelteComponent {
+	switch(container) {
+		case 'Row':
+		case 'RowContainer':
+			return RowContainer
+		case 'Masonry':
+		case 'MasonryContainer':
+			return MasonryContainer
+		case 'Column':
+		case 'ColumnContainer':
+		default:
+			return ColumnContainer
+	}
+}
+
+function parseArticleView(articleView: string | undefined): typeof SvelteComponent {
+	switch (articleView) {
+		case 'Gallery':
+		case 'GalleryArticle':
+		case 'GalleryArticleView':
+			return GalleryArticleView
+		case 'Social':
+		case 'SocialArticle':
+		case 'SocialArticleView':
+		default:
+			return SocialArticleView
+	}
+}
+
+function parseAndLoadEndpoint(endpoint: EndpointStorage): string | undefined {
+	return undefined
 }
 
 type MainStorage = {
@@ -81,7 +85,7 @@ type TimelineStorage = {
 	title: string
 	container?: string
 	articleView?: string
-	endpoints: string[]//EndpointSerialized[]
+	endpoints: EndpointStorage[]
 	columnCount: number
 	width: number
 	//filters: Option<FilterCollection>,
@@ -101,4 +105,14 @@ const DEFAULT_TIMELINE: TimelineStorage = {
 	compact: false,
 	animatedAsGifs: false,
 	hideText: false,
+}
+
+type EndpointStorage = {
+	service: string
+	endpointType: number
+	params?: object
+	//filters:
+	//autoRefresh: boolean
+	onStart?: boolean
+	onRefresh?: boolean
 }

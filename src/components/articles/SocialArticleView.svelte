@@ -351,7 +351,7 @@
 						on:click={() => articleAction(STANDARD_ACTIONS.favorite, actualArticle.idPair)}
 					>
 						<span class='icon'>
-							<Fa icon={faHeart}/>
+							<Fa icon={actualArticle.getLiked() ? faHeartFilled : faHeart}/>
 						</span>
 						{#if actualArticle.getLikeCount()}
 							<span>{actualArticle.getLikeCount()}</span>

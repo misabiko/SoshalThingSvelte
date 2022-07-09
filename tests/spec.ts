@@ -2,18 +2,6 @@ import { expect, test } from '@playwright/test';
 import {loadWithLocalStorage, TIMELINE_STORAGE_KEY} from './storages.spec.js'
 //TODO Move tests to meta repo
 
-test('timeline without endpoint', async ({page}) => {
-	await loadWithLocalStorage(page, {
-		[TIMELINE_STORAGE_KEY]: [{}]
-	})
-
-	await expect(page.locator('.timeline')).toHaveCount(1);
-
-	await page.click("#sidebarButtons button[title = 'Expand sidebar']");
-
-	await expect(page.locator("#sidebar > .sidebarMenu > div.box").nth(2)).toBeEmpty();
-});
-
 test.describe('fullscreen timeline', () => {
 	test('via search param', async ({page}) => {
 		await loadWithLocalStorage(page, {

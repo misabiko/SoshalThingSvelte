@@ -11,6 +11,10 @@ export const DummyService: Service = {
 			action: toggleLike,
 			togglable: true,
 		},
+		[STANDARD_ACTIONS.repost]: {
+			action: repost,
+			togglable: false,
+		},
 	},
 }
 DummyArticle.service = DummyService.name
@@ -18,11 +22,22 @@ DummyArticle.service = DummyService.name
 registerService(DummyService)
 
 async function toggleLike(idPair: ArticleIdPair) {
-	const writable = DummyService.articles[idPair.id];
+	const writable = getWritable(idPair);
 	const oldValue = (get(writable) as DummyArticle).liked;
 
-	getWritable(idPair).update(a => {
+	writable.update(a => {
 		(a as DummyArticle).liked = !oldValue
+		return a
+	})
+}
+
+async function repost(idPair: ArticleIdPair) {
+	const writable = getWritable(idPair);
+	if ((get(writable) as DummyArticle).reposted)
+		return
+
+	writable.update(a => {
+		(a as DummyArticle).reposted = true
 		return a
 	})
 }

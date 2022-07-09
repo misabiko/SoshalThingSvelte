@@ -1,20 +1,25 @@
 import {
 	Endpoint,
 	type EndpointConstructorInfo,
-	type EndpointConstructorParams, type OECI,
+	type EndpointConstructorParams,
 	RefreshTime,
 	registerEndpoint,
 } from '../service'
 import {DummyService} from './service'
+import DummyArticle from './article'
 
 export class DummyEndpoint extends Endpoint {
 	readonly name = 'DummyEndpoint'
 
 	async refresh(refreshTime: RefreshTime) {
-		return []
+		return [{
+			article: new DummyArticle(0, 'bleh', false, false),
+			refs: [],
+			actualArticleIndex: undefined,
+		}]
 	}
 
-	static readonly constructorInfo = {
+	static readonly constructorInfo: EndpointConstructorInfo = {
 		name: 'DummyEndpoint',
 		paramTemplate: [],
 		constructor: () => new DummyEndpoint()
@@ -38,7 +43,7 @@ export class DummyEndpointWithParam extends Endpoint {
 		return []
 	}
 
-	static readonly constructorInfo: OECI = {
+	static readonly constructorInfo: EndpointConstructorInfo = {
 		name: 'DummyEndpointWithParam',
 		paramTemplate: [['query', '']],
 		constructor: params => new DummyEndpointWithParam(params.query as string)

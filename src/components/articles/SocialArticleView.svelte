@@ -281,9 +281,11 @@
 
 <article class='socialArticle' {style}>
 	<div class='repostLabel'>
-		<a href={article.author.url} target='_blank' on:click|preventDefault={() => onUsernameClick(article)}>
-			{article.author.name} reposted - {shortTimestamp(article.creationTime)}
-		</a>
+		{#if article.author}
+			<a href={article.author.url} target='_blank' on:click|preventDefault={() => onUsernameClick(article)}>
+				{article.author.name} reposted - {shortTimestamp(article.creationTime)}
+			</a>
+		{/if}
 	</div>
 	<!--{ self.view_reply_label(ctx) }-->
 	<div class='media'>
@@ -331,8 +333,11 @@
 			<!--{ quoted_post }-->
 			<nav class='level is-mobile'>
 				<div class='level-left'>
-					<button class='level-item articleButton repostButton borderless-button'
-							class:repostedPostButton={actualArticle.getReposted()}>
+					<button
+						class='level-item articleButton repostButton borderless-button'
+						class:repostedPostButton={actualArticle.getReposted()}
+						on:click={() => dispatch('action', STANDARD_ACTIONS.repost)}
+					>
 						<span class='icon'>
 							<Fa icon={faRetweet}/>
 						</span>
@@ -340,8 +345,11 @@
 							<span>{actualArticle.getRepostCount()}</span>
 						{/if}
 					</button>
-					<button class='level-item articleButton likeButton borderless-button' class:likedPostButton={actualArticle.getLiked()}
-							on:click={() => dispatch('action', STANDARD_ACTIONS.favorite)}>
+					<button
+						class='level-item articleButton likeButton borderless-button'
+						class:likedPostButton={actualArticle.getLiked()}
+						on:click={() => dispatch('action', STANDARD_ACTIONS.favorite)}
+					>
 						<span class='icon'>
 							<Fa icon={faHeart}/>
 						</span>

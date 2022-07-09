@@ -58,19 +58,16 @@ test.describe('SocialArticleView', () => {
 			[TIMELINE_STORAGE_KEY]: [{
 				endpoints: [
 					{
-						"service": "Dummy",
-						"endpoint_type": 0,
-						"params": {},
-						"on_start": true,
-						"on_refresh": true
+						service: 'Dummy',
+						endpointType: 0,
 					}
 				]
 			}]
 		})
 
-		await page.click('.article .likeButton');
+		await page.click('article .likeButton');
 
-		await expect(page.locator('.article .likeButton')).toHaveClass(/likedPostButton/);
+		await expect(page.locator('article .likeButton')).toHaveClass(/likedPostButton/);
 	});
 
 	test('repost feedback', async ({page}) => {
@@ -79,18 +76,15 @@ test.describe('SocialArticleView', () => {
 				title: "Timeline",
 				endpoints: [
 					{
-						"service": "Dummy",
-						"endpoint_type": 0,
-						"params": {},
-						"on_start": true,
-						"on_refresh": true
+						service: 'Dummy',
+						endpointType: 0,
 					}
 				]
 			}]
 		})
 
-		await page.click('.article .repostButton');
+		await page.click('article .repostButton');
 
-		await expect(page.locator('.article .repostButton')).toHaveClass(/repostedPostButton/);
+		await expect(page.locator('article .repostButton')).toHaveClass(/repostedPostButton/);
 	});
 })

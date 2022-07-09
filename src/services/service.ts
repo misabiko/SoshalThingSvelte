@@ -98,7 +98,11 @@ export function registerService(service: Service) {
 
 export function registerEndpoint(service: Service, ...endpointInfos: EndpointConstructorInfo[]) {
 	endpointConstructors[service.name] ??= []
-	endpointConstructors[service.name].push(...endpointInfos)
+	for (const endpointInfo of endpointInfos) {
+		if (endpointInfo === undefined)
+			console.error(`Missing endpoint constructor info for service ${service.name}`, endpointInfos)
+		endpointConstructors[service.name].push(endpointInfo)
+	}
 }
 
 export function addEndpoint(endpoint: Endpoint) {

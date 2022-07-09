@@ -1,8 +1,9 @@
 import type {ArticleIdPair} from '../article'
 import TwitterArticle from './article'
 import type {Service} from '../service'
-import {registerService, STANDARD_ACTIONS} from '../service'
+import {getWritable, registerService, STANDARD_ACTIONS} from '../service'
 import {get} from 'svelte/store'
+import type {TweetResponse} from './endpoints'
 
 export const TwitterService: Service = {
 	name: 'Twitter',
@@ -11,6 +12,10 @@ export const TwitterService: Service = {
 		[STANDARD_ACTIONS.favorite]: {
 			action: toggleFavorite,
 			togglable: true,
+		},
+		[STANDARD_ACTIONS.repost]: {
+			action: retweet,
+			togglable: false,
 		},
 	},
 }
@@ -66,7 +71,7 @@ registerService(TwitterService)
 }*/
 
 async function toggleFavorite(idPair: ArticleIdPair) {
-	const writable = TwitterService.articles[idPair.id];
+	const writable = getWritable(idPair);
 	const action = (get(writable) as TwitterArticle).liked ? 'destroy' : 'create';
 	const response = await fetchExtensionV1(
 		`https://api.twitter.com/1.1/favorites/${action}.json?id=${idPair.id}`,
@@ -74,10 +79,30 @@ async function toggleFavorite(idPair: ArticleIdPair) {
 		'POST'
 	);
 
-	//TODO Update article with response
+	writable.update(a => {
+		(a as TwitterArticle).liked = response.favorited || false
+		return a
+	})
 }
 
-export async function fetchExtensionV1<T>(url: string, resource: string, method = 'GET'): Promise<T> {
+async function retweet(idPair: ArticleIdPair) {
+	const writable = TwitterService.articles[idPair.id];
+	if ((get(writable) as TwitterArticle).retweeted)
+		return
+
+	const response = await fetchExtensionV1(
+		`https://api.twitter.com/1.1/statuses/retweet.json?id=${idPair.id}`,
+		`statuses/retweet`,
+		'POST'
+	);
+
+	writable.update(a => {
+		(a as TwitterArticle).retweeted = response.retweeted || false
+		return a
+	})
+}
+
+export async function fetchExtensionV1<T = TweetResponse>(url: string, resource: string, method = 'GET'): Promise<T> {
 	try {
 		const response: T = await new Promise((resolve, reject) => {
 			const timeout = 5000

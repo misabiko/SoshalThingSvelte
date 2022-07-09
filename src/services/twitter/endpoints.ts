@@ -1,5 +1,5 @@
 import type {ArticleMedia, ArticleRef} from '../article'
-import {Endpoint, getMarkedAsReadStorage, RefreshTime, registerEndpoint} from '../service'
+import {Endpoint, type EndpointConstructorInfo, getMarkedAsReadStorage, RefreshTime, registerEndpoint} from '../service'
 import type {ArticleWithRefs} from '../service'
 import {fetchExtensionV1, TwitterService} from './service'
 import TwitterArticle from './article'
@@ -17,6 +17,16 @@ export class HomeTimelineEndpoint extends Endpoint {
 		}
 		return []
 	}
+
+	matchParams(params: any): boolean {
+		return true;
+	}
+
+	static readonly constructorInfo: EndpointConstructorInfo = {
+		name: 'HomeTimelineEndpoint',
+		paramTemplate: [],
+		constructor: () => new HomeTimelineEndpoint()
+	}
 }
 
 export class UserTimelineEndpoint extends Endpoint {
@@ -30,6 +40,16 @@ export class UserTimelineEndpoint extends Endpoint {
 
 	async refresh(refreshTime: RefreshTime) {
 		return []
+	}
+
+	matchParams(params: any): boolean {
+		return params.username === this.username;
+	}
+
+	static readonly constructorInfo: EndpointConstructorInfo = {
+		name: 'UserTimelineEndpoint',
+		paramTemplate: [['username', '']],
+		constructor: params => new UserTimelineEndpoint(params.username as string)
 	}
 }
 
@@ -45,6 +65,17 @@ export class ListEndpoint extends Endpoint {
 	async refresh(refreshTime: RefreshTime) {
 		return []
 	}
+
+	matchParams(params: any): boolean {
+		return params.username === this.username &&
+			params.slug === this.slug;
+	}
+
+	static readonly constructorInfo: EndpointConstructorInfo = {
+		name: 'ListEndpoint',
+		paramTemplate: [['username', ''], ['slug', '']],
+		constructor: params => new ListEndpoint(params.username as string, params.slug as string)
+	}
 }
 
 export class LikesEndpoint extends Endpoint {
@@ -59,6 +90,16 @@ export class LikesEndpoint extends Endpoint {
 	async refresh(refreshTime: RefreshTime) {
 		return []
 	}
+
+	matchParams(params: any): boolean {
+		return params.username === this.username;
+	}
+
+	static readonly constructorInfo: EndpointConstructorInfo = {
+		name: 'LikesEndpoint',
+		paramTemplate: [['username', '']],
+		constructor: params => new LikesEndpoint(params.username as string)
+	}
 }
 
 export class SearchEndpoint extends Endpoint {
@@ -72,6 +113,16 @@ export class SearchEndpoint extends Endpoint {
 
 	async refresh(refreshTime: RefreshTime) {
 		return []
+	}
+
+	matchParams(params: any): boolean {
+		return params.query === this.query;
+	}
+
+	static readonly constructorInfo: EndpointConstructorInfo = {
+		name: 'SearchEndpoint',
+		paramTemplate: [['query', '']],
+		constructor: params => new SearchEndpoint(params.query as string)
 	}
 }
 
@@ -231,7 +282,7 @@ function getMP4(videoInfo: VideoInfo, mediaType: MediaType): ArticleMedia {
 	}
 }
 
-type TweetResponse = {
+export type TweetResponse = {
 	created_at: string;
 	id: number;
 	id_str: string;

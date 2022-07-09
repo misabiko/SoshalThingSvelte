@@ -215,6 +215,7 @@
 		align-items: flex-start
 		overflow-x: hidden
 		overflow-y: scroll
+		min-height: 50%
 
 		//TODO & input[type="number"]
 		//	width: 200px

@@ -3,7 +3,12 @@ import Article from '../article'
 export default class DummyArticle extends Article {
 	static service: string;
 
-	constructor(id: number, text: string, public liked: boolean) {
+	constructor(
+		id: number,
+		text: string,
+		public liked: boolean,
+		public reposted: boolean,
+	) {
 		super({
 			id,
 			text,
@@ -21,5 +26,12 @@ export default class DummyArticle extends Article {
 	}
 	getLiked(): boolean {
 		return this.liked
+	}
+
+	getRepostCount(): number {
+		return this.reposted ? 1 : 0
+	}
+	getReposted(): boolean {
+		return this.reposted
 	}
 }

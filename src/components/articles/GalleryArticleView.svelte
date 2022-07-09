@@ -12,7 +12,7 @@
 	import {LoadingState, loadingStore} from '../../bufferedMediaLoading'
 	import {derived} from 'svelte/store'
 	import Dropdown from "../Dropdown.svelte"
-	import {fetchArticle, toggleHide, toggleMarkAsRead, articleAction, STANDARD_ACTIONS} from "../../services/service"
+	import {fetchArticle, toggleHide, toggleMarkAsRead, articleAction, getArticleAction, STANDARD_ACTIONS} from "../../services/service"
 
 	export let article: Readonly<Article>
 	export let actualArticle: Readonly<Article>
@@ -210,12 +210,20 @@
 			</Dropdown>
 		</div>
 		<div class='holderBox holderBoxBottom'>
-			<button class='button' on:click={() => articleAction(STANDARD_ACTIONS.favorite, actualArticle.idPair)}>
+			<button
+				class='button'
+				on:click={() => articleAction(STANDARD_ACTIONS.favorite, actualArticle.idPair)}
+				disabled={actualArticle.getLiked() && !getArticleAction(STANDARD_ACTIONS.favorite, actualArticle.idPair.service).togglable}
+			>
 				<span class='icon darkIcon'>
 					<Fa icon={faHeart} class='is-small'/>
 				</span>
 			</button>
-			<button class='button'> <!--onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::Repost))}-->
+			<button
+				class='button'
+				on:click={() => articleAction(STANDARD_ACTIONS.repost, actualArticle.idPair)}
+				disabled={actualArticle.getReposted() && !getArticleAction(STANDARD_ACTIONS.repost, actualArticle.idPair.service).togglable}
+			>
 				<span class='icon darkIcon'>
 					<Fa icon={faRetweet} class='is-small'/>
 				</span>

@@ -104,7 +104,7 @@ async function retweet(idPair: ArticleIdPair) {
 
 export async function fetchExtensionV1<T = TweetResponse>(url: string, resource: string, method = 'GET'): Promise<T> {
 	try {
-		const response: T = await new Promise((resolve, reject) => {
+		return await new Promise((resolve, reject) => {
 			const timeout = 5000
 			const timeoutId = setTimeout(() => reject(new Error(`Extension didn't respond in ${timeout} ms.`)), timeout)
 
@@ -119,13 +119,9 @@ export async function fetchExtensionV1<T = TweetResponse>(url: string, resource:
 				method,
 			}, response => {
 				clearTimeout(timeoutId)
-				console.log('Response!')
 				resolve(response)
 			})
-		})
-
-		console.dir(response)
-		return response;
+		});
 	}catch (cause: any) {
 		throw new Error(`Failed to fetch from extension\n${cause.toString()}`);
 	}

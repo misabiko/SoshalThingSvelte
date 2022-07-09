@@ -61,14 +61,24 @@ test.describe('timelines', () => {
 
 		await loadWithLocalStorage(page, {
 			[TIMELINE_STORAGE_KEY]: [
-				{'title': title},
+				{title},
 			],
 		});
 
 		await expect(page.locator('.timelineLeftHeader strong')).toHaveText(title);
 	});
 
-	test.describe('endpoint', () => {
+	test('masonry container', async ({ page }) => {
+		await loadWithLocalStorage(page, {
+			[TIMELINE_STORAGE_KEY]: [
+				{container: 'Masonry'},
+			],
+		});
+
+		await expect(page.locator('.masonryContainer')).toHaveCount(1);
+	});
+
+	test.describe('endpoints', () => {
 		test('without endpoint', async ({ page }) => {
 			await loadWithLocalStorage(page, {
 				[TIMELINE_STORAGE_KEY]: [{}],

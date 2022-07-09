@@ -14,7 +14,7 @@
 	import {createEventDispatcher} from 'svelte'
 	import Article from '../../services/article'
 	import Dropdown from '../Dropdown.svelte'
-	import {toggleMarkAsRead, toggleHide, articleAction, getWritable, STANDARD_ACTIONS} from "../../services/service"
+	import {toggleMarkAsRead, toggleHide, articleAction, getArticleAction, getWritable, STANDARD_ACTIONS} from "../../services/service"
 
 	export let article: Readonly<Article>
 	export let actualArticle: Readonly<Article>
@@ -182,6 +182,9 @@
 		//&:hover.commentButton span
 		//	color: $comment-color
 
+	button:disabled
+		cursor: unset
+
 	//.fade-enter-active, .fade-leave-active
 	//	transition: opacity .5s
 	//
@@ -337,6 +340,7 @@
 						class='level-item articleButton repostButton borderless-button'
 						class:repostedPostButton={actualArticle.getReposted()}
 						on:click={() => articleAction(STANDARD_ACTIONS.repost, actualArticle.idPair)}
+						disabled={actualArticle.getReposted() && !getArticleAction(STANDARD_ACTIONS.repost, actualArticle.idPair.service).togglable}
 					>
 						<span class='icon'>
 							<Fa icon={faRetweet}/>
@@ -349,6 +353,7 @@
 						class='level-item articleButton likeButton borderless-button'
 						class:likedPostButton={actualArticle.getLiked()}
 						on:click={() => articleAction(STANDARD_ACTIONS.favorite, actualArticle.idPair)}
+						disabled={actualArticle.getLiked() && !getArticleAction(STANDARD_ACTIONS.favorite, actualArticle.idPair.service).togglable}
 					>
 						<span class='icon'>
 							<Fa icon={actualArticle.getLiked() ? faHeartFilled : faHeart}/>

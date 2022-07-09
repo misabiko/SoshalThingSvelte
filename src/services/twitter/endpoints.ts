@@ -14,8 +14,8 @@ export class HomeTimelineEndpoint extends Endpoint {
 				.map(articleFromV1)
 		}catch (errorResponse) {
 			console.error('Error fetching', errorResponse)
+			return []
 		}
-		return []
 	}
 
 	matchParams(params: any): boolean {
@@ -39,7 +39,13 @@ export class UserTimelineEndpoint extends Endpoint {
 	}
 
 	async refresh(refreshTime: RefreshTime) {
-		return []
+		try {
+			return (await fetchExtensionV1<TweetResponse[]>('https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=' + this.username, 'statuses/user_timeline'))
+				.map(articleFromV1)
+		}catch (errorResponse) {
+			console.error('Error fetching', errorResponse)
+			return []
+		}
 	}
 
 	matchParams(params: any): boolean {

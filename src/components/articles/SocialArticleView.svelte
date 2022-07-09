@@ -336,7 +336,7 @@
 					<button
 						class='level-item articleButton repostButton borderless-button'
 						class:repostedPostButton={actualArticle.getReposted()}
-						on:click={() => dispatch('action', STANDARD_ACTIONS.repost)}
+						on:click={() => articleAction(STANDARD_ACTIONS.repost, actualArticle.idPair)}
 					>
 						<span class='icon'>
 							<Fa icon={faRetweet}/>
@@ -348,7 +348,7 @@
 					<button
 						class='level-item articleButton likeButton borderless-button'
 						class:likedPostButton={actualArticle.getLiked()}
-						on:click={() => dispatch('action', STANDARD_ACTIONS.favorite)}
+						on:click={() => articleAction(STANDARD_ACTIONS.favorite, actualArticle.idPair)}
 					>
 						<span class='icon'>
 							<Fa icon={faHeart}/>

@@ -34,11 +34,6 @@
 		toggleMarkAsRead(idPair)
 	}
 
-	//TODO Use articleAction directly in article view?
-	function onArticleAction(event: { detail: string }) {
-		articleAction(event.detail, idPair)
-	}
-
 	if (!$actualArticle.fetched)
 		fetchArticle($actualArticle.idPair)
 </script>
@@ -50,7 +45,6 @@
 	{style}
 	{animatedAsGifs}
 	on:mediaClick={onMediaClick}
-	on:action={onArticleAction}
 	{hideText}
 	{compact}
 	{shouldLoadMedia}

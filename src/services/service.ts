@@ -25,7 +25,7 @@ type ArticleAction = {
 };
 
 export const STANDARD_ACTIONS = {
-	favorite: 'favorite',
+	favorite: 'favorite',	//TODO Rename to like
 	repost: 'repost',
 };
 
@@ -54,8 +54,6 @@ export abstract class Endpoint {
 	abstract readonly name: string
 	readonly articleIdPairs: ArticleIdPair[] = []
 
-	static readonly constructorInfo: EndpointConstructorInfo
-
 	abstract refresh(refreshTime: RefreshTime): Promise<ArticleWithRefs[]>;
 
 	async loadTop(refreshTime: RefreshTime): Promise<ArticleWithRefs[]> {
@@ -67,6 +65,10 @@ export abstract class Endpoint {
 		console.debug(`${this.name} doesn't implement loadBottom()`)
 		return await this.refresh(refreshTime)
 	}
+
+	abstract matchParams(params: any): boolean
+
+	static readonly constructorInfo: EndpointConstructorInfo
 }
 
 export type ArticleWithRefs = {
@@ -75,7 +77,7 @@ export type ArticleWithRefs = {
 	actualArticleIndex?: number,
 }
 
-interface EndpointConstructorInfo {
+export interface EndpointConstructorInfo {
 	readonly name: string;
 	readonly paramTemplate: [string, ParamType][];
 	readonly constructor: (params: EndpointConstructorParams) => Endpoint;
@@ -97,6 +99,21 @@ export function registerService(service: Service) {
 export function registerEndpoint(service: Service, ...endpointInfos: EndpointConstructorInfo[]) {
 	endpointConstructors[service.name] ??= []
 	endpointConstructors[service.name].push(...endpointInfos)
+}
+
+export function addEndpoint(endpoint: Endpoint) {
+	if (endpoints.hasOwnProperty(endpoint.name))
+		console.warn(`Endpoint ${endpoint.name} already exists`)
+	else
+		endpoints[endpoint.name] = endpoint
+}
+
+export function getEndpoints(): Readonly<{ [name: string]: Endpoint }> {
+	return endpoints
+}
+
+export function getEndpointConstructors(): Readonly<{ [service: string]: EndpointConstructorInfo[] }> {
+	return endpointConstructors
 }
 
 export function toggleMarkAsRead(idPair: ArticleIdPair) {
@@ -180,13 +197,6 @@ export function getCachedArticlesStorage(service: Service): {[id: string | numbe
 	const item = sessionStorage.getItem(STORAGE_KEY)
 	const parsed = item !== null ? JSON.parse(item) : null
 	return parsed?.services[service.name]?.cachedArticles || {}
-}
-
-export function addEndpoint(endpoint: Endpoint) {
-	if (endpoints.hasOwnProperty(endpoint.name))
-		console.warn(`Endpoint ${endpoint.name} already exists`)
-	else
-		endpoints[endpoint.name] = endpoint
 }
 
 export async function refreshEndpoints(endpointNames: string[], refreshTime: RefreshTime): Promise<ArticleIdPair[]> {

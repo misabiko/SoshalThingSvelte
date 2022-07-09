@@ -68,7 +68,7 @@ test.describe('timelines', () => {
 		await expect(page.locator('.timelineLeftHeader strong')).toHaveText(title);
 	});
 
-	test.describe.only('endpoint', () => {
+	test.describe('endpoint', () => {
 		test('without endpoint', async ({ page }) => {
 			await loadWithLocalStorage(page, {
 				[TIMELINE_STORAGE_KEY]: [{}],
@@ -93,6 +93,9 @@ test.describe('timelines', () => {
 						{
 							service: 'Dummy',
 							endpointType: 1,
+							params: {
+								query: 'querystring'
+							}
 						}
 					]
 				}],

@@ -5,6 +5,7 @@ import RowContainer from './components/containers/RowContainer.svelte'
 import MasonryContainer from './components/containers/MasonryContainer.svelte'
 import SocialArticleView from './components/articles/SocialArticleView.svelte'
 import GalleryArticleView from './components/articles/GalleryArticleView.svelte'
+import {addEndpoint, Endpoint, getEndpointConstructors, getEndpoints} from './services/service'
 
 export const MAIN_STORAGE_KEY = 'SoshalThingSvelte'
 export const TIMELINE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Timelines'
@@ -31,10 +32,17 @@ export function loadTimelines(): TimelineData[] {
 			...t,
 		}
 
+		const endpoints: string[] = []
+		for (const endpointStorage of defaulted.endpoints) {
+			const endpoint = parseAndLoadEndpoint(endpointStorage)
+			if (endpoint !== undefined && !endpoints.includes(endpoint))
+				endpoints.push(endpoint)
+		}
+
 		return {
 			title: defaulted.title,
 			fullscreen: false,
-			endpoints: defaulted.endpoints.map(parseAndLoadEndpoint).filter(e => e !== undefined) as string[],
+			endpoints,
 			initArticles: [],
 			initContainer: parseContainer(defaulted.container),
 			initArticleView: parseArticleView(defaulted.articleView),
@@ -73,8 +81,30 @@ function parseArticleView(articleView: string | undefined): typeof SvelteCompone
 	}
 }
 
-function parseAndLoadEndpoint(endpoint: EndpointStorage): string | undefined {
-	return undefined
+function parseAndLoadEndpoint(storage: EndpointStorage): string | undefined {
+	const endpoints = getEndpoints()
+	const constructors = getEndpointConstructors()
+	if (!constructors.hasOwnProperty(storage.service)) {
+		console.error(`"${storage.service}" doesn't have any endpoint registered`)
+		return undefined
+	}else if (constructors[storage.service].length <= storage.endpointType) {
+		console.error(`"${storage.service}" doesn't have endpointType "${storage.endpointType}"`)
+		return undefined
+	}
+
+	const constructorInfo = constructors[storage.service][storage.endpointType]
+
+	let endpoint = Object.values(endpoints).find(endpoint =>
+		constructorInfo.name === (endpoint.constructor as typeof Endpoint).constructorInfo.name &&
+		endpoint.matchParams(storage.params)
+	)
+
+	if (endpoint === undefined) {
+		endpoint = constructorInfo.constructor(storage.params as any)
+		addEndpoint(endpoint)
+	}
+
+	return endpoint.name
 }
 
 type MainStorage = {

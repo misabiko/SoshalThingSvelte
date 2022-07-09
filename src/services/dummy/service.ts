@@ -7,7 +7,7 @@ export const DummyService: Service = {
 	name: 'Dummy',
 	articles: {},
 	articleActions: {
-		[STANDARD_ACTIONS.favorite]: {
+		[STANDARD_ACTIONS.like]: {
 			action: toggleLike,
 			togglable: true,
 		},

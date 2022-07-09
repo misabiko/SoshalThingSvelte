@@ -212,8 +212,8 @@
 		<div class='holderBox holderBoxBottom'>
 			<button
 				class='button'
-				on:click={() => articleAction(STANDARD_ACTIONS.favorite, actualArticle.idPair)}
-				disabled={actualArticle.getLiked() && !getArticleAction(STANDARD_ACTIONS.favorite, actualArticle.idPair.service).togglable}
+				on:click={() => articleAction(STANDARD_ACTIONS.like, actualArticle.idPair)}
+				disabled={actualArticle.getLiked() && !getArticleAction(STANDARD_ACTIONS.like, actualArticle.idPair.service).togglable}
 			>
 				<span class='icon darkIcon'>
 					<Fa icon={faHeart} class='is-small'/>

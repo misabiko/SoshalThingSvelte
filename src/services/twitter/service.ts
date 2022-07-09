@@ -9,7 +9,7 @@ export const TwitterService: Service = {
 	name: 'Twitter',
 	articles: {},
 	articleActions: {
-		[STANDARD_ACTIONS.favorite]: {
+		[STANDARD_ACTIONS.like]: {
 			action: toggleFavorite,
 			togglable: true,
 		},

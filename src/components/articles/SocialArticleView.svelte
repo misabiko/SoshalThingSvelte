@@ -352,8 +352,8 @@
 					<button
 						class='level-item articleButton likeButton borderless-button'
 						class:likedPostButton={actualArticle.getLiked()}
-						on:click={() => articleAction(STANDARD_ACTIONS.favorite, actualArticle.idPair)}
-						disabled={actualArticle.getLiked() && !getArticleAction(STANDARD_ACTIONS.favorite, actualArticle.idPair.service).togglable}
+						on:click={() => articleAction(STANDARD_ACTIONS.like, actualArticle.idPair)}
+						disabled={actualArticle.getLiked() && !getArticleAction(STANDARD_ACTIONS.like, actualArticle.idPair.service).togglable}
 					>
 						<span class='icon'>
 							<Fa icon={actualArticle.getLiked() ? faHeartFilled : faHeart}/>

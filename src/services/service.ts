@@ -25,7 +25,7 @@ type ArticleAction = {
 };
 
 export const STANDARD_ACTIONS = {
-	favorite: 'favorite',	//TODO Rename to like
+	like: 'like',
 	repost: 'repost',
 };
 

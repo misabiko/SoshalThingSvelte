@@ -1,12 +1,12 @@
 <script lang='ts'>
 	import {Field, Select, Input, Switch} from 'svelma';
 	import type {Writable} from 'svelte/store'
-	import type {ArticleIdPair} from '../services/article'
-	import ColumnContainer from "./containers/ColumnContainer.svelte"
-	import RowContainer from "./containers/RowContainer.svelte"
-	import MasonryContainer from "./containers/MasonryContainer.svelte"
-	import SocialArticleView from "./articles/SocialArticleView.svelte"
-	import GalleryArticleView from "./articles/GalleryArticleView.svelte"
+	import type {ArticleIdPair} from '../../services/article'
+	import ColumnContainer from "../containers/ColumnContainer.svelte"
+	import RowContainer from "../containers/RowContainer.svelte"
+	import MasonryContainer from "../containers/MasonryContainer.svelte"
+	import SocialArticleView from "../articles/SocialArticleView.svelte"
+	import GalleryArticleView from "../articles/GalleryArticleView.svelte"
 	import Fa from 'svelte-fa/src/fa.svelte'
 	import {
 		faRandom,
@@ -24,19 +24,9 @@
 		loadTopEndpoints,
 		refreshEndpoints,
 		RefreshTime,
-	} from '../services/service'
-	import Article from '../services/article'
+	} from '../../services/service'
+	import Article from '../../services/article'
 	import {afterUpdate, onMount} from 'svelte'
-
-	export interface TimelineData {
-		title: string;
-		fullscreen?: boolean;
-		endpoints: string[];
-		initArticles?: Article[];
-		initContainer?: any;
-		initArticleView?: any;
-		columnCount?: number;
-	}
 
 	export let title
 	export let fullscreen = false
@@ -175,7 +165,7 @@
 </script>
 
 <style lang='sass'>
-	@use '../styles/variables' as *
+	@use '../../styles/variables' as *
 
 	.timeline
 		color: $text

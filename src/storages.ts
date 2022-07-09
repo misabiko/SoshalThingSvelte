@@ -1,4 +1,4 @@
-import type {TimelineData} from './components/Timeline.svelte'
+import type {TimelineData} from './components/timelines'
 
 export const TIMELINE_STORAGE_KEY = 'SoshalThingSvelte Timelines';
 

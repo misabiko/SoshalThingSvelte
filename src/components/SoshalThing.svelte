@@ -1,8 +1,8 @@
 <script lang='ts'>
 	import {setContext} from 'svelte'
 	import Sidebar from "./sidebar/Sidebar.svelte"
-	import type {TimelineData} from "./TimelineContainer.svelte"
-	import TimelineContainer from "./TimelineContainer.svelte"
+	import type {TimelineData} from "./timelines"
+	import TimelineContainer from "./timelines/TimelineContainer.svelte"
 	import {notifications} from '../notifications/store'
 	import Notification from "../notifications/Notification.svelte";
 

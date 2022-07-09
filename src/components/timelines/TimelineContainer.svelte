@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type {TimelineData} from './Timeline.svelte';
+	import type {TimelineData} from './';
 	import Timeline from './Timeline.svelte';
 	import {getContext} from 'svelte'
 

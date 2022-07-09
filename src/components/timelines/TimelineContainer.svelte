@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type {TimelineData} from './';
+	import type {TimelineData} from './index';
 	import Timeline from './Timeline.svelte';
 	import {getContext} from 'svelte'
 
@@ -20,16 +20,16 @@
 </style>
 
 <div id='timelineContainer'>
-	{#each timelines as timelineData, i}
+	{#each timelines as data, i}
 		{#if isInjected && i === 0}
 			<Timeline
 				favviewerButtons={true}
 				bind:favviewerHidden={favviewerHidden}
 				bind:showSidebar={showSidebar}
-				{...timelineData}
+				{data}
 			/>
 		{:else}
-			<Timeline {...timelineData}/>
+			<Timeline {data}/>
 		{/if}
 	{/each}
 </div>

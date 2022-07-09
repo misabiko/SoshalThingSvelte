@@ -26,32 +26,27 @@
 		RefreshTime,
 	} from '../../services/service'
 	import Article from '../../services/article'
-	import {afterUpdate, onMount} from 'svelte'
+	import {afterUpdate, onMount, SvelteComponent} from 'svelte'
+	import {type TimelineData} from './index'
 
-	export let title
-	export let fullscreen = false
-	export let endpoints: string[]
-	export let initArticles: ArticleIdPair[] = []
-	export let initContainer = undefined
-	export let initArticleView = undefined
-	export let columnCount = 3
+	export let data: TimelineData
 
 	export let favviewerButtons = false
 	export let favviewerHidden = false
 
 	export let showSidebar = true
 	let showOptions = false
-	let container = initContainer || MasonryContainer
+	let container = data.initContainer || MasonryContainer
 	let containerRef: HTMLElement | undefined = undefined
 	let width = 1
-	let articleView = initArticleView || SocialArticleView
+	let articleView = data.initArticleView || SocialArticleView
 	let animatedAsGifs = false
 	let scrollSpeed = 3
 	let hideText = false
 	let compact = false
 	let shouldLoadMedia = true;
 
-	let articleIdPairs: Writable<ArticleIdPair[]> = writable([...initArticles])
+	let articleIdPairs: Writable<ArticleIdPair[]> = writable([...data.initArticles])
 
 	$: filteredArticles = derived($articleIdPairs.map(idPair => getWritable(idPair)),
 		(articles: Article[]) => articles?.filter((a: Article) => !a.markedAsRead && !a.hidden)
@@ -123,7 +118,7 @@
 
 	async function refresh() {
 		console.log('Refreshing!')
-		const newArticles = await refreshEndpoints(endpoints, RefreshTime.OnRefresh)
+		const newArticles = await refreshEndpoints(data.endpoints, RefreshTime.OnRefresh)
 		articleIdPairs.update(idPairs => {
 			idPairs.push(...newArticles)
 			return idPairs
@@ -132,7 +127,7 @@
 
 	async function loadBottom() {
 		console.log('Loading Bottom!')
-		const newArticles = await loadBottomEndpoints(endpoints, RefreshTime.OnRefresh)
+		const newArticles = await loadBottomEndpoints(data.endpoints, RefreshTime.OnRefresh)
 		articleIdPairs.update(idPairs => {
 			idPairs.push(...newArticles)
 			return idPairs
@@ -141,7 +136,7 @@
 
 	async function loadTop() {
 		console.log('Loading Top!')
-		const newArticles = await loadTopEndpoints(endpoints, RefreshTime.OnRefresh)
+		const newArticles = await loadTopEndpoints(data.endpoints, RefreshTime.OnRefresh)
 		articleIdPairs.update(idPairs => {
 			idPairs.push(...newArticles)
 			return idPairs
@@ -149,10 +144,10 @@
 	}
 
 	onMount(async () => {
-		if (!endpoints.length)
+		if (!data.endpoints.length)
 			return
 
-		const newArticles = await refreshEndpoints(endpoints, RefreshTime.OnStart)
+		const newArticles = await refreshEndpoints(data.endpoints, RefreshTime.OnStart)
 		articleIdPairs.update(idPairs => {
 			idPairs.push(...newArticles)
 			return idPairs
@@ -238,10 +233,10 @@
 		background-color: $background
 </style>
 
-<div class='timeline' class:fullscreenTimeline={fullscreen} style='{width > 1 ? `width: ${width * 500}px` : ""}'>
+<div class='timeline' class:fullscreenTimeline={data.fullscreen} style='{width > 1 ? `width: ${width * 500}px` : ""}'>
 	<div class='timelineHeader'>
 		<div class='timelineLeftHeader'>
-			<strong>{title}</strong>
+			<strong>{data.title}</strong>
 			{#if favviewerButtons}
 				<div class='timelineButtons'>
 					<button class='borderless-button' title='Toggle FavViewer' on:click={() => favviewerHidden = !favviewerHidden}>
@@ -286,10 +281,10 @@
 				</Field>
 				{#if container !== ColumnContainer}
 					<Field label='Column Count'>
-						<Input type='number' bind:value={columnCount} min={1}/>
+						<Input type='number' bind:value={data.columnCount} min={1}/>
 					</Field>
 				{/if}
-				{#if !fullscreen}
+				{#if !data.fullscreen}
 					<Field label='Timeline Width'>
 						<Input type='number' bind:value={width} min={1}/>
 					</Field>
@@ -323,7 +318,7 @@
 			<div class='box'>
 				<Field label='Endpoints'>
 					<ul>
-						{#each endpoints as endpoint (endpoint)}
+						{#each data.endpoints as endpoint (endpoint)}
 							<li>{endpoint}</li>
 						{/each}
 					</ul>
@@ -336,7 +331,7 @@
 		bind:containerRef={containerRef}
 		idPairs={$filteredArticles}
 		articleView={articleView}
-		{columnCount}
+		columnCount={data.columnCount}
 		{hideText}
 		{compact}
 		{animatedAsGifs}

@@ -35,6 +35,7 @@ export const buildOptions = {
 	watch: process.argv.includes(`--watch`),
 	plugins: [
 		esbuildSvelte({
+			compilerOptions: {dev: true},
 			preprocess: sveltePreprocess(),
 		}),
 		DedupSvelteInternalPlugin,

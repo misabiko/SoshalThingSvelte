@@ -5,9 +5,9 @@
 	import {getWritable} from '../../services/service'
 	import Article from '../../services/article'
 
+	export let containerRef = undefined;
 	export let idPairs;
 	export let articleView;
-	export let containerRef;
 	export let columnCount: number;
 	export let animatedAsGifs;
 	export let compact;
@@ -63,7 +63,7 @@
 <div class='articlesContainer masonryContainer' bind:this={containerRef}>
 	{#each $columns as column, i (i)}
 		<div class='masonryColumn'>
-<!--			<span>Ratio: {column.ratio}</span>-->
+<!--		<span>Ratio: {column.ratio}</span>-->
 			{#each column.idPairs as idPair (idPair)}
 				<ArticleComponent
 					{idPair}

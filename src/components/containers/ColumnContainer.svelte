@@ -1,9 +1,9 @@
 <script lang='ts'>
 	import ArticleComponent from "../articles/ArticleComponent.svelte";
 
+	export let containerRef = undefined;
 	export let idPairs;
 	export let articleView;
-	export let containerRef;
 	export let animatedAsGifs;
 	export let compact;
 	export let hideText;

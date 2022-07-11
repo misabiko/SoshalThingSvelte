@@ -19,11 +19,15 @@
 
 	export let article: Readonly<Article>
 	export let actualArticle: Readonly<Article>
-	export let animatedAsGifs: boolean	//TODO animatedAsGifs
+	export let animatedAsGifs: boolean
 	export let compact: boolean
 	export let hideText: boolean
 	export let style: string = ''
-	export let shouldLoadMedia: boolean
+	export let shouldLoadMedia: boolean	//TODO shouldLoadMedia in SocialArticleView
+
+	//Just to stop the unused prop warnings
+	if (shouldLoadMedia) {
+	}
 
 	let minimized = false
 	$: isReposted = article.id !== actualArticle.id

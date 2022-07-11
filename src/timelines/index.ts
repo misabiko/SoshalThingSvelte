@@ -3,7 +3,6 @@ import type {SvelteComponent} from 'svelte'
 
 export type TimelineData = {
 	title: string;
-	fullscreen?: boolean;
 	endpoints: string[];
 	initArticles?: ArticleIdPair[];
 	initContainer?: typeof SvelteComponent;

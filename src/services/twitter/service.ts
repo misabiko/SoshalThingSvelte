@@ -4,6 +4,7 @@ import type {Service} from '../service'
 import {getWritable, registerService, STANDARD_ACTIONS} from '../service'
 import {get} from 'svelte/store'
 import type {TweetResponse} from './endpoints'
+import {getV1APIURL} from './endpoints'
 
 export const TwitterService: Service = {
 	name: 'Twitter',
@@ -74,8 +75,7 @@ async function toggleFavorite(idPair: ArticleIdPair) {
 	const writable = getWritable(idPair);
 	const action = (get(writable) as TwitterArticle).liked ? 'destroy' : 'create';
 	const response = await fetchExtensionV1(
-		`https://api.twitter.com/1.1/favorites/${action}.json?id=${idPair.id}`,
-		`favorites/${action}`,
+		`${getV1APIURL('favorites/' + action)}?id=${idPair.id}`,
 		'POST'
 	);
 
@@ -91,8 +91,7 @@ async function retweet(idPair: ArticleIdPair) {
 		return
 
 	const response = await fetchExtensionV1(
-		`https://api.twitter.com/1.1/statuses/retweet.json?id=${idPair.id}`,
-		`statuses/retweet`,
+		`${getV1APIURL('statuses/retweet')}?id=${idPair.id}`,
 		'POST'
 	);
 
@@ -102,7 +101,7 @@ async function retweet(idPair: ArticleIdPair) {
 	})
 }
 
-export async function fetchExtensionV1<T = TweetResponse>(url: string, resource: string, method = 'GET'): Promise<T> {
+export async function fetchExtensionV1<T = TweetResponse>(url: string, method = 'GET', body?: any): Promise<T> {
 	try {
 		return await new Promise((resolve, reject) => {
 			const timeout = 5000
@@ -115,15 +114,19 @@ export async function fetchExtensionV1<T = TweetResponse>(url: string, resource:
 				service: TwitterService.name,
 				request: 'fetchV1',
 				url,
-				resource,
 				method,
+				body,
 			}, response => {
 				clearTimeout(timeoutId)
-				resolve(response)
+
+				if (response.errors !== undefined)
+					reject(response)
+				else
+					resolve(response)
 			})
 		});
 	}catch (cause: any) {
-		throw new Error(`Failed to fetch from extension\n${cause.toString()}`);
+		throw new Error(`Failed to fetch from extension\n${JSON.stringify(cause, null, '\t')}`);
 	}
 }
 

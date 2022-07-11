@@ -64,6 +64,7 @@ chrome.runtime.onMessageExternal.addListener(
 					fetch(request.url, {
 						headers: twitterAuthHeaders(request.url, request.method),
 						method: request.method,
+						body: request.body,
 					})
 						.then(response => response.json())
 						.then(json => {

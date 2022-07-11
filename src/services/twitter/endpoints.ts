@@ -4,12 +4,14 @@ import {fetchExtensionV1, TwitterService} from './service'
 import TwitterArticle from './article'
 import {articleRefToIdPair, ArticleRefType, getRatio, MediaQueueInfo, MediaType} from '../article'
 
+//TODO interface V1Endpoint extends Endpoint
+
 export class HomeTimelineEndpoint extends Endpoint {
 	readonly name = 'Home Timeline'
 
 	async refresh(refreshTime: RefreshTime) {
 		try {
-			return (await fetchExtensionV1<TweetResponse[]>('https://api.twitter.com/1.1/statuses/home_timeline.json', 'statuses/home_timeline'))
+			return (await fetchExtensionV1<TweetResponse[]>(getV1APIURL('statuses/home_timeline') + '?include_entities=true'))
 				.map(articleFromV1)
 		}catch (errorResponse) {
 			console.error('Error fetching', errorResponse)
@@ -39,7 +41,7 @@ export class UserTimelineEndpoint extends Endpoint {
 
 	async refresh(refreshTime: RefreshTime) {
 		try {
-			return (await fetchExtensionV1<TweetResponse[]>('https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=' + this.username, 'statuses/user_timeline'))
+			return (await fetchExtensionV1<TweetResponse[]>(`${getV1APIURL('statuses/user_timeline')}?screen_name=${this.username}&include_entities=true`))
 				.map(articleFromV1)
 		}catch (errorResponse) {
 			console.error('Error fetching', errorResponse)
@@ -68,7 +70,13 @@ export class ListEndpoint extends Endpoint {
 	}
 
 	async refresh(refreshTime: RefreshTime) {
-		return []
+		try {
+			return (await fetchExtensionV1<TweetResponse[]>(getV1APIURL('lists/statuses') + `?owner_screen_name=${this.username}&slug=${this.slug}&include_entities=true`))
+				.map(articleFromV1)
+		}catch (errorResponse) {
+			console.error('Error fetching', errorResponse)
+			return []
+		}
 	}
 
 	matchParams(params: any): boolean {
@@ -93,7 +101,13 @@ export class LikesEndpoint extends Endpoint {
 	}
 
 	async refresh(refreshTime: RefreshTime) {
-		return []
+		try {
+			return (await fetchExtensionV1<TweetResponse[]>(getV1APIURL('favorites/list') + `?screen_name=${this.username}&include_entities=true`))
+				.map(articleFromV1)
+		}catch (errorResponse) {
+			console.error('Error fetching', errorResponse)
+			return []
+		}
 	}
 
 	matchParams(params: any): boolean {
@@ -117,7 +131,19 @@ export class SearchEndpoint extends Endpoint {
 	}
 
 	async refresh(refreshTime: RefreshTime) {
-		return []
+		try {
+			const url = new URL(getV1APIURL('search/tweets'))
+			url.searchParams.set('q', this.query)
+			url.searchParams.set('result_type', 'recent')
+			url.searchParams.set('include_entities', 'true')
+
+			const response = await fetchExtensionV1<SearchResponse>(url.toString())
+			return response.statuses
+				.map(articleFromV1)
+		}catch (errorResponse) {
+			console.error('Error fetching', errorResponse)
+			return []
+		}
 	}
 
 	matchParams(params: any): boolean {
@@ -138,6 +164,10 @@ registerEndpoint(TwitterService,
 	LikesEndpoint.constructorInfo,
 	SearchEndpoint.constructorInfo,
 )
+
+export function getV1APIURL(resource: string): string {
+	return `https://api.twitter.com/1.1/${resource}.json`
+}
 
 function articleFromV1(json: TweetResponse): ArticleWithRefs {
 	const {text, textHtml} = parseText(json.text, json.entities, json.extended_entities)
@@ -163,16 +193,21 @@ function articleFromV1(json: TweetResponse): ArticleWithRefs {
 			}
 			actualArticleIndex = 0
 		}else if (json.is_quote_status) {
-			//TODO Have is_quote_status imply not undefined quoted_status
-			const quote = articleFromV1(json.quoted_status as TweetResponse)
-			const actualRef = quote.actualArticleIndex !== undefined ? quote.refs[quote.actualArticleIndex] : undefined
-			if (actualRef?.type === ArticleRefType.Quote)
-				console.warn(`Quote(${json.id_str}) of a quote(${actualRef.quoted.id})?`)
+			if (json.quoted_status) {
+				const quote = articleFromV1(json.quoted_status)
+				const actualRef = quote.actualArticleIndex !== undefined ? quote.refs[quote.actualArticleIndex] : undefined
+				if (actualRef?.type === ArticleRefType.Quote)
+					console.warn(`Quote(${json.id_str}) of a quote(${actualRef.quoted.id})?`)
 
-			articleRefs.push({
-				type: ArticleRefType.Quote,
-				quoted: quote.article,
-			})
+				articleRefs.push({
+					type: ArticleRefType.Quote,
+					quoted: quote.article,
+				})
+			}else if (json.quoted_status_id_str) {
+				console.warn("Quote tweet doesn't include quoted tweet, need to get the tweet from service")
+			}else {
+				console.error('is_quote_status true, but no quote info', json)
+			}
 		}
 	}
 	return {
@@ -353,6 +388,8 @@ export type TweetResponse = {
 	retweeted_status?: TweetResponse;
 	is_quote_status: boolean;
 	quoted_status?: TweetResponse;
+	quoted_status_id?: number;
+	quoted_status_id_str?: string;
 	retweet_count: number;
 	favorite_count: number;
 	favorited: boolean;
@@ -360,6 +397,21 @@ export type TweetResponse = {
 	possibly_sensitive: boolean;
 	possibly_sensitive_appealable: boolean;
 	lang: string
+}
+
+type SearchResponse = {
+	search_metadata: {
+		completed_in: number
+		max_id: number
+		max_id_str: string
+		next_results: string
+		query: string
+		refresh_url: string
+		count: number
+		since_id: number
+		since_id_str: string
+	}
+	statuses: TweetResponse[]
 }
 
 type Entities = {

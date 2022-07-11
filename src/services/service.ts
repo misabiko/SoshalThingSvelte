@@ -206,15 +206,24 @@ export function getCachedArticlesStorage(service: Service): {[id: string | numbe
 }
 
 export async function refreshEndpoints(endpointNames: string[], refreshTime: RefreshTime): Promise<ArticleIdPair[]> {
-	return endpointRefreshed(endpointNames[0], await endpoints[endpointNames[0]].refresh(refreshTime))
+	const articleIdPairs = []
+	for (const endpointName of endpointNames)
+		articleIdPairs.push(...endpointRefreshed(endpointName, await endpoints[endpointName].refresh(refreshTime)))
+	return articleIdPairs
 }
 
 export async function loadTopEndpoints(endpointNames: string[], refreshTime: RefreshTime): Promise<ArticleIdPair[]> {
-	return endpointRefreshed(endpointNames[0], await endpoints[endpointNames[0]].loadTop(refreshTime))
+	const articleIdPairs = []
+	for (const endpointName of endpointNames)
+		articleIdPairs.push(...endpointRefreshed(endpointName, await endpoints[endpointName].loadTop(refreshTime)))
+	return articleIdPairs
 }
 
 export async function loadBottomEndpoints(endpointNames: string[], refreshTime: RefreshTime): Promise<ArticleIdPair[]> {
-	return endpointRefreshed(endpointNames[0], await endpoints[endpointNames[0]].loadBottom(refreshTime))
+	const articleIdPairs = []
+	for (const endpointName of endpointNames)
+		articleIdPairs.push(...endpointRefreshed(endpointName, await endpoints[endpointName].loadBottom(refreshTime)))
+	return articleIdPairs
 }
 
 function endpointRefreshed(endpointName: string, articles: ArticleWithRefs[]): ArticleIdPair[] {

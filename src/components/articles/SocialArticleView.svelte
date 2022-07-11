@@ -18,10 +18,11 @@
 
 	export let article: Readonly<Article>
 	export let actualArticle: Readonly<Article>
-	//TODO export let animatedAsGifs: boolean
+	export let animatedAsGifs: boolean	//TODO animatedAsGifs
 	export let compact: boolean
 	export let hideText: boolean
 	export let style: string = ''
+	export let shouldLoadMedia: boolean
 
 	let minimized = false
 	$: isReposted = article.id !== actualArticle.id

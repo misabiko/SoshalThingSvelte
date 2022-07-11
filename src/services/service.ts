@@ -144,7 +144,7 @@ export function toggleHide(idPair: ArticleIdPair) {
 	})
 }
 
-export function getWritable(idPair: ArticleIdPair) {
+export function getWritable(idPair: ArticleIdPair): Writable<Article> {
 	return services[idPair.service].articles[idPair.id]
 }
 

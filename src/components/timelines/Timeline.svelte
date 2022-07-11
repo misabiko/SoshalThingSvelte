@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import {Field, Select, Input, Switch} from 'svelma';
-	import type {Writable} from 'svelte/store'
+	import type {Readable, Writable} from 'svelte/store'
 	import type {ArticleIdPair} from '../../services/article'
 	import ColumnContainer from "../containers/ColumnContainer.svelte"
 	import RowContainer from "../containers/RowContainer.svelte"
@@ -25,7 +25,7 @@
 		refreshEndpoints,
 		RefreshTime,
 	} from '../../services/service'
-	import Article from '../../services/article'
+	import Article, {ArticleRefType} from '../../services/article'
 	import {afterUpdate, onMount, SvelteComponent} from 'svelte'
 	import {type TimelineData} from './index'
 
@@ -47,11 +47,40 @@
 	let compact = false
 	let shouldLoadMedia = true;
 
-	let articleIdPairs: Writable<ArticleIdPair[]> = writable([...data.initArticles])
+	let articleIdPairs = [...data.initArticles]
 
-	$: filteredArticles = derived($articleIdPairs.map(idPair => getWritable(idPair)),
-		(articles: Article[]) => articles?.filter((a: Article) => !a.markedAsRead && !a.hidden)
-			.map((a: Article) => a.idPair) || [],
+	let articles: Readable<Article[]>
+	$: articles = derived(articleIdPairs.map(getWritable), a => a)
+
+	let articleRefStores: Readable<{article: Article, refs: Article[]}>[]
+	$: articleRefStores = $articles.map(article =>
+		derived(
+			article.articleRefs
+				.flatMap(ref => {
+					switch (ref.type) {
+						case ArticleRefType.Repost:
+							return [ref.reposted];
+						case ArticleRefType.Quote:
+							return [ref.quoted];
+						case ArticleRefType.QuoteRepost:
+							return [ref.reposted, ref.quoted];
+						default:
+							return [];
+					}
+				})
+				.map(getWritable),
+			(refs: Article[]) => ({article, refs})
+		)
+	)
+
+	let articleRefs: Readable<{article: Article, refs: Article[]}[]>
+	$: articleRefs = derived(articleRefStores, refs => refs)
+
+	let filteredArticles: Readable<ArticleIdPair[]>
+	$: filteredArticles = derived(articleRefs, stores =>
+		stores
+			.filter(({article, refs}) => !article.markedAsRead && !article.hidden && refs.every(ref => !ref.markedAsRead && !ref.hidden))
+			.map(({article}) => article.idPair)
 	)
 
 	enum ScrollDirection {
@@ -68,23 +97,21 @@
 	}
 
 	function shuffle() {
-		articleIdPairs.update(array => {
-			let currentIndex = array.length,  randomIndex;
+		let currentIndex = articleIdPairs.length,  randomIndex;
 
-			// While there remain elements to shuffle...
-			while (currentIndex != 0) {
+		// While there remain elements to shuffle...
+		while (currentIndex != 0) {
 
-				// Pick a remaining element...
-				randomIndex = Math.floor(Math.random() * currentIndex);
-				currentIndex--;
+			// Pick a remaining element...
+			randomIndex = Math.floor(Math.random() * currentIndex);
+			currentIndex--;
 
-				// And swap it with the current element.
-				[array[currentIndex], array[randomIndex]] = [
-					array[randomIndex], array[currentIndex]];
-			}
+			// And swap it with the current element.
+			[articleIdPairs[currentIndex], articleIdPairs[randomIndex]] = [
+				articleIdPairs[randomIndex], articleIdPairs[currentIndex]];
+		}
 
-			return array;
-		})
+		articleIdPairs = articleIdPairs
 	}
 
 	function autoscroll() {
@@ -120,28 +147,22 @@
 	async function refresh() {
 		console.log('Refreshing!')
 		const newArticles = await refreshEndpoints(data.endpoints, RefreshTime.OnRefresh)
-		articleIdPairs.update(idPairs => {
-			idPairs.push(...newArticles)
-			return idPairs
-		})
+		articleIdPairs.push(...newArticles)
+		articleIdPairs = articleIdPairs
 	}
 
 	async function loadBottom() {
 		console.log('Loading Bottom!')
 		const newArticles = await loadBottomEndpoints(data.endpoints, RefreshTime.OnRefresh)
-		articleIdPairs.update(idPairs => {
-			idPairs.push(...newArticles)
-			return idPairs
-		})
+		articleIdPairs.push(...newArticles)
+		articleIdPairs = articleIdPairs
 	}
 
 	async function loadTop() {
 		console.log('Loading Top!')
 		const newArticles = await loadTopEndpoints(data.endpoints, RefreshTime.OnRefresh)
-		articleIdPairs.update(idPairs => {
-			idPairs.push(...newArticles)
-			return idPairs
-		})
+		articleIdPairs.push(...newArticles)
+		articleIdPairs = articleIdPairs
 	}
 
 	onMount(async () => {
@@ -149,10 +170,8 @@
 			return
 
 		const newArticles = await refreshEndpoints(data.endpoints, RefreshTime.OnStart)
-		articleIdPairs.update(idPairs => {
-			idPairs.push(...newArticles)
-			return idPairs
-		})
+		articleIdPairs.push(...newArticles)
+		articleIdPairs = articleIdPairs
 	})
 
 	/*afterUpdate(async () => {

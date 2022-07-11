@@ -419,12 +419,14 @@
 					</div>
 				{:else if !animatedAsGifs && media.mediaType === MediaType.Video}
 					<div class="postMedia postVideo">
+						<!-- svelte-ignore a11y-media-has-caption -->
 						<video controls on:click|preventDefault={() => dispatch('mediaClick', index)}>
 							<source src={media.src} type="video/mp4"/>
 						</video>
 					</div>
 				{:else if media.mediaType === MediaType.VideoGif || animatedAsGifs && media.mediaType === MediaType.Video}
 					<div class="postMedia postVideo">
+						<!-- svelte-ignore a11y-media-has-caption -->
 						<video controls autoplay loop muted on:click|preventDefault={() => dispatch('mediaClick', index)}>
 							<source src={media.src} type="video/mp4"/>
 						</video>

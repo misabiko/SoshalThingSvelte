@@ -212,3 +212,28 @@ export function getRefed(ref: ArticleRef | ArticleRefIdPair): (Article | Article
 			return [ref.replied]
 	}
 }
+
+export function getActualArticle({article, refs, actualArticleIndex}: ArticleWithRefs): Readonly<Article> {
+	if (actualArticleIndex === undefined)
+		return article
+	else {
+		const ref = refs[actualArticleIndex]
+		switch (ref.type) {
+			case ArticleRefType.Repost:
+				return ref.reposted;
+			case ArticleRefType.Quote:
+				return article;
+			case ArticleRefType.QuoteRepost:
+				return ref.reposted;
+			case ArticleRefType.Reply:
+				return article;
+		}
+	}
+}
+
+export function isRepost(article: Article): boolean {
+	return article.articleRefs.some(ref =>
+		ref.type === ArticleRefType.Repost ||
+		ref.type === ArticleRefType.QuoteRepost
+	)
+}

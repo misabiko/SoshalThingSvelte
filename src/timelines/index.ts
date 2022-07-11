@@ -1,5 +1,6 @@
 import type {ArticleIdPair} from '../services/article'
 import type {SvelteComponent} from 'svelte'
+import type {FilterInstance} from '../filters'
 
 export type TimelineData = {
 	title: string;
@@ -15,5 +16,5 @@ export type TimelineEndpoint = {
 	name: string;
 	onStart: boolean;
 	onRefresh: boolean;
-	//TODO filters:
+	filters: FilterInstance[]
 }

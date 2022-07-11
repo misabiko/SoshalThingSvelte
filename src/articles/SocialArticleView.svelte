@@ -8,7 +8,7 @@
 		faEllipsisH,
 	} from '@fortawesome/free-solid-svg-icons'
 	import {createEventDispatcher} from 'svelte'
-	import Article from '../services/article'
+	import Article, {isRepost} from '../services/article'
 	import Dropdown from '../Dropdown.svelte'
 	import {toggleMarkAsRead, toggleHide, articleAction, getArticleAction, STANDARD_ACTIONS} from "../services/service"
 	import {MediaType} from "../services/article.js";
@@ -26,7 +26,7 @@
 	}
 
 	let minimized = false
-	$: isReposted = article.id !== actualArticle.id
+	$: isArticleRepost = isRepost(article)
 
 	const MONTH_ABBREVS: string[] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
@@ -286,7 +286,7 @@
 
 <article class='socialArticle' {style}>
 	<div class='repostLabel'>
-		{#if article.author}
+		{#if isArticleRepost && article.author}
 			<a href={article.author.url} target='_blank' on:click|preventDefault={() => onUsernameClick(article)}>
 				{article.author.name} reposted - {shortTimestamp(article.creationTime)}
 			</a>
@@ -295,9 +295,9 @@
 	<!--{ self.view_reply_label(ctx) }-->
 	<div class='media'>
 		<div class='media-left'>
-			<figure class='image is-64x64' class:sharedAvatar={isReposted}>
+			<figure class='image is-64x64' class:sharedAvatar={isArticleRepost}>
 				{#if actualArticle.author?.url}
-					{#if isReposted}
+					{#if isArticleRepost}
 						<img src={actualArticle.author.avatarUrl} alt={`${actualArticle.author.username}'s avatar`}/>
 						<img src={article.author.avatarUrl} alt={`${article.author.username}'s avatar`}/>
 					{:else}
@@ -389,7 +389,7 @@
 						<a class='dropdown-item' href={ actualArticle.url } target='_blank'>
 							External Link
 						</a>
-						{#if isReposted}
+						{#if isArticleRepost}
 							<a class='dropdown-item' href={ article.url } target='_blank'>
 								Repost's external Link
 							</a>

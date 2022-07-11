@@ -4,6 +4,7 @@ import {getRefed} from './article'
 import type {Writable} from 'svelte/store'
 import {get, writable} from 'svelte/store'
 import type {TimelineEndpoint} from '../timelines'
+import {keepArticle} from '../filters'
 
 const endpoints: { [name: string]: Endpoint } = {}
 const services: { [name: string]: Service } = {}
@@ -45,18 +46,14 @@ export function getArticleAction(action: string, service: string) {
 		console.warn(`${service} doesn't have action ${action}.`)
 }
 
-export function addArticles(service: Service, ...articles: ArticleWithRefs[]): ArticleIdPair[] {
-	const idPairs = []
+export function addArticles(service: Service, ...articles: ArticleWithRefs[]) {
 	for (const {article, refs} of articles) {
 		service.articles[article.id] = writable(article)
-		idPairs.push({service: service.name, id: article.id})
-		for (const ref of refs.flatMap(getRefed) as Article[]) {
+		for (const ref of refs.flatMap(getRefed) as Article[])
 			service.articles[ref.id] = writable(ref)
-		}
 	}
 
 	updateCachedArticlesStorage()
-	return idPairs
 }
 
 export abstract class Endpoint {
@@ -214,7 +211,7 @@ export async function refreshEndpoints(timelineEndpoints: TimelineEndpoint[], re
 			(refreshTime === RefreshTime.OnStart && endpoint.onStart) ||
 			(refreshTime === RefreshTime.OnRefresh && endpoint.onRefresh)
 		)
-			articleIdPairs.push(...endpointRefreshed(endpoint.name, await endpoints[endpoint.name].refresh(refreshTime)))
+			articleIdPairs.push(...endpointRefreshed(endpoint, await endpoints[endpoint.name].refresh(refreshTime)))
 
 	return articleIdPairs
 }
@@ -223,7 +220,7 @@ export async function loadTopEndpoints(timelineEndpoints: TimelineEndpoint[]): P
 	const articleIdPairs = []
 	for (const endpoint of timelineEndpoints)
 		if (endpoint.onRefresh)
-			articleIdPairs.push(...endpointRefreshed(endpoint.name, await endpoints[endpoint.name].refresh(RefreshTime.OnRefresh)))
+			articleIdPairs.push(...endpointRefreshed(endpoint, await endpoints[endpoint.name].refresh(RefreshTime.OnRefresh)))
 
 	return articleIdPairs
 }
@@ -232,26 +229,32 @@ export async function loadBottomEndpoints(timelineEndpoints: TimelineEndpoint[])
 	const articleIdPairs = []
 	for (const endpoint of timelineEndpoints)
 		if (endpoint.onRefresh)
-			articleIdPairs.push(...endpointRefreshed(endpoint.name, await endpoints[endpoint.name].refresh(RefreshTime.OnRefresh)))
+			articleIdPairs.push(...endpointRefreshed(endpoint, await endpoints[endpoint.name].refresh(RefreshTime.OnRefresh)))
 
 	return articleIdPairs
 }
 
-function endpointRefreshed(endpointName: string, articles: ArticleWithRefs[]): ArticleIdPair[] {
+function endpointRefreshed(endpoint: TimelineEndpoint, articles: ArticleWithRefs[]): ArticleIdPair[] {
 	if (!articles.length)
 		return []
 	//TODO Store service name on endpoint
-	// @ts-ignore
-	const service = articles[0].article.constructor.service
+	const service = (articles[0].article.constructor as typeof Article).service
 
-	return addArticles(services[service], ...articles)
-		.filter(idPair => {
-			if (endpoints[endpointName].articleIdPairs.findIndex(pair => pair.service === idPair.service && pair.id === idPair.id) === -1) {
-				endpoints[endpointName].articleIdPairs.push(idPair)
-				return true
-			}else
-				return false
+	addArticles(services[service], ...articles)
+	const addedArticles = articles
+		.filter(articleWithRefs => {
+			return !endpoints[endpoint.name].articleIdPairs
+					.some(pair =>
+						pair.service === articleWithRefs.article.idPair.service &&
+						pair.id === articleWithRefs.article.idPair.id,
+					) &&
+				endpoint.filters.every(f => !f.enabled || keepArticle(articleWithRefs, f.filter))
 		})
+
+	const addedIdPairs = addedArticles.map(a => a.article.idPair)
+	endpoints[endpoint.name].articleIdPairs.push(...addedIdPairs)
+
+	return addedIdPairs
 }
 
 export function fetchArticle(idPair: ArticleIdPair) {

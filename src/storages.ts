@@ -6,6 +6,7 @@ import MasonryContainer from './containers/MasonryContainer.svelte'
 import SocialArticleView from './articles/SocialArticleView.svelte'
 import GalleryArticleView from './articles/GalleryArticleView.svelte'
 import {addEndpoint, Endpoint, getEndpointConstructors, getEndpoints} from './services/service'
+import type {FilterInstance} from './filters'
 
 export const MAIN_STORAGE_KEY = 'SoshalThingSvelte'
 export const TIMELINE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Timelines'
@@ -108,6 +109,7 @@ function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | unde
 		name: endpoint.name,
 		onStart: storage.onStart ?? true,
 		onRefresh: storage.onRefresh ?? true,
+		filters: storage.filters || [],
 	}
 }
 
@@ -145,7 +147,7 @@ type EndpointStorage = {
 	service: string
 	endpointType: number
 	params?: object
-	//filters:
+	filters?: FilterInstance[]
 	//autoRefresh: boolean
 	onStart?: boolean
 	onRefresh?: boolean

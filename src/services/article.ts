@@ -12,6 +12,7 @@ export default abstract class Article {
 	markedAsRead: boolean
 	hidden: boolean
 	readonly articleRefs: ArticleRefIdPair[]
+	readonly actualArticleIndex?: number
 	fetched: boolean
 	json: any
 
@@ -25,6 +26,7 @@ export default abstract class Article {
 		hidden: boolean,
 		markedAsReadStorage: (string | number)[],	//Actually (string[] | number[])
 		articleRefs: ArticleRefIdPair[],
+		actualArticleIndex?: number,
 		fetched?: boolean,
 		json?: any,
 	}) {
@@ -36,6 +38,7 @@ export default abstract class Article {
 		this.markedAsRead = params.markedAsRead || params.markedAsReadStorage.includes(this.id)
 		this.hidden = params.hidden
 		this.articleRefs = params.articleRefs
+		this.actualArticleIndex = params.actualArticleIndex
 		this.fetched = params.fetched || false
 		this.json = params.json
 	}
@@ -147,7 +150,6 @@ export type ArticleRef =
 export type ArticleWithRefs = {
 	article: Article,
 	refs: ArticleRef[],
-	actualArticleIndex?: number,
 }
 
 export interface ArticleIdPair {
@@ -213,11 +215,11 @@ export function getRefed(ref: ArticleRef | ArticleRefIdPair): (Article | Article
 	}
 }
 
-export function getActualArticle({article, refs, actualArticleIndex}: ArticleWithRefs): Readonly<Article> {
-	if (actualArticleIndex === undefined)
+export function getActualArticle({article, refs}: ArticleWithRefs): Readonly<Article> {
+	if (article.actualArticleIndex === undefined)
 		return article
 	else {
-		const ref = refs[actualArticleIndex]
+		const ref = refs[article.actualArticleIndex]
 		switch (ref.type) {
 			case ArticleRefType.Repost:
 				return ref.reposted;

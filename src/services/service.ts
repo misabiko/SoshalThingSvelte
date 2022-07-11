@@ -204,6 +204,7 @@ export function getCachedArticlesStorage(service: Service): {[id: string | numbe
 	return parsed?.services[service.name]?.cachedArticles || {}
 }
 
+//TODO Add articles to other timelines
 export async function refreshEndpoints(timelineEndpoints: TimelineEndpoint[], refreshTime: RefreshTime): Promise<ArticleIdPair[]> {
 	const articleIdPairs = []
 	for (const endpoint of timelineEndpoints)
@@ -248,7 +249,7 @@ function endpointRefreshed(endpoint: TimelineEndpoint, articles: ArticleWithRefs
 						pair.service === articleWithRefs.article.idPair.service &&
 						pair.id === articleWithRefs.article.idPair.id,
 					) &&
-				endpoint.filters.every(f => !f.enabled || keepArticle(articleWithRefs, f.filter))
+				endpoint.filters.every(f => !f.enabled || (keepArticle(articleWithRefs, f.filter) !== f.inverted))
 		})
 
 	const addedIdPairs = addedArticles.map(a => a.article.idPair)

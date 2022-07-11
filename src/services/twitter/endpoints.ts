@@ -178,7 +178,7 @@ function articleFromV1(json: TweetResponse): ArticleWithRefs {
 	{
 		if (json.retweeted_status !== undefined) {
 			const retweet = articleFromV1(json.retweeted_status)
-			const actualRef = retweet.actualArticleIndex !== undefined ? retweet.refs[retweet.actualArticleIndex] : undefined
+			const actualRef = retweet.article.actualArticleIndex !== undefined ? retweet.refs[retweet.article.actualArticleIndex] : undefined
 
 			if (actualRef?.type === ArticleRefType.Quote) {
 				articleRefs.push({
@@ -196,7 +196,7 @@ function articleFromV1(json: TweetResponse): ArticleWithRefs {
 		}else if (json.is_quote_status) {
 			if (json.quoted_status) {
 				const quote = articleFromV1(json.quoted_status)
-				const actualRef = quote.actualArticleIndex !== undefined ? quote.refs[quote.actualArticleIndex] : undefined
+				const actualRef = quote.article.actualArticleIndex !== undefined ? quote.refs[quote.article.actualArticleIndex] : undefined
 				if (actualRef?.type === ArticleRefType.Quote)
 					console.warn(`Quote(${json.id_str}) of a quote(${actualRef.quoted.id})?`)
 
@@ -226,6 +226,7 @@ function articleFromV1(json: TweetResponse): ArticleWithRefs {
 			new Date(json.created_at),
 			getMarkedAsReadStorage(TwitterService) as string[],
 			articleRefs.map(articleRefToIdPair),
+			actualArticleIndex,
 			parseMedia(json.extended_entities),
 			json.favorited,
 			json.favorite_count,
@@ -233,7 +234,6 @@ function articleFromV1(json: TweetResponse): ArticleWithRefs {
 			json.retweet_count,
 		),
 		refs: articleRefs,
-		actualArticleIndex,
 	}
 }
 

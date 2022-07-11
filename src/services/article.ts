@@ -84,7 +84,7 @@ export type ArticleMedia = {
 	ratio: ValidRatio;
 	queueLoadInfo: MediaQueueInfo.LazyLoad;
 	mediaType: MediaType;
-	thumbnail: string;
+	thumbnail?: string;
 	loaded: boolean;
 }
 

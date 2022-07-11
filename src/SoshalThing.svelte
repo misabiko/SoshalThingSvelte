@@ -13,8 +13,6 @@
 
 	setContext('isInjected', isInjected)
 	let showSidebar = !isInjected
-
-	//TODO Dissolve components folder
 </script>
 
 <style lang='sass'>

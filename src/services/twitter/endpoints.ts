@@ -4,20 +4,35 @@ import {fetchExtensionV1, TwitterService} from './service'
 import TwitterArticle from './article'
 import {articleRefToIdPair, ArticleRefType, getRatio, MediaQueueInfo, MediaType} from '../article'
 
-//TODO interface V1Endpoint extends Endpoint
-
-export class HomeTimelineEndpoint extends Endpoint {
-	readonly name = 'Home Timeline'
+abstract class V1Endpoint extends Endpoint {
+	//Waiting on https://github.com/microsoft/TypeScript/issues/34516 to make static
+	abstract readonly resource: string
 
 	async refresh(refreshTime: RefreshTime) {
+		const url = new URL(getV1APIURL(this.resource))
+		this.setSearchParams(url)
+
 		try {
-			return (await fetchExtensionV1<TweetResponse[]>(getV1APIURL('statuses/home_timeline') + '?include_entities=true'))
-				.map(articleFromV1)
+			return await this.fetchTweets(url)
 		}catch (errorResponse) {
 			console.error('Error fetching', errorResponse)
 			return []
 		}
 	}
+
+	setSearchParams(url: URL) {
+		url.searchParams.set('include_entities', 'true')
+	}
+
+	async fetchTweets(url: URL): Promise<ArticleWithRefs[]> {
+		return (await fetchExtensionV1<TweetResponse[]>(url.toString()))
+			.map(articleFromV1)
+	}
+}
+
+export class HomeTimelineEndpoint extends V1Endpoint {
+	readonly name = 'Home Timeline'
+	readonly resource = 'statuses/home_timeline'
 
 	matchParams(params: any): boolean {
 		return true;
@@ -30,8 +45,9 @@ export class HomeTimelineEndpoint extends Endpoint {
 	}
 }
 
-export class UserTimelineEndpoint extends Endpoint {
+export class UserTimelineEndpoint extends V1Endpoint {
 	readonly name;
+	readonly resource = 'statuses/user_timeline'
 
 	constructor(readonly username: string) {
 		super()
@@ -39,14 +55,9 @@ export class UserTimelineEndpoint extends Endpoint {
 		this.name = `User Timeline ${this.username}`
 	}
 
-	async refresh(refreshTime: RefreshTime) {
-		try {
-			return (await fetchExtensionV1<TweetResponse[]>(`${getV1APIURL('statuses/user_timeline')}?screen_name=${this.username}&include_entities=true`))
-				.map(articleFromV1)
-		}catch (errorResponse) {
-			console.error('Error fetching', errorResponse)
-			return []
-		}
+	setSearchParams(url: URL) {
+		super.setSearchParams(url)
+		url.searchParams.set('screen_name', this.username)
 	}
 
 	matchParams(params: any): boolean {
@@ -60,8 +71,9 @@ export class UserTimelineEndpoint extends Endpoint {
 	}
 }
 
-export class ListEndpoint extends Endpoint {
+export class ListEndpoint extends V1Endpoint {
 	readonly name;
+	readonly resource = 'lists/statuses'
 
 	constructor(readonly username: string, readonly slug: string) {
 		super()
@@ -69,14 +81,10 @@ export class ListEndpoint extends Endpoint {
 		this.name = `List Endpoint ${this.username}/${this.slug}`
 	}
 
-	async refresh(refreshTime: RefreshTime) {
-		try {
-			return (await fetchExtensionV1<TweetResponse[]>(getV1APIURL('lists/statuses') + `?owner_screen_name=${this.username}&slug=${this.slug}&include_entities=true`))
-				.map(articleFromV1)
-		}catch (errorResponse) {
-			console.error('Error fetching', errorResponse)
-			return []
-		}
+	setSearchParams(url: URL) {
+		super.setSearchParams(url)
+		url.searchParams.set('owner_screen_name', this.username)
+		url.searchParams.set('slug', this.slug)
 	}
 
 	matchParams(params: any): boolean {
@@ -91,8 +99,9 @@ export class ListEndpoint extends Endpoint {
 	}
 }
 
-export class LikesEndpoint extends Endpoint {
+export class LikesEndpoint extends V1Endpoint {
 	readonly name
+	readonly resource = 'favorites/list'
 
 	constructor(readonly username: string) {
 		super()
@@ -100,14 +109,9 @@ export class LikesEndpoint extends Endpoint {
 		this.name = `Likes ${this.username}`
 	}
 
-	async refresh(refreshTime: RefreshTime) {
-		try {
-			return (await fetchExtensionV1<TweetResponse[]>(getV1APIURL('favorites/list') + `?screen_name=${this.username}&include_entities=true`))
-				.map(articleFromV1)
-		}catch (errorResponse) {
-			console.error('Error fetching', errorResponse)
-			return []
-		}
+	setSearchParams(url: URL) {
+		super.setSearchParams(url)
+		url.searchParams.set('screen_name', this.username)
 	}
 
 	matchParams(params: any): boolean {
@@ -121,8 +125,9 @@ export class LikesEndpoint extends Endpoint {
 	}
 }
 
-export class SearchEndpoint extends Endpoint {
+export class SearchEndpoint extends V1Endpoint {
 	readonly name
+	readonly resource = 'search/tweets'
 
 	constructor(readonly query: string) {
 		super()
@@ -130,20 +135,16 @@ export class SearchEndpoint extends Endpoint {
 		this.name = `Search ${this.query}`
 	}
 
-	async refresh(refreshTime: RefreshTime) {
-		try {
-			const url = new URL(getV1APIURL('search/tweets'))
-			url.searchParams.set('q', this.query)
-			url.searchParams.set('result_type', 'recent')
-			url.searchParams.set('include_entities', 'true')
+	setSearchParams(url: URL) {
+		super.setSearchParams(url)
+		url.searchParams.set('q', this.query)
+		url.searchParams.set('result_type', 'recent')
+		url.searchParams.set('include_entities', 'true')
+	}
 
-			const response = await fetchExtensionV1<SearchResponse>(url.toString())
-			return response.statuses
-				.map(articleFromV1)
-		}catch (errorResponse) {
-			console.error('Error fetching', errorResponse)
-			return []
-		}
+	async fetchTweets(url: URL): Promise<ArticleWithRefs[]> {
+		return (await fetchExtensionV1<SearchResponse>(url.toString())).statuses
+			.map(articleFromV1)
 	}
 
 	matchParams(params: any): boolean {

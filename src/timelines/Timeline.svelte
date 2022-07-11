@@ -151,14 +151,14 @@
 
 	async function loadBottom() {
 		console.log('Loading Bottom!')
-		const newArticles = await loadBottomEndpoints(data.endpoints, RefreshTime.OnRefresh)
+		const newArticles = await loadBottomEndpoints(data.endpoints)
 		articleIdPairs.push(...newArticles)
 		articleIdPairs = articleIdPairs
 	}
 
 	async function loadTop() {
 		console.log('Loading Top!')
-		const newArticles = await loadTopEndpoints(data.endpoints, RefreshTime.OnRefresh)
+		const newArticles = await loadTopEndpoints(data.endpoints)
 		articleIdPairs.push(...newArticles)
 		articleIdPairs = articleIdPairs
 	}

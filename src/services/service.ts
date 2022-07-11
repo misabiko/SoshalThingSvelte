@@ -3,6 +3,7 @@ import type { ArticleIdPair, ArticleWithRefs } from './article'
 import {getRefed} from './article'
 import type {Writable} from 'svelte/store'
 import {get, writable} from 'svelte/store'
+import type {TimelineEndpoint} from '../timelines'
 
 const endpoints: { [name: string]: Endpoint } = {}
 const services: { [name: string]: Service } = {}
@@ -87,6 +88,7 @@ export interface EndpointConstructorInfo {
 
 export type EndpointConstructorParams = { [param: string]: ParamType };
 
+//TODO Replace with enum RefreshType { RefreshStart, Refresh, LoadTop, LoadBottom }
 export enum RefreshTime {
 	OnStart,
 	OnRefresh,
@@ -205,24 +207,33 @@ export function getCachedArticlesStorage(service: Service): {[id: string | numbe
 	return parsed?.services[service.name]?.cachedArticles || {}
 }
 
-export async function refreshEndpoints(endpointNames: string[], refreshTime: RefreshTime): Promise<ArticleIdPair[]> {
+export async function refreshEndpoints(timelineEndpoints: TimelineEndpoint[], refreshTime: RefreshTime): Promise<ArticleIdPair[]> {
 	const articleIdPairs = []
-	for (const endpointName of endpointNames)
-		articleIdPairs.push(...endpointRefreshed(endpointName, await endpoints[endpointName].refresh(refreshTime)))
+	for (const endpoint of timelineEndpoints)
+		if (
+			(refreshTime === RefreshTime.OnStart && endpoint.onStart) ||
+			(refreshTime === RefreshTime.OnRefresh && endpoint.onRefresh)
+		)
+			articleIdPairs.push(...endpointRefreshed(endpoint.name, await endpoints[endpoint.name].refresh(refreshTime)))
+
 	return articleIdPairs
 }
 
-export async function loadTopEndpoints(endpointNames: string[], refreshTime: RefreshTime): Promise<ArticleIdPair[]> {
+export async function loadTopEndpoints(timelineEndpoints: TimelineEndpoint[]): Promise<ArticleIdPair[]> {
 	const articleIdPairs = []
-	for (const endpointName of endpointNames)
-		articleIdPairs.push(...endpointRefreshed(endpointName, await endpoints[endpointName].loadTop(refreshTime)))
+	for (const endpoint of timelineEndpoints)
+		if (endpoint.onRefresh)
+			articleIdPairs.push(...endpointRefreshed(endpoint.name, await endpoints[endpoint.name].refresh(RefreshTime.OnRefresh)))
+
 	return articleIdPairs
 }
 
-export async function loadBottomEndpoints(endpointNames: string[], refreshTime: RefreshTime): Promise<ArticleIdPair[]> {
+export async function loadBottomEndpoints(timelineEndpoints: TimelineEndpoint[]): Promise<ArticleIdPair[]> {
 	const articleIdPairs = []
-	for (const endpointName of endpointNames)
-		articleIdPairs.push(...endpointRefreshed(endpointName, await endpoints[endpointName].loadBottom(refreshTime)))
+	for (const endpoint of timelineEndpoints)
+		if (endpoint.onRefresh)
+			articleIdPairs.push(...endpointRefreshed(endpoint.name, await endpoints[endpoint.name].refresh(RefreshTime.OnRefresh)))
+
 	return articleIdPairs
 }
 

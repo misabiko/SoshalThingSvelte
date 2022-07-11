@@ -1,4 +1,4 @@
-import type {TimelineData} from './timelines'
+import type {TimelineData, TimelineEndpoint} from './timelines'
 import type {SvelteComponent} from 'svelte'
 import ColumnContainer from './containers/ColumnContainer.svelte'
 import RowContainer from './containers/RowContainer.svelte'
@@ -32,10 +32,10 @@ export function loadTimelines(): TimelineData[] {
 			...t,
 		}
 
-		const endpoints: string[] = []
+		const endpoints: TimelineEndpoint[] = []
 		for (const endpointStorage of defaulted.endpoints) {
 			const endpoint = parseAndLoadEndpoint(endpointStorage)
-			if (endpoint !== undefined && !endpoints.includes(endpoint))
+			if (endpoint !== undefined && !endpoints.find(e => e.name === endpoint.name))
 				endpoints.push(endpoint)
 		}
 
@@ -81,7 +81,7 @@ function parseArticleView(articleView: string | undefined): typeof SvelteCompone
 	}
 }
 
-function parseAndLoadEndpoint(storage: EndpointStorage): string | undefined {
+function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | undefined {
 	const endpoints = getEndpoints()
 	const constructors = getEndpointConstructors()
 	if (!constructors.hasOwnProperty(storage.service)) {
@@ -104,7 +104,11 @@ function parseAndLoadEndpoint(storage: EndpointStorage): string | undefined {
 		addEndpoint(endpoint)
 	}
 
-	return endpoint.name
+	return {
+		name: endpoint.name,
+		onStart: storage.onStart ?? true,
+		onRefresh: storage.onRefresh ?? true,
+	}
 }
 
 type MainStorage = {

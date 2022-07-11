@@ -292,7 +292,7 @@
 		<div class='timelineOptions'>
 			<div class='box'>
 				<Field label='Container'>
-					<Select bind:selected={container}>
+					<Select bind:selected={container} nativeSize={0}>
 						<option value={ColumnContainer}>Column</option>
 						<option value={RowContainer}>Row</option>
 						<option value={MasonryContainer}>Masonry</option>
@@ -314,7 +314,7 @@
 			</div>
 			<div class='box'>
 				<Field label='Article View'>
-					<Select bind:selected={articleView}>
+					<Select bind:selected={articleView} nativeSize={0}>
 						<option value={SocialArticleView}>Social</option>
 						<option value={GalleryArticleView}>Gallery</option>
 					</Select>

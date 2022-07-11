@@ -419,15 +419,13 @@
 					</div>
 				{:else if !animatedAsGifs && media.mediaType === MediaType.Video}
 					<div class="postMedia postVideo">
-						<!--ref={ctx.props().video_ref.clone()}-->
-						<video controls on:click={() => dispatch('mediaClick', index)}>
+						<video controls on:click|preventDefault={() => dispatch('mediaClick', index)}>
 							<source src={media.src} type="video/mp4"/>
 						</video>
 					</div>
 				{:else if media.mediaType === MediaType.VideoGif || animatedAsGifs && media.mediaType === MediaType.Video}
 					<div class="postMedia postVideo">
-						<!--ref={ctx.props().video_ref.clone()}-->
-						<video controls autoplay loop muted on:click={() => dispatch('mediaClick', index)}>
+						<video controls autoplay loop muted on:click|preventDefault={() => dispatch('mediaClick', index)}>
 							<source src={media.src} type="video/mp4"/>
 						</video>
 					</div>

@@ -140,7 +140,7 @@
 				<!-- svelte-ignore a11y-media-has-caption -->
 				<video
 					controls
-					on:click={() => dispatch('mediaClick', i)}
+					on:click|preventDefault={() => dispatch('mediaClick', i)}
 					on:loadeddata={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
 					on:load={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
 				>
@@ -152,7 +152,7 @@
 					autoplay
 					loop
 					muted
-					on:click={() => dispatch('mediaClick', i)}
+					on:click|preventDefault={() => dispatch('mediaClick', i)}
 					on:loadeddata={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
 					on:load={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
 				>

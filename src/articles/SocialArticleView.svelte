@@ -15,6 +15,7 @@
 	import Article from '../services/article'
 	import Dropdown from '../Dropdown.svelte'
 	import {toggleMarkAsRead, toggleHide, articleAction, getArticleAction, getWritable, STANDARD_ACTIONS} from "../services/service"
+	import {MediaType} from "../services/article.js";
 
 	export let article: Readonly<Article>
 	export let actualArticle: Readonly<Article>
@@ -410,11 +411,27 @@
 	</div>
 	{#if actualArticle.medias.length && !minimized}
 		<div class='postMedia postImages'>
-			{#each actualArticle.medias as media}
-				<div class='mediaHolder'>
-					<div class='is-hidden imgPlaceHolder'></div>
-					<img alt={actualArticle.id} src={media.src} on:click={() => dispatch('mediaClick', 0)}/>
-				</div>
+			{#each actualArticle.medias as media, index (index)}
+				{#if media.mediaType === MediaType.Image || media.mediaType === MediaType.Gif}
+					<div class='mediaHolder'>
+						<div class='is-hidden imgPlaceHolder'></div>
+						<img alt={actualArticle.id} src={media.src} on:click={() => dispatch('mediaClick', index)}/>
+					</div>
+				{:else if !animatedAsGifs && media.mediaType === MediaType.Video}
+					<div class="postMedia postVideo">
+						<!--ref={ctx.props().video_ref.clone()}-->
+						<video controls on:click={() => dispatch('mediaClick', index)}>
+							<source src={media.src} type="video/mp4"/>
+						</video>
+					</div>
+				{:else if media.mediaType === MediaType.VideoGif || animatedAsGifs && media.mediaType === MediaType.Video}
+					<div class="postMedia postVideo">
+						<!--ref={ctx.props().video_ref.clone()}-->
+						<video controls autoplay loop muted on:click={() => dispatch('mediaClick', index)}>
+							<source src={media.src} type="video/mp4"/>
+						</video>
+					</div>
+				{/if}
 			{/each}
 		</div>
 	{/if}

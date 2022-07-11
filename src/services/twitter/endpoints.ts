@@ -267,9 +267,9 @@ function parseMedia(extendedEntities?: ExtendedEntities): ArticleMedia[] {
 					queueLoadInfo: MediaQueueInfo.DirectLoad
 				}
 			case 'video':
-				return getMP4(media.video_info, MediaType.VideoGif)
-			case 'animated_gif':
 				return getMP4(media.video_info, MediaType.Video)
+			case 'animated_gif':
+				return getMP4(media.video_info, MediaType.VideoGif)
 		}
 	}) || []
 }

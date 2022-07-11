@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import {Field, Select, Input, Switch} from 'svelma';
-	import type {Readable, Writable} from 'svelte/store'
+	import type {Readable} from 'svelte/store'
 	import type {ArticleIdPair} from '../services/article'
 	import ColumnContainer from "../containers/ColumnContainer.svelte"
 	import RowContainer from "../containers/RowContainer.svelte"
@@ -17,7 +17,7 @@
 		faEllipsisV,
 		faEyeSlash,
 	} from '@fortawesome/free-solid-svg-icons'
-	import {derived, writable} from 'svelte/store'
+	import {derived} from 'svelte/store'
 	import {
 		getWritable,
 		loadBottomEndpoints,
@@ -26,7 +26,7 @@
 		RefreshTime,
 	} from '../services/service'
 	import Article, {ArticleRefType} from '../services/article'
-	import {afterUpdate, onMount, SvelteComponent} from 'svelte'
+	import {onMount} from 'svelte'
 	import {type TimelineData} from './index'
 
 	export let data: TimelineData
@@ -52,6 +52,7 @@
 	let articles: Readable<Article[]>
 	$: articles = derived(articleIdPairs.map(getWritable), a => a)
 
+	//TODO Use ArticleWithRefs type
 	let articleRefs: Readable<{article: Article, refs: Article[]}[]>
 	$: articleRefs = derived($articles.map(article =>
 		derived(
@@ -76,7 +77,7 @@
 	let filteredArticles: Readable<ArticleIdPair[]>
 	$: filteredArticles = derived(articleRefs, stores =>
 		stores
-			.filter(({article, refs}) => !article.markedAsRead && !article.hidden && refs.every(ref => !ref.markedAsRead && !ref.hidden))
+			.filter(({article, refs}: {article: Article, refs: Article[]}) => !article.markedAsRead && !article.hidden && refs.every(ref => !ref.markedAsRead && !ref.hidden))
 			.map(({article}) => article.idPair)
 	)
 

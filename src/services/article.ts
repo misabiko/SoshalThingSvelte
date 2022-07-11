@@ -153,7 +153,7 @@ export type ArticleWithRefs = {
 export interface ArticleIdPair {
 	service: string;
 	id: string | number
-};
+}
 
 export type ArticleRefIdPair =
 	{

@@ -92,10 +92,10 @@
 			overflow-x: hidden
 
 	.holderBoxTop
-		top: 0px
+		top: 0
 
 	.holderBoxBottom
-		bottom: 0px
+		bottom: 0
 		justify-content: space-around
 
 	img.articleMediaLoading
@@ -108,7 +108,7 @@
 	//	list-style-type: none
 </style>
 
-<article class='galleryArticle' articleId={article.id} {style}>
+<article class='galleryArticle' {style}>
 	<div>
 		{#each actualArticle.medias as media, i (i)}
 			{@const isLoading = $loadingStates[i] === LoadingState.Loading}

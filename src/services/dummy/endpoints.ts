@@ -1,7 +1,6 @@
 import {
 	Endpoint,
 	type EndpointConstructorInfo,
-	type EndpointConstructorParams,
 	RefreshTime,
 	registerEndpoint,
 } from '../service'

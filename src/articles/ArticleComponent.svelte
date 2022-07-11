@@ -1,7 +1,7 @@
 <script lang='ts'>
 	import type {Writable} from 'svelte/store'
 	import type {ArticleIdPair, ArticleRefIdPair} from "../services/article"
-	import {toggleMarkAsRead, articleAction, getWritable, fetchArticle} from "../services/service"
+	import {toggleMarkAsRead, getWritable, fetchArticle} from "../services/service"
 	import Article, {ArticleRefType} from '../services/article'
 	import {derived} from 'svelte/store'
 

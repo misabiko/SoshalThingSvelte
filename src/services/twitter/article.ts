@@ -1,4 +1,4 @@
-import type {ArticleAuthor, ArticleIdPair, ArticleMedia, ArticleRefIdPair} from '../article'
+import type {ArticleAuthor, ArticleMedia, ArticleRefIdPair} from '../article'
 import Article from '../article'
 
 export default class TwitterArticle extends Article {

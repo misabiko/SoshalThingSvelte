@@ -36,7 +36,7 @@
 	}
 
 	function getRatio(article: Article, hideText: boolean): number {
-		const {width} = canvasContext.measureText(article.text)
+		const {width} = article.text !== undefined ? canvasContext.measureText(article.text) : 0
 		const textWidth = /*hideText ?*/ 0 /*: width / columnCount*/
 		return textWidth + article.medias.reduce((acc, curr) => acc + curr.ratio, 0)
 	}

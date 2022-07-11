@@ -4,17 +4,13 @@
 	import {
 		faRetweet,
 		faHeart as faHeartFilled,
-		faCompress,
-		faExpand,
-		faEye,
 		faEyeSlash,
-		faExpandAlt,
 		faEllipsisH,
 	} from '@fortawesome/free-solid-svg-icons'
 	import {createEventDispatcher} from 'svelte'
 	import Article from '../services/article'
 	import Dropdown from '../Dropdown.svelte'
-	import {toggleMarkAsRead, toggleHide, articleAction, getArticleAction, getWritable, STANDARD_ACTIONS} from "../services/service"
+	import {toggleMarkAsRead, toggleHide, articleAction, getArticleAction, STANDARD_ACTIONS} from "../services/service"
 	import {MediaType} from "../services/article.js";
 
 	export let article: Readonly<Article>

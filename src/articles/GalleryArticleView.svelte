@@ -20,6 +20,8 @@
 	export let animatedAsGifs: boolean
 	export let shouldLoadMedia: boolean
 	export let modal = false
+	export let hideText: boolean; hideText;
+	export let compact: boolean; compact;
 
 	const dispatch = createEventDispatcher()
 	const mediaRefs: HTMLImageElement[] = []

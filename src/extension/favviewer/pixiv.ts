@@ -1,4 +1,4 @@
-import FavViewer from '../../components/SoshalThing.svelte';
+import FavViewer from '../../SoshalThing.svelte';
 
 const favviewer = new FavViewer({
 	target: document.body,

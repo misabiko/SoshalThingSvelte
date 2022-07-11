@@ -8,7 +8,7 @@
 </script>
 
 <style lang='sass'>
-	@use '../../styles/variables' as *
+	@use '../styles/variables' as *
 
 	#sidebar
 		background-color: $dark

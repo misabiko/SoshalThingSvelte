@@ -1,7 +1,7 @@
 <script lang='ts'>
 	import {Field, Select, Input, Switch} from 'svelma';
 	import type {Readable, Writable} from 'svelte/store'
-	import type {ArticleIdPair} from '../../services/article'
+	import type {ArticleIdPair} from '../services/article'
 	import ColumnContainer from "../containers/ColumnContainer.svelte"
 	import RowContainer from "../containers/RowContainer.svelte"
 	import MasonryContainer from "../containers/MasonryContainer.svelte"
@@ -24,8 +24,8 @@
 		loadTopEndpoints,
 		refreshEndpoints,
 		RefreshTime,
-	} from '../../services/service'
-	import Article, {ArticleRefType} from '../../services/article'
+	} from '../services/service'
+	import Article, {ArticleRefType} from '../services/article'
 	import {afterUpdate, onMount, SvelteComponent} from 'svelte'
 	import {type TimelineData} from './index'
 
@@ -177,7 +177,7 @@
 </script>
 
 <style lang='sass'>
-	@use '../../styles/variables' as *
+	@use '../styles/variables' as *
 
 	.timeline
 		color: $text

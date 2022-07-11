@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import 'styles/global.sass'
-	import SoshalThing from "./components/SoshalThing.svelte"
+	import SoshalThing from "./SoshalThing.svelte"
 	import {loadMainStorage, loadTimelines} from './storages'
 
 	const {fullscreen} = loadMainStorage();

@@ -1,9 +1,9 @@
 <script lang="ts">
 	import ArticleComponent from "../articles/ArticleComponent.svelte";
-	import type {ArticleIdPair} from '../../services/article'
+	import type {ArticleIdPair} from '../services/article'
 	import {derived} from 'svelte/store'
-	import {getWritable} from '../../services/service'
-	import Article from '../../services/article'
+	import {getWritable} from '../services/service'
+	import Article from '../services/article'
 
 	export let containerRef = undefined;
 	export let idPairs;

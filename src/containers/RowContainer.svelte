@@ -12,7 +12,7 @@
 </script>
 
 <style lang='sass'>
-	@use '../../styles/variables' as *
+	@use '../styles/variables' as *
 
 	.articlesContainer.rowContainer
 		display: flex

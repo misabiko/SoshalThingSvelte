@@ -12,9 +12,9 @@
 		faEllipsisH,
 	} from '@fortawesome/free-solid-svg-icons'
 	import {createEventDispatcher} from 'svelte'
-	import Article from '../../services/article'
+	import Article from '../services/article'
 	import Dropdown from '../Dropdown.svelte'
-	import {toggleMarkAsRead, toggleHide, articleAction, getArticleAction, getWritable, STANDARD_ACTIONS} from "../../services/service"
+	import {toggleMarkAsRead, toggleHide, articleAction, getArticleAction, getWritable, STANDARD_ACTIONS} from "../services/service"
 
 	export let article: Readonly<Article>
 	export let actualArticle: Readonly<Article>
@@ -54,7 +54,7 @@
 </script>
 
 <style lang='sass'>
-	@use '../../styles/variables' as *
+	@use '../styles/variables' as *
 
 	article
 		padding: 1rem

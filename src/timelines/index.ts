@@ -1,4 +1,4 @@
-import type {ArticleIdPair} from '../../services/article'
+import type {ArticleIdPair} from '../services/article'
 import type {SvelteComponent} from 'svelte'
 
 export type TimelineData = {

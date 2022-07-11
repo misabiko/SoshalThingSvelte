@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import Article, {MediaQueueInfo, MediaType} from '../../services/article'
+	import Article, {MediaQueueInfo, MediaType} from '../services/article'
 	import Fa from 'svelte-fa/src/fa.svelte'
 	import {
 		faExpandArrowsAlt,
@@ -9,10 +9,10 @@
 		faEllipsisH,
 	} from '@fortawesome/free-solid-svg-icons'
 	import {afterUpdate, createEventDispatcher} from 'svelte'
-	import {LoadingState, loadingStore} from '../../bufferedMediaLoading'
+	import {LoadingState, loadingStore} from '../bufferedMediaLoading'
 	import {derived} from 'svelte/store'
 	import Dropdown from "../Dropdown.svelte"
-	import {fetchArticle, toggleHide, toggleMarkAsRead, articleAction, getArticleAction, STANDARD_ACTIONS} from "../../services/service"
+	import {fetchArticle, toggleHide, toggleMarkAsRead, articleAction, getArticleAction, STANDARD_ACTIONS} from "../services/service"
 
 	export let article: Readonly<Article>
 	export let actualArticle: Readonly<Article>
@@ -42,7 +42,7 @@
 </script>
 
 <style lang='sass'>
-	@use '../../styles/variables' as *
+	@use '../styles/variables' as *
 
 	article
 		padding: 1rem

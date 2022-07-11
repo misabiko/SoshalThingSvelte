@@ -144,6 +144,12 @@ export type ArticleRef =
 		replied: Article,
 	}
 
+export type ArticleWithRefs = {
+	article: Article,
+	refs: ArticleRef[],
+	actualArticleIndex?: number,
+}
+
 export interface ArticleIdPair {
 	service: string;
 	id: string | number

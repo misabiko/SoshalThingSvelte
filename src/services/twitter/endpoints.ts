@@ -1,6 +1,5 @@
-import type {ArticleMedia, ArticleRef} from '../article'
+import type {ArticleMedia, ArticleRef, ArticleWithRefs} from '../article'
 import {Endpoint, type EndpointConstructorInfo, getMarkedAsReadStorage, RefreshTime, registerEndpoint} from '../service'
-import type {ArticleWithRefs} from '../service'
 import {fetchExtensionV1, TwitterService} from './service'
 import TwitterArticle from './article'
 import {articleRefToIdPair, ArticleRefType, getRatio, MediaQueueInfo, MediaType} from '../article'

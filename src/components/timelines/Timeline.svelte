@@ -52,8 +52,8 @@
 	let articles: Readable<Article[]>
 	$: articles = derived(articleIdPairs.map(getWritable), a => a)
 
-	let articleRefStores: Readable<{article: Article, refs: Article[]}>[]
-	$: articleRefStores = $articles.map(article =>
+	let articleRefs: Readable<{article: Article, refs: Article[]}[]>
+	$: articleRefs = derived($articles.map(article =>
 		derived(
 			article.articleRefs
 				.flatMap(ref => {
@@ -71,10 +71,7 @@
 				.map(getWritable),
 			(refs: Article[]) => ({article, refs})
 		)
-	)
-
-	let articleRefs: Readable<{article: Article, refs: Article[]}[]>
-	$: articleRefs = derived(articleRefStores, refs => refs)
+	), refs => refs)
 
 	let filteredArticles: Readable<ArticleIdPair[]>
 	$: filteredArticles = derived(articleRefs, stores =>

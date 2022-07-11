@@ -1,8 +1,8 @@
-import type {ArticleIdPair, ArticleRef} from './article'
 import type Article from './article'
+import type { ArticleIdPair, ArticleWithRefs } from './article'
+import {getRefed} from './article'
 import type {Writable} from 'svelte/store'
 import {get, writable} from 'svelte/store'
-import {getRefed} from './article'
 
 const endpoints: { [name: string]: Endpoint } = {}
 const services: { [name: string]: Service } = {}
@@ -77,12 +77,6 @@ export abstract class Endpoint {
 	abstract matchParams(params: any): boolean
 
 	static readonly constructorInfo: EndpointConstructorInfo
-}
-
-export type ArticleWithRefs = {
-	article: Article,
-	refs: ArticleRef[],
-	actualArticleIndex?: number,
 }
 
 export interface EndpointConstructorInfo {

@@ -1,7 +1,5 @@
-import FavViewer from '../../SoshalThing.svelte';
+import SoshalThing from '../../SoshalThing.svelte';
 
-const favviewer = new FavViewer({
+const soshalthing = new SoshalThing({
 	target: document.body,
 });
-
-export default favviewer;

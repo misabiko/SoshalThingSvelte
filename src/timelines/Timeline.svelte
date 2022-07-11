@@ -258,7 +258,7 @@
 			<strong>{data.title}</strong>
 			{#if favviewerButtons}
 				<div class='timelineButtons'>
-					<button class='borderless-button' title='Toggle FavViewer' on:click={() => favviewerHidden = !favviewerHidden}>
+					<button class='borderless-button' title='Toggle SoshalThing' on:click={() => favviewerHidden = !favviewerHidden}>
 						<Fa icon={faEyeSlash} size='large'/>
 					</button>
 					<button class='borderless-button' title='Show Sidebar' on:click={() => showSidebar = !showSidebar}>

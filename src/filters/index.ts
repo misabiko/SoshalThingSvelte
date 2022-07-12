@@ -5,7 +5,7 @@ import {
 	getActualArticle,
 	getRefed,
 	MediaType,
-} from './services/article'
+} from '../services/article'
 
 export type FilterInstance = {
 	filter: Filter
@@ -44,9 +44,9 @@ export type Filter =
 		byUsername?: string
 	}
 
-function getFilterName(filter: Filter, inverted: boolean): string {
+export function getFilterName(filterType: Filter['type'], inverted: boolean): string {
 	if (inverted) {
-		switch (filter.type) {
+		switch (filterType) {
 			case 'media':
 				return 'Without Media';
 			case 'animated':
@@ -67,7 +67,7 @@ function getFilterName(filter: Filter, inverted: boolean): string {
 				return 'Not a quote';
 		}
 	}else {
-		switch (filter.type) {
+		switch (filterType) {
 			case 'media':
 				return 'Has media';
 			case 'animated':
@@ -88,6 +88,22 @@ function getFilterName(filter: Filter, inverted: boolean): string {
 				return 'Quote';
 		}
 	}
+}
+
+export const filterTypes: Filter['type'][] = [
+	'media',
+	'animated',
+	'notMarkedAsRead',
+	'notHidden',
+	'liked',
+	'reposted',
+	'noRef',
+	'repost',
+	'quote'
+]
+
+export function defaultFilter(filterType: Filter['type']): Filter {
+	return { type: filterType }
 }
 
 export function keepArticle(articleWithRefs: ArticleWithRefs, filter: Filter): boolean {

@@ -29,6 +29,7 @@
 	import {onMount} from 'svelte'
 	import {type TimelineData} from './index'
 	import {keepArticle} from '../filters'
+	import FiltersOptions from "../filters/FiltersOptions.svelte";
 
 	export let data: TimelineData
 	export let fullscreen: boolean
@@ -335,10 +336,13 @@
 				<Field label='Endpoints'>
 					<ul>
 						{#each data.endpoints as endpoint (endpoint)}
-							<li>{endpoint}</li>
+							<li>{endpoint.name}</li>
 						{/each}
 					</ul>
 				</Field>
+			</div>
+			<div class='box'>
+				<FiltersOptions bind:instances={data.filters}/>
 			</div>
 		</div>
 	{/if}

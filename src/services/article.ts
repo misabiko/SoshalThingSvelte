@@ -1,4 +1,8 @@
 //TODO interface?
+import type {Readable} from 'svelte/store'
+import {derived} from 'svelte/store'
+import {getWritable} from './service'
+
 export default abstract class Article {
 	static readonly service: string
 
@@ -9,10 +13,13 @@ export default abstract class Article {
 	readonly creationTime?: Date
 	readonly url: string
 	readonly medias: ArticleMedia[]
+
 	markedAsRead: boolean
 	hidden: boolean
-	readonly articleRefs: ArticleRefIdPair[]
-	readonly actualArticleIndex?: number
+
+	readonly actualArticleRef?: ArticleRefIdPair
+	readonly replyRef?: ArticleIdPair
+
 	fetched: boolean
 	json: any
 
@@ -25,8 +32,8 @@ export default abstract class Article {
 		markedAsRead: boolean,
 		hidden: boolean,
 		markedAsReadStorage: (string | number)[],	//Actually (string[] | number[])
-		articleRefs: ArticleRefIdPair[],
-		actualArticleIndex?: number,
+		actualArticleRef?: ArticleRefIdPair
+		replyRef?: ArticleIdPair
 		fetched?: boolean,
 		json?: any,
 	}) {
@@ -37,8 +44,8 @@ export default abstract class Article {
 		this.medias = params.medias || []
 		this.markedAsRead = params.markedAsRead || params.markedAsReadStorage.includes(this.id)
 		this.hidden = params.hidden
-		this.articleRefs = params.articleRefs
-		this.actualArticleIndex = params.actualArticleIndex
+		this.actualArticleRef = params.actualArticleRef
+		this.replyRef = params.replyRef
 		this.fetched = params.fetched || false
 		this.json = params.json
 	}
@@ -124,7 +131,6 @@ export enum ArticleRefType {
 	Repost,
 	Quote,
 	QuoteRepost,
-	Reply,
 }
 
 //TODO Have reply as its own member
@@ -141,16 +147,13 @@ export type ArticleRef =
 		type: ArticleRefType.QuoteRepost,
 		reposted: Article,
 		quoted: Article,
-	} |
-	{
-		type: ArticleRefType.Reply,
-		replied: Article,
 	}
 
-export type ArticleWithRefs = {
+export type ArticleWithRefs = Readonly<{
 	article: Article,
-	refs: ArticleRef[],
-}
+	actualArticleRef?: ArticleRef
+	replyRef?: Article
+}>
 
 export interface ArticleIdPair {
 	service: string;
@@ -170,10 +173,6 @@ export type ArticleRefIdPair =
 		type: ArticleRefType.QuoteRepost,
 		reposted: ArticleIdPair,
 		quoted: ArticleIdPair,
-	} |
-	{
-		type: ArticleRefType.Reply,
-		replied: ArticleIdPair,
 	}
 
 export function articleRefToIdPair(ref: ArticleRef): ArticleRefIdPair {
@@ -194,48 +193,77 @@ export function articleRefToIdPair(ref: ArticleRef): ArticleRefIdPair {
 				reposted: ref.reposted.idPair,
 				quoted: ref.quoted.idPair,
 			}
-		case ArticleRefType.Reply:
-			return {
-				type: ref.type,
-				replied: ref.replied.idPair,
-			}
 	}
 }
 
-export function getRefed(ref: ArticleRef | ArticleRefIdPair): (Article | ArticleIdPair)[] {
+type ArticlesOrIdPairs<T extends ArticleRef | ArticleRefIdPair> = T extends ArticleRef
+	? Article[]
+	: ArticleIdPair[]
+
+export function getRefed<T extends ArticleRef | ArticleRefIdPair>(ref: T) {
 	switch (ref.type) {
 		case ArticleRefType.Repost:
-			return [ref.reposted]
+			return [ref.reposted] as ArticlesOrIdPairs<T>
 		case ArticleRefType.Quote:
-			return [ref.quoted]
+			return [ref.quoted] as ArticlesOrIdPairs<T>
 		case ArticleRefType.QuoteRepost:
-			return [ref.reposted, ref.quoted]
-		case ArticleRefType.Reply:
-			return [ref.replied]
+			return [ref.reposted, ref.quoted] as ArticlesOrIdPairs<T>
 	}
 }
 
-export function getActualArticle({article, refs}: ArticleWithRefs): Readonly<Article> {
-	if (article.actualArticleIndex === undefined)
-		return article
-	else {
-		const ref = refs[article.actualArticleIndex]
-		switch (ref.type) {
-			case ArticleRefType.Repost:
-				return ref.reposted;
-			case ArticleRefType.Quote:
-				return article;
-			case ArticleRefType.QuoteRepost:
-				return ref.reposted;
-			case ArticleRefType.Reply:
-				return article;
-		}
+export function getActualArticleIdPair(article: Article)
+	: Readonly<ArticleIdPair> {
+	switch (article.actualArticleRef?.type) {
+		case ArticleRefType.Repost:
+			return article.actualArticleRef.reposted;
+		case ArticleRefType.Quote:
+			return article.idPair;
+		case ArticleRefType.QuoteRepost:
+			return article.actualArticleRef.reposted;
+		default:
+			return article.idPair;
+	}
+}
+
+export function getActualArticle({article, actualArticleRef}: ArticleWithRefs)
+	: Readonly<Article> {
+	switch (actualArticleRef?.type) {
+		case ArticleRefType.Repost:
+			return actualArticleRef.reposted;
+		case ArticleRefType.Quote:
+			return article;
+		case ArticleRefType.QuoteRepost:
+			return actualArticleRef.reposted;
+		default:
+			return article;
 	}
 }
 
 export function isRepost(article: Article): boolean {
-	return article.articleRefs.some(ref =>
-		ref.type === ArticleRefType.Repost ||
-		ref.type === ArticleRefType.QuoteRepost
-	)
+	return article.actualArticleRef?.type === ArticleRefType.Repost ||
+		article.actualArticleRef?.type === ArticleRefType.QuoteRepost;
+}
+
+export function articleRefIdPairToRef(articleRef: ArticleRefIdPair): Readable<ArticleRef> {
+	switch (articleRef.type) {
+		case ArticleRefType.Repost:
+			return derived(getWritable(articleRef.reposted), reposted => ({
+				type: articleRef.type,
+				reposted
+			}));
+		case ArticleRefType.Quote:
+			return derived(getWritable(articleRef.quoted), quoted => ({
+				type: articleRef.type,
+				quoted
+			}));
+		case ArticleRefType.QuoteRepost:
+			return derived([
+				getWritable(articleRef.reposted),
+				getWritable(articleRef.quoted)
+			], ([reposted, quoted]) => ({
+				type: articleRef.type,
+				reposted,
+				quoted
+			}));
+	}
 }

@@ -1,7 +1,9 @@
 <script lang='ts'>
-	import {Field, Select, Input, Switch} from 'svelma';
+	import {Field, Input, Select, Switch} from 'svelma'
 	import type {Readable} from 'svelte/store'
-	import type {ArticleIdPair} from '../services/article'
+	import {derived} from 'svelte/store'
+	import type {ArticleIdPair, ArticleRef, ArticleRefIdPair, ArticleWithRefs} from '../services/article'
+	import Article, {articleRefIdPairToRef, ArticleRefType} from '../services/article'
 	import ColumnContainer from "../containers/ColumnContainer.svelte"
 	import RowContainer from "../containers/RowContainer.svelte"
 	import MasonryContainer from "../containers/MasonryContainer.svelte"
@@ -9,15 +11,14 @@
 	import GalleryArticleView from "../articles/GalleryArticleView.svelte"
 	import Fa from 'svelte-fa/src/fa.svelte'
 	import {
-		faRandom,
-		faScroll,
-		faSyncAlt,
 		faArrowDown,
 		faArrowUp,
 		faEllipsisV,
 		faEyeSlash,
+		faRandom,
+		faScroll,
+		faSyncAlt,
 	} from '@fortawesome/free-solid-svg-icons'
-	import {derived} from 'svelte/store'
 	import {
 		getWritable,
 		loadBottomEndpoints,
@@ -25,7 +26,6 @@
 		refreshEndpoints,
 		RefreshTime,
 	} from '../services/service'
-	import Article, {ArticleRefType} from '../services/article'
 	import {onMount} from 'svelte'
 	import {type TimelineData} from './index'
 
@@ -52,33 +52,26 @@
 	let articles: Readable<Article[]>
 	$: articles = derived(articleIdPairs.map(getWritable), a => a)
 
-	//TODO Use ArticleWithRefs type
-	let articleRefs: Readable<{article: Article, refs: Article[]}[]>
-	$: articleRefs = derived($articles.map(article =>
-		derived(
-			article.articleRefs
-				.flatMap(ref => {
-					switch (ref.type) {
-						case ArticleRefType.Repost:
-							return [ref.reposted];
-						case ArticleRefType.Quote:
-							return [ref.quoted];
-						case ArticleRefType.QuoteRepost:
-							return [ref.reposted, ref.quoted];
-						default:
-							return [];
-					}
-				})
-				.map(getWritable),
-			(refs: Article[]) => ({article, refs})
-		)
-	), refs => refs)
+	let articlesWithRefs: Readable<ArticleWithRefs[]>
+	$: articlesWithRefs = derived($articles.map(article => {
+		const stores: Readable<ArticleRef | Article>[] = []
+		if (article.actualArticleRef)
+			stores.push(articleRefIdPairToRef(article.actualArticleRef))
+		if (article.replyRef)
+			stores.push(getWritable(article.replyRef))
+
+		return derived(stores, refs => ({
+			article,
+			actualArticleRef: article.actualArticleRef ? refs[0] as ArticleRef : undefined,
+			replyRef: article.replyRef ? (article.actualArticleRef ? refs[1] : refs[0]) as Article : undefined,
+		}))
+	}), a => a)
 
 	let filteredArticles: Readable<ArticleIdPair[]>
-	$: filteredArticles = derived(articleRefs, stores =>
-		stores
-			.filter(({article, refs}: {article: Article, refs: Article[]}) => !article.markedAsRead && !article.hidden && refs.every(ref => !ref.markedAsRead && !ref.hidden))
-			.map(({article}) => article.idPair)
+	$: filteredArticles = derived(articlesWithRefs, stores => stores.map(a => a.article.idPair)
+		/*stores
+			.filter(({article, actualArticleRefs}: {article: Article, refs: Article[]}) => !article.markedAsRead && !article.hidden && refs.every(ref => !ref.markedAsRead && !ref.hidden))
+			.map(({article}) => article.idPair)*/
 	)
 
 	enum ScrollDirection {

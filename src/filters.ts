@@ -1,8 +1,9 @@
-import Article, {
+import {
 	type ArticleMedia,
 	ArticleRefType,
 	type ArticleWithRefs,
 	getActualArticle,
+	getRefed,
 	MediaType,
 } from './services/article'
 
@@ -93,33 +94,18 @@ export function keepArticle(articleWithRefs: ArticleWithRefs, filter: Filter): b
 	switch (filter.type) {
 		case 'media':
 			return !!articleWithRefs.article.medias.length ||
-				articleWithRefs.refs.some(ref => {
-					//TODO Use getRefed
-					switch (ref.type) {
-						case ArticleRefType.Repost:
-							return !!ref.reposted.medias.length;
-						case ArticleRefType.Quote:
-							return !!ref.quoted.medias.length;
-						case ArticleRefType.QuoteRepost:
-							return !!ref.reposted.medias.length || !!ref.quoted.medias.length;
-						case ArticleRefType.Reply:
-							return false;
-					}
-				});
+				(
+					articleWithRefs.actualArticleRef !== undefined &&
+					getRefed(articleWithRefs.actualArticleRef)
+						.some(ref => !!ref.medias.length)
+				);
 		case 'animated':
 			return articleWithRefs.article.medias.some(isAnimated) ||
-				articleWithRefs.refs.some(ref => {
-					switch (ref.type) {
-						case ArticleRefType.Repost:
-							return ref.reposted.medias.some(isAnimated);
-						case ArticleRefType.Quote:
-							return ref.quoted.medias.some(isAnimated);
-						case ArticleRefType.QuoteRepost:
-							return ref.reposted.medias.some(isAnimated) || ref.quoted.medias.some(isAnimated);
-						case ArticleRefType.Reply:
-							return false;
-					}
-				});
+				(
+					articleWithRefs.actualArticleRef !== undefined &&
+					getRefed(articleWithRefs.actualArticleRef)
+						.some(ref => ref.medias.some(isAnimated))
+				);
 		case 'notMarkedAsRead':
 			return !getActualArticle(articleWithRefs).markedAsRead;
 		case 'notHidden':
@@ -129,31 +115,22 @@ export function keepArticle(articleWithRefs: ArticleWithRefs, filter: Filter): b
 		case 'reposted':
 			return getActualArticle(articleWithRefs).getReposted();
 		case 'noRef':
-			return !articleWithRefs.refs.some(ref =>
-				ref.type === ArticleRefType.Repost ||
-				ref.type === ArticleRefType.Quote ||
-				ref.type === ArticleRefType.QuoteRepost
-			);
-		case 'repost': {
-			for (const ref of articleWithRefs.refs) {
-				if (ref.type === ArticleRefType.Repost || ref.type === ArticleRefType.QuoteRepost) {
-					if (filter.byUsername)
-						return ref.reposted.author?.username === filter.byUsername
-					else
-						return true
-				}
+			return articleWithRefs.actualArticleRef === undefined;
+		case 'repost':
+			if (articleWithRefs.actualArticleRef?.type === ArticleRefType.Repost || articleWithRefs.actualArticleRef?.type === ArticleRefType.QuoteRepost) {
+				if (filter.byUsername)
+					return articleWithRefs.actualArticleRef.reposted.author?.username === filter.byUsername
+				else
+					return true
 			}
 
 			return false
-		}
 		case 'quote':
-			for (const ref of articleWithRefs.refs) {
-				if (ref.type === ArticleRefType.Quote || ref.type === ArticleRefType.QuoteRepost) {
-					if (filter.byUsername)
-						return ref.quoted.author?.username === filter.byUsername
-					else
-						return true
-				}
+			if (articleWithRefs.actualArticleRef?.type === ArticleRefType.Quote || articleWithRefs.actualArticleRef?.type === ArticleRefType.QuoteRepost) {
+				if (filter.byUsername)
+					return articleWithRefs.actualArticleRef.quoted.author?.username === filter.byUsername
+				else
+					return true
 			}
 
 			return false

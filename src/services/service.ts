@@ -47,10 +47,14 @@ export function getArticleAction(action: string, service: string) {
 }
 
 export function addArticles(service: Service, ...articles: ArticleWithRefs[]) {
-	for (const {article, refs} of articles) {
+	for (const {article, actualArticleRef, replyRef} of articles) {
 		service.articles[article.id] = writable(article)
-		for (const ref of refs.flatMap(getRefed) as Article[])
-			service.articles[ref.id] = writable(ref)
+		if (actualArticleRef)
+			for (const ref of getRefed(actualArticleRef))
+				service.articles[ref.id] = writable(ref)
+		if (replyRef)
+			for (const ref of getRefed(replyRef))
+				service.articles[ref.id] = writable(ref)
 	}
 
 	updateCachedArticlesStorage()

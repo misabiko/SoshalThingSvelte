@@ -17,7 +17,6 @@ export default class DummyArticle extends Article {
 			markedAsRead: false,
 			hidden: false,
 			markedAsReadStorage: [],
-			articleRefs: [],
 		})
 	}
 

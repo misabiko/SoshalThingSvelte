@@ -2,7 +2,7 @@ import type {ArticleMedia, ArticleRef, ArticleWithRefs} from '../article'
 import {Endpoint, type EndpointConstructorInfo, getMarkedAsReadStorage, RefreshTime, registerEndpoint} from '../service'
 import {fetchExtensionV1, TwitterService} from './service'
 import TwitterArticle from './article'
-import {articleRefToIdPair, ArticleRefType, getRatio, MediaQueueInfo, MediaType} from '../article'
+import Article, {articleRefToIdPair, ArticleRefType, getRatio, MediaQueueInfo, MediaType} from '../article'
 
 abstract class V1Endpoint extends Endpoint {
 	//Waiting on https://github.com/microsoft/TypeScript/issues/34516 to make static
@@ -173,37 +173,36 @@ export function getV1APIURL(resource: string): string {
 function articleFromV1(json: TweetResponse): ArticleWithRefs {
 	const {text, textHtml} = parseText(json.text, json.entities, json.extended_entities)
 
-	const articleRefs: ArticleRef[] = []
+	let actualArticleRef: ArticleRef | undefined
+	let replyRef: Article | undefined
 	let actualArticleIndex: number | undefined
 	{
 		if (json.retweeted_status !== undefined) {
 			const retweet = articleFromV1(json.retweeted_status)
-			const actualRef = retweet.article.actualArticleIndex !== undefined ? retweet.refs[retweet.article.actualArticleIndex] : undefined
 
-			if (actualRef?.type === ArticleRefType.Quote) {
-				articleRefs.push({
+			if (retweet.actualArticleRef?.type === ArticleRefType.Quote) {
+				actualArticleRef = {
 					type: ArticleRefType.QuoteRepost,
 					reposted: retweet.article,
-					quoted: actualRef.quoted
-				})
+					quoted: retweet.actualArticleRef.quoted
+				}
 			}else {
-				articleRefs.push({
+				actualArticleRef = {
 					type: ArticleRefType.Repost,
 					reposted: retweet.article,
-				})
+				}
 			}
 			actualArticleIndex = 0
 		}else if (json.is_quote_status) {
 			if (json.quoted_status) {
 				const quote = articleFromV1(json.quoted_status)
-				const actualRef = quote.article.actualArticleIndex !== undefined ? quote.refs[quote.article.actualArticleIndex] : undefined
-				if (actualRef?.type === ArticleRefType.Quote)
-					console.warn(`Quote(${json.id_str}) of a quote(${actualRef.quoted.id})?`)
+				if (quote.actualArticleRef?.type === ArticleRefType.Quote)
+					console.warn(`Quote(${json.id_str}) of a quote(${quote.actualArticleRef.quoted.id})?`)
 
-				articleRefs.push({
+				actualArticleRef = {
 					type: ArticleRefType.Quote,
 					quoted: quote.article,
-				})
+				}
 			}else if (json.quoted_status_id_str) {
 				console.warn("Quote tweet doesn't include quoted tweet, need to get the tweet from service")
 			}else {
@@ -225,15 +224,16 @@ function articleFromV1(json: TweetResponse): ArticleWithRefs {
 			},
 			new Date(json.created_at),
 			getMarkedAsReadStorage(TwitterService) as string[],
-			articleRefs.map(articleRefToIdPair),
-			actualArticleIndex,
+			actualArticleRef ? articleRefToIdPair(actualArticleRef) : undefined,
+			replyRef?.idPair,
 			parseMedia(json.extended_entities),
 			json.favorited,
 			json.favorite_count,
 			json.retweeted,
 			json.retweet_count,
 		),
-		refs: articleRefs,
+		actualArticleRef,
+		replyRef,
 	}
 }
 

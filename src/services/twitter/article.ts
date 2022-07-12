@@ -1,4 +1,4 @@
-import type {ArticleAuthor, ArticleMedia, ArticleRefIdPair} from '../article'
+import type {ArticleAuthor, ArticleIdPair, ArticleMedia, ArticleRefIdPair} from '../article'
 import Article from '../article'
 
 export default class TwitterArticle extends Article {
@@ -11,8 +11,8 @@ export default class TwitterArticle extends Article {
 		readonly author: TwitterUser,
 		readonly creationTime: Date,
 		markedAsReadStorage: string[],
-		articleRefs: ArticleRefIdPair[],
-		actualArticleIndex: number | undefined,
+		actualArticleRef: ArticleRefIdPair | undefined,
+		replyRef: ArticleIdPair | undefined,
 		medias: ArticleMedia[],
 		public liked: boolean,
 		public likeCount: number,
@@ -28,8 +28,8 @@ export default class TwitterArticle extends Article {
 			markedAsRead: false,
 			hidden: false,
 			markedAsReadStorage,
-			articleRefs,
-			actualArticleIndex,
+			actualArticleRef,
+			replyRef,
 		});
 	}
 

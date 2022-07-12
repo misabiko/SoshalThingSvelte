@@ -17,7 +17,7 @@
 	let actualArticle = derived(
 		[
 			article,
-			getRepostedStore($article.articleRefs[0]),
+			getRepostedStore($article.actualArticleRef),
 		]
 			.filter(store => store !== undefined),
 		([a, ref]) => ref === undefined ? a : ref,

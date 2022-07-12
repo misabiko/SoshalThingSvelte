@@ -7,6 +7,8 @@ export default abstract class Article {
 	static readonly service: string
 
 	readonly id: string | number
+	abstract numberId: number | bigint
+
 	readonly text?: string
 	readonly textHtml?: string
 	readonly author?: ArticleAuthor

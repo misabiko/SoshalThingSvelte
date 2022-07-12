@@ -1,7 +1,7 @@
 <script lang='ts'>
 	import {Field, Input, Select, Switch} from 'svelma'
 	import type {Readable} from 'svelte/store'
-	import {derived} from 'svelte/store'
+	import {derived, get} from 'svelte/store'
 	import type {ArticleIdPair, ArticleRef, ArticleRefIdPair, ArticleWithRefs} from '../services/article'
 	import Article, {articleRefIdPairToRef, ArticleRefType} from '../services/article'
 	import ColumnContainer from "../containers/ColumnContainer.svelte"
@@ -30,6 +30,8 @@
 	import {type TimelineData} from './index'
 	import {keepArticle} from '../filters'
 	import FiltersOptions from "../filters/FiltersOptions.svelte";
+	import {compare, SortMethod} from '../sorting'
+	import SortOptions from "../sorting/SortOptions.svelte";
 
 	export let data: TimelineData
 	export let fullscreen: boolean
@@ -72,11 +74,19 @@
 	let filteredArticles: Readable<ArticleIdPair[]>
 	$: filteredArticles = derived(
 		articlesWithRefs,
-		stores => stores
-			.filter(articleWithRefs =>
-				data.filters.every(f => !f.enabled ||(keepArticle(articleWithRefs, f.filter) !== f.inverted))
-			)
-			.map(a => a.article.idPair),
+		stores => {
+			const filtered = stores
+				.filter(articleWithRefs =>
+					data.filters.every(f => !f.enabled || (keepArticle(articleWithRefs, f.filter) !== f.inverted)),
+				)
+
+			if (data.sortInfo.method)
+				filtered.sort(compare(data.sortInfo.method))
+			if (data.sortInfo.reversed)
+				filtered.reverse()
+
+			return filtered.map(a => a.article.idPair)
+		},
 	)
 
 	enum ScrollDirection {
@@ -159,6 +169,13 @@
 		const newArticles = await loadTopEndpoints(data.endpoints)
 		articleIdPairs.push(...newArticles)
 		articleIdPairs = articleIdPairs
+	}
+
+	function sortOnce(event: {detail: {method: SortMethod, reversed: boolean}}) {
+		const sorted = get(articlesWithRefs).sort(compare(event.detail.method))
+		if (event.detail.reversed)
+			sorted.reverse()
+		articleIdPairs = sorted.map(a => a.article.idPair)
 	}
 
 	onMount(async () => {
@@ -343,6 +360,9 @@
 			</div>
 			<div class='box'>
 				<FiltersOptions bind:instances={data.filters}/>
+			</div>
+			<div class='box'>
+				<SortOptions bind:sortInfo={data.sortInfo} on:sortOnce={sortOnce}/>
 			</div>
 		</div>
 	{/if}

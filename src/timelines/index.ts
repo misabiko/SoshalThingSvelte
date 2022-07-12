@@ -1,6 +1,7 @@
 import type {ArticleIdPair} from '../services/article'
 import type {SvelteComponent} from 'svelte'
 import type {FilterInstance} from '../filters'
+import type {SortInfo, SortMethod} from '../sorting'
 
 export type TimelineData = {
 	title: string;
@@ -11,6 +12,7 @@ export type TimelineData = {
 	columnCount?: number;
 	width?: number;
 	filters: FilterInstance[];
+	sortInfo: SortInfo
 }
 
 export type TimelineEndpoint = {

@@ -4,7 +4,7 @@ export default class DummyArticle extends Article {
 	static service: string;
 
 	constructor(
-		id: number,
+		readonly id: number,
 		text: string,
 		public liked: boolean,
 		public reposted: boolean,
@@ -18,6 +18,10 @@ export default class DummyArticle extends Article {
 			hidden: false,
 			markedAsReadStorage: [],
 		})
+	}
+
+	get numberId() {
+		return this.id
 	}
 
 	getLikeCount(): number {

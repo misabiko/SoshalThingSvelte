@@ -7,6 +7,8 @@ import SocialArticleView from './articles/SocialArticleView.svelte'
 import GalleryArticleView from './articles/GalleryArticleView.svelte'
 import {addEndpoint, Endpoint, getEndpointConstructors, getEndpoints} from './services/service'
 import type {FilterInstance} from './filters'
+import type {SortInfo} from './sorting'
+import {SortMethod} from './sorting'
 
 export const MAIN_STORAGE_KEY = 'SoshalThingSvelte'
 export const TIMELINE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Timelines'
@@ -42,7 +44,6 @@ export function loadTimelines(): TimelineData[] {
 
 		return {
 			title: defaulted.title,
-			fullscreen: false,
 			endpoints,
 			initArticles: [],
 			initContainer: parseContainer(defaulted.container),
@@ -50,6 +51,7 @@ export function loadTimelines(): TimelineData[] {
 			columnCount: defaulted.columnCount,
 			width: defaulted.width,
 			filters: defaulted.filters,
+			sortInfo: parseSortInfo(defaulted.sortInfo),
 		}
 	})
 }
@@ -114,6 +116,28 @@ function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | unde
 	}
 }
 
+function parseSortInfo({method, reversed}: {method?: string, reversed: boolean}): SortInfo {
+	let sortMethod: SortMethod | undefined
+	switch (method?.toLowerCase()) {
+		case 'id':
+			sortMethod = SortMethod.Id
+			break;
+		case 'date':
+			sortMethod = SortMethod.Date
+			break;
+		case 'likes':
+			sortMethod = SortMethod.Likes
+			break;
+		case 'reposts':
+			sortMethod = SortMethod.Reposts
+			break;
+	}
+	return {
+		method: sortMethod,
+		reversed: reversed || false
+	}
+}
+
 type MainStorage = {
 	fullscreen?: boolean | number
 }
@@ -126,7 +150,10 @@ type TimelineStorage = {
 	columnCount: number
 	width: number
 	filters: FilterInstance[],
-	//sortMethod: Option<(SortMethod, bool)>,
+	sortInfo: {
+		method?: string
+		reversed: boolean
+	},
 	compact: boolean
 	animatedAsGifs: boolean
 	hideText: boolean
@@ -137,12 +164,14 @@ const DEFAULT_TIMELINE: TimelineStorage = {
 	endpoints: [],
 	columnCount: 1,
 	width: 1,
-	//filters: Option<FilterCollection>,
-	//sortMethod: Option<(SortMethod, bool)>,
 	compact: false,
 	animatedAsGifs: false,
 	hideText: false,
-	filters: []
+	filters: [],
+	sortInfo: {
+		method: undefined,
+		reversed: false,
+	}
 }
 
 type EndpointStorage = {

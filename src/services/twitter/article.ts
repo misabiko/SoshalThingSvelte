@@ -33,6 +33,10 @@ export default class TwitterArticle extends Article {
 		});
 	}
 
+	get numberId() {
+		return BigInt(this.id)
+	}
+
 	getLikeCount(): number {
 		return this.likeCount
 	}

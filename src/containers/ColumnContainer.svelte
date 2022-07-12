@@ -4,6 +4,7 @@
 	export let containerRef = undefined;
 	export let idPairs;
 	export let articleView;
+	export let columnCount: number; columnCount;
 	export let animatedAsGifs;
 	export let compact;
 	export let hideText;
@@ -11,7 +12,7 @@
 </script>
 
 <div class='columnContainer' bind:this={containerRef}>
-	{#each idPairs as idPair (idPair)}
+	{#each idPairs as idPair, index (JSON.stringify({...idPair, index}))}
 		<ArticleComponent
 			{idPair}
 			view={articleView}

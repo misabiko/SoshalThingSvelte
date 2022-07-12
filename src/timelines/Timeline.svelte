@@ -28,6 +28,7 @@
 	} from '../services/service'
 	import {onMount} from 'svelte'
 	import {type TimelineData} from './index'
+	import {keepArticle} from '../filters'
 
 	export let data: TimelineData
 	export let fullscreen: boolean
@@ -68,10 +69,13 @@
 	}), a => a)
 
 	let filteredArticles: Readable<ArticleIdPair[]>
-	$: filteredArticles = derived(articlesWithRefs, stores => stores.map(a => a.article.idPair)
-		/*stores
-			.filter(({article, actualArticleRefs}: {article: Article, refs: Article[]}) => !article.markedAsRead && !article.hidden && refs.every(ref => !ref.markedAsRead && !ref.hidden))
-			.map(({article}) => article.idPair)*/
+	$: filteredArticles = derived(
+		articlesWithRefs,
+		stores => stores
+			.filter(articleWithRefs =>
+				data.filters.every(f => !f.enabled ||(keepArticle(articleWithRefs, f.filter) !== f.inverted))
+			)
+			.map(a => a.article.idPair),
 	)
 
 	enum ScrollDirection {

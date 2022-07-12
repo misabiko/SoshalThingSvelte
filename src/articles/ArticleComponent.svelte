@@ -30,8 +30,8 @@
 			return undefined
 	}
 
-	function onMediaClick(event: { detail: number }) {
-		toggleMarkAsRead(idPair)
+	function onMediaClick(event: { detail: { idPair: ArticleIdPair, index: number } }) {
+		toggleMarkAsRead(event.detail.idPair)
 	}
 
 	if (!$actualArticle.fetched)

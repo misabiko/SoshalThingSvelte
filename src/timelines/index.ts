@@ -10,6 +10,7 @@ export type TimelineData = {
 	initArticleView?: typeof SvelteComponent;
 	columnCount?: number;
 	width?: number;
+	filters: FilterInstance[];
 }
 
 export type TimelineEndpoint = {

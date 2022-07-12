@@ -119,13 +119,13 @@
 					alt={`${actualArticle.id} thumbnail`}
 					class='articleThumb'
 					src={media.thumbnail}
-					on:click={() => dispatch('mediaClick', i)}
+					on:click={() => dispatch('mediaClick', {idPair: actualArticle.idPair, index: i})}
 				/>
 			{:else if media.mediaType === MediaType.Image || media.mediaType === MediaType.Gif}
 				<img
 					alt={actualArticle.id}
 					src={media.src}
-					on:click={() => dispatch('mediaClick', i)}
+					on:click={() => dispatch('mediaClick', {idPair: actualArticle.idPair, index: i})}
 					on:load={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
 					class:articleMediaLoading={isLoading}
 					bind:this={mediaRefs[i]}
@@ -135,14 +135,14 @@
 						alt={`${actualArticle.id} thumbnail`}
 						class='articleThumb'
 						src={media.thumbnail}
-						on:click={() => dispatch('mediaClick', i)}
+						on:click={() => dispatch('mediaClick', {idPair: actualArticle.idPair, index: i})}
 					/>
 				{/if}
 			{:else if !animatedAsGifs && media.mediaType === MediaType.Video}
 				<!-- svelte-ignore a11y-media-has-caption -->
 				<video
 					controls
-					on:click|preventDefault={() => dispatch('mediaClick', i)}
+					on:click|preventDefault={() => dispatch('mediaClick', {idPair: actualArticle.idPair, index: i})}
 					on:loadeddata={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
 					on:load={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
 				>
@@ -154,7 +154,7 @@
 					autoplay
 					loop
 					muted
-					on:click|preventDefault={() => dispatch('mediaClick', i)}
+					on:click|preventDefault={() => dispatch('mediaClick', {idPair: actualArticle.idPair, index: i})}
 					on:loadeddata={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
 					on:load={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
 				>

@@ -49,6 +49,7 @@ export function loadTimelines(): TimelineData[] {
 			initArticleView: parseArticleView(defaulted.articleView),
 			columnCount: defaulted.columnCount,
 			width: defaulted.width,
+			filters: defaulted.filters,
 		}
 	})
 }
@@ -124,7 +125,7 @@ type TimelineStorage = {
 	endpoints: EndpointStorage[]
 	columnCount: number
 	width: number
-	//filters: Option<FilterCollection>,
+	filters: FilterInstance[],
 	//sortMethod: Option<(SortMethod, bool)>,
 	compact: boolean
 	animatedAsGifs: boolean
@@ -141,6 +142,7 @@ const DEFAULT_TIMELINE: TimelineStorage = {
 	compact: false,
 	animatedAsGifs: false,
 	hideText: false,
+	filters: []
 }
 
 type EndpointStorage = {

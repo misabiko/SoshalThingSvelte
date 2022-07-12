@@ -107,9 +107,21 @@ export function keepArticle(articleWithRefs: ArticleWithRefs, filter: Filter): b
 						.some(ref => ref.medias.some(isAnimated))
 				);
 		case 'notMarkedAsRead':
-			return !getActualArticle(articleWithRefs).markedAsRead;
+			return !articleWithRefs.article.markedAsRead &&
+				(
+					(
+						articleWithRefs.actualArticleRef?.type !== ArticleRefType.Repost &&
+						articleWithRefs.actualArticleRef?.type !== ArticleRefType.QuoteRepost
+					) || !articleWithRefs.actualArticleRef.reposted.markedAsRead
+				);
 		case 'notHidden':
-			return !getActualArticle(articleWithRefs).hidden;
+			return !articleWithRefs.article.hidden &&
+				(
+					(
+						articleWithRefs.actualArticleRef?.type !== ArticleRefType.Repost &&
+						articleWithRefs.actualArticleRef?.type !== ArticleRefType.QuoteRepost
+					) || !articleWithRefs.actualArticleRef.reposted.hidden
+				);
 		case 'liked':
 			return getActualArticle(articleWithRefs).getLiked();
 		case 'reposted':

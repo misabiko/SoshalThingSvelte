@@ -204,7 +204,7 @@ function articleFromV1(json: TweetResponse): ArticleWithRefs {
 					quoted: quote.article,
 				}
 			}else if (json.quoted_status_id_str) {
-				console.warn("Quote tweet doesn't include quoted tweet, need to get the tweet from service")
+				console.warn("Quote tweet doesn't include quoted tweet, need to get the tweet from service", json)
 			}else {
 				console.error('is_quote_status true, but no quote info', json)
 			}

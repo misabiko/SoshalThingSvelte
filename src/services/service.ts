@@ -53,8 +53,7 @@ export function addArticles(service: Service, ...articles: ArticleWithRefs[]) {
 			for (const ref of getRefed(actualArticleRef))
 				service.articles[ref.id] = writable(ref)
 		if (replyRef)
-			for (const ref of getRefed(replyRef))
-				service.articles[ref.id] = writable(ref)
+			service.articles[replyRef.id] = writable(replyRef)
 	}
 
 	updateCachedArticlesStorage()

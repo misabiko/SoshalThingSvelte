@@ -282,6 +282,10 @@
 	//
 	//	p
 	//		white-space: pre-line
+
+	.imgPlaceHolder
+		width: 100%
+		background-color: grey
 </style>
 
 <article class='socialArticle' {style}>
@@ -414,7 +418,7 @@
 			{#each actualArticle.medias as media, index (index)}
 				{#if media.mediaType === MediaType.Image || media.mediaType === MediaType.Gif}
 					<div class='mediaHolder'>
-						<div class='is-hidden imgPlaceHolder'></div>
+						<div class='is-hidden imgPlaceHolder' style:aspect-ratio={1 / media.ratio}></div>
 						<img alt={actualArticle.id} src={media.src} on:click={() => dispatch('mediaClick', {idPair: actualArticle.idPair, index})}/>
 					</div>
 				{:else if !animatedAsGifs && media.mediaType === MediaType.Video}

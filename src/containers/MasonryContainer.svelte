@@ -14,31 +14,26 @@
 	export let hideText;
 	export let shouldLoadMedia: boolean;
 
-	const canvas = document.createElement('canvas');
-	const canvasContext = canvas.getContext('2d');
-	//TODO Use actual font
-
 	type Column = {idPairs: ArticleIdPair[], ratio: number}
-	$: columns = derived(idPairs.map(idPair => getWritable(idPair)), (articles: Article[]) => makeColumns(articles, hideText))
+	$: columns = derived(idPairs.map(idPair => getWritable(idPair)), (articles: Article[]) => makeColumns(articles))
 
-	function makeColumns(articles: Article[], hideText: boolean) {
+	function makeColumns(articles: Article[]) {
 		let columns: Column[] = []
 		for (let i = 0; i < columnCount; ++i)
 			columns.push({idPairs: [], ratio: 0})
 
 		for (const article of articles) {
-			const smallestIndex = columns.reduce((acc, curr, currIndex) => curr.ratio <= columns[acc].ratio ? currIndex : acc, 0);
+			//TODO Support rtl
+			const smallestIndex = columns.reduce((acc, curr, currIndex) => curr.ratio < columns[acc].ratio ? currIndex : acc, 0);
 			columns[smallestIndex].idPairs.push(article.idPair);
-			columns[smallestIndex].ratio += getRatio(article, hideText);
+			columns[smallestIndex].ratio += getRatio(article);
 		}
 
 		return columns
 	}
 
-	function getRatio(article: Article, hideText: boolean): number {
-		const {width} = article.text !== undefined ? canvasContext.measureText(article.text) : 0
-		const textWidth = /*hideText ?*/ 0 /*: width / columnCount*/
-		return textWidth + article.medias.reduce((acc, curr) => acc + curr.ratio, 0)
+	function getRatio(article: Article): number {
+		return 1 + article.medias.reduce((acc, curr) => acc + curr.ratio, 0)
 	}
 </script>
 

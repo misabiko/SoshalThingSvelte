@@ -1,49 +1,40 @@
 <script lang='ts'>
-	import type {Writable} from 'svelte/store'
-	import type {ArticleIdPair, ArticleRefIdPair} from "../services/article"
+	import type {ArticleIdPair, ArticleRefIdPair, ArticleWithRefs} from "../services/article"
 	import {toggleMarkAsRead, getWritable, fetchArticle} from "../services/service"
-	import Article, {ArticleRefType} from '../services/article'
-	import {derived} from 'svelte/store'
+	import Article, {ArticleRefType, getActualArticle} from '../services/article'
+	import {SvelteComponent} from 'svelte'
 
-	export let idPair: ArticleIdPair
-	export let view
+	export let articleWithRefs: Readonly<ArticleWithRefs>
+	export let view: SvelteComponent
 	export let style = ''
-	export let animatedAsGifs
-	export let compact
-	export let hideText
+	export let animatedAsGifs: boolean
+	export let compact: boolean
+	export let hideText: boolean
 	export let shouldLoadMedia: boolean
 
-	let article: Writable<Article> = getWritable(idPair)
-	let actualArticle = derived(
-		[
-			article,
-			getRepostedStore($article.actualArticleRef),
-		]
-			.filter(store => store !== undefined),
-		([a, ref]) => ref === undefined ? a : ref,
-	)
+	let actualArticle: Readonly<Article>
+	$: {
+		actualArticle = getActualArticle(articleWithRefs)
+		if (!actualArticle.fetched)
+			fetchArticle(actualArticle.idPair)
+	}
 
-	function getRepostedStore(ref?: ArticleRefIdPair): Writable<Article> | undefined {
-		if (ref !== undefined && (ref.type === ArticleRefType.Repost || ref.type === ArticleRefType.QuoteRepost))
-			return getWritable(ref.reposted)
-		else
-			return undefined
+	function onLogData() {
+		console.dir(articleWithRefs)
 	}
 
 	function onMediaClick(event: { detail: { idPair: ArticleIdPair, index: number } }) {
 		toggleMarkAsRead(event.detail.idPair)
 	}
-
-	if (!$actualArticle.fetched)
-		fetchArticle($actualArticle.idPair)
 </script>
 
 <svelte:component
 	this={view}
-	article={$article}
-	actualArticle={$actualArticle}
+	{articleWithRefs}
+	{actualArticle}
 	{style}
 	{animatedAsGifs}
+	on:logData={onLogData}
 	on:mediaClick={onMediaClick}
 	{hideText}
 	{compact}

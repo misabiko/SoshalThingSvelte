@@ -1,20 +1,22 @@
 <script lang='ts'>
 	import ArticleComponent from "../articles/ArticleComponent.svelte";
+	import type {ArticleWithRefs} from '../services/article'
+	import {SvelteComponent} from 'svelte'
 
 	export let containerRef = undefined;
-	export let idPairs;
-	export let articleView;
+	export let articlesWithRefs: ArticleWithRefs[];
+	export let articleView: typeof SvelteComponent;
 	export let columnCount: number; columnCount;
-	export let animatedAsGifs;
-	export let compact;
-	export let hideText;
+	export let animatedAsGifs: boolean;
+	export let compact: boolean;
+	export let hideText: boolean;
 	export let shouldLoadMedia: boolean;
 </script>
 
 <div class='columnContainer' bind:this={containerRef}>
-	{#each idPairs as idPair, index (JSON.stringify({...idPair, index}))}
+	{#each articlesWithRefs as articleWithRefs, index (JSON.stringify({...articleWithRefs.article.idPair, index}))}
 		<ArticleComponent
-			{idPair}
+			{articleWithRefs}
 			view={articleView}
 			{compact}
 			{hideText}

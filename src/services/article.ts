@@ -227,8 +227,7 @@ export function getActualArticleIdPair(article: Article)
 	}
 }
 
-export function getActualArticle({article, actualArticleRef}: ArticleWithRefs)
-	: Readonly<Article> {
+export function getActualArticle({article, actualArticleRef}: ArticleWithRefs) : Readonly<Article> {
 	switch (actualArticleRef?.type) {
 		case ArticleRefType.Repost:
 			return actualArticleRef.reposted;
@@ -239,11 +238,6 @@ export function getActualArticle({article, actualArticleRef}: ArticleWithRefs)
 		default:
 			return article;
 	}
-}
-
-export function isRepost(article: Article): boolean {
-	return article.actualArticleRef?.type === ArticleRefType.Repost ||
-		article.actualArticleRef?.type === ArticleRefType.QuoteRepost;
 }
 
 export function articleRefIdPairToRef(articleRef: ArticleRefIdPair): Readable<ArticleRef> {

@@ -1,5 +1,6 @@
 <script lang='ts'>
 	import Article, {MediaQueueInfo, MediaType} from '../services/article'
+	import type {ArticleWithRefs} from '../services/article'
 	import Fa from 'svelte-fa/src/fa.svelte'
 	import {
 		faExpandArrowsAlt,
@@ -14,7 +15,7 @@
 	import Dropdown from "../Dropdown.svelte"
 	import {fetchArticle, toggleHide, toggleMarkAsRead, articleAction, getArticleAction, STANDARD_ACTIONS} from "../services/service"
 
-	export let article: Readonly<Article>
+	export let articleWithRefs: Readonly<ArticleWithRefs>
 	export let actualArticle: Readonly<Article>
 	export let style: string = ''
 	export let animatedAsGifs: boolean
@@ -204,7 +205,7 @@
 					External Link
 				</a>
 				<!-- svelte-ignore a11y-missing-attribute -->
-				<a class='dropdown-item' on:click={() => console.dir(article)}>
+				<a class='dropdown-item' on:click={() => dispatch('logData')}>
 					Log Data
 				</a>
 				<!--				<a class='dropdown-item' on:click={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::LogJsonData))}>{"Log Json Data"}</a>-->

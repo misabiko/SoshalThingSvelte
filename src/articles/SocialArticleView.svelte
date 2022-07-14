@@ -8,25 +8,22 @@
 		faEllipsisH,
 	} from '@fortawesome/free-solid-svg-icons'
 	import {createEventDispatcher} from 'svelte'
-	import Article, {isRepost} from '../services/article'
+	import Article from '../services/article'
+	import type {ArticleWithRefs} from '../services/article'
 	import Dropdown from '../Dropdown.svelte'
 	import {toggleMarkAsRead, toggleHide, articleAction, getArticleAction, STANDARD_ACTIONS} from "../services/service"
 	import {MediaType} from "../services/article.js";
 
-	export let article: Readonly<Article>
+	export let articleWithRefs: Readonly<ArticleWithRefs>
 	export let actualArticle: Readonly<Article>
 	export let animatedAsGifs: boolean
 	export let compact: boolean
 	export let hideText: boolean
 	export let style: string = ''
-	export let shouldLoadMedia: boolean	//TODO shouldLoadMedia in SocialArticleView
-
-	//Just to stop the unused prop warnings
-	if (shouldLoadMedia) {
-	}
+	export let shouldLoadMedia: boolean; shouldLoadMedia;	//TODO shouldLoadMedia in SocialArticleView
 
 	let minimized = false
-	$: isArticleRepost = isRepost(article)
+	const isArticleRepost = 'reposted' in articleWithRefs
 
 	const MONTH_ABBREVS: string[] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
@@ -290,9 +287,9 @@
 
 <article class='socialArticle' {style}>
 	<div class='repostLabel'>
-		{#if isArticleRepost && article.author}
-			<a href={article.author.url} target='_blank' on:click|preventDefault={() => onUsernameClick(article)}>
-				{article.author.name} reposted - {shortTimestamp(article.creationTime)}
+		{#if isArticleRepost && articleWithRefs.article.author}
+			<a href={articleWithRefs.article.author.url} target='_blank' on:click|preventDefault={() => onUsernameClick(articleWithRefs.article)}>
+				{articleWithRefs.article.author.name} reposted - {shortTimestamp(articleWithRefs.article.creationTime)}
 			</a>
 		{/if}
 	</div>
@@ -303,7 +300,7 @@
 				{#if actualArticle.author?.url}
 					{#if isArticleRepost}
 						<img src={actualArticle.author.avatarUrl} alt={`${actualArticle.author.username}'s avatar`}/>
-						<img src={article.author.avatarUrl} alt={`${article.author.username}'s avatar`}/>
+						<img src={articleWithRefs.article.author.avatarUrl} alt={`${articleWithRefs.article.author.username}'s avatar`}/>
 					{:else}
 						<img src={actualArticle.author.avatarUrl} alt={`${actualArticle.author.username}'s avatar`}/>
 					{/if}
@@ -394,12 +391,12 @@
 							External Link
 						</a>
 						{#if isArticleRepost}
-							<a class='dropdown-item' href={ article.url } target='_blank'>
+							<a class='dropdown-item' href={ articleWithRefs.article.url } target='_blank'>
 								Repost's external Link
 							</a>
 						{/if}
 						<!-- svelte-ignore a11y-missing-attribute -->
-						<a class='dropdown-item' on:click={() => console.dir(article)}>
+						<a class='dropdown-item' on:click={() => dispatch('logData')}>
 							Log Data
 						</a>
 						<!--	<a class='dropdown-item'>-->

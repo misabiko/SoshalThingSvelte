@@ -71,7 +71,7 @@
 		}))
 	}), a => a)
 
-	let filteredArticles: Readable<ArticleIdPair[]>
+	let filteredArticles: Readable<ArticleWithRefs[]>
 	$: filteredArticles = derived(
 		articlesWithRefs,
 		stores => {
@@ -85,7 +85,7 @@
 			if (data.sortInfo.reversed)
 				filtered.reverse()
 
-			return filtered.map(a => a.article.idPair)
+			return filtered
 		},
 	)
 
@@ -370,7 +370,7 @@
 	<svelte:component
 		this={container}
 		bind:containerRef={containerRef}
-		idPairs={$filteredArticles}
+		articlesWithRefs={$filteredArticles}
 		articleView={articleView}
 		columnCount={data.columnCount}
 		{hideText}

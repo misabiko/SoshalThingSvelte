@@ -118,6 +118,7 @@
 		}
 
 		articleIdPairs = articleIdPairs
+		data.sortInfo.method = undefined
 	}
 
 	function autoscroll() {

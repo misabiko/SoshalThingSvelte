@@ -2,15 +2,14 @@
 	import type {ArticleIdPair, ArticleRefIdPair, ArticleWithRefs} from "../services/article"
 	import {toggleMarkAsRead, getWritable, fetchArticle} from "../services/service"
 	import Article, {ArticleRefType, getActualArticle} from '../services/article'
-	import {SvelteComponent} from 'svelte'
+	import type {ArticleProps} from './index'
+	import type {SvelteComponent} from 'svelte'
 
-	export let articleWithRefs: Readonly<ArticleWithRefs>
-	export let view: SvelteComponent
+	export let articleWithRefs: ArticleWithRefs
+	export let props: ArticleProps
+	export let view: typeof SvelteComponent
+	export let modal = false
 	export let style = ''
-	export let animatedAsGifs: boolean
-	export let compact: boolean
-	export let hideText: boolean
-	export let shouldLoadMedia: boolean
 
 	let actualArticle: Readonly<Article>
 	$: {
@@ -30,13 +29,10 @@
 
 <svelte:component
 	this={view}
+	{props}
+	{modal}
 	{articleWithRefs}
 	{actualArticle}
-	{style}
-	{animatedAsGifs}
 	on:logData={onLogData}
 	on:mediaClick={onMediaClick}
-	{hideText}
-	{compact}
-	{shouldLoadMedia}
 />

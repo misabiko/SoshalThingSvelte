@@ -6,7 +6,8 @@ import {getWritable} from './service'
 export default abstract class Article {
 	static readonly service: string
 
-	readonly id: string | number
+	readonly idPair: ArticleIdPair
+	readonly idPairStr: string
 	abstract numberId: number | bigint
 
 	readonly text?: string
@@ -39,26 +40,22 @@ export default abstract class Article {
 		fetched?: boolean,
 		json?: any,
 	}) {
-		this.id = params.id
 		this.text = params.text
 		this.textHtml = params.textHtml
 		this.url = params.url
 		this.medias = params.medias || []
-		this.markedAsRead = params.markedAsRead || params.markedAsReadStorage.includes(this.id)
+		this.markedAsRead = params.markedAsRead || params.markedAsReadStorage.includes(params.id)
 		this.hidden = params.hidden
 		this.actualArticleRef = params.actualArticleRef
 		this.replyRef = params.replyRef
 		this.fetched = params.fetched || false
 		this.json = params.json
-	}
 
-	//TODO Unit test this
-	get idPair() {
-		return {
-			// @ts-ignore
-			service: this.constructor.service,
-			id: this.id,
+		this.idPair = {
+			service: (this.constructor as typeof Article).service,
+			id: params.id,
 		}
+		this.idPairStr = `${this.idPair.service}/${params.id}`
 	}
 
 	//TODO Replace with dynamic action buttons

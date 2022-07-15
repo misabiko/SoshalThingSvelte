@@ -197,7 +197,7 @@ function articleFromV1(json: TweetResponse): ArticleWithRefs {
 			if (json.quoted_status) {
 				const quote = articleFromV1(json.quoted_status)
 				if (quote.actualArticleRef?.type === ArticleRefType.Quote)
-					console.warn(`Quote(${json.id_str}) of a quote(${quote.actualArticleRef.quoted.id})?`)
+					console.warn(`Quote(${json.id_str}) of a quote(${quote.actualArticleRef.quoted.idPair.id})?`)
 
 				actualArticleRef = {
 					type: ArticleRefType.Quote,

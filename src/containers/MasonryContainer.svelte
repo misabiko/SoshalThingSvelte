@@ -1,35 +1,85 @@
 <script lang="ts">
 	import ArticleComponent from "../articles/ArticleComponent.svelte";
-	import Article, {getActualArticle} from '../services/article'
+	import {getActualArticle} from '../services/article'
 	import type {ArticleWithRefs} from '../services/article'
-	import {SvelteComponent} from 'svelte'
+	import type {ContainerProps} from './index'
 
 	export let containerRef = undefined;
-	export let articlesWithRefs: ArticleWithRefs[];
-	export let articleView: typeof SvelteComponent;
-	export let columnCount: number;
-	export let animatedAsGifs: boolean;
-	export let compact: boolean;
-	export let hideText: boolean;
-	export let shouldLoadMedia: boolean;
+	export let props: ContainerProps
+	let uniqueArticles: { [idPairStr: string]: { articleWithRefs: ArticleWithRefs, index: number } }
+	$: {
+		uniqueArticles = {}
+		const idPairs = new Set<string>()
+		for (const a of props.articles) {
+			let lastSize = idPairs.size
+			idPairs.add(a.article.idPairStr)
+			if (idPairs.size > lastSize) {
+				uniqueArticles[a.article.idPairStr] = {articleWithRefs: a, index: lastSize}
+			}
+		}
+	}
+	//TODO Support duplicate articles
+	//Maybe by making a second MasonryContainer which refreshes every column every time
 
-	type Column = {articles: ArticleWithRefs[], ratio: number}
+	type Column = {articles: string[], ratio: number}
 	let columns: Column[]
-	$: columns = makeColumns(articlesWithRefs)
+	$: {
+		uniqueArticles;
+		if (!columns) {
+			columns = makeColumns()
+		}else {
+			const columnsChanged = new Set<number>()
+			const addedArticles: { idPairStr: string, index: number }[] = []
 
-	function makeColumns(articles: ArticleWithRefs[]) {
-		let columns: Column[] = []
-		for (let i = 0; i < columnCount; ++i)
+			for (let i = 0; i < columns.length; ++i) {
+				for (let j = 0; j < columns[i].articles.length;) {
+					if (!uniqueArticles[columns[i].articles[j]]) {
+						columns[i].articles.splice(j, 1)
+						columnsChanged.add(i)
+					}else
+						++j
+				}
+			}
+
+			for (const {articleWithRefs, index} of Object.values(uniqueArticles)) {
+				if (!columns.some(c => c.articles.some(idPair => uniqueArticles[idPair].articleWithRefs.article.idPairStr === articleWithRefs.article.idPairStr))) {
+					addedArticles.push({idPairStr: articleWithRefs.article.idPairStr, index})
+				}
+			}
+
+			addedArticles.sort((a, b) => a.index - b.index)
+			for (const {idPairStr} of addedArticles)
+				columnsChanged.add(addArticle(idPairStr))
+
+			for (let i = 0; i < columns.length; ++i)
+				columns[i].articles.sort((a, b) => uniqueArticles[a].index - uniqueArticles[b].index)
+
+			if (columnsChanged.size)
+				columns = columns
+			for (const i of columnsChanged.values())
+				columns[i].ratio = columns[i].articles.reduce((acc, curr) => acc + getRatio(uniqueArticles[curr].articleWithRefs), 0)
+		}
+	}
+
+	function makeColumns() {
+		columns = []
+		for (let i = 0; i < props.columnCount; ++i)
 			columns.push({articles: [], ratio: 0})
 
-		for (const article of articles) {
-			//TODO Support rtl
-			const smallestIndex = columns.reduce((acc, curr, currIndex) => curr.ratio < columns[acc].ratio ? currIndex : acc, 0);
-			columns[smallestIndex].articles.push(article);
-			columns[smallestIndex].ratio += getRatio(article);
-		}
+		const sortedArticles = Object.values(uniqueArticles)
+		sortedArticles.sort((a, b) => a.index - b.index)
+		for (const {articleWithRefs, index} of sortedArticles)
+			addArticle(articleWithRefs.article.idPairStr)
 
 		return columns
+	}
+
+	function addArticle(idPairStr: string): number {
+		//TODO Support rtl
+		const smallestIndex = columns.reduce((acc, curr, currIndex) => curr.ratio < columns[acc].ratio ? currIndex : acc, 0);
+		columns[smallestIndex].articles.push(idPairStr);
+		columns[smallestIndex].ratio += getRatio(uniqueArticles[idPairStr].articleWithRefs);
+		return smallestIndex
 	}
 
 	function getRatio(article: ArticleWithRefs): number {
@@ -59,14 +109,11 @@
 	{#each columns as column, i (i)}
 		<div class='masonryColumn'>
 <!--		<span>Ratio: {column.ratio}</span>-->
-			{#each column.articles as articleWithRefs, index (JSON.stringify({...articleWithRefs.article.idPair, index}))}
+			{#each column.articles as idPairStr, index (idPairStr)}
 				<ArticleComponent
-					{articleWithRefs}
-					view={articleView}
-					{animatedAsGifs}
-					{compact}
-					{hideText}
-					{shouldLoadMedia}
+					view={props.articleView}
+					articleWithRefs={uniqueArticles[idPairStr].articleWithRefs}
+					props={props.articleProps}
 				/>
 			{/each}
 		</div>

@@ -2,8 +2,8 @@
 	import {Field, Input, Select, Switch} from 'svelma'
 	import type {Readable} from 'svelte/store'
 	import {derived, get} from 'svelte/store'
-	import type {ArticleIdPair, ArticleRef, ArticleRefIdPair, ArticleWithRefs} from '../services/article'
-	import Article, {articleRefIdPairToRef, ArticleRefType} from '../services/article'
+	import type {ArticleIdPair, ArticleRef, ArticleWithRefs} from '../services/article'
+	import Article, {articleRefIdPairToRef} from '../services/article'
 	import ColumnContainer from "../containers/ColumnContainer.svelte"
 	import RowContainer from "../containers/RowContainer.svelte"
 	import MasonryContainer from "../containers/MasonryContainer.svelte"
@@ -32,6 +32,7 @@
 	import FiltersOptions from "../filters/FiltersOptions.svelte";
 	import {compare, SortMethod} from '../sorting'
 	import SortOptions from "../sorting/SortOptions.svelte";
+	import type {ContainerProps} from '../containers'
 
 	export let data: TimelineData
 	export let fullscreen: boolean
@@ -88,6 +89,20 @@
 			return filtered
 		},
 	)
+
+
+	let containerProps: ContainerProps
+	$: containerProps = {
+		articles: $filteredArticles,
+		articleProps: {
+			animatedAsGifs,
+			compact,
+			hideText,
+			shouldLoadMedia,
+		},
+		articleView,
+		columnCount: data.columnCount,
+	}
 
 	enum ScrollDirection {
 		Up,
@@ -370,12 +385,6 @@
 	<svelte:component
 		this={container}
 		bind:containerRef={containerRef}
-		articlesWithRefs={$filteredArticles}
-		articleView={articleView}
-		columnCount={data.columnCount}
-		{hideText}
-		{compact}
-		{animatedAsGifs}
-		{shouldLoadMedia}
+		props={containerProps}
 	/>
 </div>

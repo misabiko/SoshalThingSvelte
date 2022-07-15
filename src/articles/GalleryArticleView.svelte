@@ -14,22 +14,20 @@
 	import {derived} from 'svelte/store'
 	import Dropdown from "../Dropdown.svelte"
 	import {fetchArticle, toggleHide, toggleMarkAsRead, articleAction, getArticleAction, STANDARD_ACTIONS} from "../services/service"
+	import type {ArticleProps} from './index'
 
+	export let props: ArticleProps
+	export let style = ''
+	export let modal: boolean
 	export let articleWithRefs: Readonly<ArticleWithRefs>
 	export let actualArticle: Readonly<Article>
-	export let style: string = ''
-	export let animatedAsGifs: boolean
-	export let shouldLoadMedia: boolean
-	export let modal = false
-	export let hideText: boolean; hideText;
-	export let compact: boolean; compact;
 
 	const dispatch = createEventDispatcher()
 	const mediaRefs: HTMLImageElement[] = []
 	const loadingStates = derived(loadingStore, loadingSet => {
 		const states = []
 		for (let mediaIndex = 0; mediaIndex < actualArticle.medias.length; ++mediaIndex)
-			states.push(loadingStore.getLoadingState(actualArticle, mediaIndex, shouldLoadMedia))
+			states.push(loadingStore.getLoadingState(actualArticle, mediaIndex, props.shouldLoadMedia))
 		return states
 	})
 
@@ -110,7 +108,7 @@
 	//ul.articleTags
 	//	list-style-type: none
 </style>
-
+<!--TODO Try setting style directly in ArticleComponent-->
 <article class='galleryArticle' {style}>
 	<div>
 		{#each actualArticle.medias as media, i (i)}
@@ -139,7 +137,7 @@
 						on:click={() => dispatch('mediaClick', {idPair: actualArticle.idPair, index: i})}
 					/>
 				{/if}
-			{:else if !animatedAsGifs && media.mediaType === MediaType.Video}
+			{:else if !props.animatedAsGifs && media.mediaType === MediaType.Video}
 				<!-- svelte-ignore a11y-media-has-caption -->
 				<video
 					controls

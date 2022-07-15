@@ -48,12 +48,12 @@ export function getArticleAction(action: string, service: string) {
 
 export function addArticles(service: Service, ...articles: ArticleWithRefs[]) {
 	for (const {article, actualArticleRef, replyRef} of articles) {
-		service.articles[article.id] = writable(article)
+		service.articles[article.idPair.id] = writable(article)
 		if (actualArticleRef)
 			for (const ref of getRefed(actualArticleRef))
-				service.articles[ref.id] = writable(ref)
+				service.articles[ref.idPair.id] = writable(ref)
 		if (replyRef)
-			service.articles[replyRef.id] = writable(replyRef)
+			service.articles[replyRef.idPair.id] = writable(replyRef)
 	}
 
 	updateCachedArticlesStorage()
@@ -154,7 +154,7 @@ function updateMarkAsReadStorage() {
 		const articlesMarkedAsRead = Object.values(service.articles)
 			.map(a => {
 				const value = get(a)
-				return value.markedAsRead ? value.id : undefined
+				return value.markedAsRead ? value.idPair.id : undefined
 			})
 			.filter(id => id !== undefined)
 

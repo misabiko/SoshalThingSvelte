@@ -1,16 +1,9 @@
 <script lang="ts">
 	import ArticleComponent from "../articles/ArticleComponent.svelte";
-	import type {ArticleWithRefs} from '../services/article'
-	import {SvelteComponent} from 'svelte'
+	import type {ContainerProps} from './index'
 
 	export let containerRef = undefined;
-	export let articlesWithRefs: ArticleWithRefs[];
-	export let articleView: typeof SvelteComponent;
-	export let columnCount: number;
-	export let animatedAsGifs: boolean;
-	export let compact: boolean;
-	export let hideText: boolean;
-	export let shouldLoadMedia: boolean;
+	export let props: ContainerProps;
 </script>
 
 <style lang='sass'>
@@ -23,15 +16,12 @@
 </style>
 
 <div class='articlesContainer rowContainer' bind:this={containerRef}>
-	{#each articlesWithRefs as articleWithRefs, index (JSON.stringify({...articleWithRefs.article.idPair, index}))}
+	{#each props.articles as articleWithRefs, index (articleWithRefs.article.idPairStr)}
 		<ArticleComponent
+			view={props.articleView}
 			{articleWithRefs}
-			view={articleView}
-			{animatedAsGifs}
-			{compact}
-			{hideText}
-			{shouldLoadMedia}
-			style={`width: calc(100% / ${columnCount})`}
+			props={props.articleProps}
+			style={`width: calc(100% / ${props.columnCount})`}
 		/>
 	{/each}
 </div>

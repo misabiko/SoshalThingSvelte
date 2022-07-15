@@ -13,14 +13,13 @@
 	import Dropdown from '../Dropdown.svelte'
 	import {toggleMarkAsRead, toggleHide, articleAction, getArticleAction, STANDARD_ACTIONS} from "../services/service"
 	import {MediaType} from "../services/article.js";
+	import type {ArticleProps} from './index'
 
+	export let props: ArticleProps
+	export let style = ''
+	export let modal: boolean; modal;
 	export let articleWithRefs: Readonly<ArticleWithRefs>
 	export let actualArticle: Readonly<Article>
-	export let animatedAsGifs: boolean
-	export let compact: boolean
-	export let hideText: boolean
-	export let style: string = ''
-	export let shouldLoadMedia: boolean; shouldLoadMedia;	//TODO shouldLoadMedia in SocialArticleView
 
 	let minimized = false
 	const isArticleRepost = 'reposted' in articleWithRefs
@@ -326,7 +325,7 @@
 						</span>
 					{/if}
 				</div>
-				{#if !hideText && !minimized}
+				{#if !props.hideText && !minimized}
 					<p class='articleParagraph'>
 						{#if actualArticle.textHtml}
 							{@html actualArticle.textHtml}
@@ -384,8 +383,8 @@
 							Hide
 						</a>
 						<!-- svelte-ignore a11y-missing-attribute -->
-						<a class='dropdown-item' on:click={() => compact = !compact}>
-							{ compact ? 'Show expanded' : 'Show compact' }
+						<a class='dropdown-item' on:click={() => props.compact = !props.compact}>
+							{ props.compact ? 'Show expanded' : 'Show compact' }
 						</a>
 						<a class='dropdown-item' href={ actualArticle.url } target='_blank'>
 							External Link
@@ -418,14 +417,14 @@
 						<div class='is-hidden imgPlaceHolder' style:aspect-ratio={1 / media.ratio}></div>
 						<img alt={actualArticle.id} src={media.src} on:click={() => dispatch('mediaClick', {idPair: actualArticle.idPair, index})}/>
 					</div>
-				{:else if !animatedAsGifs && media.mediaType === MediaType.Video}
+				{:else if !props.animatedAsGifs && media.mediaType === MediaType.Video}
 					<div class="postMedia postVideo">
 						<!-- svelte-ignore a11y-media-has-caption -->
 						<video controls on:click|preventDefault={() => dispatch('mediaClick', {idPair: actualArticle.idPair, index})}>
 							<source src={media.src} type="video/mp4"/>
 						</video>
 					</div>
-				{:else if media.mediaType === MediaType.VideoGif || animatedAsGifs && media.mediaType === MediaType.Video}
+				{:else if media.mediaType === MediaType.VideoGif || props.animatedAsGifs && media.mediaType === MediaType.Video}
 					<div class="postMedia postVideo">
 						<!-- svelte-ignore a11y-media-has-caption -->
 						<video controls autoplay loop muted on:click|preventDefault={() => dispatch('mediaClick', {idPair: actualArticle.idPair, index})}>

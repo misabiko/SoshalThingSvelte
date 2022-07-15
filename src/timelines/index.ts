@@ -1,7 +1,9 @@
 import type {ArticleIdPair} from '../services/article'
 import type {SvelteComponent} from 'svelte'
 import type {FilterInstance} from '../filters'
-import type {SortInfo, SortMethod} from '../sorting'
+import {SortMethod, type SortInfo} from '../sorting'
+import ColumnContainer from '../containers/ColumnContainer.svelte'
+import SocialArticleView from '../articles/SocialArticleView.svelte'
 
 export type TimelineData = {
 	title: string;
@@ -13,6 +15,21 @@ export type TimelineData = {
 	width?: number;
 	filters: FilterInstance[];
 	sortInfo: SortInfo
+}
+
+export const DEFAULT_TIMELINE: TimelineData = {
+	title: 'Timeline',
+	endpoints: [],
+	initArticles: [],
+	initContainer: ColumnContainer,
+	initArticleView: SocialArticleView,
+	columnCount: 1,
+	width: 1,
+	filters: [],
+	sortInfo: {
+		method: SortMethod.Date,
+		reversed: true,
+	}
 }
 
 export type TimelineEndpoint = {

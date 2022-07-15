@@ -51,6 +51,7 @@
 	let hideText = false
 	let compact = false
 	let shouldLoadMedia = true;
+	let containerRebalance = false;
 
 	let articleIdPairs = [...data.initArticles]
 
@@ -102,6 +103,7 @@
 		},
 		articleView,
 		columnCount: data.columnCount,
+		rebalanceTrigger: containerRebalance,
 	}
 
 	enum ScrollDirection {
@@ -134,6 +136,7 @@
 
 		articleIdPairs = articleIdPairs
 		data.sortInfo.method = undefined
+		containerRebalance = !containerRebalance
 	}
 
 	function autoscroll() {

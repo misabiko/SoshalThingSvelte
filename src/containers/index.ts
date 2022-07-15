@@ -7,4 +7,5 @@ export type ContainerProps = {
 	columnCount: number;
 	articleView: typeof SvelteComponent;
 	articleProps: ArticleProps;
+	rebalanceTrigger: boolean;
 }

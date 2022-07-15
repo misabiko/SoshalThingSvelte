@@ -6,6 +6,8 @@
 
 	export let containerRef = undefined;
 	export let props: ContainerProps
+	let lastRebalanceTrigger = false
+
 	let uniqueArticles: { [idPairStr: string]: { articleWithRefs: ArticleWithRefs, index: number } }
 	$: {
 		uniqueArticles = {}
@@ -22,7 +24,15 @@
 	//Maybe by making a second MasonryContainer which refreshes every column every time
 
 	type Column = {articles: string[], ratio: number}
-	let columns: Column[]
+	let columns: Column[] | undefined
+
+	$: {
+		if (props.rebalanceTrigger !== lastRebalanceTrigger) {
+			columns = undefined
+			lastRebalanceTrigger = props.rebalanceTrigger
+		}
+	}
+
 	$: {
 		uniqueArticles;
 		if (!columns) {

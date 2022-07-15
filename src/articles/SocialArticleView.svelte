@@ -14,6 +14,7 @@
 	import {toggleMarkAsRead, toggleHide, articleAction, getArticleAction, STANDARD_ACTIONS} from "../services/service"
 	import {MediaType} from "../services/article.js";
 	import type {ArticleProps} from './index'
+	import {shortTimestamp} from "./index";
 
 	export let props: ArticleProps
 	export let style = ''
@@ -22,26 +23,7 @@
 	export let actualArticle: Readonly<Article>
 
 	let minimized = false
-	const isArticleRepost = 'reposted' in articleWithRefs
-
-	const MONTH_ABBREVS: string[] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-
-	function shortTimestamp(date: Date) {
-		const timeSince = Date.now() - date.getTime()
-
-		if (timeSince < 1000)
-			return 'just now'
-		else if (timeSince < 60_000)
-			return `${Math.floor(timeSince / 1000)}s`
-		else if (timeSince < 3_600_000)
-			return `${Math.floor(timeSince / 60_000)}m`
-		else if (timeSince < 86_400_000)
-			return `${Math.floor(timeSince / 3_600_000)}h`
-		else if (timeSince < 604_800_000)
-			return `${Math.floor(timeSince / 86_400_000)}d`
-		else
-			return `${MONTH_ABBREVS[date.getMonth()]} ${date.getDate()} ${date.getFullYear()}`
-	}
+	const isArticleRepost = articleWithRefs.actualArticleRef && 'reposted' in articleWithRefs.actualArticleRef
 
 	function onUsernameClick(clickedArticle: Article) {
 		console.log(clickedArticle.author?.username + ' click')

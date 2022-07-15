@@ -24,18 +24,15 @@
 	//Maybe by making a second MasonryContainer which refreshes every column every time
 
 	type Column = {articles: string[], ratio: number}
-	let columns: Column[] | undefined
+	let columns: Column[] = []
 
-	$: {
-		if (props.rebalanceTrigger !== lastRebalanceTrigger) {
-			columns = undefined
-			lastRebalanceTrigger = props.rebalanceTrigger
-		}
+	$: if (props.rebalanceTrigger !== lastRebalanceTrigger) {
+		columns = []
+		lastRebalanceTrigger = props.rebalanceTrigger
 	}
 
 	$: {
-		uniqueArticles;
-		if (!columns) {
+		if (!columns.length) {
 			columns = makeColumns()
 		}else {
 			const columnsChanged = new Set<number>()
@@ -64,8 +61,6 @@
 			for (let i = 0; i < columns.length; ++i)
 				columns[i].articles.sort((a, b) => uniqueArticles[a].index - uniqueArticles[b].index)
 
-			if (columnsChanged.size)
-				columns = columns
 			for (const i of columnsChanged.values())
 				columns[i].ratio = columns[i].articles.reduce((acc, curr) => acc + getRatio(uniqueArticles[curr].articleWithRefs), 0)
 		}

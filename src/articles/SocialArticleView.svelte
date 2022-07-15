@@ -90,8 +90,8 @@
 	.postMedia
 		margin-top: 1rem
 
-	//TODO .postVideo video
-	//	width: 100%
+	.postVideo video
+		width: 100%
 
 	.articleHeader *
 		vertical-align: middle
@@ -116,9 +116,9 @@
 	.timestamp
 		float: right
 
-	//TODO .postImagesCompact
-	//	display: flex
-	//	flex-wrap: wrap
+	.postImagesCompact
+		display: flex
+		flex-wrap: wrap
 
 	.mediaHolder
 		overflow: hidden

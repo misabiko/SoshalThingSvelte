@@ -40,6 +40,9 @@
 			}
 		}
 	})
+
+	const likeAction = getArticleAction(STANDARD_ACTIONS.like, actualArticle.idPair.service)
+	const repostAction = getArticleAction(STANDARD_ACTIONS.repost, actualArticle.idPair.service)
 </script>
 
 <style lang='sass'>
@@ -216,22 +219,20 @@
 			</Dropdown>
 		</div>
 		<div class='holderBox holderBoxBottom'>
-			{#if getArticleAction(STANDARD_ACTIONS.like, actualArticle.idPair.service) && }
+			{#if likeAction && !(actualArticle.getLiked() && !likeAction.togglable)}
 				<button
 					class='button'
 					on:click={() => articleAction(STANDARD_ACTIONS.like, actualArticle.idPair)}
-					disabled={actualArticle.getLiked() && !getArticleAction(STANDARD_ACTIONS.like, actualArticle.idPair.service).togglable}
 				>
 					<span class='icon darkIcon'>
 						<Fa icon={faHeart} class='is-small'/>
 					</span>
 				</button>
 			{/if}
-			{#if getArticleAction(STANDARD_ACTIONS.repost, actualArticle.idPair.service)}
+			{#if repostAction && !(actualArticle.getReposted() && !repostAction.togglable)}
 				<button
 					class='button'
 					on:click={() => articleAction(STANDARD_ACTIONS.repost, actualArticle.idPair)}
-					disabled={actualArticle.getReposted() && !getArticleAction(STANDARD_ACTIONS.repost, actualArticle.idPair.service).togglable}
 				>
 					<span class='icon darkIcon'>
 						<Fa icon={faRetweet} class='is-small'/>

@@ -106,6 +106,18 @@ export function defaultFilter(filterType: Filter['type']): Filter {
 	return { type: filterType }
 }
 
+export const defaultFilterInstances: FilterInstance[] = [
+	{
+		filter: {type: "notMarkedAsRead"},
+		enabled: true,
+		inverted: false,
+	}, {
+		filter: {type: "notHidden"},
+		enabled: true,
+		inverted: false,
+	},
+]
+
 export function keepArticle(articleWithRefs: ArticleWithRefs, filter: Filter): boolean {
 	switch (filter.type) {
 		case 'media':

@@ -5,6 +5,7 @@ import {SortMethod, type SortInfo} from '../sorting'
 import ColumnContainer from '../containers/ColumnContainer.svelte'
 import SocialArticleView from '../articles/SocialArticleView.svelte'
 import type {RefreshType} from '../services/service'
+import {defaultFilterInstances} from '../filters'
 
 export type TimelineData = {
 	title: string;
@@ -26,7 +27,7 @@ export const DEFAULT_TIMELINE: TimelineData = {
 	initArticleView: SocialArticleView,
 	columnCount: 1,
 	width: 1,
-	filters: [],
+	filters: defaultFilterInstances,
 	sortInfo: {
 		method: SortMethod.Date,
 		reversed: true,

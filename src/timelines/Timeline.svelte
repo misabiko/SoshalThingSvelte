@@ -38,18 +38,10 @@
 
 	export let favviewerButtons = false
 	export let favviewerHidden = false
-
 	export let showSidebar = true
+
 	let showOptions = false
-	let container = data.initContainer || MasonryContainer
 	let containerRef: HTMLElement | undefined = undefined
-	let width = 1
-	let articleView = data.initArticleView || SocialArticleView
-	let animatedAsGifs = false
-	let scrollSpeed = 3
-	let hideText = false
-	let compact = false
-	let shouldLoadMedia = true;
 	let containerRebalance = false;
 
 	let articleIdPairs = [...data.initArticles]
@@ -97,12 +89,12 @@
 	$: containerProps = {
 		articles: $filteredArticles,
 		articleProps: {
-			animatedAsGifs,
-			compact,
-			hideText,
-			shouldLoadMedia,
+			animatedAsGifs: data.animatedAsGifs,
+			compact: data.compact,
+			hideText: data.hideText,
+			shouldLoadMedia: data.shouldLoadMedia,
 		},
-		articleView,
+		articleView: data.articleView,
 		columnCount: data.columnCount,
 		rebalanceTrigger: containerRebalance,
 	}
@@ -148,7 +140,7 @@
 		const scrollStep = () => {
 			if ((autoscrollInfo.direction && containerRef.scrollTop > 0) ||
 				(!autoscrollInfo.direction && containerRef.scrollTop < containerRef.scrollHeight - containerRef.clientHeight))
-				containerRef.scrollBy(0, autoscrollInfo.direction ? -scrollSpeed : scrollSpeed)
+				containerRef.scrollBy(0, autoscrollInfo.direction ? -data.scrollSpeed : data.scrollSpeed)
 			else
 				autoscrollInfo.direction = autoscrollInfo.direction === ScrollDirection.Down ? ScrollDirection.Up : ScrollDirection.Down
 			autoscrollInfo.scrollRequestId = window.requestAnimationFrame(scrollStep)
@@ -268,7 +260,7 @@
 		background-color: $background
 </style>
 
-<div class='timeline' class:fullscreenTimeline={fullscreen} style='{width > 1 ? `width: ${width * 500}px` : ""}'>
+<div class='timeline' class:fullscreenTimeline={fullscreen} style='{data.width > 1 ? `width: ${data.width * 500}px` : ""}'>
 	<div class='timelineHeader'>
 		<div class='timelineLeftHeader'>
 			<strong>{data.title}</strong>
@@ -284,7 +276,7 @@
 			{/if}
 		</div>
 		<div class='timelineButtons'>
-			{#if container === MasonryContainer}
+			{#if data.container === MasonryContainer}
 				<button class='borderless-button' title='Organize Container' on:click={() => containerRebalance = !containerRebalance}>
 					<Fa icon={faScaleBalanced} size='large'/>
 				</button>
@@ -319,45 +311,45 @@
 		<div class='timelineOptions'>
 			<div class='box'>
 				<Field label='Container'>
-					<Select bind:selected={container} nativeSize={0}>
+					<Select bind:selected={data.container} nativeSize={0}>
 						<option value={ColumnContainer}>Column</option>
 						<option value={RowContainer}>Row</option>
 						<option value={MasonryContainer}>Masonry</option>
 					</Select>
 				</Field>
-				{#if container !== ColumnContainer}
+				{#if data.container !== ColumnContainer}
 					<Field label='Column Count'>
 						<Input type='number' bind:value={data.columnCount} min={1}/>
 					</Field>
 				{/if}
 				{#if !fullscreen}
 					<Field label='Timeline Width'>
-						<Input type='number' bind:value={width} min={1}/>
+						<Input type='number' bind:value={data.width} min={1}/>
 					</Field>
 				{/if}
 				<Field label='AutoScroll Speed'>
-					<Input type='number' bind:value={scrollSpeed} min={0}/>
+					<Input type='number' bind:value={data.scrollSpeed} min={0}/>
 				</Field>
 			</div>
 			<div class='box'>
 				<Field label='Article View'>
-					<Select bind:selected={articleView} nativeSize={0}>
+					<Select bind:selected={data.articleView} nativeSize={0}>
 						<option value={SocialArticleView}>Social</option>
 						<option value={GalleryArticleView}>Gallery</option>
 					</Select>
 				</Field>
 				<div class='field'>
-					<Switch bind:checked={animatedAsGifs}>Show all animated as gifs</Switch>
+					<Switch bind:checked={data.animatedAsGifs}>Show all animated as gifs</Switch>
 				</div>
 <!--				<div class='field'>-->
 <!--					<Switch bind:checked={lazyLoading}>Lazy media loading</Switch>-->
 <!--				</div>-->
-				{#if articleView === SocialArticleView}
+				{#if data.articleView === SocialArticleView}
 					<div class='field'>
-						<Switch bind:checked={compact}>Compact articles</Switch>
+						<Switch bind:checked={data.compact}>Compact articles</Switch>
 					</div>
 					<div class='field'>
-						<Switch bind:checked={hideText}>Hide text</Switch>
+						<Switch bind:checked={data.hideText}>Hide text</Switch>
 					</div>
 				{/if}
 			</div>
@@ -379,7 +371,7 @@
 		</div>
 	{/if}
 	<svelte:component
-		this={container}
+		this={data.container}
 		bind:containerRef={containerRef}
 		props={containerProps}
 	/>

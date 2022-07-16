@@ -10,28 +10,38 @@ import {defaultFilterInstances} from '../filters'
 export type TimelineData = {
 	title: string;
 	endpoints: TimelineEndpoint[];
-	initArticles?: ArticleIdPair[];
-	initContainer?: typeof SvelteComponent;
-	initArticleView?: typeof SvelteComponent;
-	columnCount?: number;
-	width?: number;
+	initArticles: ArticleIdPair[];
+	container: typeof SvelteComponent;
+	articleView: typeof SvelteComponent;
+	columnCount: number;
+	width: number;
 	filters: FilterInstance[];
-	sortInfo: SortInfo
+	sortInfo: SortInfo;
+	animatedAsGifs: boolean;
+	scrollSpeed: number;
+	hideText: boolean;
+	compact: boolean;
+	shouldLoadMedia: boolean;
 }
 
 export const DEFAULT_TIMELINE: TimelineData = {
 	title: 'Timeline',
 	endpoints: [],
 	initArticles: [],
-	initContainer: ColumnContainer,
-	initArticleView: SocialArticleView,
+	container: ColumnContainer,
+	articleView: SocialArticleView,
 	columnCount: 1,
 	width: 1,
 	filters: defaultFilterInstances,
 	sortInfo: {
 		method: SortMethod.Date,
 		reversed: true,
-	}
+	},
+	animatedAsGifs: false,
+	scrollSpeed: 3,
+	hideText: false,
+	compact: false,
+	shouldLoadMedia: true,
 }
 
 export type TimelineEndpoint = {

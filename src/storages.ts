@@ -9,6 +9,7 @@ import {addEndpoint, Endpoint, getEndpointConstructors, getEndpoints, RefreshTyp
 import type {FilterInstance} from './filters'
 import type {SortInfo} from './sorting'
 import {SortMethod} from './sorting'
+import {DEFAULT_TIMELINE} from './timelines'
 
 export const MAIN_STORAGE_KEY = 'SoshalThingSvelte'
 export const TIMELINE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Timelines'
@@ -31,7 +32,7 @@ export function loadTimelines(): TimelineData[] {
 
 	return storage.map(t => {
 		const defaulted: TimelineStorage = {
-			...DEFAULT_TIMELINE,
+			...DEFAULT_TIMELINE_STORAGE,
 			...t,
 		}
 
@@ -43,11 +44,12 @@ export function loadTimelines(): TimelineData[] {
 		}
 
 		return {
+			...DEFAULT_TIMELINE,
 			title: defaulted.title,
 			endpoints,
 			initArticles: [],
-			initContainer: parseContainer(defaulted.container),
-			initArticleView: parseArticleView(defaulted.articleView),
+			container: parseContainer(defaulted.container),
+			articleView: parseArticleView(defaulted.articleView),
 			columnCount: defaulted.columnCount,
 			width: defaulted.width,
 			filters: defaulted.filters,
@@ -168,7 +170,7 @@ type TimelineStorage = {
 	hideText: boolean
 }
 
-const DEFAULT_TIMELINE: TimelineStorage = {
+const DEFAULT_TIMELINE_STORAGE: TimelineStorage = {
 	title: 'Timeline',
 	endpoints: [],
 	columnCount: 1,

@@ -115,14 +115,14 @@
 			{@const isLoading = $loadingStates[i] === LoadingState.Loading}
 			{#if media.thumbnail !== undefined && $loadingStates[i] === LoadingState.NotLoaded}
 				<img
-					alt={`${actualArticle.id} thumbnail`}
+					alt={`${actualArticle.idPair.id} thumbnail`}
 					class='articleThumb'
 					src={media.thumbnail}
 					on:click={() => dispatch('mediaClick', {idPair: actualArticle.idPair, index: i})}
 				/>
 			{:else if media.mediaType === MediaType.Image || media.mediaType === MediaType.Gif}
 				<img
-					alt={actualArticle.id}
+					alt={actualArticle.idPair.id}
 					src={media.src}
 					on:click={() => dispatch('mediaClick', {idPair: actualArticle.idPair, index: i})}
 					on:load={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
@@ -210,24 +210,28 @@
 			</Dropdown>
 		</div>
 		<div class='holderBox holderBoxBottom'>
-			<button
-				class='button'
-				on:click={() => articleAction(STANDARD_ACTIONS.like, actualArticle.idPair)}
-				disabled={actualArticle.getLiked() && !getArticleAction(STANDARD_ACTIONS.like, actualArticle.idPair.service).togglable}
-			>
-				<span class='icon darkIcon'>
-					<Fa icon={faHeart} class='is-small'/>
-				</span>
-			</button>
-			<button
-				class='button'
-				on:click={() => articleAction(STANDARD_ACTIONS.repost, actualArticle.idPair)}
-				disabled={actualArticle.getReposted() && !getArticleAction(STANDARD_ACTIONS.repost, actualArticle.idPair.service).togglable}
-			>
-				<span class='icon darkIcon'>
-					<Fa icon={faRetweet} class='is-small'/>
-				</span>
-			</button>
+			{#if getArticleAction(STANDARD_ACTIONS.like, actualArticle.idPair.service)}
+				<button
+					class='button'
+					on:click={() => articleAction(STANDARD_ACTIONS.like, actualArticle.idPair)}
+					disabled={actualArticle.getLiked() && !getArticleAction(STANDARD_ACTIONS.like, actualArticle.idPair.service).togglable}
+				>
+					<span class='icon darkIcon'>
+						<Fa icon={faHeart} class='is-small'/>
+					</span>
+				</button>
+			{/if}
+			{#if getArticleAction(STANDARD_ACTIONS.repost, actualArticle.idPair.service)}
+				<button
+					class='button'
+					on:click={() => articleAction(STANDARD_ACTIONS.repost, actualArticle.idPair)}
+					disabled={actualArticle.getReposted() && !getArticleAction(STANDARD_ACTIONS.repost, actualArticle.idPair.service).togglable}
+				>
+					<span class='icon darkIcon'>
+						<Fa icon={faRetweet} class='is-small'/>
+					</span>
+				</button>
+			{/if}
 		</div>
 	</div>
 </article>

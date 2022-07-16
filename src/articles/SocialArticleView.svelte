@@ -320,32 +320,36 @@
 			<!--{ quoted_post }-->
 			<nav class='level is-mobile'>
 				<div class='level-left'>
-					<button
-						class='level-item articleButton repostButton borderless-button'
-						class:repostedPostButton={actualArticle.getReposted()}
-						on:click={() => articleAction(STANDARD_ACTIONS.repost, actualArticle.idPair)}
-						disabled={actualArticle.getReposted() && !getArticleAction(STANDARD_ACTIONS.repost, actualArticle.idPair.service).togglable}
-					>
-						<span class='icon'>
-							<Fa icon={faRetweet}/>
-						</span>
-						{#if actualArticle.getRepostCount()}
-							<span>{actualArticle.getRepostCount()}</span>
-						{/if}
-					</button>
-					<button
-						class='level-item articleButton likeButton borderless-button'
-						class:likedPostButton={actualArticle.getLiked()}
-						on:click={() => articleAction(STANDARD_ACTIONS.like, actualArticle.idPair)}
-						disabled={actualArticle.getLiked() && !getArticleAction(STANDARD_ACTIONS.like, actualArticle.idPair.service).togglable}
-					>
-						<span class='icon'>
-							<Fa icon={actualArticle.getLiked() ? faHeartFilled : faHeart}/>
-						</span>
-						{#if actualArticle.getLikeCount()}
-							<span>{actualArticle.getLikeCount()}</span>
-						{/if}
-					</button>
+					{#if getArticleAction(STANDARD_ACTIONS.repost, actualArticle.idPair.service)}
+						<button
+							class='level-item articleButton repostButton borderless-button'
+							class:repostedPostButton={actualArticle.getReposted()}
+							on:click={() => articleAction(STANDARD_ACTIONS.repost, actualArticle.idPair)}
+							disabled={actualArticle.getReposted() && !getArticleAction(STANDARD_ACTIONS.repost, actualArticle.idPair.service).togglable}
+						>
+							<span class='icon'>
+								<Fa icon={faRetweet}/>
+							</span>
+							{#if actualArticle.getRepostCount()}
+								<span>{actualArticle.getRepostCount()}</span>
+							{/if}
+						</button>
+					{/if}
+					{#if getArticleAction(STANDARD_ACTIONS.like, actualArticle.idPair.service)}
+						<button
+							class='level-item articleButton likeButton borderless-button'
+							class:likedPostButton={actualArticle.getLiked()}
+							on:click={() => articleAction(STANDARD_ACTIONS.like, actualArticle.idPair)}
+							disabled={actualArticle.getLiked() && !getArticleAction(STANDARD_ACTIONS.like, actualArticle.idPair.service).togglable}
+						>
+							<span class='icon'>
+								<Fa icon={actualArticle.getLiked() ? faHeartFilled : faHeart}/>
+							</span>
+							{#if actualArticle.getLikeCount()}
+								<span>{actualArticle.getLikeCount()}</span>
+							{/if}
+						</button>
+					{/if}
 					<button class='level-item articleButton borderless-button' on:click={() => toggleMarkAsRead(actualArticle.idPair)}>
 						<span class='icon'>
 							<Fa icon={faEyeSlash}/>

@@ -5,6 +5,7 @@ import {getWritable, registerService, STANDARD_ACTIONS} from '../service'
 import {get} from 'svelte/store'
 import type {TweetResponse} from './endpoints'
 import {getV1APIURL} from './endpoints'
+import {fetchExtension} from '../extension'
 
 export const TwitterService: Service = {
 	name: 'Twitter',
@@ -24,65 +25,36 @@ TwitterArticle.service = TwitterService.name
 
 registerService(TwitterService)
 
-/*export async function getTweet(id: Id) {
-	console.log("Fetching " + id)
-	try {
-		const response: TweetResponseV2 = await new Promise((resolve, reject) => {
-			const timeout = 5000
-			const timeoutId = setTimeout(() => reject(new Error(`Extension didn't respond in ${timeout} ms.`)), timeout)
-
-			//TODO Cancel request on timeout
-			//TODO Add setting or detect extension id
-			chrome.runtime.sendMessage("nlbklcaopkjjncgjikklggigffbjfloe", {
-				soshalthing: true,
-				service: TwitterService.name,
-				request: 'singleTweet',
-				id,
-			}, response => {
-				clearTimeout(timeoutId)
-				console.log('Response!')
-				resolve(response)
-			})
-		})
-
-		console.dir(response)
-		if ('data' in (response as object)) {
-			const [idPair] = addArticles(TwitterService, new TwitterArticle(
-				response.data.id,
-				response.data.text,
-				{
-					id: response.includes.users[0].id,
-					name: response.includes.users[0].name,
-					username: response.includes.users[0].username,
-					url: "https://twitter.com/" + response.includes.users[0].username,
-					avatarUrl: response.includes.users[0].profile_image_url,
-				},
-				new Date(response.data.created_at),
-				getMarkedAsReadStorage(TwitterService) as string[],
-			))
-
-			return idPair
-		}else {
-			console.error('Error fetching single tweet', response)
-			return undefined
-		}
-	}catch (errorResponse) {
-		console.error('Error fetching single tweet', errorResponse)
-	}
-}*/
-
 async function toggleFavorite(idPair: ArticleIdPair) {
 	const writable = getWritable(idPair);
 	const action = (get(writable) as TwitterArticle).liked ? 'destroy' : 'create';
-	const response = await fetchExtensionV1(
-		`${getV1APIURL('favorites/' + action)}?id=${idPair.id}`,
-		'POST'
-	);
 
-	writable.update(a => {
-		(a as TwitterArticle).liked = response.favorited || false
-		return a
-	})
+	try {
+		const response = await fetchExtensionV1(
+			`${getV1APIURL('favorites/' + action)}?id=${idPair.id}`,
+			'POST'
+		);
+
+		writable.update(a => {
+			(a as TwitterArticle).liked = response.favorited || false
+			return a
+		})
+	}catch (cause: V1ErrorResponse | any) {
+		let shouldThrow = true
+		if (cause.errors !== undefined && (cause as V1ErrorResponse).errors.some(e => e.code === 139)) {
+			console.warn(cause)
+			writable.update(a => {
+				(a as TwitterArticle).liked = true
+				return a
+			})
+
+			if (cause.errors.length === 1)
+				shouldThrow = false
+		}
+
+		if (shouldThrow)
+			throw new Error(JSON.stringify(cause, null, '\t'))
+	}
 }
 
 async function retweet(idPair: ArticleIdPair) {
@@ -102,41 +74,25 @@ async function retweet(idPair: ArticleIdPair) {
 }
 
 export async function fetchExtensionV1<T = TweetResponse>(url: string, method = 'GET', body?: any): Promise<T> {
-	try {
-		return await new Promise((resolve, reject) => {
-			const timeout = 5000
-			const timeoutId = setTimeout(() => reject(new Error(`Extension didn't respond in ${timeout} ms.`)), timeout)
+	const response = await fetchExtension<T | V1ErrorResponse>(
+		TwitterService.name,
+		'fetchV1',
+		url,
+		method,
+		body
+	)
 
-			//TODO Cancel request on timeout
-			//TODO Add setting or detect extension id
-			chrome.runtime.sendMessage("ialpimkfmdjoekolcmhnajfkmhchkmbd", {
-				soshalthing: true,
-				service: TwitterService.name,
-				request: 'fetchV1',
-				url,
-				method,
-				body,
-			}, response => {
-				clearTimeout(timeoutId)
+	if ((response as V1ErrorResponse).errors !== undefined)
+		return Promise.reject(response)
 
-				if (response.errors !== undefined)
-					reject(response)
-				else
-					resolve(response)
-			})
-		});
-	}catch (cause: any) {
-		throw new Error(`Failed to fetch from extension\n${JSON.stringify(cause, null, '\t')}`);
-		//TODO Handle already favorited
-		// {
-		// 	"errors": [
-		// 		{
-		// 			"code": 139,
-		// 			"message": "You have already favorited this status."
-		// 		}
-		// 	]
-		// }
-	}
+	return response as T
+}
+
+type V1ErrorResponse = {
+	errors: {
+		code: number,
+		message: string,
+	}[]
 }
 
 interface TweetResponseV2 {

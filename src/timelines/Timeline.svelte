@@ -291,17 +291,17 @@
 				<Fa icon={faScroll} size='large'/>
 			</button>
 			{#if availableRefreshTypes.has(RefreshType.Refresh)}
-				<button class='borderless-button' title='Refresh' on:click={refresh}>
+				<button class='borderless-button' title='Refresh' on:click={() => refresh(RefreshType.Refresh)}>
 					<Fa icon={faSyncAlt} size='large'/>
 				</button>
 			{/if}
 			{#if availableRefreshTypes.has(RefreshType.LoadBottom)}
-				<button class='borderless-button' title='Load Bottom' on:click={refresh(RefreshType.LoadBottom)}>
+				<button class='borderless-button' title='Load Bottom' on:click={() => refresh(RefreshType.LoadBottom)}>
 					<Fa icon={faArrowDown} size='large'/>
 				</button>
 			{/if}
 			{#if availableRefreshTypes.has(RefreshType.LoadTop)}
-				<button class='borderless-button' title='Load Top' on:click={refresh(RefreshType.LoadTop)}>
+				<button class='borderless-button' title='Load Top' on:click={() => refresh(RefreshType.LoadTop)}>
 					<Fa icon={faArrowUp} size='large'/>
 				</button>
 			{/if}

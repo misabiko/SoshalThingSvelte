@@ -22,6 +22,10 @@ abstract class V1Endpoint extends Endpoint {
 
 	setSearchParams(url: URL, refreshType: RefreshType) {
 		url.searchParams.set('include_entities', 'true')
+		if (refreshType === RefreshType.LoadBottom)
+			url.searchParams.set('max_id', this.articleIdPairs.reduce((acc, curr) => curr.id < acc.id ? curr : acc).id.toString())
+		if (refreshType === RefreshType.LoadTop)
+			url.searchParams.set('since_id', this.articleIdPairs.reduce((acc, curr) => curr.id > acc.id ? curr : acc).id.toString())
 	}
 
 	async fetchTweets(url: URL): Promise<ArticleWithRefs[]> {
@@ -30,9 +34,15 @@ abstract class V1Endpoint extends Endpoint {
 	}
 }
 
+//https://developer.twitter.com/en/docs/twitter-api/v1/tweets/timelines/api-reference/get-statuses-home_timeline
 export class HomeTimelineEndpoint extends V1Endpoint {
 	readonly name = 'Home Timeline'
 	readonly resource = 'statuses/home_timeline'
+	refreshTypes = new Set([
+		RefreshType.RefreshStart,
+		RefreshType.Refresh,
+		RefreshType.LoadBottom,
+	])
 
 	matchParams(params: any): boolean {
 		return true;
@@ -45,6 +55,7 @@ export class HomeTimelineEndpoint extends V1Endpoint {
 	}
 }
 
+//https://developer.twitter.com/en/docs/twitter-api/v1/tweets/timelines/api-reference/get-statuses-user_timeline
 export class UserTimelineEndpoint extends V1Endpoint {
 	readonly name;
 	readonly resource = 'statuses/user_timeline'
@@ -71,6 +82,7 @@ export class UserTimelineEndpoint extends V1Endpoint {
 	}
 }
 
+//https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/create-manage-lists/api-reference/get-lists-statuses
 export class ListEndpoint extends V1Endpoint {
 	readonly name;
 	readonly resource = 'lists/statuses'
@@ -99,6 +111,7 @@ export class ListEndpoint extends V1Endpoint {
 	}
 }
 
+//https://developer.twitter.com/en/docs/twitter-api/v1/tweets/post-and-engage/api-reference/get-favorites-list
 export class LikesEndpoint extends V1Endpoint {
 	readonly name
 	readonly resource = 'favorites/list'
@@ -125,6 +138,7 @@ export class LikesEndpoint extends V1Endpoint {
 	}
 }
 
+//https://developer.twitter.com/en/docs/twitter-api/v1/tweets/search/api-reference/get-search-tweets
 export class SearchEndpoint extends V1Endpoint {
 	readonly name
 	readonly resource = 'search/tweets'
@@ -212,7 +226,7 @@ function articleFromV1(json: TweetResponse): ArticleWithRefs {
 	}
 	return {
 		article: new TwitterArticle(
-			json.id_str,
+			BigInt(json.id_str),
 			text,
 			textHtml,
 			{

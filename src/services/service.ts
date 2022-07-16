@@ -1,5 +1,5 @@
 import type Article from './article'
-import type { ArticleIdPair, ArticleWithRefs } from './article'
+import type { ArticleId, ArticleIdPair, ArticleWithRefs } from './article'
 import {getRefed} from './article'
 import type {Writable} from 'svelte/store'
 import {get, writable} from 'svelte/store'
@@ -14,11 +14,11 @@ const STORAGE_KEY = 'SoshalThingSvelte'
 
 export interface Service {
 	readonly name: string;
-	readonly articles: { [id: string | number]: Writable<Article> };
+	readonly articles: { [id: string]: Writable<Article> };
 	articleActions: { [name: string]: ArticleAction };
-	requestImageLoad?: (id: string | number, index: number) => void;
-	fetchArticle?: (id: string | number) => void;
-	getCachedArticles?: () => {[id: string | number]: object}
+	requestImageLoad?: (id: ArticleId, index: number) => void;
+	fetchArticle?: (id: ArticleId) => void;
+	getCachedArticles?: () => {[id: string]: object}
 }
 
 type ArticleAction = {
@@ -48,12 +48,13 @@ export function getArticleAction(action: string, service: string) {
 
 export function addArticles(service: Service, ...articles: ArticleWithRefs[]) {
 	for (const {article, actualArticleRef, replyRef} of articles) {
-		service.articles[article.idPair.id] = writable(article)
+		//https://github.com/microsoft/TypeScript/issues/46395
+		service.articles[article.idPair.id as string] = writable(article)
 		if (actualArticleRef)
 			for (const ref of getRefed(actualArticleRef))
-				service.articles[ref.idPair.id] = writable(ref)
+				service.articles[ref.idPair.id as string] = writable(ref)
 		if (replyRef)
-			service.articles[replyRef.idPair.id] = writable(replyRef)
+			service.articles[replyRef.idPair.id.toString()] = writable(replyRef)
 	}
 
 	updateCachedArticlesStorage()
@@ -133,7 +134,7 @@ export function toggleHide(idPair: ArticleIdPair) {
 }
 
 export function getWritable(idPair: ArticleIdPair): Writable<Article> {
-	return services[idPair.service].articles[idPair.id]
+	return services[idPair.service].articles[idPair.id as string]
 }
 
 function updateMarkAsReadStorage() {
@@ -187,13 +188,13 @@ export function updateCachedArticlesStorage() {
 }
 
 //TODO Profile passing service vs service name
-export function getMarkedAsReadStorage(service: Service): (string | number)[] {
+export function getMarkedAsReadStorage(service: Service): (ArticleId)[] {
 	const item = sessionStorage.getItem(STORAGE_KEY)
 	const parsed = item !== null ? JSON.parse(item) : null
 	return parsed?.services[service.name]?.articlesMarkedAsRead || []
 }
 
-export function getCachedArticlesStorage(service: Service): {[id: string | number]: object} {
+export function getCachedArticlesStorage(service: Service): {[id: string]: object} {
 	const item = sessionStorage.getItem(STORAGE_KEY)
 	const parsed = item !== null ? JSON.parse(item) : null
 	return parsed?.services[service.name]?.cachedArticles || {}

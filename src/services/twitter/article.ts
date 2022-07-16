@@ -5,7 +5,7 @@ export default class TwitterArticle extends Article {
 	static service: string;
 
 	constructor(
-		id: string,
+		readonly id: bigint,
 		text: string,
 		textHtml: string,
 		readonly author: TwitterUser,
@@ -56,5 +56,3 @@ export interface TwitterUser extends ArticleAuthor {
 	id: string;
 	avatarUrl: string;
 }
-
-export type Id = string;

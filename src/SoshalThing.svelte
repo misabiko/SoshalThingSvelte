@@ -6,6 +6,10 @@
 	import {notifications} from './notifications/store'
 	import Notification from "./notifications/Notification.svelte";
 
+	(BigInt.prototype as any).toJSON = function () {
+		return this.toString();
+	};
+
 	export let initTimelines: TimelineData[]
 	export let fullscreen: number | undefined
 	export let isInjected = true

@@ -113,9 +113,9 @@ function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | unde
 		refreshTypes.add(RefreshType.RefreshStart)
 	if (storage.onRefresh === undefined ? true : storage.onRefresh)
 		refreshTypes.add(RefreshType.Refresh)
-	if (storage.loadTop)
+	if (storage.loadTop === undefined ? true : storage.loadTop)
 		refreshTypes.add(RefreshType.LoadTop)
-	if (storage.loadBottom)
+	if (storage.loadBottom === undefined ? true : storage.loadBottom)
 		refreshTypes.add(RefreshType.LoadBottom)
 
 	return {

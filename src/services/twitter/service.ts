@@ -86,7 +86,7 @@ async function toggleFavorite(idPair: ArticleIdPair) {
 }
 
 async function retweet(idPair: ArticleIdPair) {
-	const writable = TwitterService.articles[idPair.id];
+	const writable = TwitterService.articles[idPair.id as string];
 	if ((get(writable) as TwitterArticle).retweeted)
 		return
 
@@ -127,6 +127,15 @@ export async function fetchExtensionV1<T = TweetResponse>(url: string, method = 
 		});
 	}catch (cause: any) {
 		throw new Error(`Failed to fetch from extension\n${JSON.stringify(cause, null, '\t')}`);
+		//TODO Handle already favorited
+		// {
+		// 	"errors": [
+		// 		{
+		// 			"code": 139,
+		// 			"message": "You have already favorited this status."
+		// 		}
+		// 	]
+		// }
 	}
 }
 

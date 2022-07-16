@@ -1,4 +1,3 @@
-//TODO interface?
 import type {Readable} from 'svelte/store'
 import {derived} from 'svelte/store'
 import {getWritable} from './service'
@@ -27,14 +26,14 @@ export default abstract class Article {
 	json: any
 
 	protected constructor(params: {
-		id: string | number,
+		id: ArticleId,
 		text?: string,
 		textHtml?: string,
 		url: string,//TODO Make optional
 		medias: ArticleMedia[],
 		markedAsRead: boolean,
 		hidden: boolean,
-		markedAsReadStorage: (string | number)[],	//Actually (string[] | number[])
+		markedAsReadStorage: ArticleId[],	//Actually (string[] | number[])
 		actualArticleRef?: ArticleRefIdPair
 		replyRef?: ArticleIdPair
 		fetched?: boolean,
@@ -154,9 +153,11 @@ export type ArticleWithRefs = Readonly<{
 	replyRef?: Article
 }>
 
+export type ArticleId = string | number | bigint
+
 export interface ArticleIdPair {
 	service: string;
-	id: string | number
+	id: ArticleId
 }
 
 export type ArticleRefIdPair =

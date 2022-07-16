@@ -1,10 +1,22 @@
-<script>
+<script lang='ts'>
 	import Fa from 'svelte-fa/src/fa.svelte';
-	import { faAngleDoubleLeft, faAngleDoubleRight, faPlus, faCog } from '@fortawesome/free-solid-svg-icons';
+	import {faAngleDoubleLeft, faAngleDoubleRight, faPlus, faCog, faSpinner} from '@fortawesome/free-solid-svg-icons'
 	import { faGithub } from '@fortawesome/free-brands-svg-icons';
 	import EndpointOptions from "./EndpointOptions.svelte";
+	import {loadingStore} from "../bufferedMediaLoading";
 
-	let expanded = false;
+	let menu: SidebarMenu | null = null;
+
+	enum SidebarMenu {
+		Endpoints,
+		NewTimeline,
+		MediaLoader,
+		Settings,
+	}
+
+	function toggleSidebarMenu(newMenu: SidebarMenu) {
+		menu = menu === null ? newMenu : null;
+	}
 </script>
 
 <style lang='sass'>
@@ -51,25 +63,33 @@
 </style>
 
 <nav id='sidebar'>
-	{#if expanded}
+	{#if menu !== null}
 		<div class='sidebarMenu'>
-			<div class='box'>
-				<EndpointOptions/>
-			</div>
+			{#if menu === SidebarMenu.Endpoints}
+				<div class='box'>
+					<EndpointOptions/>
+				</div>
+			{:else if menu === SidebarMenu.MediaLoader}
+				{#each [...$loadingStore] as idPair (idPair)}
+					{idPair}
+				{/each}
+			{/if}
 		</div>
 	{/if}
 	<div id='sidebarButtons'>
 		<div>
-			<button class='borderless-button' title="Expand sidebar" on:click='{() => expanded = !expanded}'>
-				<Fa icon={expanded ? faAngleDoubleLeft : faAngleDoubleRight} size='2x'/>
+			<button class='borderless-button' title="Expand sidebar" on:click='{() => toggleSidebarMenu(SidebarMenu.Endpoints)}'>
+				<Fa icon={menu === SidebarMenu.Endpoints ? faAngleDoubleLeft : faAngleDoubleRight} size='2x'/>
 			</button>
-			<button class='borderless-button' title="Add new timeline"> <!-- onclick={ctx.link().callback(|_| Msg::AddTimeline)}-->
+			<button class='borderless-button' title="Add new timeline" on:click={() => toggleSidebarMenu(SidebarMenu.NewTimeline)}>
 				<Fa icon={faPlus} size='2x'/>
 			</button>
-			<!--{ for ctx.props().children.iter() }-->
+			<button class='borderless-button' title="Loading medias" on:click={() => toggleSidebarMenu(SidebarMenu.MediaLoader)}>
+				<Fa icon={faSpinner} size='2x'/>
+			</button>
 		</div>
 		<div>
-			<button class='borderless-button' title="Settings"> <!-- onclick={ctx.link().callback(|_| Msg::ShowSettings)}-->
+			<button class='borderless-button' title="Settings" on:click={() => toggleSidebarMenu(SidebarMenu.Settings)}>
 				<Fa icon={faCog} size='2x'/>
 			</button>
 			<a href="https://github.com/misabiko/SoshalThingSvelte" title="Github">

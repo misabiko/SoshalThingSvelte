@@ -42,8 +42,6 @@ export function getArticleAction(action: string, service: string) {
 	const actions = services[service].articleActions
 	if (actions.hasOwnProperty(action))
 		return actions[action]
-	else
-		console.warn(`${service} doesn't have action ${action}.`)
 }
 
 export function addArticles(service: Service, ...articles: ArticleWithRefs[]) {

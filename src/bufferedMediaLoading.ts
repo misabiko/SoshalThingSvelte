@@ -1,7 +1,7 @@
 import type Article from './services/article'
 import type {ArticleIdPair} from './services/article'
 import {getWritable} from './services/service'
-import {writable} from 'svelte/store'
+import {get, writable} from 'svelte/store'
 
 function hash(idPair: ArticleIdPair, mediaIndex: number) {
 	return JSON.stringify({...idPair, mediaIndex})
@@ -13,11 +13,11 @@ function createStore() {
 
 	return {
 		subscribe,
-		getLoadingState(article: Article, mediaIndex: number, request = false): LoadingState {
-			if (local.has(hash(article.idPair, mediaIndex)))
+		getLoadingState(idPair: ArticleIdPair, mediaIndex: number, request = false): LoadingState {
+			if (local.has(hash(idPair, mediaIndex)))
 				return LoadingState.Loading
 
-			const loaded = article.medias[mediaIndex].loaded;
+			const loaded = get(getWritable(idPair)).medias[mediaIndex].loaded;
 			if (loaded === undefined)
 				return LoadingState.Loaded
 			else if (loaded)
@@ -27,7 +27,7 @@ function createStore() {
 					return LoadingState.NotLoaded
 
 				update(l => {
-					l.add(hash(article.idPair, mediaIndex))
+					l.add(hash(idPair, mediaIndex))
 					local = l
 					return l
 				})
@@ -37,16 +37,27 @@ function createStore() {
 		},
 		mediaLoaded(idPair: ArticleIdPair, mediaIndex: number) {
 			update(l => {
+				getWritable(idPair).update(a => {
+					a.medias[mediaIndex].loaded = true;
+					return a;
+				})
+
 				l.delete(hash(idPair, mediaIndex))
 				local = l
 				return l
 			})
 
-			getWritable(idPair).update(a => {
-				a.medias[mediaIndex].loaded = true;
-				return a;
-			})
 		},
+		forceLoading(article: Readonly<Article>, mediaIndex: number) {
+			if (article.medias[mediaIndex].loaded === undefined || article.medias[mediaIndex].loaded)
+				return
+
+			update(l => {
+				l.add(hash(article.idPair, mediaIndex))
+				local = l
+				return l
+			})
+		}
 	}
 }
 export const loadingStore = createStore()

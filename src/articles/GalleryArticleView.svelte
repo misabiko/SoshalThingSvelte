@@ -27,7 +27,7 @@
 	const loadingStates = derived(loadingStore, loadingSet => {
 		const states = []
 		for (let mediaIndex = 0; mediaIndex < actualArticle.medias.length; ++mediaIndex)
-			states.push(loadingStore.getLoadingState(actualArticle, mediaIndex, props.shouldLoadMedia))
+			states.push(loadingStore.getLoadingState(actualArticle.idPair, mediaIndex, props.shouldLoadMedia))
 		return states
 	})
 
@@ -108,12 +108,13 @@
 	//ul.articleTags
 	//	list-style-type: none
 </style>
+
 <!--TODO Try setting style directly in ArticleComponent-->
 <article class='galleryArticle' {style}>
 	<div>
 		{#each actualArticle.medias as media, i (i)}
 			{@const isLoading = $loadingStates[i] === LoadingState.Loading}
-			{#if media.thumbnail !== undefined && $loadingStates[i] === LoadingState.NotLoaded}
+			{#if $loadingStates[i] === LoadingState.NotLoaded}
 				<img
 					alt={`${actualArticle.idPair.id} thumbnail`}
 					class='articleThumb'
@@ -131,7 +132,7 @@
 				/>
 				{#if isLoading}
 					<img
-						alt={`${actualArticle.id} thumbnail`}
+						alt={`${actualArticle.idPair.id} thumbnail`}
 						class='articleThumb'
 						src={media.thumbnail}
 						on:click={() => dispatch('mediaClick', {idPair: actualArticle.idPair, index: i})}
@@ -188,9 +189,9 @@
 				<a class='dropdown-item' on:click={() => toggleHide(actualArticle.idPair)}>
 					Hide
 				</a>
-				{#if !actualArticle.fetched }
+				{#if actualArticle.medias.some(m => !m.loaded) }
 					<!-- svelte-ignore a11y-missing-attribute -->
-					<a class='dropdown-item' on:click={() => fetchArticle(actualArticle.idPair)}>
+					<a class='dropdown-item' on:click={() => {for (let i = 0; i < actualArticle.medias.length; ++i) loadingStore.forceLoading(actualArticle, i)}}>
 						Load Media
 					</a>
 				{/if}
@@ -206,11 +207,16 @@
 					Log Data
 				</a>
 				<!--				<a class='dropdown-item' on:click={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::LogJsonData))}>{"Log Json Data"}</a>-->
-				<!--				<a class='dropdown-item' on:click={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::FetchData))}>{"Fetch Data"}</a>-->
+				{#if !actualArticle.fetched }
+					<!-- svelte-ignore a11y-missing-attribute -->
+					<a class='dropdown-item' on:click={() => fetchArticle(actualArticle.idPair)}>
+						Fetch Article
+					</a>
+				{/if}
 			</Dropdown>
 		</div>
 		<div class='holderBox holderBoxBottom'>
-			{#if getArticleAction(STANDARD_ACTIONS.like, actualArticle.idPair.service)}
+			{#if getArticleAction(STANDARD_ACTIONS.like, actualArticle.idPair.service) && }
 				<button
 					class='button'
 					on:click={() => articleAction(STANDARD_ACTIONS.like, actualArticle.idPair)}

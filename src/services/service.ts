@@ -87,6 +87,13 @@ export enum RefreshType {
 	LoadBottom,
 }
 
+export const everyRefreshType = new Set([
+	RefreshType.RefreshStart,
+	RefreshType.Refresh,
+	RefreshType.LoadBottom,
+	RefreshType.LoadTop,
+])
+
 type ParamType = string | number | boolean;
 
 export function registerService(service: Service) {

@@ -7,6 +7,7 @@
 	export let containerRef = undefined;
 	export let props: ContainerProps
 	let lastRebalanceTrigger = false
+	let lastColumnCount = props.columnCount
 
 	let uniqueArticles: { [idPairStr: string]: { articleWithRefs: ArticleWithRefs, index: number } }
 	$: {
@@ -26,7 +27,7 @@
 	type Column = {articles: string[], ratio: number}
 	let columns: Column[] = []
 
-	$: if (props.rebalanceTrigger !== lastRebalanceTrigger) {
+	$: if (props.rebalanceTrigger !== lastRebalanceTrigger || props.columnCount !== lastColumnCount) {
 		columns = []
 		lastRebalanceTrigger = props.rebalanceTrigger
 	}

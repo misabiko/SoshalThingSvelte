@@ -15,7 +15,7 @@
 		faArrowUp,
 		faEllipsisV,
 		faEyeSlash,
-		faRandom,
+		faRandom, faScaleBalanced,
 		faScroll,
 		faSyncAlt,
 	} from '@fortawesome/free-solid-svg-icons'
@@ -284,6 +284,11 @@
 			{/if}
 		</div>
 		<div class='timelineButtons'>
+			{#if container === MasonryContainer}
+				<button class='borderless-button' title='Organize Container' on:click={() => containerRebalance = !containerRebalance}>
+					<Fa icon={faScaleBalanced} size='large'/>
+				</button>
+			{/if}
 			<button class='borderless-button' title='Shuffle' on:click={shuffle}>
 				<Fa icon={faRandom} size='large'/>
 			</button>

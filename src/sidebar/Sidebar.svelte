@@ -1,9 +1,17 @@
 <script lang='ts'>
 	import Fa from 'svelte-fa/src/fa.svelte';
-	import {faAngleDoubleLeft, faAngleDoubleRight, faPlus, faCog, faSpinner} from '@fortawesome/free-solid-svg-icons'
+	import {
+		faAngleDoubleLeft,
+		faAngleDoubleRight,
+		faPlus,
+		faCog,
+		faSpinner,
+		faCube,
+	} from '@fortawesome/free-solid-svg-icons'
 	import { faGithub } from '@fortawesome/free-brands-svg-icons';
 	import EndpointOptions from "./EndpointOptions.svelte";
 	import {loadingStore} from "../bufferedMediaLoading";
+	import SettingsMenu from "./SettingsMenu.svelte";
 
 	let menu: SidebarMenu | null = null;
 
@@ -73,6 +81,8 @@
 				{#each [...$loadingStore] as idPair (idPair)}
 					{idPair}
 				{/each}
+			{:else if menu === SidebarMenu.Settings}
+				<SettingsMenu/>
 			{/if}
 		</div>
 	{/if}

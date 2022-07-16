@@ -34,7 +34,9 @@ chrome.runtime.onMessageExternal.addListener(
 		console.log("Extension received message");
 		console.dir(request);
 
-		if (request.service === 'Twitter') {
+		if (request.request === 'extensionCheck')
+			sendResponse({id: chrome.runtime.id, available: true})
+		else if (request.service === 'Twitter') {
 			switch (request.request) {
 				case 'singleTweet':
 					const url = new URL("https://api.twitter.com/2/tweets/" + request.id);

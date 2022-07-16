@@ -10,7 +10,7 @@
 	export let props: ArticleProps
 	export let view: typeof SvelteComponent
 	export let modal = false
-	export let style = ''
+	export let style = ''; style;
 
 	let actualArticle: Readonly<Article>
 	$: {

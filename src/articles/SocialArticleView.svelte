@@ -97,9 +97,9 @@
 	.timestamp
 		float: right
 
-	.postImagesCompact
-		display: flex
-		flex-wrap: wrap
+	//TODO .postImagesCompact
+	//	display: flex
+	//	flex-wrap: wrap
 
 	.mediaHolder
 		overflow: hidden

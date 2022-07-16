@@ -14,6 +14,7 @@
 
 <div class='block field has-addons'>
 	<div class='field-label is-normal'>
+		<!-- svelte-ignore a11y-label-has-associated-control -->
 		<label class='label'>
 			Sort Method
 		</label>
@@ -22,10 +23,12 @@
 		<div class='control'>
 			<Dropdown labelText={currentMethodName}>
 				{#each allSortMethods as method}
+					<!-- svelte-ignore a11y-missing-attribute -->
 					<a class='dropdown-item' on:click={() => sortInfo.method = method}>
 						{ `${methodName(method)} - ${directionLabel(method, sortInfo.reversed || false)}` }
 					</a>
 				{/each}
+				<!-- svelte-ignore a11y-missing-attribute -->
 				<a class='dropdown-item' on:click={() => sortInfo.method = undefined}>
 					Unsorted
 				</a>
@@ -44,9 +47,11 @@
 			<div class='control'>
 				<Dropdown labelText='Sort once'>
 					{#each allSortMethods as method}
+						<!-- svelte-ignore a11y-missing-attribute -->
 						<a class='dropdown-item' on:click={() => dispatch('sortOnce', {method, reversed: false})}>
 							{ `${methodName(method)} - ${directionLabel(method, false)}` }
 						</a>
+						<!-- svelte-ignore a11y-missing-attribute -->
 						<a class='dropdown-item' on:click={() => dispatch('sortOnce', {method, reversed: true})}>
 							{ `${methodName(method)} - ${directionLabel(method, true)}` }
 						</a>

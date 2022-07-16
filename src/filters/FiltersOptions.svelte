@@ -26,6 +26,7 @@
 {#each instances as instance, index (index)}
 	<div class="field has-addons">
 		<div class="field-label is-normal">
+			<!-- svelte-ignore a11y-label-has-associated-control -->
 			<label class="label">{ getFilterName(instance.filter.type, instance.inverted) }</label>
 		</div>
 		<div class="field-body">
@@ -53,6 +54,7 @@
 <!--TODO has-addons-->
 <Dropdown labelText='New Filter'>
 	{#each filterTypes as filterType}
+		<!-- svelte-ignore a11y-missing-attribute -->
 		<a class='dropdown-item' on:click={() => addFilter(filterType, false)}>
 			{ getFilterName(filterType, false) }
 		</a>
@@ -60,6 +62,7 @@
 </Dropdown>
 <Dropdown labelText='New Inverted Filter'>
 	{#each filterTypes as filterType}
+		<!-- svelte-ignore a11y-missing-attribute -->
 		<a class="dropdown-item" on:click={() => addFilter(filterType, true)}>
 			{ getFilterName(filterType, true) }
 		</a>

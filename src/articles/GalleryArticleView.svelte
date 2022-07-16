@@ -17,9 +17,9 @@
 	import type {ArticleProps} from './index'
 
 	export let props: ArticleProps
-	export let style = ''
+	export let style = ''; style;
 	export let modal: boolean
-	export let articleWithRefs: Readonly<ArticleWithRefs>
+	export let articleWithRefs: Readonly<ArticleWithRefs>; articleWithRefs;
 	export let actualArticle: Readonly<Article>
 
 	const dispatch = createEventDispatcher()

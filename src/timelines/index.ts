@@ -4,6 +4,7 @@ import type {FilterInstance} from '../filters'
 import {SortMethod, type SortInfo} from '../sorting'
 import ColumnContainer from '../containers/ColumnContainer.svelte'
 import SocialArticleView from '../articles/SocialArticleView.svelte'
+import type {RefreshType} from '../services/service'
 
 export type TimelineData = {
 	title: string;
@@ -34,7 +35,6 @@ export const DEFAULT_TIMELINE: TimelineData = {
 
 export type TimelineEndpoint = {
 	name: string;
-	onStart: boolean;
-	onRefresh: boolean;
+	refreshTypes: Set<RefreshType>;
 	filters: FilterInstance[]
 }

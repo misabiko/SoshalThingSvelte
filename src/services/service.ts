@@ -62,18 +62,9 @@ export function addArticles(service: Service, ...articles: ArticleWithRefs[]) {
 export abstract class Endpoint {
 	abstract readonly name: string
 	readonly articleIdPairs: ArticleIdPair[] = []
+	refreshTypes = new Set<RefreshType>([RefreshType.RefreshStart, RefreshType.Refresh])
 
-	abstract refresh(refreshTime: RefreshTime): Promise<ArticleWithRefs[]>;
-
-	async loadTop(refreshTime: RefreshTime): Promise<ArticleWithRefs[]> {
-		console.debug(`${this.name} doesn't implement loadTop()`)
-		return await this.refresh(refreshTime)
-	}
-
-	async loadBottom(refreshTime: RefreshTime): Promise<ArticleWithRefs[]> {
-		console.debug(`${this.name} doesn't implement loadBottom()`)
-		return await this.refresh(refreshTime)
-	}
+	abstract refresh(refreshType: RefreshType): Promise<ArticleWithRefs[]>;
 
 	abstract matchParams(params: any): boolean
 
@@ -88,10 +79,11 @@ export interface EndpointConstructorInfo {
 
 export type EndpointConstructorParams = { [param: string]: ParamType };
 
-//TODO Replace with enum RefreshType { RefreshStart, Refresh, LoadTop, LoadBottom }
-export enum RefreshTime {
-	OnStart,
-	OnRefresh,
+export enum RefreshType {
+	RefreshStart,
+	Refresh,
+	LoadTop,
+	LoadBottom,
 }
 
 type ParamType = string | number | boolean;
@@ -208,32 +200,11 @@ export function getCachedArticlesStorage(service: Service): {[id: string | numbe
 }
 
 //TODO Add articles to other timelines
-export async function refreshEndpoints(timelineEndpoints: TimelineEndpoint[], refreshTime: RefreshTime): Promise<ArticleIdPair[]> {
+export async function refreshEndpoints(timelineEndpoints: TimelineEndpoint[], refreshType: RefreshType): Promise<ArticleIdPair[]> {
 	const articleIdPairs = []
-	for (const endpoint of timelineEndpoints)
-		if (
-			(refreshTime === RefreshTime.OnStart && endpoint.onStart) ||
-			(refreshTime === RefreshTime.OnRefresh && endpoint.onRefresh)
-		)
-			articleIdPairs.push(...endpointRefreshed(endpoint, await endpoints[endpoint.name].refresh(refreshTime)))
-
-	return articleIdPairs
-}
-
-export async function loadTopEndpoints(timelineEndpoints: TimelineEndpoint[]): Promise<ArticleIdPair[]> {
-	const articleIdPairs = []
-	for (const endpoint of timelineEndpoints)
-		if (endpoint.onRefresh)
-			articleIdPairs.push(...endpointRefreshed(endpoint, await endpoints[endpoint.name].refresh(RefreshTime.OnRefresh)))
-
-	return articleIdPairs
-}
-
-export async function loadBottomEndpoints(timelineEndpoints: TimelineEndpoint[]): Promise<ArticleIdPair[]> {
-	const articleIdPairs = []
-	for (const endpoint of timelineEndpoints)
-		if (endpoint.onRefresh)
-			articleIdPairs.push(...endpointRefreshed(endpoint, await endpoints[endpoint.name].refresh(RefreshTime.OnRefresh)))
+	for (const timelineEndpoint of timelineEndpoints)
+		if (timelineEndpoint.refreshTypes.has(refreshType) && endpoints[timelineEndpoint.name].refreshTypes.has(refreshType))
+			articleIdPairs.push(...endpointRefreshed(timelineEndpoint, await endpoints[timelineEndpoint.name].refresh(refreshType)))
 
 	return articleIdPairs
 }

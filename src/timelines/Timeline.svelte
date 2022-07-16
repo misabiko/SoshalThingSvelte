@@ -20,11 +20,10 @@
 		faSyncAlt,
 	} from '@fortawesome/free-solid-svg-icons'
 	import {
+		getEndpoints,
 		getWritable,
-		loadBottomEndpoints,
-		loadTopEndpoints,
 		refreshEndpoints,
-		RefreshTime,
+		RefreshType,
 	} from '../services/service'
 	import {onMount} from 'svelte'
 	import {type TimelineData} from './index'
@@ -91,6 +90,8 @@
 		},
 	)
 
+	let availableRefreshTypes: Set<RefreshType>
+	$: availableRefreshTypes = new Set(data.endpoints.flatMap(e => [...getEndpoints()[e.name].refreshTypes.values()]))
 
 	let containerProps: ContainerProps
 	$: containerProps = {
@@ -169,23 +170,8 @@
 		autoscrollInfo.scrollRequestId = undefined
 	}
 
-	async function refresh() {
-		console.log('Refreshing!')
-		const newArticles = await refreshEndpoints(data.endpoints, RefreshTime.OnRefresh)
-		articleIdPairs.push(...newArticles)
-		articleIdPairs = articleIdPairs
-	}
-
-	async function loadBottom() {
-		console.log('Loading Bottom!')
-		const newArticles = await loadBottomEndpoints(data.endpoints)
-		articleIdPairs.push(...newArticles)
-		articleIdPairs = articleIdPairs
-	}
-
-	async function loadTop() {
-		console.log('Loading Top!')
-		const newArticles = await loadTopEndpoints(data.endpoints)
+	async function refresh(refreshType: RefreshType) {
+		const newArticles = await refreshEndpoints(data.endpoints, refreshType)
 		articleIdPairs.push(...newArticles)
 		articleIdPairs = articleIdPairs
 	}
@@ -201,14 +187,10 @@
 		if (!data.endpoints.length)
 			return
 
-		const newArticles = await refreshEndpoints(data.endpoints, RefreshTime.OnStart)
+		const newArticles = await refreshEndpoints(data.endpoints, RefreshType.RefreshStart)
 		articleIdPairs.push(...newArticles)
 		articleIdPairs = articleIdPairs
 	})
-
-	/*afterUpdate(async () => {
-		for (const idPair of)
-	})*/
 </script>
 
 <style lang='sass'>
@@ -308,15 +290,21 @@
 			<button class='borderless-button' title='Autoscroll' on:click={autoscroll}>
 				<Fa icon={faScroll} size='large'/>
 			</button>
-			<button class='borderless-button' title='Refresh' on:click={refresh}>
-				<Fa icon={faSyncAlt} size='large'/>
-			</button>
-			<button class='borderless-button' title='Load Bottom' on:click={loadBottom}>
-				<Fa icon={faArrowDown} size='large'/>
-			</button>
-			<button class='borderless-button' title='Load Top' on:click={loadTop}>
-				<Fa icon={faArrowUp} size='large'/>
-			</button>
+			{#if availableRefreshTypes.has(RefreshType.Refresh)}
+				<button class='borderless-button' title='Refresh' on:click={refresh}>
+					<Fa icon={faSyncAlt} size='large'/>
+				</button>
+			{/if}
+			{#if availableRefreshTypes.has(RefreshType.LoadBottom)}
+				<button class='borderless-button' title='Load Bottom' on:click={refresh(RefreshType.LoadBottom)}>
+					<Fa icon={faArrowDown} size='large'/>
+				</button>
+			{/if}
+			{#if availableRefreshTypes.has(RefreshType.LoadTop)}
+				<button class='borderless-button' title='Load Top' on:click={refresh(RefreshType.LoadTop)}>
+					<Fa icon={faArrowUp} size='large'/>
+				</button>
+			{/if}
 			<button class='borderless-button' title='Expand options' on:click='{() => showOptions = !showOptions}'>
 				<Fa icon={faEllipsisV} size='large'/>
 			</button>

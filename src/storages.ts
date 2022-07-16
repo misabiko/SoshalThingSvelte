@@ -5,7 +5,7 @@ import RowContainer from './containers/RowContainer.svelte'
 import MasonryContainer from './containers/MasonryContainer.svelte'
 import SocialArticleView from './articles/SocialArticleView.svelte'
 import GalleryArticleView from './articles/GalleryArticleView.svelte'
-import {addEndpoint, Endpoint, getEndpointConstructors, getEndpoints} from './services/service'
+import {addEndpoint, Endpoint, getEndpointConstructors, getEndpoints, RefreshType} from './services/service'
 import type {FilterInstance} from './filters'
 import type {SortInfo} from './sorting'
 import {SortMethod} from './sorting'
@@ -108,10 +108,19 @@ function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | unde
 		addEndpoint(endpoint)
 	}
 
+	const refreshTypes = new Set<RefreshType>()
+	if (storage.onStart === undefined ? true : storage.onStart)
+		refreshTypes.add(RefreshType.RefreshStart)
+	if (storage.onRefresh === undefined ? true : storage.onRefresh)
+		refreshTypes.add(RefreshType.Refresh)
+	if (storage.loadTop)
+		refreshTypes.add(RefreshType.LoadTop)
+	if (storage.loadBottom)
+		refreshTypes.add(RefreshType.LoadBottom)
+
 	return {
 		name: endpoint.name,
-		onStart: storage.onStart ?? true,
-		onRefresh: storage.onRefresh ?? true,
+		refreshTypes,
 		filters: storage.filters || [],
 	}
 }
@@ -182,4 +191,6 @@ type EndpointStorage = {
 	//autoRefresh: boolean
 	onStart?: boolean
 	onRefresh?: boolean
+	loadTop?: boolean
+	loadBottom?: boolean
 }

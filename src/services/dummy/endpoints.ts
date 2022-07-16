@@ -1,7 +1,7 @@
 import {
 	Endpoint,
 	type EndpointConstructorInfo,
-	RefreshTime,
+	RefreshType,
 	registerEndpoint,
 } from '../service'
 import {DummyService} from './service'
@@ -10,7 +10,7 @@ import DummyArticle from './article'
 export class DummyEndpoint extends Endpoint {
 	readonly name = 'DummyEndpoint'
 
-	async refresh(refreshTime: RefreshTime) {
+	async refresh(refreshType: RefreshType) {
 		return [{
 			article: new DummyArticle(0, 'bleh', false, false),
 			refs: [],
@@ -38,7 +38,7 @@ export class DummyEndpointWithParam extends Endpoint {
 		this.name = `Dummy Endpoint ${query}`
 	}
 
-	async refresh(refreshTime: RefreshTime) {
+	async refresh(refreshType: RefreshType) {
 		return []
 	}
 

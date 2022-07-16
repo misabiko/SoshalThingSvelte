@@ -1,5 +1,5 @@
 import type {ArticleMedia, ArticleRef, ArticleWithRefs} from '../article'
-import {Endpoint, type EndpointConstructorInfo, getMarkedAsReadStorage, RefreshTime, registerEndpoint} from '../service'
+import {Endpoint, type EndpointConstructorInfo, getMarkedAsReadStorage, RefreshType, registerEndpoint} from '../service'
 import {fetchExtensionV1, TwitterService} from './service'
 import TwitterArticle from './article'
 import Article, {articleRefToIdPair, ArticleRefType, getRatio, MediaQueueInfo, MediaType} from '../article'
@@ -8,9 +8,9 @@ abstract class V1Endpoint extends Endpoint {
 	//Waiting on https://github.com/microsoft/TypeScript/issues/34516 to make static
 	abstract readonly resource: string
 
-	async refresh(refreshTime: RefreshTime) {
+	async refresh(refreshType: RefreshType) {
 		const url = new URL(getV1APIURL(this.resource))
-		this.setSearchParams(url)
+		this.setSearchParams(url, refreshType)
 
 		try {
 			return await this.fetchTweets(url)
@@ -20,7 +20,7 @@ abstract class V1Endpoint extends Endpoint {
 		}
 	}
 
-	setSearchParams(url: URL) {
+	setSearchParams(url: URL, refreshType: RefreshType) {
 		url.searchParams.set('include_entities', 'true')
 	}
 
@@ -55,8 +55,8 @@ export class UserTimelineEndpoint extends V1Endpoint {
 		this.name = `User Timeline ${this.username}`
 	}
 
-	setSearchParams(url: URL) {
-		super.setSearchParams(url)
+	setSearchParams(url: URL, refreshType: RefreshType) {
+		super.setSearchParams(url, refreshType)
 		url.searchParams.set('screen_name', this.username)
 	}
 
@@ -81,8 +81,8 @@ export class ListEndpoint extends V1Endpoint {
 		this.name = `List Endpoint ${this.username}/${this.slug}`
 	}
 
-	setSearchParams(url: URL) {
-		super.setSearchParams(url)
+	setSearchParams(url: URL, refreshType: RefreshType) {
+		super.setSearchParams(url, refreshType)
 		url.searchParams.set('owner_screen_name', this.username)
 		url.searchParams.set('slug', this.slug)
 	}
@@ -109,8 +109,8 @@ export class LikesEndpoint extends V1Endpoint {
 		this.name = `Likes ${this.username}`
 	}
 
-	setSearchParams(url: URL) {
-		super.setSearchParams(url)
+	setSearchParams(url: URL, refreshType: RefreshType) {
+		super.setSearchParams(url, refreshType)
 		url.searchParams.set('screen_name', this.username)
 	}
 
@@ -135,8 +135,8 @@ export class SearchEndpoint extends V1Endpoint {
 		this.name = `Search ${this.query}`
 	}
 
-	setSearchParams(url: URL) {
-		super.setSearchParams(url)
+	setSearchParams(url: URL, refreshType: RefreshType) {
+		super.setSearchParams(url, refreshType)
 		url.searchParams.set('q', this.query)
 		url.searchParams.set('result_type', 'recent')
 		url.searchParams.set('include_entities', 'true')

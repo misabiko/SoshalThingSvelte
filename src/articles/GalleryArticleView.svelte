@@ -169,8 +169,7 @@
 			</a>
 			{#if !modal}
 				<button class='button'>
-					<!--onclick={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::ToggleInModal))}-->
-					<span class='icon darkIcon'>
+					<span class='icon darkIcon' on:click={() => modal = !modal}>
 						<Fa icon={faExpandArrowsAlt} class='is-small'/>
 					</span>
 				</button>

@@ -5,7 +5,7 @@
 		faRetweet,
 		faHeart as faHeartFilled,
 		faEyeSlash,
-		faEllipsisH,
+		faEllipsisH, faExpandAlt,
 	} from '@fortawesome/free-solid-svg-icons'
 	import {createEventDispatcher} from 'svelte'
 	import Article from '../services/article'
@@ -351,6 +351,13 @@
 							<Fa icon={faEyeSlash}/>
 						</span>
 					</button>
+					{#if !modal}
+						<button class='level-item articleButton borderless-button' on:click={() => modal = !modal}>
+							<span class='icon'>
+								<Fa icon={faExpandAlt}/>
+							</span>
+						</button>
+					{/if}
 					<Dropdown labelClasses='articleButton borderless-button'>
 						<span slot='triggerIcon' class='icon'>
 							<Fa icon={faEllipsisH} class='level-item'/>

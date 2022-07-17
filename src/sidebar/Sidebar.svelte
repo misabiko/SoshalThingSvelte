@@ -23,7 +23,7 @@
 	}
 
 	function toggleSidebarMenu(newMenu: SidebarMenu) {
-		menu = menu === null ? newMenu : null;
+		menu = menu === newMenu ? null : newMenu;
 	}
 </script>
 

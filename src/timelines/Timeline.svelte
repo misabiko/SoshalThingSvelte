@@ -9,16 +9,6 @@
 	import MasonryContainer from "../containers/MasonryContainer.svelte"
 	import SocialArticleView from "../articles/SocialArticleView.svelte"
 	import GalleryArticleView from "../articles/GalleryArticleView.svelte"
-	import Fa from 'svelte-fa/src/fa.svelte'
-	import {
-		faArrowDown,
-		faArrowUp,
-		faEllipsisV,
-		faEyeSlash,
-		faRandom, faScaleBalanced,
-		faScroll,
-		faSyncAlt,
-	} from '@fortawesome/free-solid-svg-icons'
 	import {
 		getEndpoints,
 		getWritable,
@@ -32,6 +22,7 @@
 	import {compare, SortMethod} from '../sorting'
 	import SortOptions from "../sorting/SortOptions.svelte";
 	import type {ContainerProps} from '../containers'
+	import TimelineHeader from "./TimelineHeader.svelte";
 
 	export let data: TimelineData
 	export let fullscreen: boolean
@@ -206,32 +197,6 @@
 		width: unset
 		max-width: 100%
 
-	.timelineHeader
-		height: 50px
-		line-height: 50px
-		padding-left: 25px
-		background-color: $dark
-		display: flex
-		justify-content: space-between
-
-		strong
-			vertical-align: middle
-
-		//TODO &.timelineInvalid
-		//	background-color: $dark-error
-
-	.timelineLeftHeader
-		display: flex
-		flex-shrink: 8
-
-	.timelineButtons
-		display: flex
-		flex-wrap: nowrap
-
-	.timelineButtons > button
-		height: 100%
-		padding: 0 1rem
-
 	.timelineOptions
 		background-color: $scheme-main-ter
 		padding: 1rem
@@ -261,52 +226,19 @@
 </style>
 
 <div class='timeline' class:fullscreenTimeline={fullscreen} style='{data.width > 1 ? `width: ${data.width * 500}px` : ""}'>
-	<div class='timelineHeader'>
-		<div class='timelineLeftHeader'>
-			<strong>{data.title}</strong>
-			{#if favviewerButtons}
-				<div class='timelineButtons'>
-					<button class='borderless-button' title='Toggle SoshalThing' on:click={() => favviewerHidden = !favviewerHidden}>
-						<Fa icon={faEyeSlash} size='large'/>
-					</button>
-					<button class='borderless-button' title='Show Sidebar' on:click={() => showSidebar = !showSidebar}>
-						<Fa icon={faEllipsisV} size='large'/>
-					</button>
-				</div>
-			{/if}
-		</div>
-		<div class='timelineButtons'>
-			{#if data.container === MasonryContainer}
-				<button class='borderless-button' title='Organize Container' on:click={() => containerRebalance = !containerRebalance}>
-					<Fa icon={faScaleBalanced} size='large'/>
-				</button>
-			{/if}
-			<button class='borderless-button' title='Shuffle' on:click={shuffle}>
-				<Fa icon={faRandom} size='large'/>
-			</button>
-			<button class='borderless-button' title='Autoscroll' on:click={autoscroll}>
-				<Fa icon={faScroll} size='large'/>
-			</button>
-			{#if availableRefreshTypes.has(RefreshType.Refresh)}
-				<button class='borderless-button' title='Refresh' on:click={() => refresh(RefreshType.Refresh)}>
-					<Fa icon={faSyncAlt} size='large'/>
-				</button>
-			{/if}
-			{#if availableRefreshTypes.has(RefreshType.LoadBottom)}
-				<button class='borderless-button' title='Load Bottom' on:click={() => refresh(RefreshType.LoadBottom)}>
-					<Fa icon={faArrowDown} size='large'/>
-				</button>
-			{/if}
-			{#if availableRefreshTypes.has(RefreshType.LoadTop)}
-				<button class='borderless-button' title='Load Top' on:click={() => refresh(RefreshType.LoadTop)}>
-					<Fa icon={faArrowUp} size='large'/>
-				</button>
-			{/if}
-			<button class='borderless-button' title='Expand options' on:click='{() => showOptions = !showOptions}'>
-				<Fa icon={faEllipsisV} size='large'/>
-			</button>
-		</div>
-	</div>
+	<TimelineHeader
+		bind:data
+		bind:availableRefreshTypes
+		bind:containerRebalance
+		bind:showSidebar
+		bind:showOptions
+		bind:favviewerButtons
+		bind:favviewerHidden
+
+		on:shuffle
+		on:autoscroll
+		on:refresh={e => refresh(e.detail)}
+	/>
 	{#if showOptions}
 		<div class='timelineOptions'>
 			<div class='box'>

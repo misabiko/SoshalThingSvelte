@@ -1,15 +1,14 @@
 import { expect, test } from '@playwright/test';
 import {loadWithLocalStorage, TIMELINE_STORAGE_KEY} from './storages.spec.js'
-//TODO Move tests to meta repo
 
-test.describe.skip('fullscreen timeline', () => {
+test.describe('fullscreen timeline', () => {
 	test('via search param', async ({page}) => {
 		await loadWithLocalStorage(page, {
 			[TIMELINE_STORAGE_KEY]: [{}]
 		})
 		await page.goto('/?fullscreen_timeline=true');
 
-		await expect(page.locator('.timeline').first()).toHaveClass(/mainTimeline/);
+		await expect(page.locator('.timeline').first()).toHaveClass(/fullscreenTimeline/);
 	});
 
 	test('setting timeline fullscreen retains order', async ({page}) => {
@@ -17,11 +16,9 @@ test.describe.skip('fullscreen timeline', () => {
 			[TIMELINE_STORAGE_KEY]: [{}, {}, {}]
 		})
 
-		await page.click('.timeline:nth-child(2) .timelineHeader .timelineButtons button[title = "Expand options"]');
+		await page.click('.timeline:nth-child(2) .timelineHeader button[title = "Make timeline fullscreen"]');
 
-		await page.click('button:has-text("Set as main timeline")');
-
-		await page.click('#sidebarButtons button[title = "Multiple Timelines"]');
+		await page.click('.timelineHeader button[title = "Disable fullscreen"]');
 
 		for (let i = 1; i <= 3; ++i)
 			await expect(page.locator(`.timeline:nth-child(${i}) .timelineLeftHeader > strong`))
@@ -37,13 +34,13 @@ test.describe.skip('fullscreen timeline', () => {
 			]
 		})
 
-		await page.click('.timeline:nth-child(2) .timelineHeader .timelineButtons button[title = "Expand options"]');
+		await page.click('.timeline:nth-child(2) .timelineHeader button[title = "Make timeline fullscreen"]');
 
-		await page.click('button:has-text("Set as main timeline")');
+		await page.click('.timeline:nth-child(2) .timelineHeader button[title = "Expand options"]');
 
 		await page.click('text=Remove timeline');
 
-		await page.click('#sidebarButtons button[title = "Multiple Timelines"]');
+		await page.click('.timelineHeader button[title = "Disable fullscreen"]');
 
 		await expect(page.locator('.timeline:nth-child(1) .timelineLeftHeader > strong'))
 			.toHaveText('Timeline1', {timeout: 500});

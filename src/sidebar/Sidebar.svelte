@@ -80,6 +80,10 @@
 			{:else if menu === SidebarMenu.MediaLoader}
 				{#each [...$loadingStore] as idPair (idPair)}
 					{idPair}
+				{:else}
+					<div class='box'>
+						No media currently loading
+					</div>
 				{/each}
 			{:else if menu === SidebarMenu.Settings}
 				<SettingsMenu/>

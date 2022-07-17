@@ -65,10 +65,10 @@ export async function extensionCheck(): Promise<ExtensionContext> {
 			chrome.runtime.sendMessage(extensionContext.id as string, {
 				soshalthing: true,
 				request: 'extensionCheck',
-			}, (response: ExtensionContext) => {
+			}, (response?: ExtensionContext) => {
 				clearTimeout(timeoutId)
 
-				if (!response.id) {
+				if (!response?.id) {
 					extensionContextStore.set({
 						id: extensionContext.id,
 						available: false

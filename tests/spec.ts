@@ -69,6 +69,13 @@ test.describe('fullscreen timeline', () => {
 	});
 });
 
+test('scrolling', ({page}) => test.fail())
+
+test.describe('filters', () => {
+	test('mark as read', ({page}) => test.fail())
+	test('hidden', ({page}) => test.fail())
+})
+
 test.describe('SocialArticleView', () => {
 	test('like feedback', async ({page}) => {
 		await loadWithLocalStorage(page, {

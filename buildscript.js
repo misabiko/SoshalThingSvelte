@@ -53,10 +53,15 @@ export const errorHandler = (error, location) => {
 if (!fs.existsSync(outdir))
 	fs.mkdirSync(outdir);
 
+let port = 8080
+const portIndex = process.argv.findIndex(s => s === '--port')
+if (portIndex > -1 && process.argv.length >= portIndex)
+	port = parseInt(process.argv[portIndex + 1])
+
 if (process.argv.includes('--serve'))
 	esbuild
 		.serve({
-			port: 8081,
+			port,
 			servedir: outdir,
 		}, {
 			...buildOptions,

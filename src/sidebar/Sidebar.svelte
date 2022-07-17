@@ -88,9 +88,11 @@
 	{/if}
 	<div id='sidebarButtons'>
 		<div>
-			<button class='borderless-button' title="Expand sidebar" on:click='{() => toggleSidebarMenu(SidebarMenu.Endpoints)}'>
-				<Fa icon={menu === SidebarMenu.Endpoints ? faAngleDoubleLeft : faAngleDoubleRight} size='2x'/>
-			</button>
+			{#if menu !== null}
+				<button class='borderless-button' title="Expand sidebar" on:click='{() => menu = null}'>
+					<Fa icon={faAngleDoubleLeft} size='2x'/>
+				</button>
+			{/if}
 			<button class='borderless-button' title="Add new timeline" on:click={() => toggleSidebarMenu(SidebarMenu.NewTimeline)}>
 				<Fa icon={faPlus} size='2x'/>
 			</button>

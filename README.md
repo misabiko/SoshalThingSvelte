@@ -1,40 +1,20 @@
-# create-svelte
+# SoshalThingSvelte [![CI@main](https://github.com/misabiko/SoshalThingSvelte/actions/workflows/ci.yml/badge.svg?branch=main "CI@main")](https://github.com/misabiko/SoshalThingSvelte/actions/workflows/ci.yml) <a href="https://bulma.io"> <img src="https://bulma.io/images/made-with-bulma.png" alt="Made with Bulma" width="128" height="24"> </a>
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+Tweetdeck-style timeline app to display feeds from various services in columns.
 
-## Creating a project
+Mostly for my personal use, so the code is messy and the UI is all over the place. 😊
 
-If you're seeing this, you've probably already done this step. Congrats!
+---
+## Why I use it (vs Tweetdeck)
+- Not having every image cropped
+- Mark posts as read and hide them as I read
+- Having multiple sources per timeline rather than 15 individual timelines
+- Multi-column timelines
+- Adding timelines to other websites
+- Using it for other services than Twitter (not quite there yet)
 
-```bash
-# create a new project in the current directory
-npm init svelte@next
+## Usage
 
-# create a new project in my-app
-npm init svelte@next my-app
-```
-
-> Note: the `@next` is temporary
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+### Dev
+Serve the app  on `localhost:8081` with `npm run serve`  
+Needs a `credentials.json` in the working directory with `twitter.consumer_key` and `twitter.consumer_secret` for a Twitter app.  

@@ -23,7 +23,11 @@
 		"*://*/*"
 	],
 	"externally_connectable": {
-		"matches": ["*://localhost/*"]
+		"matches": [
+			"*://localhost/*",
+			"*://soshalthing.surge.sh/*",
+			"*://soshalthing.com/*"
+		]
 	},
 	"content_scripts": [
 		{

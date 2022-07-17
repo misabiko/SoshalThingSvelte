@@ -4,6 +4,10 @@ Tweetdeck-style timeline app to display feeds from various services in columns.
 
 Mostly for my personal use, so the code is messy and the UI is all over the place. 😊
 
+Hosted on https://soshalthing.com
+
+Rust version: https://github.com/misabiko/SoshalThingYew
+
 ---
 ## Why I use it (vs Tweetdeck)
 - Not having every image cropped

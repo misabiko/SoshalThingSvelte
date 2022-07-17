@@ -207,6 +207,7 @@
 		bind:showOptions
 		bind:favviewerButtons
 		bind:favviewerHidden
+		bind:fullscreen
 
 		on:shuffle
 		on:autoscroll

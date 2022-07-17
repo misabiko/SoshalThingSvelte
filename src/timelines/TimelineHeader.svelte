@@ -3,8 +3,8 @@
 	import Fa from 'svelte-fa/src/fa.svelte'
 	import {
 		faArrowDown,
-		faArrowUp,
-		faEllipsisV,
+		faArrowUp, faColumns,
+		faEllipsisV, faExpandAlt,
 		faEyeSlash,
 		faRandom,
 		faScaleBalanced,
@@ -18,6 +18,7 @@
 	export let data: TimelineData
 	export let favviewerButtons: boolean
 	export let favviewerHidden: boolean
+	export let fullscreen: boolean
 	export let availableRefreshTypes: Set<RefreshType>
 	export let containerRebalance: boolean
 	export let showSidebar: boolean
@@ -71,6 +72,13 @@
 		{/if}
 	</div>
 	<div class='timelineButtons'>
+		<button
+			class='borderless-button'
+			title={fullscreen ? 'Disable fullscreen' : 'Make timeline fullscreen'}
+			on:click={() => fullscreen = !fullscreen}
+		>
+			<Fa icon={fullscreen ? faColumns: faExpandAlt} size='large'/>
+		</button>
 		{#if data.container === MasonryContainer}
 			<button class='borderless-button' title='Organize Container'
 					on:click={() => containerRebalance = !containerRebalance}>

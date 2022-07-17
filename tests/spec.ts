@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import {loadWithLocalStorage, TIMELINE_STORAGE_KEY} from './storages.spec.js'
 //TODO Move tests to meta repo
 
-test.describe('fullscreen timeline', () => {
+test.describe.skip('fullscreen timeline', () => {
 	test('via search param', async ({page}) => {
 		await loadWithLocalStorage(page, {
 			[TIMELINE_STORAGE_KEY]: [{}]

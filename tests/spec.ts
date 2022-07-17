@@ -2,13 +2,33 @@ import { expect, test } from '@playwright/test';
 import {loadWithLocalStorage, TIMELINE_STORAGE_KEY} from './storages.spec.js'
 
 test.describe('fullscreen timeline', () => {
-	test('via search param', async ({page}) => {
-		await loadWithLocalStorage(page, {
-			[TIMELINE_STORAGE_KEY]: [{}]
-		})
-		await page.goto('/?fullscreen_timeline=true');
+	test.describe('via search param', () => {
+		test('empty param', async ({page}) => {
+			await loadWithLocalStorage(page, {
+				[TIMELINE_STORAGE_KEY]: [{}, {}, {}]
+			})
+			await page.goto('/?fullscreen_timeline');
 
-		await expect(page.locator('.timeline').first()).toHaveClass(/fullscreenTimeline/);
+			await expect(page.locator('.timeline').first()).toHaveClass(/fullscreenTimeline/);
+		})
+
+		test('true', async ({page}) => {
+			await loadWithLocalStorage(page, {
+				[TIMELINE_STORAGE_KEY]: [{}, {}, {}]
+			})
+			await page.goto('/?fullscreen_timeline=true');
+
+			await expect(page.locator('.timeline').first()).toHaveClass(/fullscreenTimeline/);
+		})
+
+		test('num', async ({page}) => {
+			await loadWithLocalStorage(page, {
+				[TIMELINE_STORAGE_KEY]: [{}, {}, {}]
+			})
+			await page.goto('/?fullscreen_timeline=1');
+
+			await expect(page.locator('.timeline').nth(1)).toHaveClass(/fullscreenTimeline/);
+		})
 	});
 
 	test('setting timeline fullscreen retains order', async ({page}) => {

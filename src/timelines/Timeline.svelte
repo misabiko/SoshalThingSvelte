@@ -9,7 +9,7 @@
 		refreshEndpoints,
 		RefreshType,
 	} from '../services/service'
-	import {onMount} from 'svelte'
+	import {createEventDispatcher, onMount} from 'svelte'
 	import {type TimelineData} from './index'
 	import {keepArticle} from '../filters'
 	import {compare, SortMethod} from '../sorting'
@@ -18,6 +18,7 @@
 	import TimelineOptions from "./TimelineOptions.svelte";
 
 	export let data: TimelineData
+	//Would like to make this immutable https://github.com/sveltejs/svelte/issues/5572
 	export let fullscreen: boolean
 
 	export let favviewerButtons = false
@@ -167,6 +168,8 @@
 		articleIdPairs.push(...newArticles)
 		articleIdPairs = articleIdPairs
 	})
+
+	const dispatch = createEventDispatcher()
 </script>
 
 <style lang='sass'>
@@ -207,17 +210,19 @@
 		bind:showOptions
 		bind:favviewerButtons
 		bind:favviewerHidden
-		bind:fullscreen
+		{fullscreen}
 
 		on:shuffle
 		on:autoscroll
 		on:refresh={e => refresh(e.detail)}
+		on:toggleFullscreen={() => dispatch('toggleFullscreen')}
 	/>
 	{#if showOptions}
 		<TimelineOptions
 			bind:data
-			bind:fullscreen
+			{fullscreen}
 			on:sortOnce
+			on:removeTimeline={() => dispatch('removeTimeline')}
 		/>
 	{/if}
 	<svelte:component

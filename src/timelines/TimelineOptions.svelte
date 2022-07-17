@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import {Field, Input, Select, Switch} from 'svelma'
+	import {Field, Button, Input, Select, Switch} from 'svelma'
 	import ColumnContainer from "../containers/ColumnContainer.svelte"
 	import RowContainer from "../containers/RowContainer.svelte"
 	import MasonryContainer from "../containers/MasonryContainer.svelte"
@@ -41,6 +41,11 @@
 </style>
 
 <div class='timelineOptions'>
+	<div class='box'>
+		<Button type='is-danger' on:click={() => dispatch('removeTimeline')}>
+			Remove timeline
+		</Button>
+	</div>
 	<div class='box'>
 		<Field label='Container'>
 			<Select bind:selected={data.container} nativeSize={0}>

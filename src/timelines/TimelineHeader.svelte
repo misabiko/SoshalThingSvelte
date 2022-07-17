@@ -75,7 +75,7 @@
 		<button
 			class='borderless-button'
 			title={fullscreen ? 'Disable fullscreen' : 'Make timeline fullscreen'}
-			on:click={() => fullscreen = !fullscreen}
+			on:click={() => dispatch('toggleFullscreen')}
 		>
 			<Fa icon={fullscreen ? faColumns: faExpandAlt} size='large'/>
 		</button>

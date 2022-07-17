@@ -60,7 +60,7 @@ test.describe('fullscreen timeline', () => {
 
 		await page.click('.timeline:nth-child(2) .timelineHeader button[title = "Make timeline fullscreen"]');
 
-		await page.click('.timeline:nth-child(2) .timelineHeader button[title = "Expand options"]');
+		await page.click('.timelineHeader button[title = "Expand options"]');
 
 		await page.click('text=Remove timeline');
 

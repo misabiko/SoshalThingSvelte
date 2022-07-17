@@ -79,11 +79,11 @@ test.describe('fullscreen timeline', () => {
 	});
 });
 
-test('scrolling', ({page}) => test.fail())
+test.skip('scrolling', ({page}) => {})
 
 test.describe('filters', () => {
-	test('mark as read', ({page}) => test.fail())
-	test('hidden', ({page}) => test.fail())
+	test.skip('mark as read', ({page}) => {})
+	test.skip('hidden', ({page}) => {})
 })
 
 test.describe('SocialArticleView', () => {

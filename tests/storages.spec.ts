@@ -182,9 +182,9 @@ test.describe('timelines', () => {
 })
 
 test.describe('cache', () => {
-	test('mark as read is properly loaded', ({page}) => test.fail())
+	test.skip('mark as read is properly loaded', ({page}) => {})
 
-	test('hidden is properly loaded', ({page}) => test.fail())
+	test.skip('hidden is properly loaded', ({page}) => {})
 })
 
 export async function loadWithLocalStorage(page: Page, storages: {[key: string]: any}) {

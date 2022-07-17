@@ -5,6 +5,18 @@ export const MAIN_STORAGE_KEY = 'SoshalThingSvelte'
 export const TIMELINE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Timelines'
 
 test.describe('app options', () => {
+	test('fullscreen undefined', async ({page}) => {
+		await loadWithLocalStorage(page, {
+			[MAIN_STORAGE_KEY]: {},
+			[TIMELINE_STORAGE_KEY]: [
+				{}, {}, {}
+			]
+		})
+
+		await expect(page.locator('.timeline')).toHaveCount(3)
+		await expect(page.locator('.fullscreenTimeline')).toHaveCount(0)
+	})
+
 	test('fullscreen true', async ({page}) => {
 		await loadWithLocalStorage(page, {
 			[MAIN_STORAGE_KEY]: {
@@ -15,7 +27,9 @@ test.describe('app options', () => {
 			]
 		})
 
-		await expect(page.locator('.timeline').first()).toHaveClass(/fullscreenTimeline/);
+		const timeline = page.locator('.timeline')
+		await expect(timeline).toHaveCount(1)
+		await expect(timeline).toHaveClass(/fullscreenTimeline/)
 	});
 	test('fullscreen false', async ({page}) => {
 		await loadWithLocalStorage(page, {
@@ -27,7 +41,8 @@ test.describe('app options', () => {
 			]
 		})
 
-		await expect(page.locator('.timeline').first()).not.toHaveClass(/fullscreenTimeline/);
+		await expect(page.locator('.timeline')).toHaveCount(3)
+		await expect(page.locator('.fullscreenTimeline')).toHaveCount(0)
 	});
 	test('fullscreen index', async ({page}) => {
 		await loadWithLocalStorage(page, {
@@ -39,7 +54,9 @@ test.describe('app options', () => {
 			]
 		})
 
-		await expect(page.locator('.timeline').nth(1)).toHaveClass(/fullscreenTimeline/);
+		const timeline = page.locator('.timeline')
+		await expect(timeline).toHaveCount(1)
+		await expect(timeline).toHaveClass(/fullscreenTimeline/)
 	});
 })
 

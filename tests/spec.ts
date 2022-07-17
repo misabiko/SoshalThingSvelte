@@ -9,7 +9,9 @@ test.describe('fullscreen timeline', () => {
 			})
 			await page.goto('/?fullscreen_timeline');
 
-			await expect(page.locator('.timeline').first()).toHaveClass(/fullscreenTimeline/);
+			const timeline = page.locator('.timeline')
+			await expect(timeline).toHaveCount(1)
+			await expect(timeline).toHaveClass(/fullscreenTimeline/)
 		})
 
 		test('true', async ({page}) => {
@@ -18,7 +20,9 @@ test.describe('fullscreen timeline', () => {
 			})
 			await page.goto('/?fullscreen_timeline=true');
 
-			await expect(page.locator('.timeline').first()).toHaveClass(/fullscreenTimeline/);
+			const timeline = page.locator('.timeline')
+			await expect(timeline).toHaveCount(1)
+			await expect(timeline).toHaveClass(/fullscreenTimeline/)
 		})
 
 		test('num', async ({page}) => {
@@ -27,7 +31,9 @@ test.describe('fullscreen timeline', () => {
 			})
 			await page.goto('/?fullscreen_timeline=1');
 
-			await expect(page.locator('.timeline').nth(1)).toHaveClass(/fullscreenTimeline/);
+			const timeline = page.locator('.timeline')
+			await expect(timeline).toHaveCount(1)
+			await expect(timeline).toHaveClass(/fullscreenTimeline/)
 		})
 	});
 

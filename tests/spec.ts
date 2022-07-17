@@ -33,7 +33,11 @@ test.describe('fullscreen timeline', () => {
 
 	test('setting timeline fullscreen retains order', async ({page}) => {
 		await loadWithLocalStorage(page, {
-			[TIMELINE_STORAGE_KEY]: [{}, {}, {}]
+			[TIMELINE_STORAGE_KEY]: [
+				{title: 'Timeline1'},
+				{title: 'Timeline2'},
+				{title: 'Timeline3'},
+			]
 		})
 
 		await page.click('.timeline:nth-child(2) .timelineHeader button[title = "Make timeline fullscreen"]');

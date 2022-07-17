@@ -7,7 +7,9 @@ import Article, {articleRefToIdPair, ArticleRefType, getRatio, MediaQueueInfo, M
 abstract class V1Endpoint extends Endpoint {
 	//Waiting on https://github.com/microsoft/TypeScript/issues/34516 to make static
 	abstract readonly resource: string
+	abstract readonly maxCount: number
 
+	//TODO Pass endpoint filters to exclude retweets
 	async refresh(refreshType: RefreshType) {
 		const url = new URL(getV1APIURL(this.resource))
 		this.setSearchParams(url, refreshType)
@@ -26,6 +28,9 @@ abstract class V1Endpoint extends Endpoint {
 			url.searchParams.set('max_id', this.articleIdPairs.reduce((acc, curr) => curr.id < acc.id ? curr : acc).id.toString())
 		if (refreshType === RefreshType.LoadTop)
 			url.searchParams.set('since_id', this.articleIdPairs.reduce((acc, curr) => curr.id > acc.id ? curr : acc).id.toString())
+
+		if (this.articleIdPairs.length)
+			url.searchParams.set('count', this.maxCount.toString())
 	}
 
 	async fetchTweets(url: URL): Promise<ArticleWithRefs[]> {
@@ -38,6 +43,7 @@ abstract class V1Endpoint extends Endpoint {
 export class HomeTimelineEndpoint extends V1Endpoint {
 	readonly name = 'Home Timeline'
 	readonly resource = 'statuses/home_timeline'
+	readonly maxCount = 200	//Default 20
 	refreshTypes = new Set([
 		RefreshType.RefreshStart,
 		RefreshType.Refresh,
@@ -59,6 +65,7 @@ export class HomeTimelineEndpoint extends V1Endpoint {
 export class UserTimelineEndpoint extends V1Endpoint {
 	readonly name;
 	readonly resource = 'statuses/user_timeline'
+	readonly maxCount = 200
 
 	constructor(readonly username: string) {
 		super()
@@ -86,6 +93,7 @@ export class UserTimelineEndpoint extends V1Endpoint {
 export class ListEndpoint extends V1Endpoint {
 	readonly name;
 	readonly resource = 'lists/statuses'
+	readonly maxCount = 200	//Not mentionned, assuming 200
 
 	constructor(readonly username: string, readonly slug: string) {
 		super()
@@ -115,6 +123,7 @@ export class ListEndpoint extends V1Endpoint {
 export class LikesEndpoint extends V1Endpoint {
 	readonly name
 	readonly resource = 'favorites/list'
+	readonly maxCount = 200	//Default 20
 
 	constructor(readonly username: string) {
 		super()
@@ -142,6 +151,7 @@ export class LikesEndpoint extends V1Endpoint {
 export class SearchEndpoint extends V1Endpoint {
 	readonly name
 	readonly resource = 'search/tweets'
+	readonly maxCount = 100	//Default 15
 
 	constructor(readonly query: string) {
 		super()

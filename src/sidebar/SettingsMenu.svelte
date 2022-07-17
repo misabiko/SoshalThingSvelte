@@ -3,7 +3,7 @@
 	import {extensionCheck, extensionContextStore} from "../services/extension.js"
 </script>
 
-<Field label='Extension Id'>
+<Field label='Extension Id' addons={false}>
 	<Input type='text' bind:value={$extensionContextStore.id} placeholder='Extension Id'/>
 	<Button on:click={extensionCheck}>Check Extension</Button>
 </Field>

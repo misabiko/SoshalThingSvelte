@@ -1,14 +1,18 @@
 import {readable, writable} from 'svelte/store'
+import {MAIN_STORAGE_KEY} from '../storages'
 
 export type ExtensionContext =
 	{ id: null, available: false } |
 	{ id: string, available: false } |
 	{ id: string, available: true }
 
+const EXTENSION_ID_STORAGE_KEY = `${MAIN_STORAGE_KEY} Extension Id`
+
 let extensionContext: Readonly<ExtensionContext> = {
-	id: null,
+	id: localStorage.getItem(EXTENSION_ID_STORAGE_KEY),
 	available: false,
 }
+
 
 //TODO Try unifying as a custom readable store?
 export const extensionContextStore = writable<ExtensionContext>(extensionContext)
@@ -37,6 +41,10 @@ export async function fetchExtension<T>(service: string, request: string, url: s
 			}, response => {
 				clearTimeout(timeoutId)
 
+				extensionContextStore.update(ctx => {
+					ctx.available = true
+					return ctx
+				})
 				resolve(response)
 			})
 		});
@@ -60,7 +68,7 @@ export async function extensionCheck(): Promise<ExtensionContext> {
 			}, (response: ExtensionContext) => {
 				clearTimeout(timeoutId)
 
-				if (response.id === undefined) {
+				if (!response.id) {
 					extensionContextStore.set({
 						id: extensionContext.id,
 						available: false
@@ -69,6 +77,7 @@ export async function extensionCheck(): Promise<ExtensionContext> {
 					reject(response)
 				}else {
 					extensionContextStore.set(response)
+					localStorage.setItem(EXTENSION_ID_STORAGE_KEY, response.id)
 					console.log('Extension available!')
 					resolve(response)
 				}

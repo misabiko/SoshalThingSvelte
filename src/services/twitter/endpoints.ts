@@ -244,7 +244,7 @@ function articleFromV1(json: TweetResponse): ArticleWithRefs {
 				name: json.user.name,
 				username: json.user.screen_name,
 				url: "https://twitter.com/" + json.user.screen_name,
-				avatarUrl: json.user.profile_image_url,
+				avatarUrl: json.user.profile_image_url_https,
 			},
 			new Date(json.created_at),
 			getMarkedAsReadStorage(TwitterService) as string[],

@@ -324,6 +324,7 @@
 						<button
 							class='level-item articleButton repostButton borderless-button'
 							class:repostedPostButton={actualArticle.getReposted()}
+							title='Repost'
 							on:click={() => articleAction(STANDARD_ACTIONS.repost, actualArticle.idPair)}
 							disabled={actualArticle.getReposted() && !getArticleAction(STANDARD_ACTIONS.repost, actualArticle.idPair.service).togglable}
 						>
@@ -339,6 +340,7 @@
 						<button
 							class='level-item articleButton likeButton borderless-button'
 							class:likedPostButton={actualArticle.getLiked()}
+							title='Like'
 							on:click={() => articleAction(STANDARD_ACTIONS.like, actualArticle.idPair)}
 							disabled={actualArticle.getLiked() && !getArticleAction(STANDARD_ACTIONS.like, actualArticle.idPair.service).togglable}
 						>
@@ -350,13 +352,21 @@
 							{/if}
 						</button>
 					{/if}
-					<button class='level-item articleButton borderless-button' on:click={() => toggleMarkAsRead(actualArticle.idPair)}>
+					<button
+						class='level-item articleButton borderless-button'
+						title='Mark as read'
+						on:click={() => toggleMarkAsRead(actualArticle.idPair)}
+					>
 						<span class='icon'>
 							<Fa icon={faEyeSlash}/>
 						</span>
 					</button>
 					{#if !modal}
-						<button class='level-item articleButton borderless-button' on:click={() => modal = !modal}>
+						<button
+							class='level-item articleButton borderless-button'
+							title='Expand article as modal'
+							on:click={() => modal = true}
+						>
 							<span class='icon'>
 								<Fa icon={faExpandAlt}/>
 							</span>

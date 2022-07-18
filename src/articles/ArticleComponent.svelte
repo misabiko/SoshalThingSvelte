@@ -1,9 +1,10 @@
 <script lang='ts'>
-	import type {ArticleIdPair, ArticleRefIdPair, ArticleWithRefs} from "../services/article"
-	import {toggleMarkAsRead, getWritable, fetchArticle} from "../services/service"
-	import Article, {ArticleRefType, getActualArticle} from '../services/article'
+	import type {ArticleIdPair, ArticleWithRefs} from "../services/article"
+	import {toggleMarkAsRead, fetchArticle} from "../services/service"
+	import Article, {getActualArticle} from '../services/article'
 	import type {ArticleProps} from './index'
 	import type {SvelteComponent} from 'svelte'
+	//TODO Add type defs to svelma
 	import {Modal} from 'svelma'
 
 	export let articleWithRefs: ArticleWithRefs
@@ -38,6 +39,7 @@
 		<svelte:component
 			this={view}
 			{props}
+			{style}
 			bind:modal
 			{articleWithRefs}
 			{actualArticle}
@@ -50,6 +52,7 @@
 <svelte:component
 	this={view}
 	{props}
+	{style}
 	bind:modal
 	{articleWithRefs}
 	{actualArticle}

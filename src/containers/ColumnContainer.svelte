@@ -1,15 +1,14 @@
 <script lang='ts'>
 	import ArticleComponent from "../articles/ArticleComponent.svelte";
-	import type {ArticleWithRefs} from '../services/article'
-	import {SvelteComponent} from 'svelte'
 	import type {ContainerProps} from './index'
+	import {articlesWithUniqueKeys} from "./index.js";
 
 	export let props: ContainerProps;
 	export let containerRef = undefined;
 </script>
 
 <div class='articlesContainer columnContainer' bind:this={containerRef}>
-	{#each props.articles as articleWithRefs, index (articleWithRefs.article.idPairStr)}
+	{#each articlesWithUniqueKeys(props.articles) as [articleWithRefs, key] (key)}
 		<ArticleComponent
 			view={props.articleView}
 			{articleWithRefs}

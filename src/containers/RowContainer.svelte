@@ -1,6 +1,7 @@
 <script lang="ts">
 	import ArticleComponent from "../articles/ArticleComponent.svelte";
 	import type {ContainerProps} from './index'
+	import {articlesWithUniqueKeys} from "./index.js";
 
 	export let containerRef = undefined;
 	export let props: ContainerProps;
@@ -16,7 +17,7 @@
 </style>
 
 <div class='articlesContainer rowContainer' bind:this={containerRef}>
-	{#each props.articles as articleWithRefs, index (articleWithRefs.article.idPairStr)}
+	{#each articlesWithUniqueKeys(props.articles) as [articleWithRefs, key] (key)}
 		<ArticleComponent
 			view={props.articleView}
 			{articleWithRefs}

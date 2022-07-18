@@ -74,7 +74,7 @@
 
 		const sortedArticles = Object.values(uniqueArticles)
 		sortedArticles.sort((a, b) => a.index - b.index)
-		for (const {articleWithRefs, index} of sortedArticles)
+		for (const {articleWithRefs} of sortedArticles)
 			addArticle(articleWithRefs.article.idPairStr)
 
 		return columns
@@ -115,6 +115,7 @@
 	{#each columns as column, i (i)}
 		<div class='masonryColumn'>
 <!--		<span>Ratio: {column.ratio}</span>-->
+<!--		TODO Find a way to share key among multiple columns?-->
 			{#each column.articles as idPairStr, index (idPairStr)}
 				<ArticleComponent
 					view={props.articleView}

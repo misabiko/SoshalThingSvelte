@@ -24,6 +24,7 @@
 
 	const dispatch = createEventDispatcher()
 	const mediaRefs: HTMLImageElement[] = []
+	//TODO Use loadingSet?
 	const loadingStates = derived(loadingStore, loadingSet => {
 		const states = []
 		for (let mediaIndex = 0; mediaIndex < actualArticle.medias.length; ++mediaIndex)
@@ -112,7 +113,6 @@
 	//	list-style-type: none
 </style>
 
-<!--TODO Try setting style directly in ArticleComponent-->
 <article class='galleryArticle' {style}>
 	<div>
 		{#each actualArticle.medias as media, i (i)}

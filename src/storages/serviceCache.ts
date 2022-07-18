@@ -1,7 +1,8 @@
 import {MAIN_STORAGE_KEY} from './index'
-import {get} from 'svelte/store'
+import {derived, get} from 'svelte/store'
 import type {Service} from '../services/service'
 import {getServices} from '../services/service'
+import type Article from '../services/article'
 
 const LOCAL_CACHE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Cache'
 
@@ -31,9 +32,7 @@ export function updateMarkAsReadStorage() {
 
 	for (const service of Object.values(getServices())) {
 		const articlesMarkedAsRead = new Set(storage.services[service.name]?.articlesMarkedAsRead)
-		for (const store of Object.values(service.articles)) {
-			//TODO Add articlesStore: derived(articles, a => a) to Service
-			const article = get(store)
+		for (const article of getServiceArticles(service)) {
 			if (article.markedAsRead)
 				articlesMarkedAsRead.add(article.idPair.id.toString())
 			else
@@ -60,8 +59,7 @@ export function updateHiddenStorage() {
 
 	for (const service of Object.values(getServices())) {
 		const hiddenArticles = new Set(storage.services[service.name]?.hiddenArticles || [])
-		for (const store of Object.values(service.articles)) {
-			const article = get(store)
+		for (const article of getServiceArticles(service)) {
 			if (article.hidden)
 				hiddenArticles.add(article.idPair.id.toString())
 			else
@@ -122,4 +120,8 @@ export function getCachedArticlesStorage(service: Service): { [id: string]: obje
 	const item = sessionStorage.getItem(MAIN_STORAGE_KEY)
 	const parsed = item !== null ? JSON.parse(item) : null
 	return parsed?.services[service.name]?.cachedArticles || {}
+}
+
+function getServiceArticles(service: Service): Article[] {
+	return get(derived(Object.values(service.articles), a => a))
 }

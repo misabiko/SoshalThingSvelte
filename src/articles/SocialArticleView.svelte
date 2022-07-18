@@ -236,30 +236,30 @@
 			&:hover
 				text-decoration: underline
 
-	//TODO .quotedPost
-	//	border: 2px solid $scheme-main-ter
-	//	border-radius: 6px
-	//	padding: 16px
-	//
-	//	.names
-	//		text-overflow: ellipsis
-	//		white-space: nowrap
-	//		overflow: hidden
-	//		display: inline-block
-	//		max-width: 300px
-	//
-	//		strong
-	//			margin-right: 0.5rem
-	//			color: $white-ter
-	//
-	//		&:hover > *
-	//			text-decoration: underline
-	//
-	//	span *
-	//		vertical-align: middle
-	//
-	//	p
-	//		white-space: pre-line
+	.quotedPost
+		border: 2px solid $scheme-main-ter
+		border-radius: 6px
+		padding: 16px
+
+		.names
+			text-overflow: ellipsis
+			white-space: nowrap
+			overflow: hidden
+			display: inline-block
+			max-width: 300px
+
+			strong
+				margin-right: 0.5rem
+				color: $white-ter
+
+			&:hover > *
+				text-decoration: underline
+
+		span *
+			vertical-align: middle
+
+		p
+			white-space: pre-line
 
 	.imgPlaceHolder
 		width: 100%
@@ -317,7 +317,37 @@
 					</p>
 				{/if}
 			</div>
-			<!--{ quoted_post }-->
+			{#if articleProps.actualArticleRef?.quoted}
+				{@const quoted = articleProps.actualArticleRef.quoted}
+				<div class='quotedPost'>
+					<div class='articleHeader'>
+						<a class='names' href={quoted.author.url} target='_blank'>
+							<strong>{ quoted.author.name }</strong>
+							<small>{ `@${quoted.author.username}` }</small>
+						</a>
+						<span class='timestamp'>
+							<small
+								title={quoted.creationTime.toString()}
+							>
+								{shortTimestamp(quoted.creationTime)}
+							</small>
+						</span>
+					</div>
+					{#if !minimized}
+						{#if !timelineProps.hideText}
+							<p class='refArticleParagraph'>
+								{#if quoted.textHtml}
+									{@html quoted.textHtml}
+								{:else}
+									{quoted.text}
+								{/if}
+							</p>
+						{/if}
+					<!--	TODO <SocialMedia/>-->
+					{/if}
+					<!--TODO SocialNav-->
+				</div>
+			{/if}
 			<nav class='level is-mobile'>
 				<div class='level-left'>
 					{#if getArticleAction(STANDARD_ACTIONS.repost, actualArticle.idPair.service)}
@@ -422,17 +452,17 @@
 						<img alt={actualArticle.id} src={media.src} on:click={() => dispatch('mediaClick', {idPair: actualArticle.idPair, index})}/>
 					</div>
 				{:else if !timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
-					<div class="postMedia postVideo">
+					<div class='postMedia postVideo'>
 						<!-- svelte-ignore a11y-media-has-caption -->
 						<video controls on:click|preventDefault={() => dispatch('mediaClick', {idPair: actualArticle.idPair, index})}>
-							<source src={media.src} type="video/mp4"/>
+							<source src={media.src} type='video/mp4'/>
 						</video>
 					</div>
 				{:else if media.mediaType === MediaType.VideoGif || timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
-					<div class="postMedia postVideo">
+					<div class='postMedia postVideo'>
 						<!-- svelte-ignore a11y-media-has-caption -->
 						<video controls autoplay loop muted on:click|preventDefault={() => dispatch('mediaClick', {idPair: actualArticle.idPair, index})}>
-							<source src={media.src} type="video/mp4"/>
+							<source src={media.src} type='video/mp4'/>
 						</video>
 					</div>
 				{/if}

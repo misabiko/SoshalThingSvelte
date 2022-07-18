@@ -214,14 +214,14 @@ function parseText(rawText: string, entities: Entities, extendedEntities?: Exten
 
 		for (const [[first, last], html] of htmlParts) {
 			if (i < first)
-				newHtmlParts += rawText.slice(i, first)
+				newHtmlParts += [...rawText].slice(i, first).join('')
 
 			newHtmlParts += html
 			i = last
 		}
 
 		if (i < length - 1)
-			newHtmlParts += trimmedText.slice(lastIndex)
+			newHtmlParts += [...trimmedText].slice(lastIndex).join('')
 
 		return {
 			text: finalText,

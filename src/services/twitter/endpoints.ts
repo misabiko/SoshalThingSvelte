@@ -1,8 +1,8 @@
 import type {ArticleWithRefs} from '../article'
 import {Endpoint, type EndpointConstructorInfo, RefreshType, registerEndpoint} from '../service'
-import {fetchExtensionV1, TwitterService} from './service'
+import {TwitterService} from './service'
 import type {SearchResponse, TweetResponse} from './apiV1'
-import {articleFromV1, getV1APIURL} from './apiV1'
+import {articleFromV1, fetchExtensionV1, getV1APIURL} from './apiV1'
 
 abstract class V1Endpoint extends Endpoint {
 	//Waiting on https://github.com/microsoft/TypeScript/issues/34516 to make static

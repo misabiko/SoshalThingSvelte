@@ -43,14 +43,16 @@ export function getArticleAction(action: string, service: string) {
 		return actions[action]
 }
 
-export function addArticles(service: Service, ...articles: ArticleWithRefs[]) {
+export function addArticles(service: Service, ignoreRefs: boolean, ...articles: ArticleWithRefs[]) {
 	for (const {article, actualArticleRef, replyRef} of articles) {
 		//https://github.com/microsoft/TypeScript/issues/46395
 		service.articles[article.idPair.id as string] = writable(article)
-		if (actualArticleRef)
-			for (const ref of getRefed(actualArticleRef))
-				service.articles[ref.idPair.id as string] = writable(ref)
-		if (replyRef)
+		if (!ignoreRefs && actualArticleRef)
+			for (const ref of getRefed(actualArticleRef)) {
+				if (!service.articles.hasOwnProperty(ref.idPair.id as string))
+					service.articles[ref.idPair.id as string] = writable(ref)
+			}
+		if (replyRef && (!ignoreRefs || !service.articles.hasOwnProperty(replyRef.idPair.id as string)))
 			service.articles[replyRef.idPair.id.toString()] = writable(replyRef)
 	}
 
@@ -143,8 +145,9 @@ export function toggleHide(idPair: ArticleIdPair) {
 	updateHiddenStorage()
 }
 
-export function getWritable(idPair: ArticleIdPair): Writable<Article> {
-	return services[idPair.service].articles[idPair.id as string]
+export function getWritable<T extends Article = Article>(idPair: ArticleIdPair): Writable<T> {
+	//Type casting might not be a great idea, no guarantee that the service returns T
+	return services[idPair.service].articles[idPair.id as string] as Writable<T>
 }
 
 //TODO Add articles to other timelines
@@ -163,7 +166,7 @@ function endpointRefreshed(endpoint: TimelineEndpoint, articles: ArticleWithRefs
 	//TODO Store service name on endpoint
 	const service = (articles[0].article.constructor as typeof Article).service
 
-	addArticles(services[service], ...articles)
+	addArticles(services[service], false, ...articles)
 	const addedArticles = articles
 		.filter(articleWithRefs => {
 			return !endpoints[endpoint.name].articleIdPairs

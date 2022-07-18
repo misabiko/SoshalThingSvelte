@@ -1,3 +1,4 @@
+import type {ArticleMedia, ArticleRef, ArticleWithRefs, ArticleIdPair} from '../article'
 import Article, {
 	articleRefToIdPair,
 	ArticleRefType,
@@ -5,10 +6,12 @@ import Article, {
 	MediaQueueInfo,
 	MediaType,
 } from '../article'
-import type {ArticleMedia, ArticleRef, ArticleWithRefs} from '../article'
 import TwitterArticle from './article'
 import {getHiddenStorage, getMarkedAsReadStorage} from '../../storages/serviceCache'
 import {TwitterService} from './service'
+import {fetchExtension} from '../extension'
+import {get} from 'svelte/store'
+import {addArticles, getWritable} from '../service'
 
 export function getV1APIURL(resource: string): string {
 	return `https://api.twitter.com/1.1/${resource}.json`
@@ -80,6 +83,91 @@ export function articleFromV1(json: TweetResponse): ArticleWithRefs {
 		actualArticleRef,
 		replyRef,
 	}
+}
+
+export async function toggleFavorite(idPair: ArticleIdPair) {
+	const writable = getWritable(idPair)
+	const action = (get(writable) as TwitterArticle).liked ? 'destroy' : 'create'
+
+	try {
+		const response = await fetchExtensionV1(
+			`${getV1APIURL('favorites/' + action)}?id=${idPair.id}`,
+			'POST',
+		)
+
+		updateAPIResponse(response)
+	}catch (cause: V1ErrorResponse | any) {
+		let shouldThrow = true
+		if (cause.errors !== undefined && (cause as V1ErrorResponse).errors.some(e => e.code === 139)) {
+			console.warn(cause)
+			writable.update(a => {
+				(a as TwitterArticle).liked = true
+				return a
+			})
+
+			if (cause.errors.length === 1)
+				shouldThrow = false
+		}
+
+		if (shouldThrow)
+			throw new Error(JSON.stringify(cause, null, '\t'))
+	}
+}
+
+export async function retweet(idPair: ArticleIdPair) {
+	const writable = TwitterService.articles[idPair.id as string]
+	if ((get(writable) as TwitterArticle).retweeted)
+		return
+
+	const response = await fetchExtensionV1(
+		`${getV1APIURL('statuses/retweet')}?id=${idPair.id}`,
+		'POST',
+	)
+
+	updateAPIResponse(response)
+}
+
+export async function fetchExtensionV1<T = TweetResponse>(url: string, method = 'GET', body?: any): Promise<T> {
+	const response = await fetchExtension<T | V1ErrorResponse>(
+		TwitterService.name,
+		'fetchV1',
+		url,
+		method,
+		body,
+	)
+
+	if ((response as V1ErrorResponse).errors !== undefined)
+		return Promise.reject(response)
+
+	return response as T
+}
+
+function updateAPIResponse(response: TweetResponse) {
+	if (TwitterService.articles[response.id_str] === undefined)
+		addArticles(TwitterService, true, articleFromV1(response))
+
+	const writable = getWritable<TwitterArticle>({service: TwitterService.name, id: BigInt(response.id_str)})
+
+	writable.update(a => {
+		a.liked = response.favorited
+		a.likeCount = response.favorite_count
+		a.retweeted = response.retweeted
+		a.retweetCount = response.retweet_count
+		return a
+	})
+
+	if (response.retweeted_status) {
+		if (TwitterService.articles[response.retweeted_status.id_str])
+			updateAPIResponse(response.retweeted_status as TweetResponse)
+		else
+			addArticles(TwitterService, false, articleFromV1(response.retweeted_status))
+	}
+
+	if (response.quoted_status)
+		if (TwitterService.articles[response.quoted_status.id_str])
+			updateAPIResponse(response.quoted_status as TweetResponse)
+		else
+			addArticles(TwitterService, false, articleFromV1(response.quoted_status))
 }
 
 function parseText(rawText: string, entities: Entities, extendedEntities?: ExtendedEntities): { text: string, textHtml: string } {
@@ -243,6 +331,12 @@ export type TweetResponse = {
 	possibly_sensitive: boolean;
 	possibly_sensitive_appealable: boolean;
 	lang: string
+}
+type V1ErrorResponse = {
+	errors: {
+		code: number,
+		message: string,
+	}[]
 }
 export type SearchResponse = {
 	search_metadata: {

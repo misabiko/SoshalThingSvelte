@@ -1,13 +1,7 @@
-import type {ArticleIdPair} from '../article'
 import TwitterArticle from './article'
 import type {Service} from '../service'
-import {getWritable, registerService, STANDARD_ACTIONS} from '../service'
-import {get} from 'svelte/store'
-import type {TweetResponse} from './endpoints'
-import {getV1APIURL} from './endpoints'
-import {fetchExtension} from '../extension'
-import type {TweetResponse} from './apiV1'
-import {getV1APIURL} from './apiV1'
+import {registerService, STANDARD_ACTIONS} from '../service'
+import {retweet, toggleFavorite} from './apiV1'
 
 export const TwitterService: Service = {
 	name: 'Twitter',
@@ -26,76 +20,6 @@ export const TwitterService: Service = {
 TwitterArticle.service = TwitterService.name
 
 registerService(TwitterService)
-
-async function toggleFavorite(idPair: ArticleIdPair) {
-	const writable = getWritable(idPair);
-	const action = (get(writable) as TwitterArticle).liked ? 'destroy' : 'create';
-
-	try {
-		const response = await fetchExtensionV1(
-			`${getV1APIURL('favorites/' + action)}?id=${idPair.id}`,
-			'POST'
-		);
-
-		writable.update(a => {
-			(a as TwitterArticle).updateAPIResponse(response)
-			return a
-		})
-	}catch (cause: V1ErrorResponse | any) {
-		let shouldThrow = true
-		if (cause.errors !== undefined && (cause as V1ErrorResponse).errors.some(e => e.code === 139)) {
-			console.warn(cause)
-			writable.update(a => {
-				(a as TwitterArticle).liked = true
-				return a
-			})
-
-			if (cause.errors.length === 1)
-				shouldThrow = false
-		}
-
-		if (shouldThrow)
-			throw new Error(JSON.stringify(cause, null, '\t'))
-	}
-}
-
-async function retweet(idPair: ArticleIdPair) {
-	const writable = TwitterService.articles[idPair.id as string];
-	if ((get(writable) as TwitterArticle).retweeted)
-		return
-
-	const response = await fetchExtensionV1(
-		`${getV1APIURL('statuses/retweet')}?id=${idPair.id}`,
-		'POST'
-	);
-
-	writable.update(a => {
-		(a as TwitterArticle).updateAPIResponse(response)
-		return a
-	})
-}
-
-export async function fetchExtensionV1<T = TweetResponse>(url: string, method = 'GET', body?: any): Promise<T> {
-	const response = await fetchExtension<T | V1ErrorResponse>(
-		TwitterService.name,
-		'fetchV1',
-		url,
-		method,
-		body
-	)
-
-	if ((response as V1ErrorResponse).errors !== undefined)
-		return Promise.reject(response)
-
-	return response as T
-}
-
-type V1ErrorResponse = {
-	errors: {
-		code: number,
-		message: string,
-	}[]
-}
 
 /*interface TweetResponseV2 {
 	data: {

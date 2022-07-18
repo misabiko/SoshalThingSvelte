@@ -36,7 +36,7 @@ async function toggleFavorite(idPair: ArticleIdPair) {
 		);
 
 		writable.update(a => {
-			(a as TwitterArticle).liked = response.favorited || false
+			(a as TwitterArticle).updateAPIResponse(response)
 			return a
 		})
 	}catch (cause: V1ErrorResponse | any) {
@@ -68,7 +68,7 @@ async function retweet(idPair: ArticleIdPair) {
 	);
 
 	writable.update(a => {
-		(a as TwitterArticle).retweeted = response.retweeted || false
+		(a as TwitterArticle).updateAPIResponse(response)
 		return a
 	})
 }
@@ -95,7 +95,7 @@ type V1ErrorResponse = {
 	}[]
 }
 
-interface TweetResponseV2 {
+/*interface TweetResponseV2 {
 	data: {
 		id: string;
 		text: string;
@@ -127,4 +127,4 @@ interface TweetResponseV2 {
 			profile_image_url: string;
 		}[]
 	};
-}
+}*/

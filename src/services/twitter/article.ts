@@ -1,5 +1,7 @@
 import type {ArticleAuthor, ArticleIdPair, ArticleMedia, ArticleRefIdPair} from '../article'
-import Article from '../article'
+import Article, {ArticleRefType} from '../article'
+import type {TweetResponse} from './endpoints'
+import {getWritable} from '../service'
 
 export default class TwitterArticle extends Article {
 	static service: string;
@@ -51,6 +53,25 @@ export default class TwitterArticle extends Article {
 	}
 	getReposted(): boolean {
 		return this.retweeted
+	}
+
+	updateAPIResponse(response: TweetResponse) {
+		this.liked = response.favorited
+		this.likeCount = response.favorite_count
+		this.retweeted = response.retweeted
+		this.retweetCount = response.retweet_count
+
+		if (response.retweeted_status)
+			getWritable((this.actualArticleRef as {type: ArticleRefType.Repost, reposted: ArticleIdPair}).reposted).update(a => {
+				(a as TwitterArticle).updateAPIResponse(response.retweeted_status as TweetResponse)
+				return a
+			})
+
+		if (response.quoted_status)
+			getWritable((this.actualArticleRef as {type: ArticleRefType.Quote, quoted: ArticleIdPair}).quoted).update(a => {
+				(a as TwitterArticle).updateAPIResponse(response.quoted_status as TweetResponse)
+				return a
+			})
 	}
 }
 

@@ -11,7 +11,6 @@
 	} from '@fortawesome/free-solid-svg-icons'
 	import {afterUpdate, createEventDispatcher} from 'svelte'
 	import {LoadingState, loadingStore} from '../bufferedMediaLoading'
-	import {derived} from 'svelte/store'
 	import Dropdown from "../Dropdown.svelte"
 	import {fetchArticle, toggleHide, toggleMarkAsRead, articleAction, getArticleAction, STANDARD_ACTIONS} from "../services/service"
 	import type {ArticleProps} from './index'
@@ -24,13 +23,12 @@
 
 	const dispatch = createEventDispatcher()
 	const mediaRefs: HTMLImageElement[] = []
-	//TODO Use loadingSet?
-	const loadingStates = derived(loadingStore, loadingSet => {
-		const states = []
+	let loadingStates: LoadingState[]
+	$: {
+		loadingStates = []
 		for (let mediaIndex = 0; mediaIndex < actualArticle.medias.length; ++mediaIndex)
-			states.push(loadingStore.getLoadingState(actualArticle.idPair, mediaIndex, props.shouldLoadMedia))
-		return states
-	})
+			loadingStates.push(loadingStore.getLoadingState(actualArticle.idPair, mediaIndex, props.shouldLoadMedia))
+	}
 
 	afterUpdate(() => {
 		const count = actualArticle.medias.length
@@ -116,8 +114,8 @@
 <article class='galleryArticle' {style}>
 	<div>
 		{#each actualArticle.medias as media, i (i)}
-			{@const isLoading = $loadingStates[i] === LoadingState.Loading}
-			{#if $loadingStates[i] === LoadingState.NotLoaded}
+			{@const isLoading = loadingStates[i] === LoadingState.Loading}
+			{#if loadingStates[i] === LoadingState.NotLoaded}
 				<img
 					alt={`${actualArticle.idPair.id} thumbnail`}
 					class='articleThumb'

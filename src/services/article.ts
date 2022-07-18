@@ -33,7 +33,8 @@ export default abstract class Article {
 		medias: ArticleMedia[],
 		markedAsRead: boolean,
 		hidden: boolean,
-		markedAsReadStorage: ArticleId[],	//Actually (string[] | number[])
+		markedAsReadStorage: string[],
+		hiddenStorage: string[],
 		actualArticleRef?: ArticleRefIdPair
 		replyRef?: ArticleIdPair
 		fetched?: boolean,
@@ -43,8 +44,8 @@ export default abstract class Article {
 		this.textHtml = params.textHtml
 		this.url = params.url
 		this.medias = params.medias || []
-		this.markedAsRead = params.markedAsRead || params.markedAsReadStorage.includes(params.id)
-		this.hidden = params.hidden
+		this.markedAsRead = params.markedAsRead || params.markedAsReadStorage.includes(params.id.toString())
+		this.hidden = params.hidden || params.hiddenStorage.includes(params.id.toString())
 		this.actualArticleRef = params.actualArticleRef
 		this.replyRef = params.replyRef
 		this.fetched = params.fetched || false

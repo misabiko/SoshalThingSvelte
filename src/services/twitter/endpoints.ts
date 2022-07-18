@@ -1,8 +1,9 @@
 import type {ArticleMedia, ArticleRef, ArticleWithRefs} from '../article'
-import {Endpoint, type EndpointConstructorInfo, getMarkedAsReadStorage, RefreshType, registerEndpoint} from '../service'
+import {Endpoint, type EndpointConstructorInfo, RefreshType, registerEndpoint} from '../service'
 import {fetchExtensionV1, TwitterService} from './service'
 import TwitterArticle from './article'
 import Article, {articleRefToIdPair, ArticleRefType, getRatio, MediaQueueInfo, MediaType} from '../article'
+import {getHiddenStorage, getMarkedAsReadStorage} from '../../storages/serviceCache'
 
 abstract class V1Endpoint extends Endpoint {
 	//Waiting on https://github.com/microsoft/TypeScript/issues/34516 to make static
@@ -248,6 +249,7 @@ function articleFromV1(json: TweetResponse): ArticleWithRefs {
 			},
 			new Date(json.created_at),
 			getMarkedAsReadStorage(TwitterService) as string[],
+			getHiddenStorage(TwitterService) as string[],
 			actualArticleRef ? articleRefToIdPair(actualArticleRef) : undefined,
 			replyRef?.idPair,
 			parseMedia(json.extended_entities),

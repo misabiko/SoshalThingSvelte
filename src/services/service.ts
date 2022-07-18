@@ -2,15 +2,14 @@ import type Article from './article'
 import type { ArticleId, ArticleIdPair, ArticleWithRefs } from './article'
 import {getRefed} from './article'
 import type {Writable} from 'svelte/store'
-import {get, writable} from 'svelte/store'
+import {writable} from 'svelte/store'
 import type {TimelineEndpoint} from '../timelines'
 import {keepArticle} from '../filters'
+import {updateCachedArticlesStorage, updateHiddenStorage, updateMarkAsReadStorage} from '../storages/serviceCache'
 
 const endpoints: { [name: string]: Endpoint } = {}
 const services: { [name: string]: Service } = {}
 const endpointConstructors: { [service: string]: EndpointConstructorInfo[] } = {}
-
-const STORAGE_KEY = 'SoshalThingSvelte'
 
 export interface Service {
 	readonly name: string;
@@ -114,6 +113,10 @@ export function addEndpoint(endpoint: Endpoint) {
 		endpoints[endpoint.name] = endpoint
 }
 
+export function getServices(): Readonly<{ [name: string]: Service }> {
+	return services
+}
+
 export function getEndpoints(): Readonly<{ [name: string]: Endpoint }> {
 	return endpoints
 }
@@ -136,73 +139,12 @@ export function toggleHide(idPair: ArticleIdPair) {
 		a.hidden = !a.hidden
 		return a
 	})
+
+	updateHiddenStorage()
 }
 
 export function getWritable(idPair: ArticleIdPair): Writable<Article> {
 	return services[idPair.service].articles[idPair.id as string]
-}
-
-function updateMarkAsReadStorage() {
-	const item = sessionStorage.getItem(STORAGE_KEY)
-	let storage = item !== null ? JSON.parse(item) : null
-	if (storage === null)
-		storage = {services: {}}
-
-	for (const service of Object.values(services)) {
-		const articlesMarkedAsRead = Object.values(service.articles)
-			.map(a => {
-				const value = get(a)
-				return value.markedAsRead ? value.idPair.id : undefined
-			})
-			.filter(id => id !== undefined)
-
-		if (storage.services.hasOwnProperty(service.name))
-			storage.services[service.name].articlesMarkedAsRead = articlesMarkedAsRead
-		else
-			storage.services[service.name] = {
-				articlesMarkedAsRead,
-				cachedArticles: {},
-			}
-	}
-
-	sessionStorage.setItem(STORAGE_KEY, JSON.stringify(storage))
-}
-
-export function updateCachedArticlesStorage() {
-	const item = sessionStorage.getItem(STORAGE_KEY)
-	let storage = item !== null ? JSON.parse(item) : null
-	if (storage === null)
-		storage = {services: {}}
-
-	for (const service of Object.values(services)) {
-		const getCachedArticles = service.getCachedArticles
-		if (getCachedArticles !== undefined) {
-			const cachedArticles = getCachedArticles()
-
-			if (storage.services.hasOwnProperty(service.name))
-				storage.services[service.name].cachedArticles = cachedArticles
-			else
-				storage.services[service.name] = {
-					articlesMarkedAsRead: [],
-					cachedArticles,
-				}
-		}
-	}
-
-	sessionStorage.setItem(STORAGE_KEY, JSON.stringify(storage))
-}
-
-//TODO Profile passing service vs service name
-export function getMarkedAsReadStorage(service: Service): (ArticleId)[] {
-	const item = sessionStorage.getItem(STORAGE_KEY)
-	const parsed = item !== null ? JSON.parse(item) : null
-	return parsed?.services[service.name]?.articlesMarkedAsRead || []
-}
-
-export function getCachedArticlesStorage(service: Service): {[id: string]: object} {
-	const item = sessionStorage.getItem(STORAGE_KEY)
-	const parsed = item !== null ? JSON.parse(item) : null
-	return parsed?.services[service.name]?.cachedArticles || {}
 }
 
 //TODO Add articles to other timelines

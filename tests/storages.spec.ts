@@ -195,7 +195,7 @@ test.describe('cache', () => {
 		})
 	})
 
-	test.only('mark as read is properly loaded', async ({page}) => {
+	test('mark as read is properly loaded', async ({page}) => {
 		const articleLocator = page.locator('article')
 		const articleCount = await articleLocator.count()
 		expect(articleCount).toBeGreaterThan(0)

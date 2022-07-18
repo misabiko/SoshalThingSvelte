@@ -8,7 +8,8 @@ export default class DummyArticle extends Article {
 		text: string,
 		public liked: boolean,
 		public reposted: boolean,
-	) {
+		markedAsReadStorage: string[],
+		hiddenStorage: string[],) {
 		super({
 			id,
 			text,
@@ -16,7 +17,8 @@ export default class DummyArticle extends Article {
 			medias: [],
 			markedAsRead: false,
 			hidden: false,
-			markedAsReadStorage: [],
+			markedAsReadStorage,
+			hiddenStorage,
 		})
 	}
 

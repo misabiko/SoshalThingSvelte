@@ -1,21 +1,22 @@
 import {
 	Endpoint,
-	type EndpointConstructorInfo,
-	RefreshType,
+	type EndpointConstructorInfo, RefreshType,
 	registerEndpoint,
 } from '../service'
 import {DummyService} from './service'
 import DummyArticle from './article'
+import {getHiddenStorage, getMarkedAsReadStorage} from '../../storages/serviceCache'
 
 export class DummyEndpoint extends Endpoint {
 	readonly name = 'DummyEndpoint'
 
 	async refresh(refreshType: RefreshType) {
-		return [{
-			article: new DummyArticle(0, 'bleh', false, false),
-			refs: [],
-			actualArticleIndex: undefined,
-		}]
+		const markAsReadStorage = getMarkedAsReadStorage(DummyService)
+		const hiddenStorage = getHiddenStorage(DummyService)
+
+		return [...Array(10).keys()].map(i => ({
+			article: new DummyArticle(i, 'bleh' + i, false, false, markAsReadStorage, hiddenStorage),
+		}))
 	}
 
 	static readonly constructorInfo: EndpointConstructorInfo = {

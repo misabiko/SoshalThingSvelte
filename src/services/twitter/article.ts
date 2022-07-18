@@ -11,6 +11,7 @@ export default class TwitterArticle extends Article {
 		readonly author: TwitterUser,
 		readonly creationTime: Date,
 		markedAsReadStorage: string[],
+		hiddenStorage: string[],
 		actualArticleRef: ArticleRefIdPair | undefined,
 		replyRef: ArticleIdPair | undefined,
 		medias: ArticleMedia[],
@@ -28,6 +29,7 @@ export default class TwitterArticle extends Article {
 			markedAsRead: false,
 			hidden: false,
 			markedAsReadStorage,
+			hiddenStorage,
 			actualArticleRef,
 			replyRef,
 		});

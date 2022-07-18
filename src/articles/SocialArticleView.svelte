@@ -5,25 +5,25 @@
 		faRetweet,
 		faHeart as faHeartFilled,
 		faEyeSlash,
-		faEllipsisH, faExpandAlt,
+		faEllipsisH, faExpandAlt, faEye,
 	} from '@fortawesome/free-solid-svg-icons'
 	import {createEventDispatcher} from 'svelte'
 	import Article from '../services/article'
-	import type {ArticleWithRefs} from '../services/article'
 	import Dropdown from '../Dropdown.svelte'
 	import {toggleMarkAsRead, toggleHide, articleAction, getArticleAction, STANDARD_ACTIONS} from "../services/service"
 	import {MediaType} from "../services/article.js";
-	import type {ArticleProps} from './index'
+	import type {ArticleProps, TimelineArticleProps} from './index'
 	import {shortTimestamp} from "./index";
 
-	export let props: ArticleProps
+	export let timelineProps: TimelineArticleProps
+	export let articleProps: ArticleProps
 	export let style = ''
 	export let modal: boolean; modal;
-	export let articleWithRefs: Readonly<ArticleWithRefs>
 	export let actualArticle: Readonly<Article>
+	export let classNames = ''
 
 	let minimized = false
-	const isArticleRepost = articleWithRefs.actualArticleRef && 'reposted' in articleWithRefs.actualArticleRef
+	const isArticleRepost = articleProps.actualArticleRef && 'reposted' in articleProps.actualArticleRef
 
 	function onUsernameClick(clickedArticle: Article) {
 		console.log(clickedArticle.author?.username + ' click')
@@ -266,11 +266,11 @@
 		background-color: grey
 </style>
 
-<article class='socialArticle' {style}>
+<article class={`socialArticle ${classNames}`} {style}>
 	<div class='repostLabel'>
-		{#if isArticleRepost && articleWithRefs.article.author}
-			<a href={articleWithRefs.article.author.url} target='_blank' on:click|preventDefault={() => onUsernameClick(articleWithRefs.article)}>
-				{articleWithRefs.article.author.name} reposted - {shortTimestamp(articleWithRefs.article.creationTime)}
+		{#if isArticleRepost && articleProps.article.author}
+			<a href={articleProps.article.author.url} target='_blank' on:click|preventDefault={() => onUsernameClick(articleProps.article)}>
+				{articleProps.article.author.name} reposted - {shortTimestamp(articleProps.article.creationTime)}
 			</a>
 		{/if}
 	</div>
@@ -281,7 +281,7 @@
 				{#if actualArticle.author?.url}
 					{#if isArticleRepost}
 						<img src={actualArticle.author.avatarUrl} alt={`${actualArticle.author.username}'s avatar`}/>
-						<img src={articleWithRefs.article.author.avatarUrl} alt={`${articleWithRefs.article.author.username}'s avatar`}/>
+						<img src={articleProps.article.author.avatarUrl} alt={`${articleProps.article.author.username}'s avatar`}/>
 					{:else}
 						<img src={actualArticle.author.avatarUrl} alt={`${actualArticle.author.username}'s avatar`}/>
 					{/if}
@@ -307,7 +307,7 @@
 						</span>
 					{/if}
 				</div>
-				{#if !props.hideText && !minimized}
+				{#if !timelineProps.hideText && !minimized}
 					<p class='articleParagraph'>
 						{#if actualArticle.textHtml}
 							{@html actualArticle.textHtml}
@@ -358,7 +358,7 @@
 						on:click={() => toggleMarkAsRead(actualArticle.idPair)}
 					>
 						<span class='icon'>
-							<Fa icon={faEyeSlash}/>
+							<Fa icon={actualArticle.markedAsRead ? faEye : faEyeSlash}/>
 						</span>
 					</button>
 					{#if !modal}
@@ -386,14 +386,14 @@
 							Hide
 						</a>
 						<!-- svelte-ignore a11y-missing-attribute -->
-						<a class='dropdown-item' on:click={() => props.compact = !props.compact}>
-							{ props.compact ? 'Show expanded' : 'Show compact' }
+						<a class='dropdown-item' on:click={() => timelineProps.compact = !timelineProps.compact}>
+							{ timelineProps.compact ? 'Show expanded' : 'Show compact' }
 						</a>
 						<a class='dropdown-item' href={ actualArticle.url } target='_blank'>
 							External Link
 						</a>
 						{#if isArticleRepost}
-							<a class='dropdown-item' href={ articleWithRefs.article.url } target='_blank'>
+							<a class='dropdown-item' href={ articleProps.article.url } target='_blank'>
 								Repost's external Link
 							</a>
 						{/if}
@@ -420,14 +420,14 @@
 						<div class='is-hidden imgPlaceHolder' style:aspect-ratio={1 / media.ratio}></div>
 						<img alt={actualArticle.id} src={media.src} on:click={() => dispatch('mediaClick', {idPair: actualArticle.idPair, index})}/>
 					</div>
-				{:else if !props.animatedAsGifs && media.mediaType === MediaType.Video}
+				{:else if !timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
 					<div class="postMedia postVideo">
 						<!-- svelte-ignore a11y-media-has-caption -->
 						<video controls on:click|preventDefault={() => dispatch('mediaClick', {idPair: actualArticle.idPair, index})}>
 							<source src={media.src} type="video/mp4"/>
 						</video>
 					</div>
-				{:else if media.mediaType === MediaType.VideoGif || props.animatedAsGifs && media.mediaType === MediaType.Video}
+				{:else if media.mediaType === MediaType.VideoGif || timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
 					<div class="postMedia postVideo">
 						<!-- svelte-ignore a11y-media-has-caption -->
 						<video controls autoplay loop muted on:click|preventDefault={() => dispatch('mediaClick', {idPair: actualArticle.idPair, index})}>

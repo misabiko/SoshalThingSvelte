@@ -9,7 +9,7 @@
 	let lastRebalanceTrigger = false
 	let lastColumnCount = props.columnCount
 
-	let uniqueArticles: { [idPairStr: string]: { articleWithRefs: ArticleWithRefs, index: number } }
+	let uniqueArticles: { [idPairStr: string]: { articleProps: ArticleWithRefs, index: number } }
 	$: {
 		uniqueArticles = {}
 		const idPairs = new Set<string>()
@@ -17,7 +17,7 @@
 			let lastSize = idPairs.size
 			idPairs.add(a.article.idPairStr)
 			if (idPairs.size > lastSize) {
-				uniqueArticles[a.article.idPairStr] = {articleWithRefs: a, index: lastSize}
+				uniqueArticles[a.article.idPairStr] = {articleProps: a, index: lastSize}
 			}
 		}
 	}
@@ -49,9 +49,9 @@
 				}
 			}
 
-			for (const {articleWithRefs, index} of Object.values(uniqueArticles)) {
-				if (!columns.some(c => c.articles.some(idPair => uniqueArticles[idPair].articleWithRefs.article.idPairStr === articleWithRefs.article.idPairStr))) {
-					addedArticles.push({idPairStr: articleWithRefs.article.idPairStr, index})
+			for (const {articleProps, index} of Object.values(uniqueArticles)) {
+				if (!columns.some(c => c.articles.some(idPair => uniqueArticles[idPair].articleProps.article.idPairStr === articleProps.article.idPairStr))) {
+					addedArticles.push({idPairStr: articleProps.article.idPairStr, index})
 				}
 			}
 
@@ -63,7 +63,7 @@
 				columns[i].articles.sort((a, b) => uniqueArticles[a].index - uniqueArticles[b].index)
 
 			for (const i of columnsChanged.values())
-				columns[i].ratio = columns[i].articles.reduce((acc, curr) => acc + getRatio(uniqueArticles[curr].articleWithRefs), 0)
+				columns[i].ratio = columns[i].articles.reduce((acc, curr) => acc + getRatio(uniqueArticles[curr].articleProps), 0)
 		}
 	}
 
@@ -74,8 +74,8 @@
 
 		const sortedArticles = Object.values(uniqueArticles)
 		sortedArticles.sort((a, b) => a.index - b.index)
-		for (const {articleWithRefs} of sortedArticles)
-			addArticle(articleWithRefs.article.idPairStr)
+		for (const {articleProps} of sortedArticles)
+			addArticle(articleProps.article.idPairStr)
 
 		return columns
 	}
@@ -84,7 +84,7 @@
 		//TODO Support rtl
 		const smallestIndex = columns.reduce((acc, curr, currIndex) => curr.ratio < columns[acc].ratio ? currIndex : acc, 0);
 		columns[smallestIndex].articles.push(idPairStr);
-		columns[smallestIndex].ratio += getRatio(uniqueArticles[idPairStr].articleWithRefs);
+		columns[smallestIndex].ratio += getRatio(uniqueArticles[idPairStr].articleProps);
 		return smallestIndex
 	}
 
@@ -94,6 +94,8 @@
 </script>
 
 <style lang='sass'>
+	@use '../styles/variables' as *
+
 	.masonryContainer
 		display: flex
 		flex-wrap: nowrap
@@ -103,6 +105,7 @@
 
 	.masonryColumn
 		flex: 1 1 0
+		background-color: $scheme-main-bis
 
 	//.masonryColumn .postMedia img
 	//	width: 100%
@@ -119,8 +122,8 @@
 			{#each column.articles as idPairStr, index (idPairStr)}
 				<ArticleComponent
 					view={props.articleView}
-					articleWithRefs={uniqueArticles[idPairStr].articleWithRefs}
-					props={props.articleProps}
+					articleProps={uniqueArticles[idPairStr].articleProps}
+					timelineProps={props.timelineArticleProps}
 				/>
 			{/each}
 		</div>

@@ -7,12 +7,19 @@
 	export let containerRef = undefined;
 </script>
 
+<style lang='sass'>
+	@use '../styles/variables' as *
+
+	.columnContainer
+		background-color: $scheme-main-bis
+</style>
+
 <div class='articlesContainer columnContainer' bind:this={containerRef}>
-	{#each articlesWithUniqueKeys(props.articles) as [articleWithRefs, key] (key)}
+	{#each articlesWithUniqueKeys(props.articles) as [articleProps, key] (key)}
 		<ArticleComponent
 			view={props.articleView}
-			{articleWithRefs}
-			props={props.articleProps}
+			{articleProps}
+			timelineProps={props.timelineArticleProps}
 		/>
 	{/each}
 </div>

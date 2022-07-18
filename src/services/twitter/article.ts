@@ -4,6 +4,7 @@ import Article from '../article'
 export default class TwitterArticle extends Article {
 	static service: string;
 	//TODO deleted = false
+	//TODO Disable like/retweet actions for deleted articles
 
 	constructor(
 		readonly id: bigint,

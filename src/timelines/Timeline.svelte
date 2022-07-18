@@ -16,6 +16,7 @@
 	import type {ContainerProps} from '../containers'
 	import TimelineHeader from "./TimelineHeader.svelte";
 	import TimelineOptions from "./TimelineOptions.svelte";
+	import type {ArticleProps} from '../articles'
 
 	export let data: TimelineData
 	//Would like to make this immutable https://github.com/sveltejs/svelte/issues/5572
@@ -49,21 +50,25 @@
 		}))
 	}), a => a)
 
-	let filteredArticles: Readable<ArticleWithRefs[]>
+	let filteredArticles: Readable<ArticleProps[]>
 	$: filteredArticles = derived(
 		articlesWithRefs,
 		stores => {
-			const filtered = stores
-				.filter(articleWithRefs =>
-					data.filters.every(f => !f.enabled || (keepArticle(articleWithRefs, f.filter) !== f.inverted)),
-				)
+			let articleProps: ArticleProps[] = stores
+				.map(articleWithRefs => ({
+					...articleWithRefs,
+					filteredOut: !data.filters.every(f => !f.enabled || (keepArticle(articleWithRefs, f.filter) !== f.inverted))
+				}))
+
+			if (data.hideFilteredOutArticles)
+				articleProps = articleProps.filter(a => !a.filteredOut)
 
 			if (data.sortInfo.method)
-				filtered.sort(compare(data.sortInfo.method))
+				articleProps.sort(compare(data.sortInfo.method))
 			if (data.sortInfo.reversed)
-				filtered.reverse()
+				articleProps.reverse()
 
-			return filtered
+			return articleProps
 		},
 	)
 
@@ -73,7 +78,7 @@
 	let containerProps: ContainerProps
 	$: containerProps = {
 		articles: $filteredArticles,
-		articleProps: {
+		timelineArticleProps: {
 			animatedAsGifs: data.animatedAsGifs,
 			compact: data.compact,
 			hideText: data.hideText,

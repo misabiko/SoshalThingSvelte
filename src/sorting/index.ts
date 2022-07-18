@@ -1,6 +1,5 @@
-import type Article from '../services/article'
-import type { ArticleWithRefs } from '../services/article';
 import {getActualArticle} from '../services/article'
+import type {ArticleProps} from '../articles'
 
 export type SortInfo = {
 	method?: SortMethod,
@@ -21,7 +20,7 @@ export const allSortMethods = [
 	SortMethod.Reposts,
 ]
 
-export function compare(method: SortMethod): (a: ArticleWithRefs, b: ArticleWithRefs) => number {
+export function compare(method: SortMethod): (a: ArticleProps, b: ArticleProps) => number {
 	return (a, b) => {
 		switch (method) {
 			//TODO Fix id sorting?

@@ -1,27 +1,27 @@
 <script lang='ts'>
-	import type {ArticleIdPair, ArticleWithRefs} from "../services/article"
+	import type {ArticleIdPair} from "../services/article"
 	import {toggleMarkAsRead, fetchArticle} from "../services/service"
 	import Article, {getActualArticle} from '../services/article'
-	import type {ArticleProps} from './index'
+	import type {ArticleProps, TimelineArticleProps} from './index'
 	import type {SvelteComponent} from 'svelte'
 	//TODO Add type defs to svelma
 	import {Modal} from 'svelma'
 
-	export let articleWithRefs: ArticleWithRefs
-	export let props: ArticleProps
+	export let articleProps: ArticleProps
+	export let timelineProps: TimelineArticleProps
 	export let view: typeof SvelteComponent
 	export let modal = false
 	export let style = ''; style;
 
 	let actualArticle: Readonly<Article>
 	$: {
-		actualArticle = getActualArticle(articleWithRefs)
+		actualArticle = getActualArticle(articleProps)
 		if (!actualArticle.fetched)
 			fetchArticle(actualArticle.idPair)
 	}
 
 	function onLogData() {
-		console.dir(articleWithRefs)
+		console.dir(articleProps)
 	}
 
 	function onMediaClick(event: { detail: { idPair: ArticleIdPair, index: number } }) {
@@ -32,16 +32,19 @@
 <style lang='sass'>
 	:global(.modal .modal-content)
 		width: 75%
+
+	:global(article.transparent)
+		opacity: 20%
 </style>
 
 {#if modal}
 	<Modal bind:active={modal}>
 		<svelte:component
 			this={view}
-			{props}
+			{timelineProps}
 			{style}
 			bind:modal
-			{articleWithRefs}
+			{articleProps}
 			{actualArticle}
 			on:logData={onLogData}
 			on:mediaClick={onMediaClick}
@@ -51,11 +54,12 @@
 
 <svelte:component
 	this={view}
-	{props}
+	{timelineProps}
 	{style}
 	bind:modal
-	{articleWithRefs}
+	{articleProps}
 	{actualArticle}
 	on:logData={onLogData}
 	on:mediaClick={onMediaClick}
+	classNames={articleProps.filteredOut ? 'transparent' : ''}
 />

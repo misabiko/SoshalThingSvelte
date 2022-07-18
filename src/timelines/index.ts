@@ -22,6 +22,7 @@ export type TimelineData = {
 	hideText: boolean;
 	compact: boolean;
 	shouldLoadMedia: boolean;
+	hideFilteredOutArticles: boolean;
 }
 
 export const DEFAULT_TIMELINE: TimelineData = {
@@ -42,6 +43,7 @@ export const DEFAULT_TIMELINE: TimelineData = {
 	hideText: false,
 	compact: false,
 	shouldLoadMedia: true,
+	hideFilteredOutArticles: true,
 }
 
 export type TimelineEndpoint = {

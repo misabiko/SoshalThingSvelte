@@ -78,6 +78,9 @@
 		<div class='field'>
 			<Switch bind:checked={data.animatedAsGifs}>Show all animated as gifs</Switch>
 		</div>
+		<div class='field'>
+			<Switch bind:checked={data.hideFilteredOutArticles}>Hide filtered out articles</Switch>
+		</div>
 		<!--				<div class='field'>-->
 		<!--					<Switch bind:checked={lazyLoading}>Lazy media loading</Switch>-->
 		<!--				</div>-->

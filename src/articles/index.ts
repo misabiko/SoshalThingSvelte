@@ -1,11 +1,15 @@
-import type {SvelteComponent} from 'svelte'
+import type {ArticleWithRefs} from '../services/article'
 
-export type ArticleProps = {
+export type TimelineArticleProps = {
 	animatedAsGifs: boolean;
 	compact: boolean;
 	hideText: boolean;
 	shouldLoadMedia: boolean;
 }
+
+export type ArticleProps = Readonly<ArticleWithRefs & {
+	filteredOut: boolean;
+}>
 
 const MONTH_ABBREVS: string[] = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 

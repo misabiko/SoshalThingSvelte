@@ -1,6 +1,5 @@
 <script lang='ts'>
 	import Article, {MediaQueueInfo, MediaType} from '../services/article'
-	import type {ArticleWithRefs} from '../services/article'
 	import Fa from 'svelte-fa/src/fa.svelte'
 	import {
 		faExpandArrowsAlt,
@@ -13,13 +12,15 @@
 	import {LoadingState, loadingStore} from '../bufferedMediaLoading'
 	import Dropdown from "../Dropdown.svelte"
 	import {fetchArticle, toggleHide, toggleMarkAsRead, articleAction, getArticleAction, STANDARD_ACTIONS} from "../services/service"
+	import type {TimelineArticleProps} from './index'
 	import type {ArticleProps} from './index'
 
-	export let props: ArticleProps
+	export let timelineProps: TimelineArticleProps
+	export let articleProps: ArticleProps
 	export let style = ''; style;
 	export let modal: boolean
-	export let articleWithRefs: Readonly<ArticleWithRefs>; articleWithRefs;
 	export let actualArticle: Readonly<Article>
+	export let classNames = ''
 
 	const dispatch = createEventDispatcher()
 	const mediaRefs: HTMLImageElement[] = []
@@ -27,7 +28,7 @@
 	$: {
 		loadingStates = []
 		for (let mediaIndex = 0; mediaIndex < actualArticle.medias.length; ++mediaIndex)
-			loadingStates.push(loadingStore.getLoadingState(actualArticle.idPair, mediaIndex, props.shouldLoadMedia))
+			loadingStates.push(loadingStore.getLoadingState(actualArticle.idPair, mediaIndex, timelineProps.shouldLoadMedia))
 	}
 
 	afterUpdate(() => {
@@ -111,7 +112,7 @@
 	//	list-style-type: none
 </style>
 
-<article class='galleryArticle' {style}>
+<article class={`galleryArticle ${classNames}`} {style}>
 	<div>
 		{#each actualArticle.medias as media, i (i)}
 			{@const isLoading = loadingStates[i] === LoadingState.Loading}
@@ -139,7 +140,7 @@
 						on:click={() => dispatch('mediaClick', {idPair: actualArticle.idPair, index: i})}
 					/>
 				{/if}
-			{:else if !props.animatedAsGifs && media.mediaType === MediaType.Video}
+			{:else if !timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
 				<!-- svelte-ignore a11y-media-has-caption -->
 				<video
 					controls

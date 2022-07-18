@@ -14,14 +14,15 @@
 		display: flex
 		flex-wrap: wrap
 		align-items: flex-start
+		background-color: $scheme-main-bis
 </style>
 
 <div class='articlesContainer rowContainer' bind:this={containerRef}>
-	{#each articlesWithUniqueKeys(props.articles) as [articleWithRefs, key] (key)}
+	{#each articlesWithUniqueKeys(props.articles) as [articleProps, key] (key)}
 		<ArticleComponent
 			view={props.articleView}
-			{articleWithRefs}
-			props={props.articleProps}
+			{articleProps}
+			timelineProps={props.timelineArticleProps}
 			style={`width: calc(100% / ${props.columnCount})`}
 		/>
 	{/each}

@@ -142,9 +142,9 @@ test.describe('SocialArticleView', () => {
 			}]
 		})
 
-		await page.click('article .likeButton');
+		await page.locator('article .likeButton').first().click();
 
-		await expect(page.locator('article .likeButton')).toHaveClass(/likedPostButton/);
+		await expect(page.locator('article .likeButton').first()).toHaveClass(/likedPostButton/);
 	});
 
 	test('repost feedback', async ({page}) => {
@@ -160,8 +160,8 @@ test.describe('SocialArticleView', () => {
 			}]
 		})
 
-		await page.click('article .repostButton');
+		await page.locator('article .repostButton').first().click();
 
-		await expect(page.locator('article .repostButton')).toHaveClass(/repostedPostButton/);
+		await expect(page.locator('article .repostButton').first()).toHaveClass(/repostedPostButton/);
 	});
 })

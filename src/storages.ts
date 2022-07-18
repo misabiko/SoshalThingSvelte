@@ -10,6 +10,7 @@ import type {FilterInstance} from './filters'
 import type {SortInfo} from './sorting'
 import {SortMethod} from './sorting'
 import {DEFAULT_TIMELINE} from './timelines'
+import {defaultFilterInstances} from './filters'
 
 export const MAIN_STORAGE_KEY = 'SoshalThingSvelte'
 export const TIMELINE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Timelines'
@@ -178,7 +179,7 @@ const DEFAULT_TIMELINE_STORAGE: TimelineStorage = {
 	compact: false,
 	animatedAsGifs: false,
 	hideText: false,
-	filters: [],
+	filters: defaultFilterInstances,
 	sortInfo: {
 		method: undefined,
 		reversed: false,

@@ -13,8 +13,6 @@ const initTimelines = loadTimelines();
 const searchParams = new URLSearchParams(location.search)
 let fullscreen: number | undefined = parseFullscreen(searchParams) ?? storageFullscreen
 
-//TODO scroll wrong direction
-
 new SoshalThing({
 	target: document.body,
 	props: {

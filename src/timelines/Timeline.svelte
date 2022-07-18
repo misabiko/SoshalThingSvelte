@@ -118,14 +118,10 @@
 	}
 
 	function autoscroll() {
-		console.log('Scrolling!')
-		let oldDirection = autoscrollInfo.direction;
-		autoscrollInfo.direction = oldDirection === ScrollDirection.Down ? ScrollDirection.Up : ScrollDirection.Down;
-
 		const scrollStep = () => {
 			if ((autoscrollInfo.direction && containerRef.scrollTop > 0) ||
 				(!autoscrollInfo.direction && containerRef.scrollTop < containerRef.scrollHeight - containerRef.clientHeight))
-				containerRef.scrollBy(0, autoscrollInfo.direction ? -data.scrollSpeed : data.scrollSpeed)
+				containerRef.scrollBy(0, autoscrollInfo.direction ? data.scrollSpeed : -data.scrollSpeed)
 			else
 				autoscrollInfo.direction = autoscrollInfo.direction === ScrollDirection.Down ? ScrollDirection.Up : ScrollDirection.Down
 			autoscrollInfo.scrollRequestId = window.requestAnimationFrame(scrollStep)
@@ -139,12 +135,19 @@
 		);
 	}
 
-	function stopScroll() {
+	function stopScroll(e: MouseEvent) {
 		if (autoscrollInfo.scrollRequestId === undefined)
 			return
 
 		window.cancelAnimationFrame(autoscrollInfo.scrollRequestId)
 		autoscrollInfo.scrollRequestId = undefined
+
+		if ((e.target as HTMLElement).matches('.timelineAutoscroll, .timelineAutoscroll *'))
+			autoscrollInfo.direction = autoscrollInfo.direction === ScrollDirection.Down
+				? ScrollDirection.Up
+				: ScrollDirection.Down
+		else
+			autoscrollInfo.direction = ScrollDirection.Down
 	}
 
 	async function refresh(refreshType: RefreshType) {
@@ -212,8 +215,8 @@
 		bind:favviewerHidden
 		{fullscreen}
 
-		on:shuffle
-		on:autoscroll
+		on:shuffle={shuffle}
+		on:autoscroll={autoscroll}
 		on:refresh={e => refresh(e.detail)}
 		on:toggleFullscreen={() => dispatch('toggleFullscreen')}
 	/>

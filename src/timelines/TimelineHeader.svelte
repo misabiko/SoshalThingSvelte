@@ -88,7 +88,7 @@
 		<button class='borderless-button' title='Shuffle' on:click={() => dispatch('shuffle')}>
 			<Fa icon={faRandom} size='large'/>
 		</button>
-		<button class='borderless-button' title='Autoscroll' on:click={() => dispatch('autoscroll')}>
+		<button class='borderless-button timelineAutoscroll' title='Autoscroll' on:click={() => dispatch('autoscroll')}>
 			<Fa icon={faScroll} size='large'/>
 		</button>
 		{#if availableRefreshTypes.has(RefreshType.Refresh)}

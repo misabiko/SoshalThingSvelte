@@ -3,7 +3,7 @@ import type {Service} from '../service'
 import {registerService, STANDARD_ACTIONS} from '../service'
 import {retweet, toggleFavorite} from './apiV1'
 
-export const TwitterService: Service = {
+export const TwitterService: Service<TwitterArticle> = {
 	name: 'Twitter',
 	articles: {},
 	articleActions: {

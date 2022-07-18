@@ -11,9 +11,9 @@ const endpoints: { [name: string]: Endpoint } = {}
 const services: { [name: string]: Service } = {}
 const endpointConstructors: { [service: string]: EndpointConstructorInfo[] } = {}
 
-export interface Service {
+export interface Service<A extends Article = Article> {
 	readonly name: string;
-	readonly articles: { [id: string]: Writable<Article> };
+	readonly articles: { [id: string]: Writable<A> };
 	articleActions: { [name: string]: ArticleAction };
 	requestImageLoad?: (id: ArticleId, index: number) => void;
 	fetchArticle?: (id: ArticleId) => void;

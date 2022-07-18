@@ -86,8 +86,8 @@ export function articleFromV1(json: TweetResponse): ArticleWithRefs {
 }
 
 export async function toggleFavorite(idPair: ArticleIdPair) {
-	const writable = getWritable(idPair)
-	const action = (get(writable) as TwitterArticle).liked ? 'destroy' : 'create'
+	const writable = getWritable<TwitterArticle>(idPair)
+	const action = get(writable).liked ? 'destroy' : 'create'
 
 	try {
 		const response = await fetchExtensionV1(
@@ -101,7 +101,7 @@ export async function toggleFavorite(idPair: ArticleIdPair) {
 		if (cause.errors !== undefined && (cause as V1ErrorResponse).errors.some(e => e.code === 139)) {
 			console.warn(cause)
 			writable.update(a => {
-				(a as TwitterArticle).liked = true
+				a.liked = true
 				return a
 			})
 
@@ -116,7 +116,7 @@ export async function toggleFavorite(idPair: ArticleIdPair) {
 
 export async function retweet(idPair: ArticleIdPair) {
 	const writable = TwitterService.articles[idPair.id as string]
-	if ((get(writable) as TwitterArticle).retweeted)
+	if (get(writable).retweeted)
 		return
 
 	const response = await fetchExtensionV1(

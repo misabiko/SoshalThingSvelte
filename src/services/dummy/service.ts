@@ -3,7 +3,7 @@ import {getWritable, registerService, type Service, STANDARD_ACTIONS} from '../s
 import DummyArticle from './article'
 import type {ArticleIdPair} from '../article'
 
-export const DummyService: Service = {
+export const DummyService: Service<DummyArticle> = {
 	name: 'Dummy',
 	articles: {},
 	articleActions: {
@@ -22,22 +22,22 @@ DummyArticle.service = DummyService.name
 registerService(DummyService)
 
 async function toggleLike(idPair: ArticleIdPair) {
-	const writable = getWritable(idPair);
-	const oldValue = (get(writable) as DummyArticle).liked;
+	const writable = getWritable<DummyArticle>(idPair);
+	const oldValue = get(writable).liked;
 
 	writable.update(a => {
-		(a as DummyArticle).liked = !oldValue
+		a.liked = !oldValue
 		return a
 	})
 }
 
 async function repost(idPair: ArticleIdPair) {
-	const writable = getWritable(idPair);
-	if ((get(writable) as DummyArticle).reposted)
+	const writable = getWritable<DummyArticle>(idPair);
+	if (get(writable).reposted)
 		return
 
 	writable.update(a => {
-		(a as DummyArticle).reposted = true
+		a.reposted = true
 		return a
 	})
 }

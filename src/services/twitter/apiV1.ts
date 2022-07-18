@@ -18,7 +18,8 @@ export function getV1APIURL(resource: string): string {
 }
 
 export function articleFromV1(json: TweetResponse): ArticleWithRefs {
-	const {text, textHtml} = parseText(json.text, json.entities, json.extended_entities)
+	const rawText = json.full_text ?? json.text as string
+	const {text, textHtml} = parseText(rawText, json.entities, json.extended_entities)
 
 	let actualArticleRef: ArticleRef | undefined
 	let replyRef: Article | undefined
@@ -270,7 +271,8 @@ export type TweetResponse = {
 	created_at: string;
 	id: number;
 	id_str: string;
-	text: string;
+	full_text?: string;
+	text?: string;
 	truncated: boolean;
 	entities: Entities;
 	extended_entities?: ExtendedEntities;

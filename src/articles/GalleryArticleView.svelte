@@ -16,7 +16,7 @@
 	import type {ArticleProps} from './index'
 
 	export let timelineProps: TimelineArticleProps
-	export let articleProps: ArticleProps
+	export let articleProps: ArticleProps; articleProps;
 	export let style = ''; style;
 	export let modal: boolean
 	export let actualArticle: Readonly<Article>

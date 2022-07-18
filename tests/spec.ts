@@ -98,6 +98,10 @@ test.describe('autoscroll', () => {
 		expect((await container.evaluate(c => c.scrollHeight) - (await container.boundingBox()).height)).toBeGreaterThan(500)
 	})
 
+	test.skip('scroll bounces from top', async ({page}) => {})
+
+	test.skip('scroll bounces from bottom', async ({page}) => {})
+
 	test('scroll downward by default', async ({page}) => {
 		const container = page.locator('.articlesContainer').first()
 

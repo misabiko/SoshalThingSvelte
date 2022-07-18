@@ -45,7 +45,6 @@ chrome.runtime.onMessageExternal.addListener(
 					url.searchParams.set('expansions', "author_id,attachments.media_keys,in_reply_to_user_id,referenced_tweets.id");
 
 					console.log('Fetching ' + url.toString());
-					//TODO Use got/browser alternative?
 					fetch(url.toString(), {
 						headers: {
 							'Authorization': `Bearer ${twitter.bearer}`

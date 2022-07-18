@@ -106,7 +106,6 @@ export function updateCachedArticlesStorage() {
 	sessionStorage.setItem(MAIN_STORAGE_KEY, JSON.stringify(storage))
 }
 
-//TODO Profile passing service vs service name
 export function getMarkedAsReadStorage(service: Service): string[] {
 	const item = sessionStorage.getItem(MAIN_STORAGE_KEY)
 	const parsed: SessionCacheStorage | null = item !== null ? JSON.parse(item) : null

@@ -1,5 +1,4 @@
 <script lang="ts">
-	//TODO Pull request Svelma
 	import Fa from 'svelte-fa/src/fa.svelte'
 	import { faAngleDown } from '@fortawesome/free-solid-svg-icons'
 

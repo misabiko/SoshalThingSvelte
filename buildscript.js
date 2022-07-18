@@ -76,7 +76,6 @@ else
 		.build(buildOptions)
 		.catch(errorHandler);
 
-//use a basic html file to test with
 fs.copyFileSync('./src/index.html', './dist/index.html');
 for (const file of [
 	'android-chrome-192x192.png',

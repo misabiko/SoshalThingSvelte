@@ -19,11 +19,9 @@
 		instances.splice(index, 1)
 		instances = instances
 	}
-
-	//TODO Keying using instance index probably isn't a good idea
 </script>
 
-{#each instances as instance, index (index)}
+{#each instances as instance, index (`${JSON.stringify(instance)}/${index}`)}
 	<div class="field has-addons">
 		<div class="field-label is-normal">
 			<!-- svelte-ignore a11y-label-has-associated-control -->

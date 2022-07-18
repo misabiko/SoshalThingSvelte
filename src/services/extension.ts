@@ -1,4 +1,4 @@
-import {readable, writable} from 'svelte/store'
+import {writable} from 'svelte/store'
 import {MAIN_STORAGE_KEY} from '../storages'
 
 export type ExtensionContext =
@@ -30,7 +30,6 @@ export async function fetchExtension<T>(service: string, request: string, url: s
 			const timeoutId = setTimeout(() => reject(new Error(`Extension didn't respond in ${timeout} ms.`)), timeout)
 
 			//TODO Cancel request on timeout
-			//TODO Add setting or detect extension id
 			chrome.runtime.sendMessage(extensionContext.id as string, {
 				soshalthing: true,
 				service,

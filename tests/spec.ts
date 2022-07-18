@@ -79,28 +79,50 @@ test.describe('fullscreen timeline', () => {
 	});
 });
 
-test('autoscroll', async ({page}) => {
-	await loadWithLocalStorage(page, {
-		[TIMELINE_STORAGE_KEY]: [{
-			endpoints: [
-				{
-					service: 'Dummy',
-					endpointType: 0,
-				}
-			]
-		}]
+test.describe('autoscroll', () => {
+	test.beforeEach(async ({page}) => {
+		await loadWithLocalStorage(page, {
+			[TIMELINE_STORAGE_KEY]: [{
+				endpoints: [
+					{
+						service: 'Dummy',
+						endpointType: 0,
+					}
+				]
+			}]
+		})
+
+		const container = page.locator('.articlesContainer').first()
+
+		//Making sure we have room to scroll
+		expect((await container.evaluate(c => c.scrollHeight) - (await container.boundingBox()).height)).toBeGreaterThan(500)
 	})
 
-	const container = page.locator('.articlesContainer').first()
+	test('scroll downward by default', async ({page}) => {
+		const container = page.locator('.articlesContainer').first()
 
-	//Making sure we have room to scroll
-	expect((await container.evaluate(c => c.scrollHeight) - (await container.boundingBox()).height)).toBeGreaterThan(500)
+		//Scrolling halfway, so it doesn't bounce from top on first frame
+		const scrollTop = await container.evaluate(c => c.scrollTop = (c.scrollHeight - c.clientHeight) / 2)
 
-	await page.click('button[title="Autoscroll"]')
+		await page.click('button[title="Autoscroll"]')
 
-	await page.waitForTimeout(500)
+		await page.waitForTimeout(500)
 
-	expect(await container.evaluate(c => c.scrollTop)).toBeGreaterThan(0)
+		expect(await container.evaluate(c => c.scrollTop)).toBeGreaterThan(scrollTop)
+	})
+
+	test('scroll flips every click', async ({page}) => {
+		const container = page.locator('.articlesContainer').first()
+
+		//Scrolling halfway so, it doesn't bounce from top on first frame
+		const scrollTop = await container.evaluate(c => c.scrollTop = (c.scrollHeight - c.clientHeight) / 2)
+
+		await page.dblclick('button[title="Autoscroll"]')
+
+		await page.waitForTimeout(500)
+
+		expect(await container.evaluate(c => c.scrollTop)).toBeLessThan(scrollTop)
+	})
 })
 
 test.describe('filters', () => {

@@ -6,6 +6,8 @@ import {get} from 'svelte/store'
 import type {TweetResponse} from './endpoints'
 import {getV1APIURL} from './endpoints'
 import {fetchExtension} from '../extension'
+import type {TweetResponse} from './apiV1'
+import {getV1APIURL} from './apiV1'
 
 export const TwitterService: Service = {
 	name: 'Twitter',

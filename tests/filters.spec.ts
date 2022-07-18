@@ -1,5 +1,5 @@
 import {expect, test} from '@playwright/test'
-import {loadWithLocalStorage, TIMELINE_STORAGE_KEY} from './storages.spec'
+import {loadWithLocalStorage, TIMELINE_STORAGE_KEY} from './storages.spec.js'
 
 test.beforeEach(async ({page}) => {
 	await loadWithLocalStorage(page, {

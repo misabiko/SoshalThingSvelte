@@ -21,6 +21,7 @@ const DedupSvelteInternalPlugin = {
 
 const outdir = './dist';
 
+//TODO Pass alternate entry, which can then import extra services
 export const buildOptions = {
 	entryPoints: [`./src/entry.ts`],
 	bundle: true,

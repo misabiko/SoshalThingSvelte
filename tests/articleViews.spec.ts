@@ -1,5 +1,5 @@
 import test, {expect} from "@playwright/test"
-import {loadWithLocalStorage, TIMELINE_STORAGE_KEY} from './storages.spec'
+import {loadWithLocalStorage, TIMELINE_STORAGE_KEY} from './storages.spec.js'
 
 test.describe('SocialArticleView', () => {
 	test('like feedback', async ({page}) => {

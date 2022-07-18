@@ -38,29 +38,6 @@ chrome.runtime.onMessageExternal.addListener(
 			sendResponse({id: chrome.runtime.id, available: true})
 		else if (request.service === 'Twitter') {
 			switch (request.request) {
-				case 'singleTweet':
-					const url = new URL("https://api.twitter.com/2/tweets/" + request.id);
-					url.searchParams.set('tweet.fields', "id,created_at,entities,in_reply_to_user_id,referenced_tweets,text");
-					url.searchParams.set('user.fields', "id,name,url,username,profile_image_url");
-					url.searchParams.set('expansions', "author_id,attachments.media_keys,in_reply_to_user_id,referenced_tweets.id");
-
-					console.log('Fetching ' + url.toString());
-					fetch(url.toString(), {
-						headers: {
-							'Authorization': `Bearer ${twitter.bearer}`
-						}
-					})
-						.then(response => response.json())
-						.then(json => {
-							console.dir(json);
-							return json;
-						})
-						.then(response => sendResponse(response))
-						.catch(err => {
-							console.dir(err);
-							sendResponse(err)
-						})
-					break;
 				case 'fetchV1':
 					fetch(request.url, {
 						headers: twitterAuthHeaders(request.url, request.method),

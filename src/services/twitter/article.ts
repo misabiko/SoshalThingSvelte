@@ -21,6 +21,7 @@ export default class TwitterArticle extends Article {
 		public likeCount: number,
 		public retweeted: boolean,
 		public retweetCount: number,
+		json: any
 	) {
 		super({
 			id,
@@ -34,6 +35,7 @@ export default class TwitterArticle extends Article {
 			hiddenStorage,
 			actualArticleRef,
 			replyRef,
+			json,
 		});
 	}
 

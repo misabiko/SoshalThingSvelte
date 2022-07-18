@@ -208,7 +208,10 @@
 				<a class='dropdown-item' on:click={() => dispatch('logData')}>
 					Log Data
 				</a>
-				<!--				<a class='dropdown-item' on:click={ctx.link().callback(|_| Msg::ParentCallback(ParentMsg::LogJsonData))}>{"Log Json Data"}</a>-->
+				<!-- svelte-ignore a11y-missing-attribute -->
+				<a class='dropdown-item' on:click={() => dispatch('logJSON')}>
+					Log JSON Data
+				</a>
 				{#if !actualArticle.fetched }
 					<!-- svelte-ignore a11y-missing-attribute -->
 					<a class='dropdown-item' on:click={() => fetchArticle(actualArticle.idPair)}>

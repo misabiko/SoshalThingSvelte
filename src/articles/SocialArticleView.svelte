@@ -401,9 +401,10 @@
 						<a class='dropdown-item' on:click={() => dispatch('logData')}>
 							Log Data
 						</a>
-						<!--	<a class='dropdown-item'>-->
-						<!--		Log Json Data-->
-						<!--	</a>-->
+						<!-- svelte-ignore a11y-missing-attribute -->
+						<a class='dropdown-item' on:click={() => dispatch('logJSON')}>
+							Log Json Data
+						</a>
 						<!--	<a class='dropdown-item'>-->
 						<!--		Fetch Data-->
 						<!--	</a>-->

@@ -79,6 +79,7 @@ export function articleFromV1(json: TweetResponse): ArticleWithRefs {
 			json.favorite_count,
 			json.retweeted,
 			json.retweet_count,
+			json,
 		),
 		actualArticleRef,
 		replyRef,

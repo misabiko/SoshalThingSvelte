@@ -24,6 +24,17 @@
 		console.dir(articleProps)
 	}
 
+	function onLogJSON() {
+		console.dir({
+			article: articleProps.article.json,
+			actualArticleRef: {
+				reposted: (articleProps.actualArticleRef as {reposted?: Article})?.reposted?.json,
+				quoted: (articleProps.actualArticleRef as {quoted?: Article})?.quoted?.json,
+			},
+			replyRef: articleProps.replyRef?.json,
+		})
+	}
+
 	function onMediaClick(event: { detail: { idPair: ArticleIdPair, index: number } }) {
 		toggleMarkAsRead(event.detail.idPair)
 	}
@@ -60,6 +71,7 @@
 	{articleProps}
 	{actualArticle}
 	on:logData={onLogData}
+	on:logJSON={onLogJSON}
 	on:mediaClick={onMediaClick}
 	classNames={articleProps.filteredOut ? 'transparent' : ''}
 />

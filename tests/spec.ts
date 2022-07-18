@@ -98,9 +98,9 @@ test.describe('autoscroll', () => {
 		expect((await container.evaluate(c => c.scrollHeight) - (await container.boundingBox()).height)).toBeGreaterThan(500)
 	})
 
-	test.skip('scroll bounces from top', async ({page}) => {})
+	test.skip('scroll bounces from top', async () => {})
 
-	test.skip('scroll bounces from bottom', async ({page}) => {})
+	test.skip('scroll bounces from bottom', async () => {})
 
 	test('scroll downward by default', async ({page}) => {
 		const container = page.locator('.articlesContainer').first()
@@ -127,93 +127,4 @@ test.describe('autoscroll', () => {
 
 		expect(await container.evaluate(c => c.scrollTop)).toBeLessThan(scrollTop)
 	})
-})
-
-test.describe('filters', () => {
-	test.beforeEach(async ({page}) => {
-		await loadWithLocalStorage(page, {
-			[TIMELINE_STORAGE_KEY]: [{
-				endpoints: [
-					{
-						service: 'Dummy',
-						endpointType: 0,
-					}
-				],
-				filters: [
-					{
-						filter: {type: "notMarkedAsRead"},
-						enabled: true,
-						inverted: false,
-					}, {
-						filter: {type: "notHidden"},
-						enabled: true,
-						inverted: false,
-					},
-				]
-			}]
-		})
-	})
-
-	test('mark as read', async ({page}) => {
-		const articleLocator = page.locator('article')
-		const articleCount = await articleLocator.count()
-		expect(articleCount).toBeGreaterThan(0)
-
-		await page.locator('article button.articleButton[title = "Mark as read"]').first().click();
-
-		await expect(articleLocator).toHaveCount(articleCount - 1);
-	})
-
-	test('hidden', async ({page}) => {
-		const articleLocator = page.locator('article')
-		const articleCount = await articleLocator.count()
-		expect(articleCount).toBeGreaterThan(0)
-
-		await page.locator('article .dropdown-trigger button.articleButton').first().click();
-
-		await page.locator('article a.dropdown-item >> text=Hide').first().click();
-
-		await expect(articleLocator).toHaveCount(articleCount - 1);
-	})
-
-	test.skip('repost by username', async ({page}) => {})
-
-	test.skip('quote by username', async ({page}) => {})
-})
-
-test.describe('SocialArticleView', () => {
-	test('like feedback', async ({page}) => {
-		await loadWithLocalStorage(page, {
-			[TIMELINE_STORAGE_KEY]: [{
-				endpoints: [
-					{
-						service: 'Dummy',
-						endpointType: 0,
-					}
-				]
-			}]
-		})
-
-		await page.locator('article .likeButton').first().click();
-
-		await expect(page.locator('article .likeButton').first()).toHaveClass(/likedPostButton/);
-	});
-
-	test('repost feedback', async ({page}) => {
-		await loadWithLocalStorage(page, {
-			[TIMELINE_STORAGE_KEY]: [{
-				title: "Timeline",
-				endpoints: [
-					{
-						service: 'Dummy',
-						endpointType: 0,
-					}
-				]
-			}]
-		})
-
-		await page.locator('article .repostButton').first().click();
-
-		await expect(page.locator('article .repostButton').first()).toHaveClass(/repostedPostButton/);
-	});
 })

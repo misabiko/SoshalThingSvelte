@@ -79,7 +79,29 @@ test.describe('fullscreen timeline', () => {
 	});
 });
 
-test.skip('scrolling', ({page}) => {})
+test('autoscroll', async ({page}) => {
+	await loadWithLocalStorage(page, {
+		[TIMELINE_STORAGE_KEY]: [{
+			endpoints: [
+				{
+					service: 'Dummy',
+					endpointType: 0,
+				}
+			]
+		}]
+	})
+
+	const container = page.locator('.articlesContainer').first()
+
+	//Making sure we have room to scroll
+	expect((await container.evaluate(c => c.scrollHeight) - (await container.boundingBox()).height)).toBeGreaterThan(500)
+
+	await page.click('button[title="Autoscroll"]')
+
+	await page.waitForTimeout(500)
+
+	expect(await container.evaluate(c => c.scrollTop)).toBeGreaterThan(0)
+})
 
 test.describe('filters', () => {
 	test.beforeEach(async ({page}) => {

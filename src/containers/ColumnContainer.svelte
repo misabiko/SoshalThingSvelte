@@ -8,7 +8,7 @@
 	export let containerRef = undefined;
 </script>
 
-<div class='columnContainer' bind:this={containerRef}>
+<div class='articlesContainer columnContainer' bind:this={containerRef}>
 	{#each props.articles as articleWithRefs, index (articleWithRefs.article.idPairStr)}
 		<ArticleComponent
 			view={props.articleView}

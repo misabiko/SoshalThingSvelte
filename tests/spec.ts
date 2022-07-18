@@ -171,6 +171,10 @@ test.describe('filters', () => {
 
 		await expect(articleLocator).toHaveCount(articleCount - 1);
 	})
+
+	test.skip('repost by username', async ({page}) => {})
+
+	test.skip('quote by username', async ({page}) => {})
 })
 
 test.describe('SocialArticleView', () => {

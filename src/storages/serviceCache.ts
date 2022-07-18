@@ -30,19 +30,21 @@ export function updateMarkAsReadStorage() {
 		storage = {services: {}}
 
 	for (const service of Object.values(getServices())) {
-		const articlesMarkedAsRead = Object.values(service.articles)
-			.map(a => {
-				//TODO Add articlesStore: derived(articles, a => a) to Service
-				const value = get(a)
-				return value.markedAsRead ? value.idPair.id.toString() : undefined
-			})
-			.filter(id => id !== undefined) as string[]
+		const articlesMarkedAsRead = new Set(storage.services[service.name]?.articlesMarkedAsRead)
+		for (const store of Object.values(service.articles)) {
+			//TODO Add articlesStore: derived(articles, a => a) to Service
+			const article = get(store)
+			if (article.markedAsRead)
+				articlesMarkedAsRead.add(article.idPair.id.toString())
+			else
+				articlesMarkedAsRead.delete(article.idPair.id.toString())
+		}
 
 		if (storage.services.hasOwnProperty(service.name))
-			storage.services[service.name].articlesMarkedAsRead = articlesMarkedAsRead
+			storage.services[service.name].articlesMarkedAsRead = [...articlesMarkedAsRead]
 		else
 			storage.services[service.name] = {
-				articlesMarkedAsRead,
+				articlesMarkedAsRead: [...articlesMarkedAsRead],
 				cachedArticles: {},
 			}
 	}
@@ -57,18 +59,20 @@ export function updateHiddenStorage() {
 		storage = {services: {}}
 
 	for (const service of Object.values(getServices())) {
-		const hiddenArticles = Object.values(service.articles)
-			.map(a => {
-				const article = get(a)
-				return article.hidden ? article.idPair.id.toString() : undefined
-			})
-			.filter(id => id !== undefined) as string[]
+		const hiddenArticles = new Set(storage.services[service.name]?.hiddenArticles || [])
+		for (const store of Object.values(service.articles)) {
+			const article = get(store)
+			if (article.hidden)
+				hiddenArticles.add(article.idPair.id.toString())
+			else
+				hiddenArticles.delete(article.idPair.id.toString())
+		}
 
 		if (storage.services.hasOwnProperty(service.name))
-			storage.services[service.name].hiddenArticles = hiddenArticles
+			storage.services[service.name].hiddenArticles = [...hiddenArticles]
 		else
 			storage.services[service.name] = {
-				hiddenArticles,
+				hiddenArticles:  [...hiddenArticles],
 			}
 	}
 
@@ -87,7 +91,10 @@ export function updateCachedArticlesStorage() {
 			const cachedArticles = getCachedArticles()
 
 			if (storage.services.hasOwnProperty(service.name))
-				storage.services[service.name].cachedArticles = cachedArticles
+				storage.services[service.name].cachedArticles = {
+					...storage.services[service.name].cachedArticles,
+					...cachedArticles
+				}
 			else
 				storage.services[service.name] = {
 					articlesMarkedAsRead: [],

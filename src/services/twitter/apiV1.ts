@@ -138,6 +138,15 @@ export async function fetchExtensionV1<T = TweetResponse>(url: string, method = 
 
 	if ((response as V1ErrorResponse).errors !== undefined)
 		return Promise.reject(response)
+	//TODO Handle deleted tweet
+	// {
+	// 	"errors": [
+	// 		{
+	// 			"code": 144,
+	// 			"message": "No status found with that ID."
+	// 		}
+	// 	]
+	// }
 
 	return response as T
 }

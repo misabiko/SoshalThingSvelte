@@ -13,6 +13,7 @@ export type FilterInstance = {
 	inverted: boolean
 }
 
+//TODO Add service nullable field, and add Deleted filter to Twitter
 export type Filter =
 	{
 		type: 'media'

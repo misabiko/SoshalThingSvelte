@@ -1,8 +1,9 @@
 import type {ArticleAuthor, ArticleIdPair, ArticleMedia, ArticleRefIdPair} from '../article'
-import Article, {ArticleRefType} from '../article'
+import Article from '../article'
 
 export default class TwitterArticle extends Article {
 	static service: string;
+	//TODO deleted = false
 
 	constructor(
 		readonly id: bigint,

@@ -77,6 +77,8 @@
 				<div class='box'>
 					{#each Object.entries(getEndpoints()) as [name, endpoint] (name)}
 						<EndpointOptions {endpoint}/>
+					{:else}
+						No endpoints currently
 					{/each}
 				</div>
 			{:else if menu === SidebarMenu.MediaLoader}

@@ -29,7 +29,7 @@
 				<input class='input' type='number' value={endpoint.autoRefreshInterval} disabled>
 			</div>
 			<div class='control'>
-				<a class='button is-static'>ms</a>
+				<button class='button is-static'>ms</button>
 			</div>
 		{:else}
 			<div class='control'>
@@ -41,7 +41,7 @@
 				<input class='input' type='number' value={endpoint.autoRefreshInterval} on:input={setAutoRefreshInterval}/>
 			</div>
 			<div class='control'>
-				<a class='button is-static'>ms</a>
+				<button class='button is-static'>ms</button>
 			</div>
 		{/if}
 	</div>

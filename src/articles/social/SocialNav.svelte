@@ -11,15 +11,14 @@
 	import {toggleMarkAsRead, toggleHide, articleAction, getArticleAction, STANDARD_ACTIONS} from "../../services/service"
 	import Article from '../../services/article'
 	import type {TimelineArticleProps} from '../index'
-	import {createEventDispatcher} from 'svelte'
 
 	export let article: Article
 	export let repost: Article | undefined = undefined
 	export let isQuoted = false
 	export let modal: boolean
 	export let timelineProps: TimelineArticleProps
-
-	const dispatch = createEventDispatcher()
+	export let onLogData: () => void
+	export let onLogJSON: () => void
 </script>
 
 <style lang='sass'>
@@ -181,11 +180,11 @@
 			{/if}
 			{#if !isQuoted}
 				<!-- svelte-ignore a11y-missing-attribute -->
-				<a class='dropdown-item' on:click={() => dispatch('logData')}>
+				<a class='dropdown-item' on:click={onLogData}>
 					Log Data
 				</a>
 				<!-- svelte-ignore a11y-missing-attribute -->
-				<a class='dropdown-item' on:click={() => dispatch('logJSON')}>
+				<a class='dropdown-item' on:click={onLogJSON}>
 					Log Json Data
 				</a>
 				<!--	<a class='dropdown-item'>-->

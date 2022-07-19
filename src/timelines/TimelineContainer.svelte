@@ -52,7 +52,7 @@
 				data={modalTimeline}
 				{setModalTimeline}
 				fullscreen=false
-				on:removeTimeline={() => modalTimeline = null}
+				removeTimeline={() => modalTimeline = null}
 			/>
 		</Modal>
 	{/if}
@@ -65,16 +65,16 @@
 				data={timelines[fullscreen]}
 				{setModalTimeline}
 				fullscreen=true
-				on:removeTimeline={() => removeTimeline(fullscreen)}
-				on:toggleFullscreen={() => fullscreen = undefined}
+				removeTimeline={() => removeTimeline(fullscreen)}
+				toggleFullscreen={() => fullscreen = undefined}
 			/>
 		{:else}
 			<Timeline
 				data={timelines[fullscreen]}
 				{setModalTimeline}
 				fullscreen=true
-				on:removeTimeline={() => removeTimeline(fullscreen)}
-				on:toggleFullscreen={() => fullscreen = undefined}
+				removeTimeline={() => removeTimeline(fullscreen)}
+				toggleFullscreen={() => fullscreen = undefined}
 			/>
 		{/if}
 	{:else}
@@ -88,16 +88,16 @@
 					{data}
 					{setModalTimeline}
 					fullscreen=false
-					on:removeTimeline={() => removeTimeline(i)}
-					on:toggleFullscreen={() => fullscreen = i}
+					removeTimeline={() => removeTimeline(i)}
+					toggleFullscreen={() => fullscreen = i}
 				/>
 			{:else}
 				<Timeline
 					{data}
 					{setModalTimeline}
 					fullscreen=false
-					on:removeTimeline={() => removeTimeline(i)}
-					on:toggleFullscreen={() => fullscreen = i}
+					removeTimeline={() => removeTimeline(i)}
+					toggleFullscreen={() => fullscreen = i}
 				/>
 			{/if}
 		{/each}

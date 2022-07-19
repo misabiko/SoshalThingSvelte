@@ -35,8 +35,8 @@
 		})
 	}
 
-	function onMediaClick(event: { detail: { idPair: ArticleIdPair, index: number } }) {
-		toggleMarkAsRead(event.detail.idPair)
+	function onMediaClick(idPair: ArticleIdPair, index: number) {
+		toggleMarkAsRead(idPair)
 	}
 </script>
 
@@ -62,8 +62,8 @@
 				bind:modal
 				{articleProps}
 				{actualArticle}
-				on:logData={onLogData}
-				on:mediaClick={onMediaClick}
+				{onLogData}
+				{onMediaClick}
 			/>
 		</article>
 	</Modal>
@@ -76,8 +76,8 @@
 		bind:modal
 		{articleProps}
 		{actualArticle}
-		on:logData={onLogData}
-		on:logJSON={onLogJSON}
-		on:mediaClick={onMediaClick}
+		{onLogData}
+		{onLogJSON}
+		{onMediaClick}
 	/>
 </article>

@@ -1,6 +1,6 @@
 <script lang='ts'>
-	import {createEventDispatcher} from 'svelte'
 	import Article from '../../services/article'
+	import type {ArticleIdPair} from '../../services/article'
 	import type {ArticleProps, TimelineArticleProps} from '../index'
 	import {shortTimestamp} from "../index";
 	import SocialMedia from "./SocialMedia.svelte";
@@ -14,6 +14,9 @@
 	export let articleProps: ArticleProps
 	export let modal: boolean; modal;
 	export let actualArticle: Readonly<Article>
+	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number
+	export let onLogData: () => void
+	export let onLogJSON: () => void
 
 	let minimized = false
 	const isArticleRepost = articleProps.actualArticleRef && 'reposted' in articleProps.actualArticleRef
@@ -48,8 +51,6 @@
 			columnCount: 3,
 		})
 	}
-
-	const dispatch = createEventDispatcher()
 </script>
 
 <style lang='sass'>
@@ -217,7 +218,7 @@
 						<SocialMedia
 							article={quoted}
 							{timelineProps}
-							on:mediaClick={e => dispatch('mediaClick', e.detail)}
+							onMediaClick={index => onMediaClick(actualArticle.idPair, index)}
 						/>
 					{/if}
 					<SocialNav
@@ -225,6 +226,8 @@
 						isQuoted={true}
 						{timelineProps}
 						{modal}
+						{onLogData}
+						{onLogJSON}
 					/>
 				</div>
 			{/if}
@@ -233,8 +236,8 @@
 				bind:modal
 				{timelineProps}
 				repost={isArticleRepost ? articleProps.article : undefined}
-				on:logData={() => dispatch('logData')}
-				on:logJSON={() => dispatch('logJSON')}
+				{onLogData}
+				{onLogJSON}
 			/>
 		</div>
 	</div>
@@ -242,7 +245,7 @@
 		<SocialMedia
 			article={actualArticle}
 			{timelineProps}
-			on:mediaClick={e => dispatch('mediaClick', e.detail)}
+			onMediaClick={index => onMediaClick(actualArticle.idPair, index)}
 		/>
 	{/if}
 </div>

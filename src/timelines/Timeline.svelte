@@ -9,7 +9,7 @@
 		refreshEndpoints,
 		RefreshType,
 	} from '../services/service'
-	import {createEventDispatcher, onMount} from 'svelte'
+	import {onMount} from 'svelte'
 	import {type TimelineData} from './index'
 	import {keepArticle} from '../filters'
 	import {compare, SortMethod} from '../sorting'
@@ -21,6 +21,8 @@
 	export let data: TimelineData
 	//Would like to make this immutable https://github.com/sveltejs/svelte/issues/5572
 	export let fullscreen: boolean
+	export let toggleFullscreen: () => void | undefined = undefined
+	export let removeTimeline: () => void
 	export let setModalTimeline: (data: Partial<TimelineData>) => void
 
 	export let favviewerButtons = false
@@ -167,9 +169,9 @@
 		articleIdPairs = articleIdPairs
 	}
 
-	function sortOnce(event: {detail: {method: SortMethod, reversed: boolean}}) {
-		const sorted = get(articlesWithRefs).sort(compare(event.detail.method))
-		if (event.detail.reversed)
+	function sortOnce(method: SortMethod, reversed: boolean) {
+		const sorted = get(articlesWithRefs).sort(compare(method))
+		if (reversed)
 			sorted.reverse()
 		articleIdPairs = sorted.map(a => a.article.idPair)
 	}
@@ -184,8 +186,6 @@
 
 		return () => console.log('Destroying timeline ' + data.title)
 	})
-
-	const dispatch = createEventDispatcher()
 </script>
 
 <style lang='sass'>
@@ -233,17 +233,17 @@
 		bind:favviewerHidden
 		{fullscreen}
 
-		on:shuffle={shuffle}
-		on:autoscroll={autoscroll}
-		on:refresh={e => refresh(e.detail)}
-		on:toggleFullscreen={() => dispatch('toggleFullscreen')}
+		{shuffle}
+		{autoscroll}
+		{refresh}
+		{toggleFullscreen}
 	/>
 	{#if showOptions}
 		<TimelineOptions
 			bind:data
 			{fullscreen}
-			on:sortOnce
-			on:removeTimeline={() => dispatch('removeTimeline')}
+			{sortOnce}
+			{removeTimeline}
 		/>
 	{/if}
 	<svelte:component

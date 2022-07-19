@@ -13,7 +13,6 @@
 	} from "@fortawesome/free-solid-svg-icons"
 	import MasonryContainer from "../containers/MasonryContainer.svelte"
 	import type {TimelineData} from './index'
-	import {createEventDispatcher} from 'svelte'
 
 	export let data: TimelineData
 	export let favviewerButtons: boolean
@@ -23,8 +22,10 @@
 	export let containerRebalance: boolean
 	export let showSidebar: boolean
 	export let showOptions: boolean
-
-	const dispatch = createEventDispatcher()
+	export let toggleFullscreen: () => void | undefined = undefined
+	export let shuffle: () => void
+	export let autoscroll: () => void
+	export let refresh: (refreshType: RefreshType) => void
 </script>
 
 <style lang='sass'>
@@ -72,39 +73,41 @@
 		{/if}
 	</div>
 	<div class='timelineButtons'>
-		<button
-			class='borderless-button'
-			title={fullscreen ? 'Disable fullscreen' : 'Make timeline fullscreen'}
-			on:click={() => dispatch('toggleFullscreen')}
-		>
-			<Fa icon={fullscreen ? faColumns: faExpandAlt} size='large'/>
-		</button>
+		{#if toggleFullscreen}
+			<button
+				class='borderless-button'
+				title={fullscreen ? 'Disable fullscreen' : 'Make timeline fullscreen'}
+				on:click={toggleFullscreen}
+			>
+				<Fa icon={fullscreen ? faColumns: faExpandAlt} size='large'/>
+			</button>
+		{/if}
 		{#if data.container === MasonryContainer}
 			<button class='borderless-button' title='Organize Container'
 					on:click={() => containerRebalance = !containerRebalance}>
 				<Fa icon={faScaleBalanced} size='large'/>
 			</button>
 		{/if}
-		<button class='borderless-button' title='Shuffle' on:click={() => dispatch('shuffle')}>
+		<button class='borderless-button' title='Shuffle' on:click={shuffle}>
 			<Fa icon={faRandom} size='large'/>
 		</button>
-		<button class='borderless-button timelineAutoscroll' title='Autoscroll' on:click={() => dispatch('autoscroll')}>
+		<button class='borderless-button timelineAutoscroll' title='Autoscroll' on:click={autoscroll}>
 			<Fa icon={faScroll} size='large'/>
 		</button>
 		{#if availableRefreshTypes.has(RefreshType.Refresh)}
-			<button class='borderless-button' title='Refresh' on:click={() => dispatch('refresh', RefreshType.Refresh)}>
+			<button class='borderless-button' title='Refresh' on:click={() => refresh(RefreshType.Refresh)}>
 				<Fa icon={faSyncAlt} size='large'/>
 			</button>
 		{/if}
 		{#if availableRefreshTypes.has(RefreshType.LoadBottom)}
 			<button class='borderless-button' title='Load Bottom'
-					on:click={() => dispatch('refresh', RefreshType.LoadBottom)}>
+					on:click={() => refresh(RefreshType.LoadBottom)}>
 				<Fa icon={faArrowDown} size='large'/>
 			</button>
 		{/if}
 		{#if availableRefreshTypes.has(RefreshType.LoadTop)}
 			<button class='borderless-button' title='Load Top'
-					on:click={() => dispatch('refresh', RefreshType.LoadTop)}>
+					on:click={() => refresh(RefreshType.LoadTop)}>
 				<Fa icon={faArrowUp} size='large'/>
 			</button>
 		{/if}

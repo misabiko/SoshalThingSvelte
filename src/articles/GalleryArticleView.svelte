@@ -1,5 +1,6 @@
 <script lang='ts'>
 	import Article, {MediaQueueInfo, MediaType} from '../services/article'
+	import type {ArticleIdPair} from '../services/article'
 	import Fa from 'svelte-fa/src/fa.svelte'
 	import {
 		faExpandArrowsAlt,
@@ -8,7 +9,7 @@
 		faRetweet,
 		faEllipsisH,
 	} from '@fortawesome/free-solid-svg-icons'
-	import {afterUpdate, createEventDispatcher} from 'svelte'
+	import {afterUpdate} from 'svelte'
 	import {LoadingState, loadingStore} from '../bufferedMediaLoading'
 	import Dropdown from "../Dropdown.svelte"
 	import {fetchArticle, toggleHide, toggleMarkAsRead, articleAction, getArticleAction, STANDARD_ACTIONS} from "../services/service"
@@ -20,8 +21,10 @@
 	export let style = ''; style;
 	export let modal: boolean; modal;
 	export let actualArticle: Readonly<Article>
+	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number
+	export let onLogData: () => void
+	export let onLogJSON: () => void
 
-	const dispatch = createEventDispatcher()
 	const mediaRefs: HTMLImageElement[] = []
 	let loadingStates: LoadingState[]
 	$: {
@@ -112,13 +115,13 @@
 					alt={`${actualArticle.idPair.id} thumbnail`}
 					class='articleThumb'
 					src={media.thumbnail}
-					on:click={() => dispatch('mediaClick', {idPair: actualArticle.idPair, index: i})}
+					on:click={() => onMediaClick(actualArticle.idPair, i)}
 				/>
 			{:else if media.mediaType === MediaType.Image || media.mediaType === MediaType.Gif}
 				<img
 					alt={actualArticle.idPair.id}
 					src={media.src}
-					on:click={() => dispatch('mediaClick', {idPair: actualArticle.idPair, index: i})}
+					on:click={() => onMediaClick(actualArticle.idPair, i)}
 					on:load={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
 					class:articleMediaLoading={isLoading}
 					bind:this={mediaRefs[i]}
@@ -128,14 +131,14 @@
 						alt={`${actualArticle.idPair.id} thumbnail`}
 						class='articleThumb'
 						src={media.thumbnail}
-						on:click={() => dispatch('mediaClick', {idPair: actualArticle.idPair, index: i})}
+						on:click={() => onMediaClick(actualArticle.idPair, i)}
 					/>
 				{/if}
 			{:else if !timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
 				<!-- svelte-ignore a11y-media-has-caption -->
 				<video
 					controls
-					on:click|preventDefault={() => dispatch('mediaClick', {idPair: actualArticle.idPair, index: i})}
+					on:click|preventDefault={() => onMediaClick(actualArticle.idPair, i)}
 					on:loadeddata={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
 					on:load={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
 				>
@@ -147,7 +150,7 @@
 					autoplay
 					loop
 					muted
-					on:click|preventDefault={() => dispatch('mediaClick', {idPair: actualArticle.idPair, index: i})}
+					on:click|preventDefault={() => onMediaClick(actualArticle.idPair, i)}
 					on:loadeddata={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
 					on:load={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
 				>
@@ -196,11 +199,11 @@
 					External Link
 				</a>
 				<!-- svelte-ignore a11y-missing-attribute -->
-				<a class='dropdown-item' on:click={() => dispatch('logData')}>
+				<a class='dropdown-item' on:click={onLogData}>
 					Log Data
 				</a>
 				<!-- svelte-ignore a11y-missing-attribute -->
-				<a class='dropdown-item' on:click={() => dispatch('logJSON')}>
+				<a class='dropdown-item' on:click={onLogJSON}>
 					Log JSON Data
 				</a>
 				{#if !actualArticle.fetched }

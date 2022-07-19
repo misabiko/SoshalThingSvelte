@@ -8,12 +8,12 @@
 	import type {TimelineData} from './index'
 	import FiltersOptions from "../filters/FiltersOptions.svelte"
 	import SortOptions from "../sorting/SortOptions.svelte"
-	import {createEventDispatcher} from 'svelte'
+	import {SortMethod} from '../sorting'
 
 	export let data: TimelineData
 	export let fullscreen: boolean
-
-	const dispatch = createEventDispatcher()
+	export let removeTimeline: () => void
+	export let sortOnce: (method: SortMethod, reversed: boolean) => void
 </script>
 
 <style lang='sass'>
@@ -42,7 +42,7 @@
 
 <div class='timelineOptions'>
 	<div class='box'>
-		<Button type='is-danger' on:click={() => dispatch('removeTimeline')}>
+		<Button type='is-danger' on:click={removeTimeline}>
 			Remove timeline
 		</Button>
 	</div>
@@ -107,6 +107,6 @@
 		<FiltersOptions bind:instances={data.filters}/>
 	</div>
 	<div class='box'>
-		<SortOptions bind:sortInfo={data.sortInfo} on:sortOnce={dispatch('sortOnce')}/>
+		<SortOptions bind:sortInfo={data.sortInfo} {sortOnce}/>
 	</div>
 </div>

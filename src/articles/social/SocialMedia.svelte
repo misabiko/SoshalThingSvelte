@@ -1,13 +1,11 @@
 <script lang='ts'>
 	import Article from '../../services/article'
 	import {MediaType} from "../../services/article.js";
-	import {createEventDispatcher} from 'svelte'
 	import type {TimelineArticleProps} from '../index'
 
 	export let article: Article
 	export let timelineProps: TimelineArticleProps
-
-	const dispatch = createEventDispatcher()
+	export let onMediaClick: (index: number) => void
 </script>
 
 <style lang='sass'>
@@ -74,19 +72,19 @@
 		{#if media.mediaType === MediaType.Image || media.mediaType === MediaType.Gif}
 			<div class='mediaHolder'>
 				<div class='is-hidden imgPlaceHolder' style:aspect-ratio={1 / media.ratio}></div>
-				<img alt={article.id} src={media.src} on:click={() => dispatch('mediaClick', {idPair: article.idPair, index})}/>
+				<img alt={article.id} src={media.src} on:click={() => onMediaClick(index)}/>
 			</div>
 		{:else if !timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
 			<div class='postMedia postVideo'>
 				<!-- svelte-ignore a11y-media-has-caption -->
-				<video controls on:click|preventDefault={() => dispatch('mediaClick', {idPair: article.idPair, index})}>
+				<video controls on:click|preventDefault={() => onMediaClick(index)}>
 					<source src={media.src} type='video/mp4'/>
 				</video>
 			</div>
 		{:else if media.mediaType === MediaType.VideoGif || timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
 			<div class='postMedia postVideo'>
 				<!-- svelte-ignore a11y-media-has-caption -->
-				<video controls autoplay loop muted on:click|preventDefault={() => dispatch('mediaClick', {idPair: article.idPair, index})}>
+				<video controls autoplay loop muted on:click|preventDefault={() => onMediaClick(index)}>
 					<source src={media.src} type='video/mp4'/>
 				</video>
 			</div>

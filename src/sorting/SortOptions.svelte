@@ -1,15 +1,13 @@
 <script lang='ts'>
-	import {methodName, type SortInfo} from './index'
+	import {methodName, type SortInfo, SortMethod} from './index'
 	import Dropdown from "../Dropdown.svelte";
 	import {allSortMethods, directionLabel} from "./index.js"
-	import {createEventDispatcher} from 'svelte'
 
 	export let sortInfo: SortInfo
+	export let sortOnce: (method: SortMethod, reversed: boolean) => void
 
 	let currentMethodName: string
 	$: currentMethodName = sortInfo.method !== undefined ? methodName(sortInfo.method) : 'Unsorted'
-
-	const dispatch = createEventDispatcher()
 </script>
 
 <div class='block field has-addons'>
@@ -48,11 +46,11 @@
 				<Dropdown labelText='Sort once'>
 					{#each allSortMethods as method}
 						<!-- svelte-ignore a11y-missing-attribute -->
-						<a class='dropdown-item' on:click={() => dispatch('sortOnce', {method, reversed: false})}>
+						<a class='dropdown-item' on:click={() => sortOnce(method, false)}>
 							{ `${methodName(method)} - ${directionLabel(method, false)}` }
 						</a>
 						<!-- svelte-ignore a11y-missing-attribute -->
-						<a class='dropdown-item' on:click={() => dispatch('sortOnce', {method, reversed: true})}>
+						<a class='dropdown-item' on:click={() => sortOnce(method, true)}>
 							{ `${methodName(method)} - ${directionLabel(method, true)}` }
 						</a>
 					{/each}

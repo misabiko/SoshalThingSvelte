@@ -3,7 +3,7 @@ import type {SvelteComponent} from 'svelte'
 import type {FilterInstance} from '../filters'
 import {SortMethod, type SortInfo} from '../sorting'
 import ColumnContainer from '../containers/ColumnContainer.svelte'
-import SocialArticleView from '../articles/SocialArticleView.svelte'
+import SocialArticleView from '../articles/social/SocialArticleView.svelte'
 import type {RefreshType} from '../services/service'
 import {defaultFilterInstances} from '../filters'
 

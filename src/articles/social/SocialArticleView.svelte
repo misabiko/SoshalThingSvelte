@@ -8,12 +8,13 @@
 		faEllipsisH, faExpandAlt, faEye,
 	} from '@fortawesome/free-solid-svg-icons'
 	import {createEventDispatcher} from 'svelte'
-	import Article from '../services/article'
-	import Dropdown from '../Dropdown.svelte'
-	import {toggleMarkAsRead, toggleHide, articleAction, getArticleAction, STANDARD_ACTIONS} from "../services/service"
-	import {MediaType} from "../services/article.js";
-	import type {ArticleProps, TimelineArticleProps} from './index'
-	import {shortTimestamp} from "./index";
+	import Article from '../../services/article'
+	import Dropdown from '../../Dropdown.svelte'
+	import {toggleMarkAsRead, toggleHide, articleAction, getArticleAction, STANDARD_ACTIONS} from "../../services/service"
+	import {MediaType} from "../../services/article.js";
+	import type {ArticleProps, TimelineArticleProps} from '../index'
+	import {shortTimestamp} from "../index";
+	import SocialMedia from "./SocialMedia.svelte";
 
 	export let timelineProps: TimelineArticleProps
 	export let articleProps: ArticleProps
@@ -33,7 +34,7 @@
 </script>
 
 <style lang='sass'>
-	@use '../styles/variables' as *
+	@use '../../styles/variables' as *
 
 	article
 		padding: 1rem
@@ -68,12 +69,6 @@
 				bottom: 0
 				right: 0
 
-	.postMedia
-		margin-top: 1rem
-
-	.postVideo video
-		width: 100%
-
 	.articleHeader *
 		vertical-align: middle
 
@@ -96,53 +91,6 @@
 
 	.timestamp
 		float: right
-
-	//TODO .postImagesCompact
-	//	display: flex
-	//	flex-wrap: wrap
-
-	.mediaHolder
-		overflow: hidden
-		display: flex
-		justify-content: center
-		border-radius: 8px
-
-		&:not(:last-child)
-			margin-bottom: 2px
-
-		img
-			align-self: center
-			width: 100%
-
-		//&.mediaHolderCompact
-		//	max-height: 16vh
-		//	width: 100%
-		//
-		//	&:not(:only-child)
-		//		margin: 2px
-		//		max-width: 49%
-		//
-		//		&.landscape img
-		//			width: unset
-		//			height: 110%
-		//
-		//		&.portrait img
-		//			width: 110%
-		//			height: unset
-		//
-		//	img
-		//		object-fit: cover
-		//
-		//	&.thirdImage
-		//		max-width: unset
-		//
-		//		&.landscape img
-		//			width: unset
-		//			height: 175%
-		//
-		//		&.portrait img
-		//			width: 175%
-		//			height: unset
 
 	p.articleParagraph
 		white-space: pre-line
@@ -343,7 +291,11 @@
 								{/if}
 							</p>
 						{/if}
-					<!--	TODO <SocialMedia/>-->
+						<SocialMedia
+							article={quoted}
+							{timelineProps}
+							on:mediaClick={e => dispatch('mediaClick', e.detail)}
+						/>
 					{/if}
 					<!--TODO SocialNav-->
 				</div>
@@ -444,29 +396,10 @@
 		</div>
 	</div>
 	{#if actualArticle.medias.length && !minimized}
-		<div class='postMedia postImages'>
-			{#each actualArticle.medias as media, index (index)}
-				{#if media.mediaType === MediaType.Image || media.mediaType === MediaType.Gif}
-					<div class='mediaHolder'>
-						<div class='is-hidden imgPlaceHolder' style:aspect-ratio={1 / media.ratio}></div>
-						<img alt={actualArticle.id} src={media.src} on:click={() => dispatch('mediaClick', {idPair: actualArticle.idPair, index})}/>
-					</div>
-				{:else if !timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
-					<div class='postMedia postVideo'>
-						<!-- svelte-ignore a11y-media-has-caption -->
-						<video controls on:click|preventDefault={() => dispatch('mediaClick', {idPair: actualArticle.idPair, index})}>
-							<source src={media.src} type='video/mp4'/>
-						</video>
-					</div>
-				{:else if media.mediaType === MediaType.VideoGif || timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
-					<div class='postMedia postVideo'>
-						<!-- svelte-ignore a11y-media-has-caption -->
-						<video controls autoplay loop muted on:click|preventDefault={() => dispatch('mediaClick', {idPair: actualArticle.idPair, index})}>
-							<source src={media.src} type='video/mp4'/>
-						</video>
-					</div>
-				{/if}
-			{/each}
-		</div>
+		<SocialMedia
+			article={actualArticle}
+			{timelineProps}
+			on:mediaClick={e => dispatch('mediaClick', e.detail)}
+		/>
 	{/if}
 </article>

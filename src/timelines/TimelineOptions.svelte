@@ -3,7 +3,7 @@
 	import ColumnContainer from "../containers/ColumnContainer.svelte"
 	import RowContainer from "../containers/RowContainer.svelte"
 	import MasonryContainer from "../containers/MasonryContainer.svelte"
-	import SocialArticleView from "../articles/SocialArticleView.svelte"
+	import SocialArticleView from "../articles/social/SocialArticleView.svelte"
 	import GalleryArticleView from "../articles/GalleryArticleView.svelte"
 	import type {TimelineData} from './index'
 	import FiltersOptions from "../filters/FiltersOptions.svelte"

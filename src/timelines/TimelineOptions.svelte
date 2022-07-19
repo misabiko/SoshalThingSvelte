@@ -56,16 +56,17 @@
 		</Field>
 		{#if data.container !== ColumnContainer}
 			<Field label='Column Count'>
-				<Input type='number' bind:value={data.columnCount} min={1}/>
+<!--				TODO Make <Input type='number' bind:value/> work in svelma-->
+				<input class='input' type='number' bind:value={data.columnCount} min={1}/>
 			</Field>
 		{/if}
 		{#if !fullscreen}
 			<Field label='Timeline Width'>
-				<Input type='number' bind:value={data.width} min={1}/>
+				<input class='input' type='number' bind:value={data.width} min={1}/>
 			</Field>
 		{/if}
 		<Field label='AutoScroll Speed'>
-			<Input type='number' bind:value={data.scrollSpeed} min={0}/>
+			<input class='input' type='number' bind:value={data.scrollSpeed} min={0}/>
 		</Field>
 	</div>
 	<div class='box'>

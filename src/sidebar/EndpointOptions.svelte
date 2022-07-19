@@ -6,7 +6,6 @@
 
 	function startAutoRefresh() {}
 	function stopAutoRefresh() {}
-	function setAutoRefreshInterval(e: InputEvent) {}
 </script>
 
 <div class='block'>
@@ -38,7 +37,7 @@
 				</button>
 			</div>
 			<div class='control'>
-				<input class='input' type='number' value={endpoint.autoRefreshInterval} on:input={setAutoRefreshInterval}/>
+				<input class='input' type='number' bind:value={endpoint.autoRefreshInterval}/>
 			</div>
 			<div class='control'>
 				<button class='button is-static'>ms</button>

@@ -30,6 +30,7 @@
 	$: if (props.rebalanceTrigger !== lastRebalanceTrigger || props.columnCount !== lastColumnCount) {
 		columns = []
 		lastRebalanceTrigger = props.rebalanceTrigger
+		lastColumnCount = props.columnCount
 	}
 
 	$: {

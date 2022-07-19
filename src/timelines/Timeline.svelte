@@ -30,6 +30,7 @@
 	let containerRef: HTMLElement | undefined = undefined
 	let containerRebalance = false;
 
+	//TODO Move articles to TimelineData
 	let articleIdPairs = [...data.initArticles]
 
 	let articles: Readable<Article[]>

@@ -200,7 +200,7 @@ function parseText(rawText: string, entities: Entities, extendedEntities?: Exten
 		htmlParts.push([indices, `<a href='${expanded_url}'>${display_url}</a>`])
 	}
 	for (const {indices, text} of entities.hashtags) {
-		htmlParts.push([indices, `<a href='https://twitter.com/search?q=#${text}'>#${text}</a>`])
+		htmlParts.push([indices, `<a href='https://twitter.com/hashtag/${text}'>#${text}</a>`])
 	}
 	for (const {indices, screen_name} of entities.user_mentions) {
 		htmlParts.push([indices, `<a href='https://twitter.com/${screen_name}'>@${screen_name}</a>`])

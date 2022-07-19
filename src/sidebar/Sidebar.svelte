@@ -2,16 +2,16 @@
 	import Fa from 'svelte-fa/src/fa.svelte';
 	import {
 		faAngleDoubleLeft,
-		faAngleDoubleRight,
 		faPlus,
 		faCog,
 		faSpinner,
-		faCube,
+		faBarsProgress,
 	} from '@fortawesome/free-solid-svg-icons'
 	import { faGithub } from '@fortawesome/free-brands-svg-icons';
 	import EndpointOptions from "./EndpointOptions.svelte";
 	import {loadingStore} from "../bufferedMediaLoading";
 	import SettingsMenu from "./SettingsMenu.svelte";
+	import {getEndpoints} from "../services/service.js";
 
 	let menu: SidebarMenu | null = null;
 
@@ -75,7 +75,9 @@
 		<div class='sidebarMenu'>
 			{#if menu === SidebarMenu.Endpoints}
 				<div class='box'>
-					<EndpointOptions/>
+					{#each Object.entries(getEndpoints()) as [name, endpoint] (name)}
+						<EndpointOptions {endpoint}/>
+					{/each}
 				</div>
 			{:else if menu === SidebarMenu.MediaLoader}
 				{#each [...$loadingStore] as idPair (idPair)}
@@ -99,6 +101,9 @@
 			{/if}
 			<button class='borderless-button' title="Add new timeline" on:click={() => toggleSidebarMenu(SidebarMenu.NewTimeline)}>
 				<Fa icon={faPlus} size='2x'/>
+			</button>
+			<button class='borderless-button' title="Endpoints" on:click={() => toggleSidebarMenu(SidebarMenu.Endpoints)}>
+				<Fa icon={faBarsProgress} size='2x'/>
 			</button>
 			<button class='borderless-button' title="Loading medias" on:click={() => toggleSidebarMenu(SidebarMenu.MediaLoader)}>
 				<Fa icon={faSpinner} size='2x'/>

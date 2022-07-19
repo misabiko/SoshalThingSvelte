@@ -63,6 +63,9 @@ export abstract class Endpoint {
 	abstract readonly name: string
 	readonly articleIdPairs: ArticleIdPair[] = []
 	refreshTypes = new Set<RefreshType>([RefreshType.RefreshStart, RefreshType.Refresh])
+	rateLimitInfo: RateLimitInfo | null = null
+	isAutoRefreshing = false
+	abstract autoRefreshInterval: number
 
 	abstract refresh(refreshType: RefreshType): Promise<ArticleWithRefs[]>;
 
@@ -94,6 +97,13 @@ export const everyRefreshType = new Set([
 ])
 
 type ParamType = string | number | boolean;
+
+//Format specific to Twitter
+export type RateLimitInfo = {
+	limit: number;
+	remaining: number;
+	reset: number;
+}
 
 export function registerService(service: Service) {
 	services[service.name] = service

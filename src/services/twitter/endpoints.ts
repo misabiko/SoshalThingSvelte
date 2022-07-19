@@ -2,7 +2,7 @@ import type {ArticleWithRefs} from '../article'
 import {Endpoint, type EndpointConstructorInfo, RefreshType, registerEndpoint} from '../service'
 import {TwitterService} from './service'
 import type {SearchResponse, TweetResponse} from './apiV1'
-import {articleFromV1, fetchExtensionV1, getV1APIURL} from './apiV1'
+import {articleFromV1, fetchExtensionV1, getV1APIURL, parseRateLimitInfo} from './apiV1'
 
 abstract class V1Endpoint extends Endpoint {
 	//Waiting on https://github.com/microsoft/TypeScript/issues/34516 to make static
@@ -35,8 +35,10 @@ abstract class V1Endpoint extends Endpoint {
 	}
 
 	async fetchTweets(url: URL): Promise<ArticleWithRefs[]> {
-		return (await fetchExtensionV1<TweetResponse[]>(url.toString()))
-			.map(articleFromV1)
+		const {json, headers} = await fetchExtensionV1<TweetResponse[]>(url.toString())
+		this.rateLimitInfo = parseRateLimitInfo(headers)
+
+		return json.map(articleFromV1)
 	}
 }
 
@@ -45,6 +47,7 @@ export class HomeTimelineEndpoint extends V1Endpoint {
 	readonly name = 'Home Timeline'
 	readonly resource = 'statuses/home_timeline'
 	readonly maxCount = 200	//Default 20
+	autoRefreshInterval = 90_000	//Min 60_000
 	refreshTypes = new Set([
 		RefreshType.RefreshStart,
 		RefreshType.Refresh,
@@ -67,6 +70,7 @@ export class UserTimelineEndpoint extends V1Endpoint {
 	readonly name;
 	readonly resource = 'statuses/user_timeline'
 	readonly maxCount = 200
+	autoRefreshInterval = 60_000	//Min 1000
 
 	constructor(readonly username: string) {
 		super()
@@ -95,6 +99,7 @@ export class ListEndpoint extends V1Endpoint {
 	readonly name;
 	readonly resource = 'lists/statuses'
 	readonly maxCount = 200	//Not mentionned, assuming 200
+	autoRefreshInterval = 60_000	//Min 1000
 
 	constructor(readonly username: string, readonly slug: string) {
 		super()
@@ -125,6 +130,7 @@ export class LikesEndpoint extends V1Endpoint {
 	readonly name
 	readonly resource = 'favorites/list'
 	readonly maxCount = 200	//Default 20
+	autoRefreshInterval = 60_000	//Min 12_000
 
 	constructor(readonly username: string) {
 		super()
@@ -153,6 +159,7 @@ export class SearchEndpoint extends V1Endpoint {
 	readonly name
 	readonly resource = 'search/tweets'
 	readonly maxCount = 100	//Default 15
+	autoRefreshInterval = 60_000	//Min 5000
 
 	constructor(readonly query: string) {
 		super()
@@ -168,8 +175,9 @@ export class SearchEndpoint extends V1Endpoint {
 	}
 
 	async fetchTweets(url: URL): Promise<ArticleWithRefs[]> {
-		return (await fetchExtensionV1<SearchResponse>(url.toString())).statuses
-			.map(articleFromV1)
+		const {json, headers} = await fetchExtensionV1<SearchResponse>(url.toString())
+		this.rateLimitInfo = parseRateLimitInfo(headers)
+		return json.statuses.map(articleFromV1)
 	}
 
 	matchParams(params: any): boolean {

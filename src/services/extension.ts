@@ -16,11 +16,11 @@ let extensionContext: Readonly<ExtensionContext> = {
 
 //TODO Try unifying as a custom readable store?
 export const extensionContextStore = writable<ExtensionContext>(extensionContext)
-const unsubscribe = extensionContextStore.subscribe(value => {
+extensionContextStore.subscribe(value => {
 	extensionContext = value
 })
 
-export async function fetchExtension<T>(service: string, request: string, url: string, method = 'GET', body?: any): Promise<T> {
+export async function fetchExtension<T>(service: string, request: string, url: string, method = 'GET', body?: any): Promise<ExtensionFetchResponse<T>> {
 	if (extensionContext.id === null)
 		throw new Error('No extension id')
 
@@ -37,14 +37,17 @@ export async function fetchExtension<T>(service: string, request: string, url: s
 				url,
 				method,
 				body,
-			}, response => {
+			}, (response: {json: T, headers: string[][]}) => {
 				clearTimeout(timeoutId)
 
 				extensionContextStore.update(ctx => {
 					ctx.available = true
 					return ctx
 				})
-				resolve(response)
+				resolve({
+					json: response.json,
+					headers: new Headers(response.headers)
+				})
 			})
 		});
 	}catch (cause: any) {
@@ -90,4 +93,9 @@ export async function extensionCheck(): Promise<ExtensionContext> {
 		})
 		return extensionContext
 	}
+}
+
+export type ExtensionFetchResponse<T> = {
+	json: T,
+	headers: Headers,
 }

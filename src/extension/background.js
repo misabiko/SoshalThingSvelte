@@ -44,12 +44,13 @@ chrome.runtime.onMessageExternal.addListener(
 						method: request.method,
 						body: request.body,
 					})
-						.then(response => response.json())
-						.then(json => {
-							console.dir(json);
-							return json;
+						.then(response => response.json()
+							.then(json => ({json, headers: [...response.headers.entries()]}))
+						)
+						.then(response => {
+							console.dir(response);
+							sendResponse(response)
 						})
-						.then(response => sendResponse(response))
 						.catch(err => {
 							console.dir(err);
 							sendResponse(err)

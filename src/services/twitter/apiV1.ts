@@ -10,8 +10,10 @@ import TwitterArticle from './article'
 import {getHiddenStorage, getMarkedAsReadStorage} from '../../storages/serviceCache'
 import {TwitterService} from './service'
 import {fetchExtension} from '../extension'
+import type {ExtensionFetchResponse} from '../extension'
 import {get} from 'svelte/store'
 import {addArticles, getWritable} from '../service'
+import type {RateLimitInfo} from '../service'
 
 export function getV1APIURL(resource: string): string {
 	return `https://api.twitter.com/1.1/${resource}.json`
@@ -97,17 +99,18 @@ export async function toggleFavorite(idPair: ArticleIdPair) {
 			'POST',
 		)
 
-		updateAPIResponse(response)
-	}catch (cause: V1ErrorResponse | any) {
+		//TODO Add rate limit to actions
+		updateAPIResponse(response.json)
+	}catch (cause: ExtensionFetchResponse<V1ErrorResponse> | any) {
 		let shouldThrow = true
-		if (cause.errors !== undefined && (cause as V1ErrorResponse).errors.some(e => e.code === 139)) {
+		if (cause.json?.errors !== undefined && (cause.json as V1ErrorResponse).errors.some(e => e.code === 139)) {
 			console.warn(cause)
 			writable.update(a => {
 				a.liked = true
 				return a
 			})
 
-			if (cause.errors.length === 1)
+			if (cause.json.errors.length === 1)
 				shouldThrow = false
 		}
 
@@ -126,10 +129,10 @@ export async function retweet(idPair: ArticleIdPair) {
 		'POST',
 	)
 
-	updateAPIResponse(response)
+	updateAPIResponse(response.json)
 }
 
-export async function fetchExtensionV1<T = TweetResponse>(url: string, method = 'GET', body?: any): Promise<T> {
+export async function fetchExtensionV1<T = TweetResponse>(url: string, method = 'GET', body?: any): Promise<ExtensionFetchResponse<T>> {
 	const response = await fetchExtension<T | V1ErrorResponse>(
 		TwitterService.name,
 		'fetchV1',
@@ -138,8 +141,8 @@ export async function fetchExtensionV1<T = TweetResponse>(url: string, method = 
 		body,
 	)
 
-	if ((response as V1ErrorResponse).errors !== undefined)
-		return Promise.reject(response)
+	if ((response.json as V1ErrorResponse).errors !== undefined)
+		return Promise.reject(response.json)
 	//TODO Handle deleted tweet
 	// {
 	// 	"errors": [
@@ -150,7 +153,7 @@ export async function fetchExtensionV1<T = TweetResponse>(url: string, method = 
 	// 	]
 	// }
 
-	return response as T
+	return response as ExtensionFetchResponse<T>
 }
 
 function updateAPIResponse(response: TweetResponse) {
@@ -264,6 +267,24 @@ function getMP4(videoInfo: VideoInfo, mediaType: MediaType): ArticleMedia {
 		src: variant.url,
 		ratio: getRatio(videoInfo.aspect_ratio[0], videoInfo.aspect_ratio[1]),
 		queueLoadInfo: MediaQueueInfo.DirectLoad,
+	}
+}
+
+export function parseRateLimitInfo(headers: Headers): RateLimitInfo {
+	const limit = headers.get('x-rate-limit-limit')
+	if (limit === null)
+		throw new Error("Missing x-rate-limit-limit header.\n" + JSON.stringify(Object.fromEntries(headers.entries()), null, '\t'))
+	const remaining = headers.get('x-rate-limit-remaining')
+	if (remaining === null)
+		throw new Error("Missing x-rate-limit-remaining header.\n" + JSON.stringify(Object.fromEntries(headers.entries()), null, '\t'))
+	const reset = headers.get('x-rate-limit-reset')
+	if (reset === null)
+		throw new Error("Missing x-rate-limit-reset header.\n" + JSON.stringify(Object.fromEntries(headers.entries()), null, '\t'))
+
+	return {
+		limit: parseInt(limit),
+		remaining: parseInt(remaining),
+		reset: parseInt(reset),
 	}
 }
 

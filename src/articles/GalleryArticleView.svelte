@@ -18,9 +18,8 @@
 	export let timelineProps: TimelineArticleProps
 	export let articleProps: ArticleProps; articleProps;
 	export let style = ''; style;
-	export let modal: boolean
+	export let modal: boolean; modal;
 	export let actualArticle: Readonly<Article>
-	export let classNames = ''
 
 	const dispatch = createEventDispatcher()
 	const mediaRefs: HTMLImageElement[] = []
@@ -48,15 +47,7 @@
 <style lang='sass'>
 	@use '../styles/variables' as *
 
-	article
-		padding: 1rem
-		background-color: $scheme-main-bis
-		margin-bottom: 2px
-
-		//TODO &.transparent
-		//	opacity: 0.5
-
-	article.galleryArticle
+	.galleryArticle
 		padding: 0
 		margin-bottom: 0
 
@@ -112,7 +103,7 @@
 	//	list-style-type: none
 </style>
 
-<article class={`galleryArticle ${classNames}`} {style}>
+<div class='galleryArticle'>
 	<div>
 		{#each actualArticle.medias as media, i (i)}
 			{@const isLoading = loadingStates[i] === LoadingState.Loading}
@@ -243,4 +234,4 @@
 			{/if}
 		</div>
 	</div>
-</article>
+</div>

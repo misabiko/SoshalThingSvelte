@@ -63,6 +63,10 @@
 	//		&.portrait img
 	//			width: 175%
 	//			height: unset
+
+	.imgPlaceHolder
+		width: 100%
+		background-color: grey
 </style>
 
 <div class='postMedia postImages'>

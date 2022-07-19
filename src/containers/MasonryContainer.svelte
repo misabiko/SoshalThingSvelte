@@ -94,8 +94,6 @@
 </script>
 
 <style lang='sass'>
-	@use '../styles/variables' as *
-
 	.masonryContainer
 		display: flex
 		flex-wrap: nowrap
@@ -105,7 +103,6 @@
 
 	.masonryColumn
 		flex: 1 1 0
-		background-color: $scheme-main-bis
 
 	//.masonryColumn .postMedia img
 	//	width: 100%

@@ -9,10 +9,8 @@
 
 	export let timelineProps: TimelineArticleProps
 	export let articleProps: ArticleProps
-	export let style = ''
 	export let modal: boolean; modal;
 	export let actualArticle: Readonly<Article>
-	export let classNames = ''
 
 	let minimized = false
 	const isArticleRepost = articleProps.actualArticleRef && 'reposted' in articleProps.actualArticleRef
@@ -27,15 +25,10 @@
 <style lang='sass'>
 	@use '../../styles/variables' as *
 
-	article
+	.socialArticle
 		padding: 1rem
-		background-color: $scheme-main-bis
 		margin-bottom: 2px
 
-		//TODO &.transparent
-		//	opacity: 0.5
-
-	article.socialArticle
 		:global(.dropdown-trigger .articleButton)
 			width: 24px
 			height: unset
@@ -121,13 +114,9 @@
 
 		p
 			white-space: pre-line
-
-	.imgPlaceHolder
-		width: 100%
-		background-color: grey
 </style>
 
-<article class={`socialArticle ${classNames}`} {style}>
+<div class='socialArticle'>
 	<div class='repostLabel'>
 		{#if isArticleRepost && articleProps.article.author}
 			<a href={articleProps.article.author.url} target='_blank' on:click|preventDefault={() => onUsernameClick(articleProps.article)}>
@@ -226,4 +215,4 @@
 			on:mediaClick={e => dispatch('mediaClick', e.detail)}
 		/>
 	{/if}
-</article>
+</div>

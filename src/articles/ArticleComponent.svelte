@@ -41,37 +41,43 @@
 </script>
 
 <style lang='sass'>
+	@use '../styles/variables' as *
+
+	article
+		background-color: $scheme-main-bis
+
+	article.transparent
+		opacity: 20%
+
 	:global(.modal .modal-content)
 		width: 75%
-
-	:global(article.transparent)
-		opacity: 20%
 </style>
 
 {#if modal}
 	<Modal bind:active={modal}>
-		<svelte:component
-			this={view}
-			{timelineProps}
-			{style}
-			bind:modal
-			{articleProps}
-			{actualArticle}
-			on:logData={onLogData}
-			on:mediaClick={onMediaClick}
-		/>
+		<article class:transparent={articleProps.filteredOut}>
+			<svelte:component
+				this={view}
+				{timelineProps}
+				bind:modal
+				{articleProps}
+				{actualArticle}
+				on:logData={onLogData}
+				on:mediaClick={onMediaClick}
+			/>
+		</article>
 	</Modal>
 {/if}
 
-<svelte:component
-	this={view}
-	{timelineProps}
-	{style}
-	bind:modal
-	{articleProps}
-	{actualArticle}
-	on:logData={onLogData}
-	on:logJSON={onLogJSON}
-	on:mediaClick={onMediaClick}
-	classNames={articleProps.filteredOut ? 'transparent' : ''}
-/>
+<article class={articleProps.filteredOut ? 'transparent' : ''} {style}>
+	<svelte:component
+		this={view}
+		{timelineProps}
+		bind:modal
+		{articleProps}
+		{actualArticle}
+		on:logData={onLogData}
+		on:logJSON={onLogJSON}
+		on:mediaClick={onMediaClick}
+	/>
+</article>

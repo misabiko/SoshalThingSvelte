@@ -14,7 +14,6 @@
 		display: flex
 		flex-wrap: wrap
 		align-items: flex-start
-		background-color: $scheme-main-bis
 </style>
 
 <div class='articlesContainer rowContainer' bind:this={containerRef}>

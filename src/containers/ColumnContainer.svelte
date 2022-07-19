@@ -7,13 +7,6 @@
 	export let containerRef = undefined;
 </script>
 
-<style lang='sass'>
-	@use '../styles/variables' as *
-
-	.columnContainer
-		background-color: $scheme-main-bis
-</style>
-
 <div class='articlesContainer columnContainer' bind:this={containerRef}>
 	{#each articlesWithUniqueKeys(props.articles) as [articleProps, key] (key)}
 		<ArticleComponent

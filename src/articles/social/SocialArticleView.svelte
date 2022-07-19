@@ -5,6 +5,7 @@
 	import {shortTimestamp} from "../index";
 	import SocialMedia from "./SocialMedia.svelte";
 	import SocialNav from "./SocialNav.svelte";
+	import Timestamp from "./Timestamp.svelte";
 
 	export let timelineProps: TimelineArticleProps
 	export let articleProps: ArticleProps
@@ -78,9 +79,6 @@
 
 		&:hover > *
 			text-decoration: underline
-
-	.timestamp
-		float: right
 
 	p.articleParagraph
 		white-space: pre-line
@@ -164,10 +162,7 @@
 						<small>@{ actualArticle.author?.username }</small>
 					</a>
 					{#if actualArticle.creationTime !== undefined}
-						<span class='timestamp'>
-							<small
-								title={actualArticle.creationTime.toString()}>{shortTimestamp(actualArticle.creationTime)}</small>
-						</span>
+						<Timestamp date={actualArticle.creationTime}/>
 					{/if}
 				</div>
 				{#if !timelineProps.hideText && !minimized}
@@ -188,13 +183,7 @@
 							<strong>{ quoted.author.name }</strong>
 							<small>{ `@${quoted.author.username}` }</small>
 						</a>
-						<span class='timestamp'>
-							<small
-								title={quoted.creationTime.toString()}
-							>
-								{shortTimestamp(quoted.creationTime)}
-							</small>
-						</span>
+						<Timestamp date={quoted.creationTime}/>
 					</div>
 					{#if !(minimized || quoted.markedAsRead || quoted.hidden)} <!--	TODO Filter from timeline-->
 						{#if !timelineProps.hideText}

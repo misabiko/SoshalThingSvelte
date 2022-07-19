@@ -160,7 +160,7 @@ export function keepArticle(articleWithRefs: ArticleWithRefs, filter: Filter): b
 		case 'repost':
 			if (articleWithRefs.actualArticleRef?.type === ArticleRefType.Repost || articleWithRefs.actualArticleRef?.type === ArticleRefType.QuoteRepost) {
 				if (filter.byUsername)
-					return articleWithRefs.actualArticleRef.reposted.author?.username === filter.byUsername
+					return articleWithRefs.article.author?.username === filter.byUsername
 				else
 					return true
 			}
@@ -168,9 +168,12 @@ export function keepArticle(articleWithRefs: ArticleWithRefs, filter: Filter): b
 			return false
 		case 'quote':
 			if (articleWithRefs.actualArticleRef?.type === ArticleRefType.Quote || articleWithRefs.actualArticleRef?.type === ArticleRefType.QuoteRepost) {
-				if (filter.byUsername)
-					return articleWithRefs.actualArticleRef.quoted.author?.username === filter.byUsername
-				else
+				if (filter.byUsername) {
+					if (articleWithRefs.actualArticleRef.type === ArticleRefType.QuoteRepost)
+						return articleWithRefs.actualArticleRef.reposted.author?.username === filter.byUsername
+					else
+						return articleWithRefs.article.author?.username === filter.byUsername
+				}else
 					return true
 			}
 

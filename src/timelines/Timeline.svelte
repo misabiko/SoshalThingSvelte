@@ -21,6 +21,7 @@
 	export let data: TimelineData
 	//Would like to make this immutable https://github.com/sveltejs/svelte/issues/5572
 	export let fullscreen: boolean
+	export let setModalTimeline: (data: Partial<TimelineData>) => void
 
 	export let favviewerButtons = false
 	export let favviewerHidden = false
@@ -74,7 +75,10 @@
 	)
 
 	let availableRefreshTypes: Set<RefreshType>
-	$: availableRefreshTypes = new Set(data.endpoints.flatMap(e => [...getEndpoints()[e.name].refreshTypes.values()]))
+	$: availableRefreshTypes = new Set(data.endpoints.flatMap(e => {
+		const endpoint = e.name !== undefined ? getEndpoints()[e.name] : e.endpoint
+		return [...endpoint.refreshTypes.values()]
+	}))
 
 	let containerProps: ContainerProps
 	$: containerProps = {
@@ -84,6 +88,7 @@
 			compact: data.compact,
 			hideText: data.hideText,
 			shouldLoadMedia: data.shouldLoadMedia,
+			setModalTimeline,
 		},
 		articleView: data.articleView,
 		columnCount: data.columnCount,
@@ -176,6 +181,8 @@
 		const newArticles = await refreshEndpoints(data.endpoints, RefreshType.RefreshStart)
 		articleIdPairs.push(...newArticles)
 		articleIdPairs = articleIdPairs
+
+		return () => console.log('Destroying timeline ' + data.title)
 	})
 
 	const dispatch = createEventDispatcher()
@@ -201,6 +208,11 @@
 		flex-grow: 2
 		width: unset
 		max-width: 100%
+
+
+	:global(.modal .timeline)
+		width: unset
+		height: 100vh
 
 	:global(.articlesContainer)
 		overflow-y: scroll

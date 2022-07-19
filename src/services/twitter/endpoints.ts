@@ -1,5 +1,5 @@
 import type {ArticleWithRefs} from '../article'
-import {Endpoint, type EndpointConstructorInfo, RefreshType, registerEndpoint} from '../service'
+import {Endpoint, type EndpointConstructorInfo, RefreshType} from '../service'
 import {TwitterService} from './service'
 import type {SearchResponse, TweetResponse} from './apiV1'
 import {articleFromV1, fetchExtensionV1, getV1APIURL, parseRateLimitInfo} from './apiV1'
@@ -191,10 +191,12 @@ export class SearchEndpoint extends V1Endpoint {
 	}
 }
 
-registerEndpoint(TwitterService,
+TwitterService.endpointConstructors.push(
 	HomeTimelineEndpoint.constructorInfo,
 	UserTimelineEndpoint.constructorInfo,
 	ListEndpoint.constructorInfo,
 	LikesEndpoint.constructorInfo,
 	SearchEndpoint.constructorInfo,
 )
+
+TwitterService.userEndpoint = username => new UserTimelineEndpoint(username)

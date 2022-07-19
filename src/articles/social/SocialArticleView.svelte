@@ -6,6 +6,9 @@
 	import SocialMedia from "./SocialMedia.svelte";
 	import SocialNav from "./SocialNav.svelte";
 	import Timestamp from "./Timestamp.svelte";
+	import {defaultFilterInstances} from '../../filters'
+	import {everyRefreshType, getServices} from '../../services/service'
+	import MasonryContainer from '../../containers/MasonryContainer.svelte'
 
 	export let timelineProps: TimelineArticleProps
 	export let articleProps: ArticleProps
@@ -16,7 +19,34 @@
 	const isArticleRepost = articleProps.actualArticleRef && 'reposted' in articleProps.actualArticleRef
 
 	function onUsernameClick(clickedArticle: Article) {
-		console.log(clickedArticle.author?.username + ' click')
+		const username = clickedArticle.author?.username
+		const endpointConstructor = getServices()[clickedArticle.idPair.service].userEndpoint
+		if (!username || !endpointConstructor)
+			return
+
+		timelineProps.setModalTimeline({
+			title: username,
+			endpoints: [{
+				endpoint: endpointConstructor(username),
+				refreshTypes: everyRefreshType,
+				filters: [],
+			}],
+			filters: [
+				...defaultFilterInstances,
+				{
+					filter: {type: 'media'},
+					enabled: true,
+					inverted: false,
+				},
+				{
+					filter: {type: 'noRef'},
+					enabled: true,
+					inverted: false,
+				}
+			],
+			container: MasonryContainer,
+			columnCount: 3,
+		})
 	}
 
 	const dispatch = createEventDispatcher()

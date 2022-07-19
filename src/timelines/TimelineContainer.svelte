@@ -1,12 +1,18 @@
 <script lang="ts">
 	import type {TimelineData} from './index';
 	import Timeline from './Timeline.svelte';
-	import {getContext} from 'svelte'
+	import {afterUpdate, getContext} from 'svelte'
+	import {Modal} from 'svelma'
+	import {DEFAULT_TIMELINE} from './index'
 
 	export let initTimelines: TimelineData[] = [];
 	export let fullscreen: number | undefined;
 	export let favviewerHidden;
 	export let showSidebar;
+
+	//We could make this a stack of timelines
+	let modalTimeline: TimelineData | null = null
+	let modalTimelineActive = false
 
 	const isInjected = getContext('isInjected');
 	let timelines: TimelineData[] = initTimelines;
@@ -14,6 +20,21 @@
 	function removeTimeline(index: number) {
 		timelines.splice(index, 1)
 	}
+
+	function setModalTimeline(data: Partial<TimelineData>) {
+		modalTimeline = {
+			...DEFAULT_TIMELINE,
+			...data,
+		}
+		modalTimelineActive = true
+	}
+
+	afterUpdate(() => {
+		//Workaround for https://github.com/sveltejs/svelte/issues/5268
+		//During Modal's close transition, the child Timeline still calls reactive statements for modalTimeline
+		if (!modalTimelineActive)
+			modalTimeline = null
+	})
 </script>
 
 <style lang='sass'>
@@ -25,13 +46,24 @@
 </style>
 
 <div id='timelineContainer'>
+	{#if modalTimeline !== null}
+		<Modal bind:active={modalTimelineActive}>
+			<Timeline
+				data={modalTimeline}
+				{setModalTimeline}
+				fullscreen=false
+				on:removeTimeline={() => modalTimeline = null}
+			/>
+		</Modal>
+	{/if}
 	{#if fullscreen !== undefined}
 		{#if isInjected}
 			<Timeline
-				favviewerButtons={true}
+				favviewerButtons=true
 				bind:favviewerHidden={favviewerHidden}
 				bind:showSidebar={showSidebar}
 				data={timelines[fullscreen]}
+				{setModalTimeline}
 				fullscreen=true
 				on:removeTimeline={() => removeTimeline(fullscreen)}
 				on:toggleFullscreen={() => fullscreen = undefined}
@@ -39,6 +71,7 @@
 		{:else}
 			<Timeline
 				data={timelines[fullscreen]}
+				{setModalTimeline}
 				fullscreen=true
 				on:removeTimeline={() => removeTimeline(fullscreen)}
 				on:toggleFullscreen={() => fullscreen = undefined}
@@ -49,18 +82,20 @@
 		{#each timelines as data, i (`${data.name}/${i}`)}
 			{#if isInjected && i === 0}
 				<Timeline
-					favviewerButtons={true}
+					favviewerButtons=true
 					bind:favviewerHidden={favviewerHidden}
 					bind:showSidebar={showSidebar}
 					{data}
-					fullscreen={false}
+					{setModalTimeline}
+					fullscreen=false
 					on:removeTimeline={() => removeTimeline(i)}
 					on:toggleFullscreen={() => fullscreen = i}
 				/>
 			{:else}
 				<Timeline
 					{data}
-					fullscreen={false}
+					{setModalTimeline}
+					fullscreen=false
 					on:removeTimeline={() => removeTimeline(i)}
 					on:toggleFullscreen={() => fullscreen = i}
 				/>

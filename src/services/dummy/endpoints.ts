@@ -1,7 +1,6 @@
 import {
 	Endpoint,
 	type EndpointConstructorInfo, RefreshType,
-	registerEndpoint,
 } from '../service'
 import {DummyService} from './service'
 import DummyArticle from './article'
@@ -54,7 +53,7 @@ export class DummyEndpointWithParam extends Endpoint {
 	}
 }
 
-registerEndpoint(DummyService,
+DummyService.endpointConstructors.push(
 	DummyEndpoint.constructorInfo,
 	DummyEndpointWithParam.constructorInfo,
 )

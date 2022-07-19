@@ -5,7 +5,7 @@ import RowContainer from '../containers/RowContainer.svelte'
 import MasonryContainer from '../containers/MasonryContainer.svelte'
 import SocialArticleView from '../articles/social/SocialArticleView.svelte'
 import GalleryArticleView from '../articles/GalleryArticleView.svelte'
-import {addEndpoint, Endpoint, getEndpointConstructors, getEndpoints, RefreshType} from '../services/service'
+import {addEndpoint, Endpoint, getEndpoints, getServices, RefreshType} from '../services/service'
 import type {FilterInstance} from '../filters'
 import type {SortInfo} from '../sorting'
 import {SortMethod} from '../sorting'
@@ -90,16 +90,16 @@ function parseArticleView(articleView: string | undefined): typeof SvelteCompone
 
 function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | undefined {
 	const endpoints = getEndpoints()
-	const constructors = getEndpointConstructors()
-	if (!constructors.hasOwnProperty(storage.service)) {
-		console.error(`"${storage.service}" doesn't have any endpoint registered`)
+	const services = getServices()
+	if (!services.hasOwnProperty(storage.service)) {
+		console.error(`"${storage.service}" isn't a registered service`)
 		return undefined
-	}else if (constructors[storage.service].length <= storage.endpointType) {
+	}else if (services[storage.service].endpointConstructors.length <= storage.endpointType) {
 		console.error(`"${storage.service}" doesn't have endpointType "${storage.endpointType}"`)
 		return undefined
 	}
 
-	const constructorInfo = constructors[storage.service][storage.endpointType]
+	const constructorInfo = services[storage.service].endpointConstructors[storage.endpointType]
 
 	let endpoint = Object.values(endpoints).find(endpoint =>
 		constructorInfo.name === (endpoint.constructor as typeof Endpoint).constructorInfo.name &&

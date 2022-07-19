@@ -1,12 +1,16 @@
 import type {ArticleWithRefs} from '../services/article'
+import type {TimelineData} from '../timelines'
 
+//Props for every article in the timeline
 export type TimelineArticleProps = {
 	animatedAsGifs: boolean;
 	compact: boolean;
 	hideText: boolean;
 	shouldLoadMedia: boolean;
+	setModalTimeline: (data: Partial<TimelineData>) => void;
 }
 
+//Props specific to that article
 export type ArticleProps = Readonly<ArticleWithRefs & {
 	filteredOut: boolean;
 }>

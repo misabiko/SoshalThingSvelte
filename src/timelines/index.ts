@@ -6,6 +6,7 @@ import ColumnContainer from '../containers/ColumnContainer.svelte'
 import SocialArticleView from '../articles/social/SocialArticleView.svelte'
 import type {RefreshType} from '../services/service'
 import {defaultFilterInstances} from '../filters'
+import type {Endpoint} from '../services/service'
 
 export type TimelineData = {
 	title: string;
@@ -48,6 +49,12 @@ export const DEFAULT_TIMELINE: TimelineData = {
 
 export type TimelineEndpoint = {
 	name: string;
+	endpoint?: never;
+	refreshTypes: Set<RefreshType>;
+	filters: FilterInstance[]
+} | {
+	name?: never;
+	endpoint: Endpoint;
 	refreshTypes: Set<RefreshType>;
 	filters: FilterInstance[]
 }

@@ -9,15 +9,23 @@ import {updateCachedArticlesStorage, updateHiddenStorage, updateMarkAsReadStorag
 
 const endpoints: { [name: string]: Endpoint } = {}
 const services: { [name: string]: Service } = {}
-const endpointConstructors: { [service: string]: EndpointConstructorInfo[] } = {}
 
 export interface Service<A extends Article = Article> {
 	readonly name: string;
 	readonly articles: { [id: string]: Writable<A> };
+	//TODO Store constructors by name
+	readonly endpointConstructors: EndpointConstructorInfo[]
+	userEndpoint: ((username: string) => Endpoint) | undefined,
 	articleActions: { [name: string]: ArticleAction };
 	requestImageLoad?: (id: ArticleId, index: number) => void;
 	fetchArticle?: (id: ArticleId) => void;
 	getCachedArticles?: () => {[id: string]: object}
+}
+
+export const DEFAULT_SERVICE: Omit<Service, 'name' | 'articles'> = {
+	endpointConstructors: [],
+	userEndpoint: undefined,
+	articleActions: {},
 }
 
 type ArticleAction = {
@@ -65,7 +73,7 @@ export abstract class Endpoint {
 	refreshTypes = new Set<RefreshType>([RefreshType.RefreshStart, RefreshType.Refresh])
 	rateLimitInfo: RateLimitInfo | null = null
 	isAutoRefreshing = false
-	abstract autoRefreshInterval: number
+	autoRefreshInterval = 90_000
 
 	abstract refresh(refreshType: RefreshType): Promise<ArticleWithRefs[]>;
 
@@ -116,15 +124,6 @@ export function registerService(service: Service) {
 	services[service.name] = service
 }
 
-export function registerEndpoint(service: Service, ...endpointInfos: EndpointConstructorInfo[]) {
-	endpointConstructors[service.name] ??= []
-	for (const endpointInfo of endpointInfos) {
-		if (endpointInfo === undefined)
-			console.error(`Missing endpoint constructor info for service ${service.name}`, endpointInfos)
-		endpointConstructors[service.name].push(endpointInfo)
-	}
-}
-
 export function addEndpoint(endpoint: Endpoint) {
 	if (endpoints.hasOwnProperty(endpoint.name))
 		console.warn(`Endpoint ${endpoint.name} already exists`)
@@ -138,10 +137,6 @@ export function getServices(): Readonly<{ [name: string]: Service }> {
 
 export function getEndpoints(): Readonly<{ [name: string]: Endpoint }> {
 	return endpoints
-}
-
-export function getEndpointConstructors(): Readonly<{ [service: string]: EndpointConstructorInfo[] }> {
-	return endpointConstructors
 }
 
 export function toggleMarkAsRead(idPair: ArticleIdPair) {
@@ -170,37 +165,41 @@ export function getWritable<T extends Article = Article>(idPair: ArticleIdPair):
 //TODO Add articles to other timelines
 export async function refreshEndpoints(timelineEndpoints: TimelineEndpoint[], refreshType: RefreshType): Promise<ArticleIdPair[]> {
 	const articleIdPairs = []
-	for (const timelineEndpoint of timelineEndpoints)
-		if (timelineEndpoint.refreshTypes.has(refreshType) && endpoints[timelineEndpoint.name].refreshTypes.has(refreshType)) {
-			if (endpoints[timelineEndpoint.name].isRateLimited()) {
-				const secondsLeft = Math.ceil((((endpoints[timelineEndpoint.name].rateLimitInfo as RateLimitInfo).reset * 1000) - Date.now()) / 1000)
-				console.log(`${timelineEndpoint.name} is rate limited, and resets in ${secondsLeft} seconds.`, endpoints[timelineEndpoint.name].rateLimitInfo)
+	for (const timelineEndpoint of timelineEndpoints) {
+		const endpoint = timelineEndpoint.name !== undefined ? endpoints[timelineEndpoint.name] : timelineEndpoint.endpoint
+
+		if (timelineEndpoint.refreshTypes.has(refreshType) && endpoint.refreshTypes.has(refreshType)) {
+			if (endpoint.isRateLimited()) {
+				const secondsLeft = Math.ceil((((endpoint.rateLimitInfo as RateLimitInfo).reset * 1000) - Date.now()) / 1000)
+				console.log(`${timelineEndpoint.name} is rate limited, and resets in ${secondsLeft} seconds.`, endpoint.rateLimitInfo)
 			}else
-				articleIdPairs.push(...endpointRefreshed(timelineEndpoint, await endpoints[timelineEndpoint.name].refresh(refreshType)))
+				articleIdPairs.push(...endpointRefreshed(timelineEndpoint, await endpoint.refresh(refreshType)))
 		}
+	}
 
 	return articleIdPairs
 }
 
-function endpointRefreshed(endpoint: TimelineEndpoint, articles: ArticleWithRefs[]): ArticleIdPair[] {
+function endpointRefreshed(timelineEndpoint: TimelineEndpoint, articles: ArticleWithRefs[]): ArticleIdPair[] {
 	if (!articles.length)
 		return []
 	//TODO Store service name on endpoint
 	const service = (articles[0].article.constructor as typeof Article).service
+	const endpoint = timelineEndpoint.name !== undefined ? endpoints[timelineEndpoint.name] : timelineEndpoint.endpoint
 
 	addArticles(services[service], false, ...articles)
 	const addedArticles = articles
 		.filter(articleWithRefs => {
-			return !endpoints[endpoint.name].articleIdPairs
+			return !endpoint.articleIdPairs
 					.some(pair =>
 						pair.service === articleWithRefs.article.idPair.service &&
 						pair.id === articleWithRefs.article.idPair.id,
 					) &&
-				endpoint.filters.every(f => !f.enabled || (keepArticle(articleWithRefs, f.filter) !== f.inverted))
+				timelineEndpoint.filters.every(f => !f.enabled || (keepArticle(articleWithRefs, f.filter) !== f.inverted))
 		})
 
 	const addedIdPairs = addedArticles.map(a => a.article.idPair)
-	endpoints[endpoint.name].articleIdPairs.push(...addedIdPairs)
+	endpoint.articleIdPairs.push(...addedIdPairs)
 
 	return addedIdPairs
 }

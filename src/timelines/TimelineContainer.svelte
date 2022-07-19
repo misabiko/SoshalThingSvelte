@@ -51,7 +51,7 @@
 			<Timeline
 				data={modalTimeline}
 				{setModalTimeline}
-				fullscreen=false
+				fullscreen={false}
 				removeTimeline={() => modalTimeline = null}
 			/>
 		</Modal>
@@ -64,7 +64,7 @@
 				bind:showSidebar={showSidebar}
 				data={timelines[fullscreen]}
 				{setModalTimeline}
-				fullscreen=true
+				fullscreen={true}
 				removeTimeline={() => removeTimeline(fullscreen)}
 				toggleFullscreen={() => fullscreen = undefined}
 			/>
@@ -72,7 +72,7 @@
 			<Timeline
 				data={timelines[fullscreen]}
 				{setModalTimeline}
-				fullscreen=true
+				fullscreen={true}
 				removeTimeline={() => removeTimeline(fullscreen)}
 				toggleFullscreen={() => fullscreen = undefined}
 			/>
@@ -87,7 +87,7 @@
 					bind:showSidebar={showSidebar}
 					{data}
 					{setModalTimeline}
-					fullscreen=false
+					fullscreen={false}
 					removeTimeline={() => removeTimeline(i)}
 					toggleFullscreen={() => fullscreen = i}
 				/>
@@ -95,7 +95,7 @@
 				<Timeline
 					{data}
 					{setModalTimeline}
-					fullscreen=false
+					fullscreen={false}
 					removeTimeline={() => removeTimeline(i)}
 					toggleFullscreen={() => fullscreen = i}
 				/>

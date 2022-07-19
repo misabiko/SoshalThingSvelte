@@ -22,12 +22,6 @@ export interface Service<A extends Article = Article> {
 	getCachedArticles?: () => {[id: string]: object}
 }
 
-export const DEFAULT_SERVICE: Omit<Service, 'name' | 'articles'> = {
-	endpointConstructors: [],
-	userEndpoint: undefined,
-	articleActions: {},
-}
-
 type ArticleAction = {
 	action: (idPair: ArticleIdPair) => void;
 	togglable: boolean;

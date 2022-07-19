@@ -1,12 +1,13 @@
 import TwitterArticle from './article'
 import type {Service} from '../service'
-import {DEFAULT_SERVICE, registerService, STANDARD_ACTIONS} from '../service'
+import {registerService, STANDARD_ACTIONS} from '../service'
 import {retweet, toggleFavorite} from './apiV1'
 
 export const TwitterService: Service<TwitterArticle> = {
-	...DEFAULT_SERVICE,
 	name: 'Twitter',
 	articles: {},
+	endpointConstructors: [],
+	userEndpoint: undefined,
 	articleActions: {
 		[STANDARD_ACTIONS.like]: {
 			action: toggleFavorite,

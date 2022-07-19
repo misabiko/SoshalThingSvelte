@@ -12,9 +12,9 @@
 <div class='block'>
 	{endpoint.name}
 	{#if endpoint.rateLimitInfo !== null}
-		{@const timeLeft = Math.ceil(((endpoint.rateLimitInfo.reset * 1000.0) - Date.now()) / 60000.0)}
+		{@const timeLeft = Math.ceil(((endpoint.rateLimitInfo.reset * 1000) - Date.now()) / 60000)}
 		<progress class="progress" value={endpoint.rateLimitInfo.remaining} max={endpoint.rateLimitInfo.limit}>
-			{ `${Math.fround(endpoint.rateLimitInfo.remaining / endpoint.rateLimitInfo.limit * 1000.0) / 10.0}%` }
+			{ `${Math.fround(endpoint.rateLimitInfo.remaining / endpoint.rateLimitInfo.limit * 1000) / 10}%` }
 		</progress>
 		{ `${timeLeft} minutes until reset`}
 	{/if}

@@ -71,6 +71,13 @@ export abstract class Endpoint {
 
 	abstract matchParams(params: any): boolean
 
+	isRateLimited(): boolean {
+		if (this.rateLimitInfo === null)
+			return false
+		else
+			return this.rateLimitInfo.remaining <= 0
+	}
+
 	static readonly constructorInfo: EndpointConstructorInfo
 }
 
@@ -164,8 +171,13 @@ export function getWritable<T extends Article = Article>(idPair: ArticleIdPair):
 export async function refreshEndpoints(timelineEndpoints: TimelineEndpoint[], refreshType: RefreshType): Promise<ArticleIdPair[]> {
 	const articleIdPairs = []
 	for (const timelineEndpoint of timelineEndpoints)
-		if (timelineEndpoint.refreshTypes.has(refreshType) && endpoints[timelineEndpoint.name].refreshTypes.has(refreshType))
-			articleIdPairs.push(...endpointRefreshed(timelineEndpoint, await endpoints[timelineEndpoint.name].refresh(refreshType)))
+		if (timelineEndpoint.refreshTypes.has(refreshType) && endpoints[timelineEndpoint.name].refreshTypes.has(refreshType)) {
+			if (endpoints[timelineEndpoint.name].isRateLimited()) {
+				const secondsLeft = Math.ceil((((endpoints[timelineEndpoint.name].rateLimitInfo as RateLimitInfo).reset * 1000) - Date.now()) / 1000)
+				console.log(`${timelineEndpoint.name} is rate limited, and resets in ${secondsLeft} seconds.`, endpoints[timelineEndpoint.name].rateLimitInfo)
+			}else
+				articleIdPairs.push(...endpointRefreshed(timelineEndpoint, await endpoints[timelineEndpoint.name].refresh(refreshType)))
+		}
 
 	return articleIdPairs
 }

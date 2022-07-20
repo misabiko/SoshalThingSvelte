@@ -48,7 +48,6 @@ export function loadTimelines(): TimelineData[] {
 			...DEFAULT_TIMELINE,
 			title: defaulted.title,
 			endpoints,
-			initArticles: [],
 			container: parseContainer(defaulted.container),
 			articleView: parseArticleView(defaulted.articleView),
 			columnCount: defaulted.columnCount,

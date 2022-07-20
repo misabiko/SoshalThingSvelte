@@ -11,7 +11,7 @@ import type {Endpoint} from '../services/service'
 export type TimelineData = {
 	title: string;
 	endpoints: TimelineEndpoint[];
-	initArticles: ArticleIdPair[];
+	articles: ArticleIdPair[];
 	container: typeof SvelteComponent;
 	articleView: typeof SvelteComponent;
 	columnCount: number;
@@ -29,7 +29,7 @@ export type TimelineData = {
 export const DEFAULT_TIMELINE: TimelineData = {
 	title: 'Timeline',
 	endpoints: [],
-	initArticles: [],
+	articles: [],
 	container: ColumnContainer,
 	articleView: SocialArticleView,
 	columnCount: 1,

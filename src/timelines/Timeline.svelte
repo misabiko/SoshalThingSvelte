@@ -33,11 +33,8 @@
 	let containerRef: HTMLElement | undefined = undefined
 	let containerRebalance = false;
 
-	//TODO Move articles to TimelineData
-	let articleIdPairs = [...data.initArticles]
-
 	let articles: Readable<Article[]>
-	$: articles = derived(articleIdPairs.map(getWritable), a => a)
+	$: articles = derived(data.articles.map(getWritable), a => a)
 
 	let articlesWithRefs: Readable<ArticleWithRefs[]>
 	$: articlesWithRefs = derived($articles.map(article => {
@@ -111,7 +108,7 @@
 	}
 
 	function shuffle() {
-		let currentIndex = articleIdPairs.length,  randomIndex;
+		let currentIndex = data.articles.length,  randomIndex;
 
 		// While there remain elements to shuffle...
 		while (currentIndex != 0) {
@@ -121,11 +118,11 @@
 			currentIndex--;
 
 			// And swap it with the current element.
-			[articleIdPairs[currentIndex], articleIdPairs[randomIndex]] = [
-				articleIdPairs[randomIndex], articleIdPairs[currentIndex]];
+			[data.articles[currentIndex], data.articles[randomIndex]] = [
+				data.articles[randomIndex], data.articles[currentIndex]];
 		}
 
-		articleIdPairs = articleIdPairs
+		data.articles = data.articles
 		data.sortInfo.method = undefined
 		containerRebalance = !containerRebalance
 	}
@@ -165,15 +162,15 @@
 
 	async function refresh(refreshType: RefreshType) {
 		const newArticles = await refreshEndpoints(data.endpoints, refreshType)
-		articleIdPairs.push(...newArticles)
-		articleIdPairs = articleIdPairs
+		data.articles.push(...newArticles)
+		data.articles = data.articles
 	}
 
 	function sortOnce(method: SortMethod, reversed: boolean) {
 		const sorted = get(articlesWithRefs).sort(compare(method))
 		if (reversed)
 			sorted.reverse()
-		articleIdPairs = sorted.map(a => a.article.idPair)
+		data.articles = sorted.map(a => a.article.idPair)
 	}
 
 	onMount(async () => {
@@ -181,8 +178,8 @@
 			return
 
 		const newArticles = await refreshEndpoints(data.endpoints, RefreshType.RefreshStart)
-		articleIdPairs.push(...newArticles)
-		articleIdPairs = articleIdPairs
+		data.articles.push(...newArticles)
+		data.articles = data.articles
 
 		return () => console.log('Destroying timeline ' + data.title)
 	})

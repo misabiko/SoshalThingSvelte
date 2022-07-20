@@ -63,6 +63,7 @@
 				{articleProps}
 				{actualArticle}
 				{onLogData}
+				{onLogJSON}
 				{onMediaClick}
 			/>
 		</article>

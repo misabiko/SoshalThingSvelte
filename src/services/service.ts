@@ -186,6 +186,14 @@ function endpointRefreshed(timelineEndpoint: TimelineEndpoint, articles: Article
 	//TODO Store service name on endpoint
 	const service = (articles[0].article.constructor as typeof Article).service
 	const endpoint = timelineEndpoint.name !== undefined ? endpoints[timelineEndpoint.name] : timelineEndpoint.endpoint
+	endpoint.articleIdPairs.push(...articles
+		.filter(a => !endpoint.articleIdPairs
+			.some(pair =>
+				pair.service === a.article.idPair.service &&
+				pair.id === a.article.idPair.id,
+			))
+		.map(a => a.article.idPair)
+	)
 
 	addArticles(services[service], false, ...articles)
 	const addedArticles = articles
@@ -193,16 +201,7 @@ function endpointRefreshed(timelineEndpoint: TimelineEndpoint, articles: Article
 			timelineEndpoint.filters.every(f => !f.enabled || (keepArticle(articleWithRefs, f.filter) !== f.inverted))
 		)
 
-	const addedIdPairs = addedArticles.map(a => a.article.idPair)
-	endpoint.articleIdPairs.push(...addedIdPairs
-		.filter(a => !endpoint.articleIdPairs
-		.some(pair =>
-			pair.service === a.service &&
-			pair.id === a.id,
-		))
-	)
-
-	return addedIdPairs
+	return addedArticles.map(a => a.article.idPair)
 }
 
 export function fetchArticle(idPair: ArticleIdPair) {

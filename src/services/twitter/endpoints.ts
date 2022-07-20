@@ -33,9 +33,9 @@ abstract class V1Endpoint extends Endpoint {
 	setSearchParams(url: URL, refreshType: RefreshType) {
 		url.searchParams.set('include_entities', 'true')
 		url.searchParams.set('tweet_mode', 'extended')
-		if (refreshType === RefreshType.LoadBottom)
+		if (this.articleIdPairs.length && refreshType === RefreshType.LoadBottom)
 			url.searchParams.set('max_id', this.articleIdPairs.reduce((acc, curr) => curr.id < acc.id ? curr : acc).id.toString())
-		if (refreshType === RefreshType.LoadTop)
+		if (this.articleIdPairs.length && refreshType === RefreshType.LoadTop)
 			url.searchParams.set('since_id', this.articleIdPairs.reduce((acc, curr) => curr.id > acc.id ? curr : acc).id.toString())
 
 		if (this.articleIdPairs.length)

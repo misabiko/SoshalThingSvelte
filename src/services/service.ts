@@ -64,10 +64,16 @@ export function addArticles(service: Service, ignoreRefs: boolean, ...articles: 
 export abstract class Endpoint {
 	abstract readonly name: string
 	readonly articleIdPairs: ArticleIdPair[] = []
-	refreshTypes = new Set<RefreshType>([RefreshType.RefreshStart, RefreshType.Refresh])
 	rateLimitInfo: RateLimitInfo | null = null
 	isAutoRefreshing = false
 	autoRefreshInterval = 90_000
+
+	constructor(
+		public refreshTypes = new Set<RefreshType>([
+			RefreshType.RefreshStart,
+			RefreshType.Refresh
+		])
+	) {}
 
 	abstract refresh(refreshType: RefreshType): Promise<ArticleWithRefs[]>;
 

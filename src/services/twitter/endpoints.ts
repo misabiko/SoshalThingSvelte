@@ -9,6 +9,14 @@ abstract class V1Endpoint extends Endpoint {
 	abstract readonly resource: string
 	abstract readonly maxCount: number
 
+	constructor() {
+		super(new Set([
+			RefreshType.RefreshStart,
+			RefreshType.Refresh,
+			RefreshType.LoadBottom,
+		]))
+	}
+
 	//TODO Pass endpoint filters to exclude retweets
 	async refresh(refreshType: RefreshType) {
 		const url = new URL(getV1APIURL(this.resource))
@@ -48,11 +56,6 @@ export class HomeTimelineEndpoint extends V1Endpoint {
 	readonly resource = 'statuses/home_timeline'
 	readonly maxCount = 200	//Default 20
 	autoRefreshInterval = 90_000	//Min 60_000
-	refreshTypes = new Set([
-		RefreshType.RefreshStart,
-		RefreshType.Refresh,
-		RefreshType.LoadBottom,
-	])
 
 	matchParams(params: any): boolean {
 		return true;

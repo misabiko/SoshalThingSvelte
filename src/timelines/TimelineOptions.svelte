@@ -98,7 +98,7 @@
 		<Field label='Endpoints'>
 			<ul>
 				{#each data.endpoints as endpoint (endpoint)}
-					<li>{endpoint.name}</li>
+					<li>{endpoint.name || endpoint.endpoint.name}</li>
 				{/each}
 			</ul>
 		</Field>

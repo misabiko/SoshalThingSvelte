@@ -26,25 +26,27 @@ export type TimelineData = {
 	hideFilteredOutArticles: boolean;
 }
 
-export const DEFAULT_TIMELINE: TimelineData = {
-	title: 'Timeline',
-	endpoints: [],
-	articles: [],
-	container: ColumnContainer,
-	articleView: SocialArticleView,
-	columnCount: 1,
-	width: 1,
-	filters: defaultFilterInstances,
-	sortInfo: {
-		method: SortMethod.Date,
-		reversed: true,
-	},
-	animatedAsGifs: false,
-	scrollSpeed: 3,
-	hideText: false,
-	compact: false,
-	shouldLoadMedia: true,
-	hideFilteredOutArticles: true,
+export function defaultTimeline(): TimelineData {
+	return {
+		title: 'Timeline',
+		endpoints: [],
+		articles: [],
+		container: ColumnContainer,
+		articleView: SocialArticleView,
+		columnCount: 1,
+		width: 1,
+		filters: defaultFilterInstances,
+		sortInfo: {
+			method: SortMethod.Date,
+			reversed: true,
+		},
+		animatedAsGifs: false,
+		scrollSpeed: 3,
+		hideText: false,
+		compact: false,
+		shouldLoadMedia: true,
+		hideFilteredOutArticles: true,
+	}
 }
 
 export type TimelineEndpoint = {

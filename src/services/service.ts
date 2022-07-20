@@ -189,17 +189,18 @@ function endpointRefreshed(timelineEndpoint: TimelineEndpoint, articles: Article
 
 	addArticles(services[service], false, ...articles)
 	const addedArticles = articles
-		.filter(articleWithRefs => {
-			return !endpoint.articleIdPairs
-					.some(pair =>
-						pair.service === articleWithRefs.article.idPair.service &&
-						pair.id === articleWithRefs.article.idPair.id,
-					) &&
-				timelineEndpoint.filters.every(f => !f.enabled || (keepArticle(articleWithRefs, f.filter) !== f.inverted))
-		})
+		.filter(articleWithRefs =>
+			timelineEndpoint.filters.every(f => !f.enabled || (keepArticle(articleWithRefs, f.filter) !== f.inverted))
+		)
 
 	const addedIdPairs = addedArticles.map(a => a.article.idPair)
-	endpoint.articleIdPairs.push(...addedIdPairs)
+	endpoint.articleIdPairs.push(...addedIdPairs
+		.filter(a => !endpoint.articleIdPairs
+		.some(pair =>
+			pair.service === a.service &&
+			pair.id === a.id,
+		))
+	)
 
 	return addedIdPairs
 }

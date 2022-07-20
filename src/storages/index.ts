@@ -9,7 +9,7 @@ import {addEndpoint, Endpoint, getEndpoints, getServices, RefreshType} from '../
 import type {FilterInstance} from '../filters'
 import type {SortInfo} from '../sorting'
 import {SortMethod} from '../sorting'
-import {DEFAULT_TIMELINE} from '../timelines'
+import {defaultTimeline} from '../timelines'
 import {defaultFilterInstances} from '../filters'
 
 export const MAIN_STORAGE_KEY = 'SoshalThingSvelte'
@@ -45,7 +45,7 @@ export function loadTimelines(): TimelineData[] {
 		}
 
 		return {
-			...DEFAULT_TIMELINE,
+			...defaultTimeline(),
 			title: defaulted.title,
 			endpoints,
 			container: parseContainer(defaulted.container),

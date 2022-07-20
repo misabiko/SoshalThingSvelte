@@ -3,7 +3,7 @@
 	import Timeline from './Timeline.svelte';
 	import {afterUpdate, getContext} from 'svelte'
 	import {Modal} from 'svelma'
-	import {DEFAULT_TIMELINE} from './index'
+	import {defaultTimeline} from './index'
 
 	export let initTimelines: TimelineData[] = [];
 	export let fullscreen: number | undefined;
@@ -23,7 +23,7 @@
 
 	function setModalTimeline(data: Partial<TimelineData>) {
 		modalTimeline = {
-			...DEFAULT_TIMELINE,
+			...defaultTimeline(),
 			...data,
 		}
 		modalTimelineActive = true

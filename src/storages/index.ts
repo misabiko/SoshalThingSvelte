@@ -5,26 +5,27 @@ import RowContainer from '../containers/RowContainer.svelte'
 import MasonryContainer from '../containers/MasonryContainer.svelte'
 import SocialArticleView from '../articles/social/SocialArticleView.svelte'
 import GalleryArticleView from '../articles/GalleryArticleView.svelte'
-import {addEndpoint, Endpoint, getEndpoints, getServices, RefreshType} from '../services/service'
+import {getServices} from '../services/service'
 import type {FilterInstance} from '../filters'
 import type {SortInfo} from '../sorting'
 import {SortMethod} from '../sorting'
 import {defaultTimeline} from '../timelines'
 import {defaultFilterInstances} from '../filters'
+import {addEndpoint, Endpoint, getEndpoints, RefreshType} from '../services/endpoints'
 
 export const MAIN_STORAGE_KEY = 'SoshalThingSvelte'
 export const TIMELINE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Timelines'
 
-export function loadMainStorage(): { fullscreen: number | undefined } {
+export function loadMainStorage() {
 	const item = localStorage.getItem(MAIN_STORAGE_KEY)
-	const mainStorage = item ? JSON.parse(item) : {}
+	const mainStorage: MainStorage = item ? JSON.parse(item) : {}
 
 	if (mainStorage.fullscreen === false)
 		delete mainStorage.fullscreen
 	else if (mainStorage.fullscreen === true)
 		mainStorage.fullscreen = 0
 
-	return mainStorage
+	return mainStorage as { fullscreen: number | undefined }
 }
 
 export function loadTimelines(): TimelineData[] {

@@ -1,5 +1,4 @@
 <script lang='ts'>
-	import {RefreshType} from '../services/service'
 	import Fa from 'svelte-fa/src/fa.svelte'
 	import {
 		faArrowDown,
@@ -13,6 +12,7 @@
 	} from "@fortawesome/free-solid-svg-icons"
 	import MasonryContainer from "../containers/MasonryContainer.svelte"
 	import type {TimelineData} from './index'
+	import {RefreshType} from '../services/endpoints'
 
 	export let data: TimelineData
 	export let favviewerButtons: boolean

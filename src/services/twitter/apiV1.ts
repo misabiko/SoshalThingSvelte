@@ -13,7 +13,7 @@ import {fetchExtension} from '../extension'
 import type {ExtensionFetchResponse} from '../extension'
 import {get} from 'svelte/store'
 import {addArticles, getWritable} from '../service'
-import type {RateLimitInfo} from '../service'
+import type {RateLimitInfo} from '../endpoints'
 
 export function getV1APIURL(resource: string): string {
 	return `https://api.twitter.com/1.1/${resource}.json`

@@ -7,8 +7,9 @@
 	import SocialNav from "./SocialNav.svelte";
 	import Timestamp from "./Timestamp.svelte";
 	import {defaultFilterInstances} from '../../filters'
-	import {everyRefreshType, getServices} from '../../services/service'
+	import {getServices} from '../../services/service'
 	import MasonryContainer from '../../containers/MasonryContainer.svelte'
+	import {everyRefreshType} from '../../services/endpoints'
 
 	export let timelineProps: TimelineArticleProps
 	export let articleProps: ArticleProps

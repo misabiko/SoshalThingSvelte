@@ -11,7 +11,7 @@
 	import EndpointOptions from "./EndpointOptions.svelte";
 	import {loadingStore} from "../bufferedMediaLoading";
 	import SettingsMenu from "./SettingsMenu.svelte";
-	import {getEndpoints} from "../services/service.js";
+	import {getEndpoints} from '../services/endpoints'
 
 	let menu: SidebarMenu | null = null;
 

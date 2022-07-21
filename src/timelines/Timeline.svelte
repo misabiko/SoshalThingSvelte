@@ -4,10 +4,8 @@
 	import type {ArticleRef, ArticleWithRefs} from '../services/article'
 	import Article, {articleRefIdPairToRef} from '../services/article'
 	import {
-		getEndpoints,
 		getWritable,
-		refreshEndpoints,
-		RefreshType,
+
 	} from '../services/service'
 	import {onMount} from 'svelte'
 	import {type TimelineData} from './index'
@@ -17,6 +15,7 @@
 	import TimelineHeader from "./TimelineHeader.svelte";
 	import TimelineOptions from "./TimelineOptions.svelte";
 	import type {ArticleProps} from '../articles'
+	import {getEndpoints, refreshEndpoints, RefreshType} from '../services/endpoints'
 
 	export let data: TimelineData
 	//Would like to make this immutable https://github.com/sveltejs/svelte/issues/5572

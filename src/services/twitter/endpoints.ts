@@ -1,10 +1,13 @@
 import type {ArticleWithRefs} from '../article'
-import {Endpoint, type EndpointConstructorInfo, RefreshType} from '../service'
 import {TwitterService} from './service'
 import type {SearchResponse, TweetResponse} from './apiV1'
 import {articleFromV1, fetchExtensionV1, getV1APIURL, parseRateLimitInfo} from './apiV1'
+import {Endpoint, RefreshType} from '../endpoints'
+import type {EndpointConstructorInfo} from '../endpoints'
 
 abstract class V1Endpoint extends Endpoint {
+	readonly service = TwitterService.name
+
 	//Waiting on https://github.com/microsoft/TypeScript/issues/34516 to make static
 	abstract readonly resource: string
 	abstract readonly maxCount: number

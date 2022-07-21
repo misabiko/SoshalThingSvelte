@@ -1,13 +1,13 @@
-import {
-	Endpoint,
-	type EndpointConstructorInfo, RefreshType,
-} from '../service'
+
 import {DummyService} from './service'
 import DummyArticle from './article'
 import {getHiddenStorage, getMarkedAsReadStorage} from '../../storages/serviceCache'
+import {Endpoint, RefreshType} from '../endpoints'
+import type {EndpointConstructorInfo} from '../endpoints'
 
 export class DummyEndpoint extends Endpoint {
 	readonly name = 'DummyEndpoint'
+	readonly service = DummyService.name
 
 	async refresh(refreshType: RefreshType) {
 		const markAsReadStorage = getMarkedAsReadStorage(DummyService)
@@ -31,6 +31,7 @@ export class DummyEndpoint extends Endpoint {
 
 export class DummyEndpointWithParam extends Endpoint {
 	readonly name
+	readonly service = DummyService.name
 
 	constructor(readonly query: string) {
 		super()

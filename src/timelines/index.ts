@@ -4,9 +4,8 @@ import type {FilterInstance} from '../filters'
 import {SortMethod, type SortInfo} from '../sorting'
 import ColumnContainer from '../containers/ColumnContainer.svelte'
 import SocialArticleView from '../articles/social/SocialArticleView.svelte'
-import type {RefreshType} from '../services/service'
 import {defaultFilterInstances} from '../filters'
-import type {Endpoint} from '../services/service'
+import type {Endpoint, RefreshType} from '../services/endpoints'
 
 export type TimelineData = {
 	title: string;

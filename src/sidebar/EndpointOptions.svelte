@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import {Endpoint} from "../services/service"
+	import {Endpoint} from '../services/endpoints'
 
 	//TODO Make endpoint store
 	export let endpoint: Endpoint

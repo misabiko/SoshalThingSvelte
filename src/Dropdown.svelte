@@ -1,12 +1,27 @@
 <script lang="ts">
 	import Fa from 'svelte-fa/src/fa.svelte'
 	import { faAngleDown } from '@fortawesome/free-solid-svg-icons'
+	import {afterUpdate, onMount} from 'svelte'
 
 	export let isActive = false
 	export let isRight = false
 	export let triggerClasses = ''
 	export let labelClasses = ''
 	export let labelText = ''
+
+	let triggerRef: HTMLButtonElement | null = null
+
+	function close(e: MouseEvent) {
+		if (!triggerRef?.contains(e.target as Node))
+			isActive = false
+	}
+
+	$: if (isActive)
+		document.addEventListener('click', close)
+	else
+		document.removeEventListener('click', close)
+
+	onMount(() => () => document.removeEventListener('click', close))
 </script>
 <div
 	class='dropdown'
@@ -14,7 +29,7 @@
 	class:is-right={isRight}
 >
 	<div class={`dropdown-trigger ${triggerClasses}`}>
-		<button class={`button ${labelClasses}`} on:click={() => isActive = !isActive}>
+		<button bind:this={triggerRef} class={`button ${labelClasses}`} on:click={() => isActive = !isActive}>
 			{#if $$slots.triggerIcon}
 				<slot name='triggerIcon'></slot>
 			{:else}

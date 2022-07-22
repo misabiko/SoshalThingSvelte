@@ -6,11 +6,13 @@ import ColumnContainer from '../containers/ColumnContainer.svelte'
 import SocialArticleView from '../articles/social/SocialArticleView.svelte'
 import {defaultFilterInstances} from '../filters'
 import type {Endpoint, RefreshType} from '../services/endpoints'
+import type {Writable} from 'svelte/store'
+import {writable} from 'svelte/store'
 
 export type TimelineData = {
 	title: string;
 	endpoints: TimelineEndpoint[];
-	articles: ArticleIdPair[];
+	articles: Writable<ArticleIdPair[]>;
 	container: typeof SvelteComponent;
 	articleView: typeof SvelteComponent;
 	columnCount: number;
@@ -29,7 +31,7 @@ export function defaultTimeline(): TimelineData {
 	return {
 		title: 'Timeline',
 		endpoints: [],
-		articles: [],
+		articles: writable([]),
 		container: ColumnContainer,
 		articleView: SocialArticleView,
 		columnCount: 1,

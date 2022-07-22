@@ -15,7 +15,12 @@
 	import TimelineHeader from "./TimelineHeader.svelte";
 	import TimelineOptions from "./TimelineOptions.svelte";
 	import type {ArticleProps} from '../articles'
-	import {getEndpoints, refreshEndpoints, RefreshType} from '../services/endpoints'
+	import {
+		getEndpoints,
+		refreshEndpoint,
+		refreshEndpointName,
+		RefreshType,
+	} from '../services/endpoints'
 
 	export let data: TimelineData
 	//Would like to make this immutable https://github.com/sveltejs/svelte/issues/5572
@@ -33,7 +38,9 @@
 	let containerRebalance = false;
 
 	let articles: Readable<Article[]>
-	$: articles = derived(data.articles.map(getWritable), a => a)
+	const idPairsUnsubscribe = data.articles.subscribe(idPairs => {
+		articles = derived(idPairs.map(getWritable), a => a)
+	})
 
 	let articlesWithRefs: Readable<ArticleWithRefs[]>
 	$: articlesWithRefs = derived($articles.map(article => {
@@ -107,23 +114,25 @@
 	}
 
 	function shuffle() {
-		let currentIndex = data.articles.length,  randomIndex;
+		data.articles.update(idPairs => {
+			let currentIndex = length,  randomIndex;
 
-		// While there remain elements to shuffle...
-		while (currentIndex != 0) {
+			// While there remain elements to shuffle...
+			while (currentIndex != 0) {
 
-			// Pick a remaining element...
-			randomIndex = Math.floor(Math.random() * currentIndex);
-			currentIndex--;
+				// Pick a remaining element...
+				randomIndex = Math.floor(Math.random() * currentIndex);
+				currentIndex--;
 
-			// And swap it with the current element.
-			[data.articles[currentIndex], data.articles[randomIndex]] = [
-				data.articles[randomIndex], data.articles[currentIndex]];
-		}
+				// And swap it with the current element.
+				[idPairs[currentIndex], idPairs[randomIndex]] = [
+					idPairs[randomIndex], idPairs[currentIndex]];
+			}
 
-		data.articles = data.articles
-		data.sortInfo.method = undefined
-		containerRebalance = !containerRebalance
+			data.sortInfo.method = undefined
+			containerRebalance = !containerRebalance
+			return idPairs
+		})
 	}
 
 	function autoscroll() {
@@ -159,28 +168,36 @@
 			autoscrollInfo.direction = ScrollDirection.Down
 	}
 
-	async function refresh(refreshType: RefreshType) {
-		const newArticles = await refreshEndpoints(data.endpoints, refreshType)
-		data.articles.push(...newArticles)
-		data.articles = data.articles
+	function refresh(refreshType: RefreshType) {
+		for (const timelineEndpoint of data.endpoints)
+			if (timelineEndpoint.name !== undefined)
+				refreshEndpointName(timelineEndpoint.name, refreshType)
+			else
+				refreshEndpoint(timelineEndpoint.endpoint, refreshType)
+					.then(articles => {
+						if (articles.length)
+							data.articles.update(idPairs => {
+								idPairs.push(...articles.map(a => a.article.idPair))
+								return idPairs
+							})
+					})
 	}
 
 	function sortOnce(method: SortMethod, reversed: boolean) {
 		const sorted = get(articlesWithRefs).sort(compare(method))
 		if (reversed)
 			sorted.reverse()
-		data.articles = sorted.map(a => a.article.idPair)
+		data.articles.set(sorted.map(a => a.article.idPair))
 	}
 
 	onMount(async () => {
 		if (!data.endpoints.length)
 			return
 
-		const newArticles = await refreshEndpoints(data.endpoints, RefreshType.RefreshStart)
-		data.articles.push(...newArticles)
-		data.articles = data.articles
-
-		return () => console.log('Destroying timeline ' + data.title)
+		return () => {
+			idPairsUnsubscribe()
+			console.log('Destroying timeline ' + data.title)
+		}
 	})
 </script>
 

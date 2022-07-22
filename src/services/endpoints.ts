@@ -2,15 +2,28 @@ import type {TimelineEndpoint} from '../timelines'
 import type {ArticleIdPair, ArticleWithRefs} from './article'
 import {keepArticle} from '../filters'
 import {addArticles, getServices} from './service'
+import {writable} from 'svelte/store'
 
 const endpoints: { [name: string]: Endpoint } = {}
+
+export function getEndpoints(): Readonly<{ [name: string]: Endpoint }> {
+	return endpoints
+}
+
+type TimelineEndpoints = {
+	endpoints: TimelineEndpoint[],
+	addArticles: (idPairs: ArticleIdPair[]) => void
+}
+export let timelineEndpoints = writable<TimelineEndpoints[]>([])
+let timelineEndpointsValue: TimelineEndpoints[]
+timelineEndpoints.subscribe(value => timelineEndpointsValue = value)
 
 export abstract class Endpoint {
 	abstract readonly name: string
 	abstract readonly service: string
 	readonly articleIdPairs: ArticleIdPair[] = []
 	rateLimitInfo: RateLimitInfo | null = null
-	isAutoRefreshing = false
+	autoRefreshId: number | null
 	autoRefreshInterval = 90_000
 
 	constructor(
@@ -19,6 +32,7 @@ export abstract class Endpoint {
 			RefreshType.Refresh,
 		]),
 	) {
+		this.autoRefreshId = null
 	}
 
 	abstract refresh(refreshType: RefreshType): Promise<ArticleWithRefs[]>;
@@ -73,33 +87,42 @@ export function addEndpoint(endpoint: Endpoint) {
 		endpoints[endpoint.name] = endpoint
 }
 
-export function getEndpoints(): Readonly<{ [name: string]: Endpoint }> {
-	return endpoints
+export async function refreshEndpointName(endpointName: string, refreshType: RefreshType) {
+	const articles = await refreshEndpoint(endpoints[endpointName], refreshType)
+
+	const matchingTimelineEndpoints = timelineEndpointsValue
+		.map(te => ({
+			endpoint: te.endpoints
+				.find(es => (es.name ?? es.endpoint.name) === endpointName && es.refreshTypes.has(refreshType)),
+			addArticles: te.addArticles
+		}))
+		.filter(e => e !== undefined) as { endpoint: TimelineEndpoint, addArticles: (idPairs: ArticleIdPair[]) => void }[]
+
+	for (const timelineEndpoint of matchingTimelineEndpoints) {
+		const addedArticles = articles
+			.filter(articleWithRefs =>
+				timelineEndpoint.endpoint.filters.every(f => !f.enabled || (keepArticle(articleWithRefs, f.filter) !== f.inverted)),
+			)
+		timelineEndpoint.addArticles(addedArticles.map(a => a.article.idPair))
+	}
 }
 
-//TODO Add articles to other timelines
-export async function refreshEndpoints(timelineEndpoints: TimelineEndpoint[], refreshType: RefreshType): Promise<ArticleIdPair[]> {
-	const articleIdPairs = []
-	for (const timelineEndpoint of timelineEndpoints) {
-		const endpoint = timelineEndpoint.name !== undefined ? endpoints[timelineEndpoint.name] : timelineEndpoint.endpoint
+export async function refreshEndpoint(endpoint: Endpoint, refreshType: RefreshType): Promise<ArticleWithRefs[]> {
+	if (!endpoint.refreshTypes.has(refreshType))
+		throw new Error(`Endpoint ${endpoint.name} doesn't have refresh type ${refreshType}`)
 
-		if (timelineEndpoint.refreshTypes.has(refreshType) && endpoint.refreshTypes.has(refreshType)) {
-			if (endpoint.isRateLimited()) {
-				const secondsLeft = Math.ceil((((endpoint.rateLimitInfo as RateLimitInfo).reset * 1000) - Date.now()) / 1000)
-				console.log(`${timelineEndpoint.name} is rate limited, and resets in ${secondsLeft} seconds.`, endpoint.rateLimitInfo)
-			}else
-				articleIdPairs.push(...endpointRefreshed(timelineEndpoint, await endpoint.refresh(refreshType)))
-		}
+	if (endpoint.isRateLimited()) {
+		const secondsLeft = Math.ceil((((endpoint.rateLimitInfo as RateLimitInfo).reset * 1000) - Date.now()) / 1000)
+		console.log(`${endpoint.name} is rate limited, and resets in ${secondsLeft} seconds.`, endpoint.rateLimitInfo)
+		return []
 	}
 
-	return articleIdPairs
-}
-
-function endpointRefreshed(timelineEndpoint: TimelineEndpoint, articles: ArticleWithRefs[]): ArticleIdPair[] {
+	const articles = await endpoint.refresh(refreshType)
 	if (!articles.length)
 		return []
 
-	const endpoint = timelineEndpoint.name !== undefined ? endpoints[timelineEndpoint.name] : timelineEndpoint.endpoint
+	//Filtering articles the endpoint already has
+	//TODO Update current articles
 	endpoint.articleIdPairs.push(...articles
 		.filter(a => !endpoint.articleIdPairs
 			.some(pair =>
@@ -110,10 +133,13 @@ function endpointRefreshed(timelineEndpoint: TimelineEndpoint, articles: Article
 	)
 
 	addArticles(getServices()[endpoint.service], false, ...articles)
-	const addedArticles = articles
-		.filter(articleWithRefs =>
-			timelineEndpoint.filters.every(f => !f.enabled || (keepArticle(articleWithRefs, f.filter) !== f.inverted)),
-		)
 
-	return addedArticles.map(a => a.article.idPair)
+	return articles
 }
+
+/*
+function autoRefresh(endpointName: string) {
+	if (endpoints[endpointName].autoRefreshId === null) {
+		endpoints[endpointName].autoRefreshId = setInterval(refreshEndpoints, endpoints[endpointName].autoRefreshInterval)
+	}
+}*/

@@ -1,9 +1,10 @@
 <script lang="ts">
-	import type {TimelineData} from './index';
-	import Timeline from './Timeline.svelte';
-	import {afterUpdate, getContext} from 'svelte'
-	import {Modal} from 'svelma'
+	import type {TimelineData} from './index'
 	import {defaultTimeline} from './index'
+	import Timeline from './Timeline.svelte'
+	import {afterUpdate, getContext, onMount} from 'svelte'
+	import {Modal} from 'svelma'
+	import {refreshEndpoint, refreshEndpointName, RefreshType, timelineEndpoints} from '../services/endpoints'
 
 	export let initTimelines: TimelineData[] = [];
 	export let fullscreen: number | undefined;
@@ -16,6 +17,33 @@
 
 	const isInjected = getContext('isInjected');
 	let timelines: TimelineData[] = initTimelines;
+
+	$: {
+		const newTimelineEndpoints = timelines.map((t, i) => ({
+			endpoints: t.endpoints,
+			addArticles(newIdPairs) {
+				if (newIdPairs.length)
+					timelines[i].articles.update(idPairs => {
+						idPairs.push(...newIdPairs)
+						return idPairs
+					})
+			}
+		}))
+
+		if (modalTimeline)
+			newTimelineEndpoints.push({
+				endpoints: modalTimeline.endpoints,
+				addArticles(newIdPairs) {
+					if (newIdPairs.length)
+						modalTimeline.articles.update(idPairs => {
+							idPairs.push(...newIdPairs)
+							return idPairs
+						})
+				}
+			})
+
+		timelineEndpoints.set(newTimelineEndpoints)
+	}
 
 	function removeTimeline(index: number) {
 		timelines.splice(index, 1)
@@ -34,6 +62,26 @@
 		//During Modal's close transition, the child Timeline still calls reactive statements for modalTimeline
 		if (!modalTimelineActive)
 			modalTimeline = null
+	})
+
+	onMount(() => {
+		const endpointNames = new Set<string>()
+		for (const timeline of timelines)
+			for (const timelineEndpoint of timeline.endpoints)
+				if (timelineEndpoint.name !== undefined)
+					endpointNames.add(timelineEndpoint.name)
+				else
+					refreshEndpoint(timelineEndpoint.endpoint, RefreshType.RefreshStart)
+						.then(articles => {
+							if (articles.length)
+								timeline.articles.update(idPairs => {
+									idPairs.push(...articles.map(a => a.article.idPair))
+									return idPairs
+								})
+						})
+
+		for (const endpointName of endpointNames.values())
+			refreshEndpointName(endpointName, RefreshType.RefreshStart)
 	})
 </script>
 

@@ -101,14 +101,12 @@
 					</div>
 				{/each}
 			{:else if menu === SidebarMenu.Undoables}
-					{#each [...$undoables] as undoable (undoable.text)}
+					{#each [...$undoables] as undoable, index (undoable.text)}
 						<div class='box'>
 							<p>{undoable.text}</p>
-							{#if undoable.undid}
-								<Button on:click={undoable.undo}>Redo</Button>
-							{:else}
-								<Button on:click={undoable.undo}>Undo</Button>
-							{/if}
+							<Button on:click={() => undoables.toggleDo(index)}>
+								{undoable.undid ? 'Redo' : 'Undo'}
+							</Button>
 						</div>
 					{:else}
 						<div class='box'>

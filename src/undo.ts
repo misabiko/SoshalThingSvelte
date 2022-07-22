@@ -11,9 +11,14 @@ export const undoables = (() => {
 				return u
 			})
 		},
-		undo(index: number) {
+		toggleDo(index: number) {
 			update(u => {
-				u[index].undo()
+				if (u[index].undid)
+					u[index].redo()
+				else
+					u[index].undo()
+
+				u[index].undid = !u[index].undid
 				return u
 			})
 		}
@@ -21,6 +26,7 @@ export const undoables = (() => {
 })()
 
 export type Undoable = {
+	//TODO Find a way to make todo/redo private
 	undo: () => void
 	redo: () => void
 	undid: boolean

@@ -24,7 +24,9 @@
 			addArticles(newIdPairs) {
 				if (newIdPairs.length)
 					timelines[i].articles.update(idPairs => {
-						idPairs.push(...newIdPairs)
+						for (const idPair of newIdPairs)
+							if (!idPairs.some(idp => idp.service === idPair.service && idp.id === idPair.id))
+								idPairs.push(idPair)
 						return idPairs
 					})
 			}
@@ -36,7 +38,9 @@
 				addArticles(newIdPairs) {
 					if (newIdPairs.length)
 						modalTimeline.articles.update(idPairs => {
-							idPairs.push(...newIdPairs)
+							for (const idPair of newIdPairs)
+								if (!idPairs.some(idp => idp.service === idPair.service && idp.id === idPair.id))
+									idPairs.push(idPair)
 							return idPairs
 						})
 				}

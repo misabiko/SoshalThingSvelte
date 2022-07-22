@@ -93,7 +93,7 @@ export async function refreshEndpointName(endpointName: string, refreshType: Ref
 				.find(es => (es.name ?? es.endpoint.name) === endpointName && es.refreshTypes.has(refreshType)),
 			addArticles: te.addArticles
 		}))
-		.filter(e => e !== undefined) as { endpoint: TimelineEndpoint, addArticles: (idPairs: ArticleIdPair[]) => void }[]
+		.filter(te => te.endpoint !== undefined) as { endpoint: TimelineEndpoint, addArticles: (idPairs: ArticleIdPair[]) => void }[]
 
 	for (const timelineEndpoint of matchingTimelineEndpoints) {
 		const addedArticles = articles

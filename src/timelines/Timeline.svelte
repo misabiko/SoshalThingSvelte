@@ -180,7 +180,9 @@
 					.then(articles => {
 						if (articles.length)
 							data.articles.update(idPairs => {
-								idPairs.push(...articles.map(a => a.article.idPair))
+								for (const a of articles)
+									if (!idPairs.some(idp => idp.service === a.article.idPair.service && idp.id === a.article.idPair.id))
+										idPairs.push(a.article.idPair)
 								return idPairs
 							})
 					})

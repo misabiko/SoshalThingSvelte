@@ -6,6 +6,7 @@ import {writable} from 'svelte/store'
 import {updateCachedArticlesStorage, updateHiddenStorage, updateMarkAsReadStorage} from '../storages/serviceCache'
 import type {EndpointConstructorInfo} from './endpoints'
 import type {Endpoint} from './endpoints'
+import {undoables} from '../undo'
 
 const services: { [name: string]: Service } = {}
 
@@ -69,8 +70,27 @@ export function getServices(): Readonly<{ [name: string]: Service }> {
 }
 
 export function toggleMarkAsRead(idPair: ArticleIdPair) {
-	getWritable(idPair).update(a => {
+	const store = getWritable(idPair)
+	store.update(a => {
+		let oldValue = a.markedAsRead
 		a.markedAsRead = !a.markedAsRead
+
+		undoables.addCommand({
+			undo: () => {
+				store.update(a => {
+					a.markedAsRead = oldValue
+					return a
+				})
+			},
+			redo: () => {
+				store.update(a => {
+					a.markedAsRead = !oldValue
+					return a
+				})
+			},
+			undid: false,
+			text: `Article ${idPair.service}/${idPair.id} was marked as ${oldValue ? 'unread' : 'read'}`
+		})
 		return a
 	})
 
@@ -78,8 +98,27 @@ export function toggleMarkAsRead(idPair: ArticleIdPair) {
 }
 
 export function toggleHide(idPair: ArticleIdPair) {
-	getWritable(idPair).update(a => {
+	const store = getWritable(idPair)
+	store.update(a => {
+		let oldValue = a.hidden
 		a.hidden = !a.hidden
+
+		undoables.addCommand({
+			undo: () => {
+				store.update(a => {
+					a.hidden = oldValue
+					return a
+				})
+			},
+			redo: () => {
+				store.update(a => {
+					a.hidden = !oldValue
+					return a
+				})
+			},
+			undid: false,
+			text: `Article ${idPair.service}/${idPair.id} was ${oldValue ? 'unhidden' : 'hidden'}`
+		})
 		return a
 	})
 

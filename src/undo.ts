@@ -22,5 +22,7 @@ export const undoables = (() => {
 
 export type Undoable = {
 	undo: () => void
+	redo: () => void
 	undid: boolean
+	text: string
 }

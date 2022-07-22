@@ -1,17 +1,20 @@
 <script lang='ts'>
+	import {Button} from 'svelma'
 	import Fa from 'svelte-fa/src/fa.svelte';
 	import {
 		faAngleDoubleLeft,
 		faPlus,
 		faCog,
 		faSpinner,
-		faBarsProgress,
+		faBarsProgress, faRotateLeft,
 	} from '@fortawesome/free-solid-svg-icons'
+	import type {IconDefinition} from '@fortawesome/free-solid-svg-icons'
 	import { faGithub } from '@fortawesome/free-brands-svg-icons';
 	import EndpointOptions from "./EndpointOptions.svelte";
 	import {loadingStore} from "../bufferedMediaLoading";
 	import SettingsMenu from "./SettingsMenu.svelte";
 	import {endpoints} from '../services/endpoints'
+	import {undoables} from "../undo.js";
 
 	let menu: SidebarMenu | null = null;
 
@@ -19,12 +22,20 @@
 		Endpoints,
 		NewTimeline,
 		MediaLoader,
+		Undoables,
 		Settings,
 	}
 
 	function toggleSidebarMenu(newMenu: SidebarMenu) {
 		menu = menu === newMenu ? null : newMenu;
 	}
+
+	const buttons: {icon: IconDefinition, menu: SidebarMenu, title: string}[] = [
+		{icon: faPlus, menu: SidebarMenu.NewTimeline, title: 'Add new timeline'},
+		{icon: faBarsProgress, menu: SidebarMenu.Endpoints, title: 'Endpoints'},
+		{icon: faRotateLeft, menu: SidebarMenu.Undoables, title: 'Undoables'},
+		{icon: faSpinner, menu: SidebarMenu.MediaLoader, title: 'Loading medias'},
+	]
 </script>
 
 <style lang='sass'>
@@ -89,6 +100,21 @@
 						No media currently loading
 					</div>
 				{/each}
+			{:else if menu === SidebarMenu.Undoables}
+					{#each [...$undoables] as undoable (undoable.text)}
+						<div class='box'>
+							<p>{undoable.text}</p>
+							{#if undoable.undid}
+								<Button on:click={undoable.undo}>Redo</Button>
+							{:else}
+								<Button on:click={undoable.undo}>Undo</Button>
+							{/if}
+						</div>
+					{:else}
+						<div class='box'>
+							Nothing to undo
+						</div>
+					{/each}
 			{:else if menu === SidebarMenu.Settings}
 				<SettingsMenu/>
 			{/if}
@@ -101,15 +127,11 @@
 					<Fa icon={faAngleDoubleLeft} size='2x'/>
 				</button>
 			{/if}
-			<button class='borderless-button' title="Add new timeline" on:click={() => toggleSidebarMenu(SidebarMenu.NewTimeline)}>
-				<Fa icon={faPlus} size='2x'/>
-			</button>
-			<button class='borderless-button' title="Endpoints" on:click={() => toggleSidebarMenu(SidebarMenu.Endpoints)}>
-				<Fa icon={faBarsProgress} size='2x'/>
-			</button>
-			<button class='borderless-button' title="Loading medias" on:click={() => toggleSidebarMenu(SidebarMenu.MediaLoader)}>
-				<Fa icon={faSpinner} size='2x'/>
-			</button>
+			{#each buttons as {icon, menu, title}}
+				<button class='borderless-button' {title} on:click={() => toggleSidebarMenu(menu)}>
+					<Fa icon={icon} size='2x'/>
+				</button>
+			{/each}
 		</div>
 		<div>
 			<button class='borderless-button' title="Settings" on:click={() => toggleSidebarMenu(SidebarMenu.Settings)}>

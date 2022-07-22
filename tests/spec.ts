@@ -98,9 +98,29 @@ test.describe('autoscroll', () => {
 		expect((await container.evaluate(c => c.scrollHeight) - (await container.boundingBox()).height)).toBeGreaterThan(500)
 	})
 
-	test.skip('scroll bounces from top', async () => {})
+	test('scroll bounces from top', async ({page}) => {
+		const container = page.locator('.articlesContainer').first()
 
-	test.skip('scroll bounces from bottom', async () => {})
+		const scrollTop = await container.evaluate(c => c.scrollTop = 10)
+
+		await page.dblclick('button[title="Autoscroll"]')
+
+		await page.waitForTimeout(500)
+
+		expect(await container.evaluate(c => c.scrollTop)).toBeGreaterThan(scrollTop)
+	})
+
+	test('scroll bounces from bottom', async ({page}) => {
+		const container = page.locator('.articlesContainer').first()
+
+		const scrollTop = await container.evaluate(c => c.scrollTop = c.scrollHeight - 10)
+
+		await page.click('button[title="Autoscroll"]')
+
+		await page.waitForTimeout(500)
+
+		expect(await container.evaluate(c => c.scrollTop)).toBeLessThan(scrollTop)
+	})
 
 	test('scroll downward by default', async ({page}) => {
 		const container = page.locator('.articlesContainer').first()

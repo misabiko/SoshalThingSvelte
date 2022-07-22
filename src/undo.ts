@@ -7,7 +7,7 @@ export const undoables = (() => {
 		subscribe,
 		addCommand(undoable: Undoable) {
 			update(u => {
-				u.push(undoable)
+				u.unshift(undoable)
 				return u
 			})
 		},

@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import {Field, Button, Input, Select, Switch} from 'svelma'
+	import {Field, Button, Select, Switch} from 'svelma'
 	import ColumnContainer from "../containers/ColumnContainer.svelte"
 	import RowContainer from "../containers/RowContainer.svelte"
 	import MasonryContainer from "../containers/MasonryContainer.svelte"
@@ -67,6 +67,10 @@
 		{/if}
 		<Field label='AutoScroll Speed'>
 			<input class='input' type='number' bind:value={data.scrollSpeed} min={0}/>
+		</Field>
+		<Field label='Section' addons={false}>
+			<Switch bind:checked={data.section.useSection}>Section articles</Switch>
+			<input class='input' type='number' bind:value={data.section.count} min={0}/>
 		</Field>
 	</div>
 	<div class='box'>

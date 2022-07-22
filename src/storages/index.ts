@@ -56,6 +56,10 @@ export function loadTimelines(): TimelineData[] {
 			width: defaulted.width,
 			filters: defaulted.filters,
 			sortInfo: parseSortInfo(defaulted.sortInfo),
+			section: defaulted.section ?? {
+				useSection: false,
+				count: 100
+			}
 		}
 	})
 }
@@ -173,6 +177,10 @@ type TimelineStorage = {
 	compact: boolean
 	animatedAsGifs: boolean
 	hideText: boolean
+	section?: {
+		useSection: boolean
+		count: number
+	}
 }
 
 const DEFAULT_TIMELINE_STORAGE: TimelineStorage = {

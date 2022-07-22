@@ -75,6 +75,9 @@
 			if (data.sortInfo.reversed)
 				articleProps.reverse()
 
+			if (data.section.useSection)
+				articleProps = articleProps.slice(0, data.section.count)
+
 			return articleProps
 		},
 	)

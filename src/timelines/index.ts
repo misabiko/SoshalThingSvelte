@@ -13,6 +13,7 @@ export type TimelineData = {
 	title: string;
 	endpoints: TimelineEndpoint[];
 	articles: Writable<ArticleIdPair[]>;
+	section: { useSection: boolean; count: number };
 	container: typeof SvelteComponent;
 	articleView: typeof SvelteComponent;
 	columnCount: number;
@@ -32,6 +33,7 @@ export function defaultTimeline(): TimelineData {
 		title: 'Timeline',
 		endpoints: [],
 		articles: writable([]),
+		section: {useSection: false, count: 100},
 		container: ColumnContainer,
 		articleView: SocialArticleView,
 		columnCount: 1,

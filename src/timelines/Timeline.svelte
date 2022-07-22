@@ -16,7 +16,7 @@
 	import TimelineOptions from "./TimelineOptions.svelte";
 	import type {ArticleProps} from '../articles'
 	import {
-		getEndpoints,
+		endpoints,
 		refreshEndpoint,
 		refreshEndpointName,
 		RefreshType,
@@ -81,7 +81,7 @@
 
 	let availableRefreshTypes: Set<RefreshType>
 	$: availableRefreshTypes = new Set(data.endpoints.flatMap(e => {
-		const endpoint = e.name !== undefined ? getEndpoints()[e.name] : e.endpoint
+		const endpoint = e.name !== undefined ? get(endpoints[e.name]) : e.endpoint
 		return [...endpoint.refreshTypes.values()]
 	}))
 

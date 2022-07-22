@@ -11,7 +11,8 @@ import type {SortInfo} from '../sorting'
 import {SortMethod} from '../sorting'
 import {defaultTimeline} from '../timelines'
 import {defaultFilterInstances} from '../filters'
-import {addEndpoint, Endpoint, getEndpoints, RefreshType} from '../services/endpoints'
+import {addEndpoint, Endpoint, endpoints, RefreshType, startAutoRefresh} from '../services/endpoints'
+import {derived, get} from 'svelte/store'
 
 export const MAIN_STORAGE_KEY = 'SoshalThingSvelte'
 export const TIMELINE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Timelines'
@@ -89,8 +90,8 @@ function parseArticleView(articleView: string | undefined): typeof SvelteCompone
 }
 
 function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | undefined {
-	const endpoints = getEndpoints()
 	const services = getServices()
+	const endpointsValue = get(derived(Object.values(endpoints), e => e))
 	if (!services.hasOwnProperty(storage.service)) {
 		console.error(`"${storage.service}" isn't a registered service`)
 		return undefined
@@ -101,7 +102,7 @@ function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | unde
 
 	const constructorInfo = services[storage.service].endpointConstructors[storage.endpointType]
 
-	let endpoint = Object.values(endpoints).find(endpoint =>
+	let endpoint = endpointsValue.find(endpoint =>
 		constructorInfo.name === (endpoint.constructor as typeof Endpoint).constructorInfo.name &&
 		endpoint.matchParams(storage.params)
 	)
@@ -120,6 +121,9 @@ function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | unde
 		refreshTypes.add(RefreshType.LoadTop)
 	if (storage.loadBottom === undefined ? true : storage.loadBottom)
 		refreshTypes.add(RefreshType.LoadBottom)
+
+	if (storage.autoRefresh)
+		startAutoRefresh(endpoint.name)
 
 	return {
 		name: endpoint.name,
@@ -191,7 +195,7 @@ type EndpointStorage = {
 	endpointType: number
 	params?: object
 	filters?: FilterInstance[]
-	//autoRefresh: boolean
+	autoRefresh?: boolean
 	onStart?: boolean
 	onRefresh?: boolean
 	loadTop?: boolean

@@ -11,7 +11,7 @@
 	import EndpointOptions from "./EndpointOptions.svelte";
 	import {loadingStore} from "../bufferedMediaLoading";
 	import SettingsMenu from "./SettingsMenu.svelte";
-	import {getEndpoints} from '../services/endpoints'
+	import {endpoints} from '../services/endpoints'
 
 	let menu: SidebarMenu | null = null;
 
@@ -75,7 +75,7 @@
 		<div class='sidebarMenu'>
 			{#if menu === SidebarMenu.Endpoints}
 				<div class='box'>
-					{#each Object.entries(getEndpoints()) as [name, endpoint] (name)}
+					{#each Object.entries(endpoints) as [name, endpoint] (name)}
 						<EndpointOptions {endpoint}/>
 					{:else}
 						No endpoints currently

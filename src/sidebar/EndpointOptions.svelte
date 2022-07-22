@@ -1,43 +1,41 @@
 <script lang='ts'>
 	import {Endpoint} from '../services/endpoints'
+	import {startAutoRefresh, stopAutoRefresh} from "../services/endpoints.js"
+	import type {Writable} from 'svelte/store'
 
-	//TODO Make endpoint store
-	export let endpoint: Endpoint
-
-	function startAutoRefresh() {}
-	function stopAutoRefresh() {}
+	export let endpoint: Writable<Endpoint>
 </script>
 
 <div class='block'>
-	{endpoint.name}
-	{#if endpoint.rateLimitInfo !== null}
-		{@const timeLeft = Math.ceil(((endpoint.rateLimitInfo.reset * 1000) - Date.now()) / 60000)}
-		<progress class="progress" value={endpoint.rateLimitInfo.remaining} max={endpoint.rateLimitInfo.limit}>
-			{ `${Math.fround(endpoint.rateLimitInfo.remaining / endpoint.rateLimitInfo.limit * 1000) / 10}%` }
+	{$endpoint.name}
+	{#if $endpoint.rateLimitInfo !== null}
+		{@const timeLeft = Math.ceil((($endpoint.rateLimitInfo.reset * 1000) - Date.now()) / 60000)}
+		<progress class="progress" value={$endpoint.rateLimitInfo.remaining} max={$endpoint.rateLimitInfo.limit}>
+			{ `${Math.fround($endpoint.rateLimitInfo.remaining / $endpoint.rateLimitInfo.limit * 1000) / 10}%` }
 		</progress>
 		{ `${timeLeft} minutes until reset`}
 	{/if}
 	<div class="field has-addons">
-		{#if endpoint.isAutoRefreshing}
+		{#if $endpoint.autoRefreshId !== null}
 			<div class='control'>
-				<button class='button' on:click={stopAutoRefresh}>
+				<button class='button' on:click={() => stopAutoRefresh($endpoint.name)}>
 					Stop refreshing
 				</button>
 			</div>
 			<div class='control'>
-				<input class='input' type='number' value={endpoint.autoRefreshInterval} disabled>
+				<input class='input' type='number' value={$endpoint.autoRefreshInterval} disabled>
 			</div>
 			<div class='control'>
 				<button class='button is-static'>ms</button>
 			</div>
 		{:else}
 			<div class='control'>
-				<button class='button' on:click={startAutoRefresh}>
+				<button class='button' on:click={() => startAutoRefresh($endpoint.name)}>
 					Auto refresh
 				</button>
 			</div>
 			<div class='control'>
-				<input class='input' type='number' bind:value={endpoint.autoRefreshInterval}/>
+				<input class='input' type='number' bind:value={$endpoint.autoRefreshInterval}/>
 			</div>
 			<div class='control'>
 				<button class='button is-static'>ms</button>

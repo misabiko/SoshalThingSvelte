@@ -2,13 +2,10 @@ import type {TimelineEndpoint} from '../timelines'
 import type {ArticleIdPair, ArticleWithRefs} from './article'
 import {keepArticle} from '../filters'
 import {addArticles, getServices} from './service'
-import {writable} from 'svelte/store'
+import {get, writable} from 'svelte/store'
+import type {Writable} from 'svelte/store'
 
-const endpoints: { [name: string]: Endpoint } = {}
-
-export function getEndpoints(): Readonly<{ [name: string]: Endpoint }> {
-	return endpoints
-}
+export const endpoints: { [name: string]: Writable<Endpoint> } = {}
 
 type TimelineEndpoints = {
 	endpoints: TimelineEndpoint[],
@@ -84,11 +81,11 @@ export function addEndpoint(endpoint: Endpoint) {
 	if (endpoints.hasOwnProperty(endpoint.name))
 		console.warn(`Endpoint ${endpoint.name} already exists`)
 	else
-		endpoints[endpoint.name] = endpoint
+		endpoints[endpoint.name] = writable(endpoint)
 }
 
-export async function refreshEndpointName(endpointName: string, refreshType: RefreshType) {
-	const articles = await refreshEndpoint(endpoints[endpointName], refreshType)
+export async function refreshEndpointName(endpointName: string, refreshType: RefreshType, autoRefreshing = false) {
+	const articles = await refreshEndpoint(get(endpoints[endpointName]), refreshType, autoRefreshing)
 
 	const matchingTimelineEndpoints = timelineEndpointsValue
 		.map(te => ({
@@ -107,7 +104,7 @@ export async function refreshEndpointName(endpointName: string, refreshType: Ref
 	}
 }
 
-export async function refreshEndpoint(endpoint: Endpoint, refreshType: RefreshType): Promise<ArticleWithRefs[]> {
+export async function refreshEndpoint(endpoint: Endpoint, refreshType: RefreshType, autoRefreshing = false): Promise<ArticleWithRefs[]> {
 	if (!endpoint.refreshTypes.has(refreshType))
 		throw new Error(`Endpoint ${endpoint.name} doesn't have refresh type ${refreshType}`)
 
@@ -115,6 +112,12 @@ export async function refreshEndpoint(endpoint: Endpoint, refreshType: RefreshTy
 		const secondsLeft = Math.ceil((((endpoint.rateLimitInfo as RateLimitInfo).reset * 1000) - Date.now()) / 1000)
 		console.log(`${endpoint.name} is rate limited, and resets in ${secondsLeft} seconds.`, endpoint.rateLimitInfo)
 		return []
+	}
+
+	if (!autoRefreshing && endpoints[endpoint.name] !== undefined && endpoint.autoRefreshId !== null) {
+		clearInterval(endpoint.autoRefreshId)
+		endpoint.autoRefreshId = null
+		startAutoRefreshEndpoint(endpoint)
 	}
 
 	const articles = await endpoint.refresh(refreshType)
@@ -134,12 +137,32 @@ export async function refreshEndpoint(endpoint: Endpoint, refreshType: RefreshTy
 
 	addArticles(getServices()[endpoint.service], false, ...articles)
 
+	if (endpoints[endpoint.name] !== undefined)
+		endpoints[endpoint.name].set(endpoint)
+
 	return articles
 }
 
-/*
-function autoRefresh(endpointName: string) {
-	if (endpoints[endpointName].autoRefreshId === null) {
-		endpoints[endpointName].autoRefreshId = setInterval(refreshEndpoints, endpoints[endpointName].autoRefreshInterval)
+export function startAutoRefresh(endpointName: string) {
+	endpoints[endpointName].update(e => {
+		startAutoRefreshEndpoint(e)
+		return e
+	})
+}
+
+function startAutoRefreshEndpoint(endpoint: Endpoint) {
+	if (endpoint.autoRefreshId === null) {
+		endpoint.autoRefreshId = setInterval(() => {
+			console.debug('Refreshing ' + endpoint.name)
+			refreshEndpointName(endpoint.name, RefreshType.Refresh, true)
+		}, endpoint.autoRefreshInterval)
 	}
-}*/
+}
+
+export function stopAutoRefresh(endpointName: string) {
+	endpoints[endpointName].update(e => {
+		clearInterval(e.autoRefreshId as number)
+		e.autoRefreshId = null
+		return e
+	})
+}

@@ -140,9 +140,9 @@
 
 	function autoscroll() {
 		const scrollStep = () => {
-			if ((autoscrollInfo.direction && containerRef.scrollTop > 0) ||
-				(!autoscrollInfo.direction && containerRef.scrollTop < containerRef.scrollHeight - containerRef.clientHeight))
-				containerRef.scrollBy(0, autoscrollInfo.direction ? data.scrollSpeed : -data.scrollSpeed)
+			if ((autoscrollInfo.direction === ScrollDirection.Down && containerRef.scrollTop < containerRef.scrollHeight - containerRef.clientHeight) ||
+				(autoscrollInfo.direction === ScrollDirection.Up && containerRef.scrollTop > 0))
+				containerRef.scrollBy(0, autoscrollInfo.direction === ScrollDirection.Down ? data.scrollSpeed : -data.scrollSpeed)
 			else
 				autoscrollInfo.direction = autoscrollInfo.direction === ScrollDirection.Down ? ScrollDirection.Up : ScrollDirection.Down
 			autoscrollInfo.scrollRequestId = window.requestAnimationFrame(scrollStep)

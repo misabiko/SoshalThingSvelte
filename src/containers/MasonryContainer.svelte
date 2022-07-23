@@ -28,6 +28,7 @@
 	let columns: Column[] = []
 
 	$: if (props.rebalanceTrigger !== lastRebalanceTrigger || props.columnCount !== lastColumnCount) {
+		//TODO Add columnRef array and rebalance by moving overflowing articles
 		columns = []
 		lastRebalanceTrigger = props.rebalanceTrigger
 		lastColumnCount = props.columnCount

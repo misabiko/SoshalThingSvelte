@@ -1,5 +1,5 @@
 import SoshalThing from '../../SoshalThing.svelte';
 
-const soshalthing = new SoshalThing({
+new SoshalThing({
 	target: document.body,
 });

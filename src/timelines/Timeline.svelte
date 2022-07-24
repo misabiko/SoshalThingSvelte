@@ -239,6 +239,11 @@
 		flex-grow: 1
 		height: 20%
 		background-color: $background
+
+	.noArticleText
+		text-align: center
+		margin-top: 25px
+		font-size: xx-large
 </style>
 
 <div class='timeline' class:fullscreenTimeline={fullscreen} style='{data.width > 1 ? `width: ${data.width * 500}px` : ""}'>
@@ -265,9 +270,21 @@
 			{removeTimeline}
 		/>
 	{/if}
-	<svelte:component
-		this={fullscreen?.container ?? data.container}
-		bind:containerRef
-		props={containerProps}
-	/>
+	{#if $filteredArticles.length}
+		<svelte:component
+			this={fullscreen?.container ?? data.container}
+			bind:containerRef
+			props={containerProps}
+		/>
+	{:else}
+		<div class='articlesContainer'>
+			<p class='noArticleText'>
+				{
+					$articles.length
+					? `${$articles.length} hidden articles`
+					: 'No articles listed.'
+				}
+			</p>
+		</div>
+	{/if}
 </div>

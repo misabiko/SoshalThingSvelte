@@ -231,7 +231,6 @@
 
 	:global(.modal .timeline)
 		width: unset
-		height: 100vh
 
 	:global(.articlesContainer)
 		overflow-y: scroll
@@ -242,7 +241,7 @@
 
 	.noArticleText
 		text-align: center
-		margin-top: 25px
+		margin: 25px 0
 		font-size: xx-large
 </style>
 

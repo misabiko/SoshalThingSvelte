@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type {TimelineData} from './index'
+	import type {FullscreenInfo, TimelineData} from './index'
 	import {defaultTimeline} from './index'
 	import Timeline from './Timeline.svelte'
 	import {afterUpdate, getContext, onMount} from 'svelte'
@@ -7,7 +7,7 @@
 	import {refreshEndpoint, refreshEndpointName, RefreshType, timelineEndpoints} from '../services/endpoints'
 
 	export let initTimelines: TimelineData[] = [];
-	export let fullscreen: number | undefined;
+	export let fullscreen: FullscreenInfo;
 	export let favviewerHidden;
 	export let showSidebar;
 
@@ -103,30 +103,29 @@
 			<Timeline
 				data={modalTimeline}
 				{setModalTimeline}
-				fullscreen={false}
 				removeTimeline={() => modalTimeline = null}
 			/>
 		</Modal>
 	{/if}
-	{#if fullscreen !== undefined}
+	{#if fullscreen.index !== null}
 		{#if isInjected}
 			<Timeline
 				favviewerButtons=true
-				bind:favviewerHidden={favviewerHidden}
-				bind:showSidebar={showSidebar}
-				data={timelines[fullscreen]}
+				bind:favviewerHidden
+				bind:showSidebar
+				data={timelines[fullscreen.index]}
 				{setModalTimeline}
-				fullscreen={true}
-				removeTimeline={() => removeTimeline(fullscreen)}
-				toggleFullscreen={() => fullscreen = undefined}
+				bind:fullscreen
+				removeTimeline={() => removeTimeline(fullscreen.index)}
+				toggleFullscreen={() => fullscreen.index = null}
 			/>
 		{:else}
 			<Timeline
-				data={timelines[fullscreen]}
+				data={timelines[fullscreen.index]}
 				{setModalTimeline}
-				fullscreen={true}
-				removeTimeline={() => removeTimeline(fullscreen)}
-				toggleFullscreen={() => fullscreen = undefined}
+				bind:fullscreen
+				removeTimeline={() => removeTimeline(fullscreen.index)}
+				toggleFullscreen={() => fullscreen.index = null}
 			/>
 		{/if}
 	{:else}
@@ -135,21 +134,19 @@
 			{#if isInjected && i === 0}
 				<Timeline
 					favviewerButtons=true
-					bind:favviewerHidden={favviewerHidden}
-					bind:showSidebar={showSidebar}
+					bind:favviewerHidden
+					bind:showSidebar
 					{data}
 					{setModalTimeline}
-					fullscreen={false}
 					removeTimeline={() => removeTimeline(i)}
-					toggleFullscreen={() => fullscreen = i}
+					toggleFullscreen={() => fullscreen.index = i}
 				/>
 			{:else}
 				<Timeline
 					{data}
 					{setModalTimeline}
-					fullscreen={false}
 					removeTimeline={() => removeTimeline(i)}
-					toggleFullscreen={() => fullscreen = i}
+					toggleFullscreen={() => fullscreen.index = i}
 				/>
 			{/if}
 		{/each}

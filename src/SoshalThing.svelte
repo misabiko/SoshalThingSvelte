@@ -1,7 +1,7 @@
 <script lang='ts'>
 	import {setContext} from 'svelte'
 	import Sidebar from "./sidebar/Sidebar.svelte"
-	import type {TimelineData} from "./timelines"
+	import type {FullscreenInfo, TimelineData} from "./timelines"
 	import TimelineContainer from "./timelines/TimelineContainer.svelte"
 	import {notifications} from './notifications/store'
 	import Notification from "./notifications/Notification.svelte";
@@ -11,7 +11,11 @@
 	};
 
 	export let initTimelines: TimelineData[]
-	export let fullscreen: number | undefined
+	export let fullscreen: FullscreenInfo = {
+		index: null,
+		columnCount: null,
+		container: null,
+	}
 	export let isInjected = true
 	export let favviewerHidden = false
 
@@ -53,8 +57,8 @@
 		<Sidebar/>
 	{/if}
 	<TimelineContainer
-		bind:favviewerHidden={favviewerHidden}
-		bind:showSidebar={showSidebar}
+		bind:favviewerHidden
+		bind:showSidebar
 		{initTimelines}
 		{fullscreen}
 	/>

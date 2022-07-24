@@ -63,3 +63,9 @@ export type TimelineEndpoint = {
 	refreshTypes: Set<RefreshType>;
 	filters: FilterInstance[]
 }
+
+export type FullscreenInfo = {
+	index: number | null;
+	columnCount: number | null;
+	container: typeof SvelteComponent | null;
+}

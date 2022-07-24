@@ -11,13 +11,13 @@
 		faSyncAlt,
 	} from "@fortawesome/free-solid-svg-icons"
 	import MasonryContainer from "../containers/MasonryContainer.svelte"
-	import type {TimelineData} from './index'
+	import type {FullscreenInfo, TimelineData} from './index'
 	import {RefreshType} from '../services/endpoints'
 
 	export let data: TimelineData
 	export let favviewerButtons: boolean
 	export let favviewerHidden: boolean
-	export let fullscreen: boolean
+	export let fullscreen: FullscreenInfo | undefined
 	export let availableRefreshTypes: Set<RefreshType>
 	export let containerRebalance: boolean
 	export let showSidebar: boolean

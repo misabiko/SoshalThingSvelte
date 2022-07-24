@@ -8,7 +8,7 @@
 
 	} from '../services/service'
 	import {onMount} from 'svelte'
-	import {type TimelineData} from './index'
+	import type {FullscreenInfo, TimelineData} from './index'
 	import {keepArticle} from '../filters'
 	import {compare, SortMethod} from '../sorting'
 	import type {ContainerProps} from '../containers'
@@ -24,7 +24,7 @@
 
 	export let data: TimelineData
 	//Would like to make this immutable https://github.com/sveltejs/svelte/issues/5572
-	export let fullscreen: boolean
+	export let fullscreen: FullscreenInfo | undefined = undefined
 	export let toggleFullscreen: () => void | undefined = undefined
 	export let removeTimeline: () => void
 	export let setModalTimeline: (data: Partial<TimelineData>) => void
@@ -99,7 +99,7 @@
 			setModalTimeline,
 		},
 		articleView: data.articleView,
-		columnCount: data.columnCount,
+		columnCount: fullscreen?.columnCount ?? data.columnCount,
 		rebalanceTrigger: containerRebalance,
 	}
 
@@ -259,14 +259,14 @@
 	{#if showOptions}
 		<TimelineOptions
 			bind:data
-			{fullscreen}
+			bind:fullscreen
 			{sortOnce}
 			{removeTimeline}
 		/>
 	{/if}
 	<svelte:component
-		this={data.container}
-		bind:containerRef={containerRef}
+		this={fullscreen?.container ?? data.container}
+		bind:containerRef
 		props={containerProps}
 	/>
 </div>

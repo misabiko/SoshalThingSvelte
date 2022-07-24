@@ -1,4 +1,4 @@
-import type {TimelineData, TimelineEndpoint} from '../timelines'
+import type {FullscreenInfo, TimelineData, TimelineEndpoint} from '../timelines'
 import type {SvelteComponent} from 'svelte'
 import ColumnContainer from '../containers/ColumnContainer.svelte'
 import RowContainer from '../containers/RowContainer.svelte'
@@ -22,11 +22,25 @@ export function loadMainStorage() {
 	const mainStorage: MainStorage = item ? JSON.parse(item) : {}
 
 	if (mainStorage.fullscreen === false)
-		delete mainStorage.fullscreen
+		mainStorage.fullscreen = {
+			index: null,
+			columnCount: null,
+			container: null
+		}
 	else if (mainStorage.fullscreen === true)
-		mainStorage.fullscreen = 0
+		mainStorage.fullscreen = {
+			index: 0,
+			columnCount: null,
+			container: null
+		}
+	else if (typeof mainStorage.fullscreen === 'number')
+		mainStorage.fullscreen = {
+			index: mainStorage.fullscreen,
+			columnCount: null,
+			container: null,
+		}
 
-	return mainStorage as { fullscreen: number | undefined }
+	return mainStorage as { fullscreen: FullscreenInfo }
 }
 
 export function loadTimelines(): TimelineData[] {
@@ -159,7 +173,7 @@ function parseSortInfo({method, reversed}: {method?: string, reversed: boolean})
 }
 
 type MainStorage = {
-	fullscreen?: boolean | number
+	fullscreen?: boolean | number | FullscreenInfo
 }
 
 type TimelineStorage = {

@@ -9,11 +9,32 @@
 	import FiltersOptions from "../filters/FiltersOptions.svelte"
 	import SortOptions from "../sorting/SortOptions.svelte"
 	import {SortMethod} from '../sorting'
+	import type {FullscreenInfo} from './index'
 
 	export let data: TimelineData
-	export let fullscreen: boolean
+	export let fullscreen: FullscreenInfo | undefined
 	export let removeTimeline: () => void
 	export let sortOnce: (method: SortMethod, reversed: boolean) => void
+
+	let fullscreenContainerChecked = fullscreen?.container !== null
+	let lastFullscreenContainerChecked = fullscreenContainerChecked
+	//TODO Just add on:change to Switch
+	$: if (fullscreenContainerChecked !== lastFullscreenContainerChecked) {
+		if (fullscreenContainerChecked)
+			fullscreen.container = data.container
+		else
+			fullscreen.container = null
+		lastFullscreenContainerChecked = fullscreenContainerChecked
+	}
+	let fullscreenColumnCountChecked = fullscreen?.columnCount !== null
+	let lastFullscreenColumnCountChecked = fullscreenColumnCountChecked
+	$: if (fullscreenColumnCountChecked !== lastFullscreenColumnCountChecked) {
+		if (fullscreenColumnCountChecked)
+			fullscreen.columnCount = data.columnCount
+		else
+			fullscreen.columnCount = null
+		lastFullscreenColumnCountChecked = fullscreenColumnCountChecked
+	}
 </script>
 
 <style lang='sass'>
@@ -47,20 +68,40 @@
 		</Button>
 	</div>
 	<div class='box'>
-		<Field label='Container'>
+		<Field label={`${fullscreen?.container !== null ? 'Timeline ' : ''}Container`}>
 			<Select bind:selected={data.container} nativeSize={0}>
 				<option value={ColumnContainer}>Column</option>
 				<option value={RowContainer}>Row</option>
 				<option value={MasonryContainer}>Masonry</option>
 			</Select>
 		</Field>
-		{#if data.container !== ColumnContainer}
-			<Field label='Column Count'>
+		{#if fullscreen !== undefined}
+			<Field label='Fullscreen Container'>
+				<Switch bind:checked={fullscreenContainerChecked}/>
+				{#if fullscreenContainerChecked}
+					<Select bind:selected={fullscreen.container} nativeSize={0}>
+						<option value={ColumnContainer}>Column</option>
+						<option value={RowContainer}>Row</option>
+						<option value={MasonryContainer}>Masonry</option>
+					</Select>
+				{/if}
+			</Field>
+		{/if}
+		{#if (fullscreen?.container ?? data.container) !== ColumnContainer}
+			<Field label={`${fullscreen?.columnCount !== null ? 'Timeline ' : ''}Column Count`}>
 <!--				TODO Make <Input type='number' bind:value/> work in svelma-->
 				<input class='input' type='number' bind:value={data.columnCount} min={1}/>
 			</Field>
+			{#if fullscreen !== undefined}
+				<Field label={'Fullscreen Column Count'}>
+					<Switch bind:checked={fullscreenColumnCountChecked}/>
+					{#if fullscreen.columnCount !== null}
+						<input class='input' type='number' bind:value={fullscreen.columnCount} min={1}/>
+					{/if}
+				</Field>
+			{/if}
 		{/if}
-		{#if !fullscreen}
+		{#if fullscreen === undefined}
 			<Field label='Timeline Width'>
 				<input class='input' type='number' bind:value={data.width} min={1}/>
 			</Field>

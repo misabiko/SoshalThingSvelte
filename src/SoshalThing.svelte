@@ -1,6 +1,7 @@
 <script lang='ts'>
 	import {setContext} from 'svelte'
 	import Sidebar from "./sidebar/Sidebar.svelte"
+	import type {SidebarMenu} from "./sidebar"
 	import type {FullscreenInfo, TimelineData} from "./timelines"
 	import TimelineContainer from "./timelines/TimelineContainer.svelte"
 	import {notifications} from './notifications/store'
@@ -21,6 +22,7 @@
 
 	setContext('isInjected', isInjected)
 	let showSidebar = !isInjected
+	let sidebarMenu: SidebarMenu | null = null;
 </script>
 
 <style lang='sass'>
@@ -54,11 +56,12 @@
 		{/each}
 	</div>
 	{#if showSidebar}
-		<Sidebar/>
+		<Sidebar bind:menu={sidebarMenu}/>
 	{/if}
 	<TimelineContainer
 		bind:favviewerHidden
 		bind:showSidebar
+		bind:sidebarMenu
 		{initTimelines}
 		{fullscreen}
 	/>

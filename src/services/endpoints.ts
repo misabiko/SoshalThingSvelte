@@ -40,7 +40,7 @@ export abstract class Endpoint {
 		if (this.rateLimitInfo === null)
 			return false
 		else
-			return this.rateLimitInfo.remaining <= 0
+			return this.rateLimitInfo.remaining <= 0 && this.rateLimitInfo.reset > Date.now()
 	}
 
 	static readonly constructorInfo: EndpointConstructorInfo

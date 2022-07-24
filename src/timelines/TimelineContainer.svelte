@@ -5,11 +5,15 @@
 	import {afterUpdate, getContext, onMount} from 'svelte'
 	import {Modal} from 'svelma'
 	import {refreshEndpoint, refreshEndpointName, RefreshType, timelineEndpoints} from '../services/endpoints'
+	import portal from '../usePortal'
+	import TimelineEditMenu from "../sidebar/TimelineEditMenu.svelte";
+	import {SidebarMenu} from '../sidebar'
 
 	export let initTimelines: TimelineData[] = [];
 	export let fullscreen: FullscreenInfo;
 	export let favviewerHidden;
 	export let showSidebar;
+	export let sidebarMenu: SidebarMenu
 
 	//We could make this a stack of timelines
 	let modalTimeline: TimelineData | null = null
@@ -87,6 +91,11 @@
 		for (const endpointName of endpointNames.values())
 			refreshEndpointName(endpointName, RefreshType.RefreshStart)
 	})
+
+	function addTimeline(data: TimelineData) {
+		timelines.push(data)
+		timelines = timelines
+	}
 </script>
 
 <style lang='sass'>
@@ -96,6 +105,15 @@
 		display: flex
 		flex-grow: 1
 </style>
+
+{#if sidebarMenu === SidebarMenu.TimelineEdit}
+	<div use:portal={document.querySelector('.sidebarMenu.timelineEdit')} class='box'>
+		<TimelineEditMenu
+			{setModalTimeline}
+			{addTimeline}
+		/>
+	</div>
+{/if}
 
 <div id='timelineContainer'>
 	{#if modalTimeline !== null}

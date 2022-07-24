@@ -1,37 +1,31 @@
 <script lang='ts'>
 	import {Button} from 'svelma'
-	import Fa from 'svelte-fa/src/fa.svelte';
+	import Fa from 'svelte-fa/src/fa.svelte'
+	import type {IconDefinition} from '@fortawesome/free-solid-svg-icons'
 	import {
 		faAngleDoubleLeft,
-		faPlus,
+		faBarsProgress,
 		faCog,
+		faPlus,
+		faRotateLeft,
 		faSpinner,
-		faBarsProgress, faRotateLeft,
 	} from '@fortawesome/free-solid-svg-icons'
-	import type {IconDefinition} from '@fortawesome/free-solid-svg-icons'
-	import { faGithub } from '@fortawesome/free-brands-svg-icons';
-	import EndpointOptions from "./EndpointOptions.svelte";
-	import {loadingStore} from "../bufferedMediaLoading";
-	import SettingsMenu from "./SettingsMenu.svelte";
+	import {faGithub} from '@fortawesome/free-brands-svg-icons'
+	import EndpointOptions from "./EndpointOptions.svelte"
+	import {loadingStore} from "../bufferedMediaLoading"
+	import SettingsMenu from "./SettingsMenu.svelte"
 	import {endpoints} from '../services/endpoints'
-	import {undoables} from "../undo.js";
+	import {undoables} from "../undo.js"
+	import {SidebarMenu} from './index'
 
-	let menu: SidebarMenu | null = null;
-
-	enum SidebarMenu {
-		Endpoints,
-		NewTimeline,
-		MediaLoader,
-		Undoables,
-		Settings,
-	}
+	export let menu: SidebarMenu | null;
 
 	function toggleSidebarMenu(newMenu: SidebarMenu) {
 		menu = menu === newMenu ? null : newMenu;
 	}
 
 	const buttons: {icon: IconDefinition, menu: SidebarMenu, title: string}[] = [
-		{icon: faPlus, menu: SidebarMenu.NewTimeline, title: 'Add new timeline'},
+		{icon: faPlus, menu: SidebarMenu.TimelineEdit, title: 'Add new timeline'},
 		{icon: faBarsProgress, menu: SidebarMenu.Endpoints, title: 'Endpoints'},
 		{icon: faRotateLeft, menu: SidebarMenu.Undoables, title: 'Undoables'},
 		{icon: faSpinner, menu: SidebarMenu.MediaLoader, title: 'Loading medias'},
@@ -83,7 +77,7 @@
 
 <nav id='sidebar'>
 	{#if menu !== null}
-		<div class='sidebarMenu'>
+		<div class='sidebarMenu' class:timelineEdit={menu === SidebarMenu.TimelineEdit}>
 			{#if menu === SidebarMenu.Endpoints}
 				<div class='box'>
 					{#each Object.entries(endpoints) as [name, endpoint] (name)}

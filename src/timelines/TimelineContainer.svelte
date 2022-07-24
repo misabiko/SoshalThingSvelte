@@ -63,6 +63,8 @@
 			...data,
 		}
 		modalTimelineActive = true
+
+		initialRefresh(modalTimeline)
 	}
 
 	afterUpdate(() => {
@@ -73,8 +75,20 @@
 	})
 
 	onMount(() => {
+		initialRefresh(...[
+			...timelines,
+			...(modalTimeline === null ? [] : [modalTimeline])
+		])
+	})
+
+	function addTimeline(data: TimelineData) {
+		timelines.push(data)
+		timelines = timelines
+	}
+
+	function initialRefresh(...refreshingTimelines: TimelineData[]) {
 		const endpointNames = new Set<string>()
-		for (const timeline of timelines)
+		for (const timeline of refreshingTimelines)
 			for (const timelineEndpoint of timeline.endpoints)
 				if (timelineEndpoint.name !== undefined)
 					endpointNames.add(timelineEndpoint.name)
@@ -90,11 +104,6 @@
 
 		for (const endpointName of endpointNames.values())
 			refreshEndpointName(endpointName, RefreshType.RefreshStart)
-	})
-
-	function addTimeline(data: TimelineData) {
-		timelines.push(data)
-		timelines = timelines
 	}
 </script>
 

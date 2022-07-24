@@ -113,7 +113,7 @@
 		width: unset
 </style>
 
-<div class='articlesContainer masonryContainer' bind:this={containerRef}>
+<div class='articlesContainer masonryContainer' bind:this={containerRef} style:flex-direction={props.rtl ? 'row-reverse' : null}>
 	{#each columns as column, i (i)}
 		<div class='masonryColumn'>
 <!--		<span>Ratio: {column.ratio}</span>-->

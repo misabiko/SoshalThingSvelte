@@ -5,6 +5,7 @@ import type {SvelteComponent} from 'svelte'
 export type ContainerProps = {
 	articles: ArticleProps[];
 	columnCount: number;
+	rtl: boolean;
 	articleView: typeof SvelteComponent;
 	timelineArticleProps: TimelineArticleProps;
 	rebalanceTrigger: boolean;

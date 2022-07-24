@@ -17,6 +17,7 @@ export type TimelineData = {
 	container: typeof SvelteComponent;
 	articleView: typeof SvelteComponent;
 	columnCount: number;
+	rtl: boolean;
 	width: number;
 	filters: FilterInstance[];
 	sortInfo: SortInfo;
@@ -37,6 +38,7 @@ export function defaultTimeline(): TimelineData {
 		container: ColumnContainer,
 		articleView: SocialArticleView,
 		columnCount: 1,
+		rtl: false,
 		width: 1,
 		filters: defaultFilterInstances,
 		sortInfo: {

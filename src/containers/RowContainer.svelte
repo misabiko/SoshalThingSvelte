@@ -16,7 +16,7 @@
 		align-items: flex-start
 </style>
 
-<div class='articlesContainer rowContainer' bind:this={containerRef}>
+<div class='articlesContainer rowContainer' bind:this={containerRef} style:flex-direction={props.rtl ? 'row-reverse' : null}>
 	{#each articlesWithUniqueKeys(props.articles) as [articleProps, key] (key)}
 		<ArticleComponent
 			view={props.articleView}

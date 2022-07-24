@@ -100,6 +100,7 @@
 		},
 		articleView: data.articleView,
 		columnCount: fullscreen?.columnCount ?? data.columnCount,
+		rtl: data.rtl,
 		rebalanceTrigger: containerRebalance,
 	}
 

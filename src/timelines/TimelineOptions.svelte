@@ -100,6 +100,9 @@
 					{/if}
 				</Field>
 			{/if}
+			<Field label='Right to left'>
+				<Switch bind:checked={data.rtl}/>
+			</Field>
 		{/if}
 		{#if fullscreen === undefined}
 			<Field label='Timeline Width'>

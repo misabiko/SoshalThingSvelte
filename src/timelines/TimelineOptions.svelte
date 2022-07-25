@@ -48,7 +48,8 @@
 		align-items: flex-start
 		overflow-x: hidden
 		overflow-y: scroll
-		min-height: 50%
+		min-height: 10%
+		resize: vertical
 
 		//TODO & input[type="number"]
 		//	width: 200px

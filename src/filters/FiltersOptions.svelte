@@ -1,4 +1,5 @@
 <script lang='ts'>
+	import {Input} from 'svelma'
 	import type {Filter, FilterInstance} from './index'
 	import Dropdown from "../Dropdown.svelte";
 	import {filterTypes, getFilterName} from "./index.js"
@@ -46,10 +47,21 @@
 		</div>
 	</div>
 
-	<!--{instance.filter.parameter_view(param_callback)}-->
+	{#if instance.filter.type === 'repost' || instance.filter.type === 'quote'}
+		<div class="field has-addons">
+			<div class="field-label is-small">
+				<!-- svelte-ignore a11y-label-has-associated-control -->
+				<label class="label">Username</label>
+			</div>
+			<div class="field-body">
+				<div class="control">
+					<Input bind:value={instance.filter.byUsername}/>
+				</div>
+			</div>
+		</div>
+	{/if}
 {/each}
 
-<!--TODO has-addons-->
 <Dropdown labelText='New Filter'>
 	{#each filterTypes as filterType}
 		<!-- svelte-ignore a11y-missing-attribute -->

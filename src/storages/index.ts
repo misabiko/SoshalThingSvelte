@@ -48,7 +48,7 @@ export function loadMainStorage() {
 		}
 
 	const containerString = mainStorage.fullscreen?.container
-	if (containerString !== null)
+	if (containerString)
 		(mainStorage.fullscreen as FullscreenInfo).container = parseContainer(containerString)
 
 	return mainStorage as { fullscreen: FullscreenInfo }

@@ -87,9 +87,13 @@ test.describe('timelines', () => {
 
 	test('masonry container', async ({ page }) => {
 		await loadWithLocalStorage(page, {
-			[TIMELINE_STORAGE_KEY]: [
-				{container: 'Masonry'},
-			],
+			[TIMELINE_STORAGE_KEY]: [{
+				container: 'Masonry',
+				endpoints: [{
+					service: 'Dummy',
+					endpointType: 0,
+				}],
+			}],
 		});
 
 		await expect(page.locator('.masonryContainer')).toHaveCount(1);

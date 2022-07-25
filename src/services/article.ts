@@ -2,6 +2,8 @@ import type {Readable} from 'svelte/store'
 import {derived} from 'svelte/store'
 import {getWritable} from './service'
 
+//Move file to article directory
+
 export default abstract class Article {
 	static readonly service: string
 
@@ -210,6 +212,18 @@ export function getRefed<T extends ArticleRef | ArticleRefIdPair>(ref: T) {
 		case ArticleRefType.QuoteRepost:
 			return [ref.reposted, ref.quoted] as ArticlesOrIdPairs<T>
 	}
+}
+
+export function articleWithRefToArray(articleWithRefs: ArticleWithRefs): Article[] {
+	const articles = [articleWithRefs.article]
+
+	if (articleWithRefs.actualArticleRef)
+		articles.push(...getRefed(articleWithRefs.actualArticleRef))
+
+	if (articleWithRefs.replyRef)
+		articles.push(articleWithRefs.replyRef)
+
+	return articles
 }
 
 export function getActualArticleIdPair(article: Article)

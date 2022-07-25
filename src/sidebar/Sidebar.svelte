@@ -87,13 +87,22 @@
 					{/each}
 				</div>
 			{:else if menu === SidebarMenu.MediaLoader}
-				{#each [...$loadingStore] as idPair (idPair)}
-					{idPair}
-				{:else}
-					<div class='box'>
+				<Button on:click={loadingStore.clearLoadings}>Clear loadings</Button>
+				<Button on:click={loadingStore.clearQueue}>Clear queue</Button>
+				<div class='box'>
+					{#each [...$loadingStore.loadings] as idPair (idPair)}
+						{idPair}
+					{:else}
 						No media currently loading
-					</div>
-				{/each}
+					{/each}
+				</div>
+				<div class='box'>
+					{#each [...$loadingStore.queue] as idPair (idPair)}
+						{idPair}
+					{:else}
+						No media currently queued
+					{/each}
+				</div>
 			{:else if menu === SidebarMenu.Undoables}
 					{#each [...$undoables] as undoable, index (undoable.text)}
 						<div class='box'>

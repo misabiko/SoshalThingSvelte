@@ -82,6 +82,14 @@
 		},
 	)
 
+	let articleCountLabel: string
+	$: if ($filteredArticles.length)
+		articleCountLabel = `${$filteredArticles.length} articles shown, ${$articles.length - $filteredArticles.length} hidden.`
+	else if ($articles.length)
+		articleCountLabel = `${$articles.length} hidden articles`
+	else
+		articleCountLabel = 'No articles listed.'
+
 	let availableRefreshTypes: Set<RefreshType>
 	$: availableRefreshTypes = new Set(data.endpoints.flatMap(e => {
 		const endpoint = e.name !== undefined ? get(endpoints[e.name]) : e.endpoint
@@ -255,6 +263,7 @@
 		bind:favviewerButtons
 		bind:favviewerHidden
 		{fullscreen}
+		{articleCountLabel}
 
 		{shuffle}
 		{autoscroll}
@@ -267,6 +276,7 @@
 			bind:fullscreen
 			{sortOnce}
 			{removeTimeline}
+			{articleCountLabel}
 		/>
 	{/if}
 	{#if $filteredArticles.length}
@@ -278,11 +288,7 @@
 	{:else}
 		<div class='articlesContainer'>
 			<p class='noArticleText'>
-				{
-					$articles.length
-					? `${$articles.length} hidden articles`
-					: 'No articles listed.'
-				}
+				{articleCountLabel}
 			</p>
 		</div>
 	{/if}

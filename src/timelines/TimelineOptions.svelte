@@ -12,9 +12,10 @@
 	import type {FullscreenInfo} from './index'
 
 	export let data: TimelineData
-	export let fullscreen: FullscreenInfo | undefined
+	export let fullscreen: FullscreenInfo | undefined = undefined
 	export let removeTimeline: () => void
 	export let sortOnce: (method: SortMethod, reversed: boolean) => void
+	export let articleCountLabel: string
 
 	let fullscreenContainerChecked = fullscreen?.container !== null
 	let lastFullscreenContainerChecked = fullscreenContainerChecked
@@ -64,6 +65,10 @@
 
 <div class='timelineOptions'>
 	<div class='box'>
+		<p>{articleCountLabel}</p>
+		<Field label='Show article count on header'>
+			<Switch bind:checked={data.showArticleCount}/>
+		</Field>
 		<Button type='is-danger' on:click={removeTimeline}>
 			Remove timeline
 		</Button>

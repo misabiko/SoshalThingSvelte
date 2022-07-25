@@ -30,6 +30,7 @@ export type TimelineData = {
 	compact: boolean;
 	shouldLoadMedia: boolean;
 	hideFilteredOutArticles: boolean;
+	showArticleCount: boolean;
 }
 
 export function defaultTimeline(): TimelineData {
@@ -54,6 +55,7 @@ export function defaultTimeline(): TimelineData {
 		compact: false,
 		shouldLoadMedia: true,
 		hideFilteredOutArticles: true,
+		showArticleCount: false,
 	}
 }
 

@@ -17,7 +17,8 @@
 	export let data: TimelineData
 	export let favviewerButtons: boolean
 	export let favviewerHidden: boolean
-	export let fullscreen: FullscreenInfo | undefined
+	export let fullscreen: FullscreenInfo | undefined = undefined
+	export let articleCountLabel: string
 	export let availableRefreshTypes: Set<RefreshType>
 	export let containerRebalance: boolean
 	export let showSidebar: boolean
@@ -60,7 +61,7 @@
 
 <div class='timelineHeader'>
 	<div class='timelineLeftHeader'>
-		<strong>{data.title}</strong>
+		<strong>{data.title + (data.showArticleCount ? ' - ' + articleCountLabel : '')}</strong>
 		{#if favviewerButtons}
 			<div class='timelineButtons'>
 				<button class='borderless-button' title='Toggle SoshalThing' on:click={() => favviewerHidden = !favviewerHidden}>

@@ -2,8 +2,9 @@
 	import type {Readable, Writable} from 'svelte/store'
 	import {derived, get} from 'svelte/store'
 	import type {ArticleIdPair, ArticleRef, ArticleWithRefs} from '../services/article'
-	import Article, {articleRefIdPairToRef, articleWithRefToArray} from '../services/article'
+	import Article, {articleRefIdPairToRef, articleWithRefToArray, getActualArticle} from '../services/article'
 	import {
+		fetchArticle,
 		getWritable,
 
 	} from '../services/service'
@@ -92,11 +93,16 @@
 		articleCountLabel = 'No articles listed.'
 
 	$: if (data.shouldLoadMedia && $filteredArticles.length) {
-		for (const articleProps of $filteredArticles)
-			for (const article of articleWithRefToArray(articleProps))
-				for (let i = 0; i < article.medias.length; ++i)
-					if (!article.medias[i].loaded)
-						loadingStore.requestLoad(article.idPair, i)
+		for (const articleProps of $filteredArticles) {
+			const actualArticle = getActualArticle(articleProps)
+			if (!actualArticle.fetched)
+				fetchArticle(actualArticle.idPair)
+			if (data.shouldLoadMedia)
+				for (const article of articleWithRefToArray(articleProps))
+					for (let i = 0; i < article.medias.length; ++i)
+						if (!article.medias[i].loaded)
+							loadingStore.requestLoad(article.idPair, i)
+		}
 	}
 
 	let availableRefreshTypes: Set<RefreshType>

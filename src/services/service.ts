@@ -18,7 +18,6 @@ export interface Service<A extends Article = Article> {
 	userEndpoint: ((username: string) => Endpoint) | undefined,
 	articleActions: { [name: string]: ArticleAction };
 	requestImageLoad?: (id: ArticleId, index: number) => void;
-	fetchArticle?: (id: ArticleId) => void;
 	getCachedArticles?: () => {[id: string]: object}
 }
 
@@ -130,9 +129,36 @@ export function getWritable<T extends Article = Article>(idPair: ArticleIdPair):
 	return services[idPair.service].articles[idPair.id as string] as Writable<T>
 }
 
-export function fetchArticle(idPair: ArticleIdPair) {
-	const service = services[idPair.service]
-	const fetchArticle = service.fetchArticle
-	if (fetchArticle !== undefined)
-		fetchArticle(idPair.id);
+export async function fetchArticle(idPair: ArticleIdPair) {
+	const service = services[idPair.service] as unknown as Service & FetchingService
+	if (service.fetchArticle === undefined)
+		return
+
+	if (service.fetchedArticles.has(idPair.id))
+		return
+
+	if (service.fetchedArticleQueue > 5) {
+		if (service.fetchTimeout === undefined) {
+			service.fetchTimeout = window.setTimeout(() => {
+				service.fetchedArticleQueue = 0
+				fetchArticle(idPair)
+				//TODO like this, cache only gets update every 5 articles
+				updateCachedArticlesStorage()
+				service.fetchTimeout = undefined
+			}, 1000)
+		}
+		return
+	}
+	service.fetchedArticles.add(idPair.id)
+	++service.fetchedArticleQueue
+
+	const store = getWritable(idPair)
+	await service.fetchArticle(store)
+}
+
+export interface FetchingService<A extends Article = Article> {
+	fetchArticle: (store: Writable<A>) => void;
+	fetchedArticles: Set<ArticleId>;
+	fetchedArticleQueue: number;
+	fetchTimeout: undefined | number;
 }

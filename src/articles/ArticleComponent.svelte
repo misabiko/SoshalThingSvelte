@@ -14,11 +14,7 @@
 	export let style = ''; style;
 
 	let actualArticle: Readonly<Article>
-	$: {
-		actualArticle = getActualArticle(articleProps)
-		if (!actualArticle.fetched)
-			fetchArticle(actualArticle.idPair)
-	}
+	$: actualArticle = getActualArticle(articleProps)
 
 	function onLogData() {
 		console.dir(articleProps)

@@ -12,7 +12,15 @@ type LoadingInfo = {
 	queue: string[]
 }
 
-function createStore() {
+const maxLoading = 5;
+
+export enum LoadingState {
+	NotLoaded,
+	Loading,
+	Loaded,
+}
+
+export const loadingStore = (() => {
 	const {subscribe, update} = writable<LoadingInfo>({
 		loadings: new Set<string>(),
 		queue: []
@@ -132,12 +140,4 @@ function createStore() {
 			})
 		}
 	}
-}
-export const loadingStore = createStore()
-const maxLoading = 5;
-
-export enum LoadingState {
-	NotLoaded,
-	Loading,
-	Loaded,
-}
+})()

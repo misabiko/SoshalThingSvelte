@@ -4,7 +4,8 @@ import esbuildSvelte from 'esbuild-svelte';
 import sveltePreprocess from 'svelte-preprocess';
 import {sassPlugin} from 'esbuild-sass-plugin';
 import postcss from 'esbuild-postcss';
-import path from "path";
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
 
 //From https://github.com/evanw/esbuild/issues/2093#issuecomment-1062461380
 //To make sure Soshal library uses the same svelte runtime as this one
@@ -21,9 +22,14 @@ const DedupSvelteInternalPlugin = {
 
 const outdir = './dist';
 
-//TODO Pass alternate entry, which can then import extra services
+
+let entryPoint = './src/entry.ts'
+const entryIndex = process.argv.findIndex(s => s === '--entry')
+if (entryIndex > -1 && process.argv.length >= entryIndex)
+	entryPoint = path.join(dirname(fileURLToPath(import.meta.url)), process.argv[entryIndex + 1])
+
 export const buildOptions = {
-	entryPoints: [`./src/entry.ts`],
+	entryPoints: [entryPoint],
 	bundle: true,
 	outdir,
 	mainFields: ['svelte', 'browser', 'module', 'main', 'exports'],

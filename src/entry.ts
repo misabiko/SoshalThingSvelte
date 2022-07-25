@@ -2,8 +2,6 @@ import 'styles/global.sass'
 
 //Add service endpoints here to include them
 import './services/twitter/endpoints'
-//TODO Conditionally include dummy service in tests
-import './services/dummy/endpoints'
 import SoshalThing from "./SoshalThing.svelte"
 import {loadMainStorage, loadTimelines} from './storages'
 import type {FullscreenInfo} from './timelines'

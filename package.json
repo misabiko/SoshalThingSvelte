@@ -4,7 +4,7 @@
   "scripts": {
     "build": "node buildscript.js",
     "serve": "node buildscript.js --serve",
-    "serve:static": "node buildscript.js && node src/staticServer.js",
+    "serve:static": "node src/staticServer.js",
     "build:extension": "node extensionbuildscript.js",
     "test": "playwright test",
     "test:headed": "playwright test --headed",

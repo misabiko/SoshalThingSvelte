@@ -1,7 +1,7 @@
 <script lang='ts'>
-	import type {Readable} from 'svelte/store'
+	import type {Readable, Writable} from 'svelte/store'
 	import {derived, get} from 'svelte/store'
-	import type {ArticleRef, ArticleWithRefs} from '../services/article'
+	import type {ArticleIdPair, ArticleRef, ArticleWithRefs} from '../services/article'
 	import Article, {articleRefIdPairToRef} from '../services/article'
 	import {
 		getWritable,
@@ -37,10 +37,10 @@
 	let containerRef: HTMLElement | undefined = undefined
 	let containerRebalance = false;
 
+	let articleIdPairs: Writable<ArticleIdPair[]> = data.articles
+
 	let articles: Readable<Article[]>
-	const idPairsUnsubscribe = data.articles.subscribe(idPairs => {
-		articles = derived(idPairs.map(getWritable), a => a)
-	})
+	$: articles = derived($articleIdPairs.map(getWritable), a => a)
 
 	let articlesWithRefs: Readable<ArticleWithRefs[]>
 	$: articlesWithRefs = derived($articles.map(article => {
@@ -209,7 +209,6 @@
 			return
 
 		return () => {
-			idPairsUnsubscribe()
 			console.log('Destroying timeline ' + data.title)
 		}
 	})
@@ -253,7 +252,7 @@
 		font-size: xx-large
 </style>
 
-<div class='timeline' class:fullscreenTimeline={fullscreen} style='{data.width > 1 ? `width: ${data.width * 500}px` : ""}'>
+<div class='timeline' class:fullscreenTimeline={fullscreen !== undefined} style='{data.width > 1 ? `width: ${data.width * 500}px` : ""}'>
 	<TimelineHeader
 		bind:data
 		bind:availableRefreshTypes

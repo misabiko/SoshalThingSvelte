@@ -8,6 +8,9 @@ import {defaultFilterInstances} from '../filters'
 import type {Endpoint, RefreshType} from '../services/endpoints'
 import type {Writable} from 'svelte/store'
 import {writable} from 'svelte/store'
+import {everyRefreshType} from '../services/endpoints'
+import MasonryContainer from '../containers/MasonryContainer.svelte'
+import {getServices} from '../services/service'
 
 export type TimelineData = {
 	title: string;
@@ -70,4 +73,35 @@ export type FullscreenInfo = {
 	index: number | null;
 	columnCount: number | null;
 	container: typeof SvelteComponent | null;
+}
+
+export function newUserTimeline(serviceName: string, username: string): TimelineData | undefined {
+	const endpointConstructor = getServices()[serviceName].userEndpoint
+	if (endpointConstructor === undefined)
+		return undefined
+
+	return {
+		...defaultTimeline(),
+		title: username,
+		endpoints: [{
+			endpoint: endpointConstructor(username),
+			refreshTypes: everyRefreshType,
+			filters: [],
+		}],
+		filters: [
+			...defaultFilterInstances,
+			{
+				filter: {type: 'media'},
+				enabled: true,
+				inverted: false,
+			},
+			{
+				filter: {type: 'noRef'},
+				enabled: true,
+				inverted: false,
+			}
+		],
+		container: MasonryContainer,
+		columnCount: 3,
+	}
 }

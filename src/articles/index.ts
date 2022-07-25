@@ -7,7 +7,7 @@ export type TimelineArticleProps = {
 	compact: boolean;
 	hideText: boolean;
 	shouldLoadMedia: boolean;
-	setModalTimeline: (data: Partial<TimelineData>) => void;
+	setModalTimeline: (data: TimelineData, width?: number) => void;
 }
 
 //Props specific to that article

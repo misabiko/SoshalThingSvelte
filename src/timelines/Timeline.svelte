@@ -27,7 +27,7 @@
 	export let fullscreen: FullscreenInfo | undefined = undefined
 	export let toggleFullscreen: () => void | undefined = undefined
 	export let removeTimeline: () => void
-	export let setModalTimeline: (data: Partial<TimelineData>) => void
+	export let setModalTimeline: (data: TimelineData, width?: number) => void
 
 	export let favviewerButtons = false
 	export let favviewerHidden = false

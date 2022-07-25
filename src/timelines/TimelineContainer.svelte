@@ -57,10 +57,10 @@
 		timelines.splice(index, 1)
 	}
 
-	function setModalTimeline(data: Partial<TimelineData>) {
+	function setModalTimeline(data: TimelineData, width = 3) {
 		modalTimeline = {
-			...defaultTimeline(),
 			...data,
+			width,
 		}
 		modalTimelineActive = true
 

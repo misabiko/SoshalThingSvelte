@@ -47,6 +47,10 @@ export function loadMainStorage() {
 			container: null,
 		}
 
+	const containerString = mainStorage.fullscreen?.container
+	if (containerString !== null)
+		(mainStorage.fullscreen as FullscreenInfo).container = parseContainer(containerString)
+
 	return mainStorage as { fullscreen: FullscreenInfo }
 }
 
@@ -187,7 +191,11 @@ function parseSortInfo({method, reversed}: {method?: string, reversed: boolean})
 }
 
 type MainStorage = {
-	fullscreen?: boolean | number | FullscreenInfo
+	fullscreen?: boolean | number | FullscreenInfoStorage
+}
+
+type FullscreenInfoStorage = FullscreenInfo & {
+	container: string | null
 }
 
 type TimelineStorage = {

@@ -11,7 +11,14 @@ import type {SortInfo} from '../sorting'
 import {SortMethod} from '../sorting'
 import {defaultTimeline} from '../timelines'
 import {defaultFilterInstances} from '../filters'
-import {addEndpoint, Endpoint, endpoints, RefreshType, startAutoRefresh} from '../services/endpoints'
+import {
+	addEndpoint,
+	Endpoint,
+	endpoints,
+	RefreshType,
+	startAutoRefresh,
+} from '../services/endpoints'
+import type {EndpointConstructorParams} from '../services/endpoints'
 import {derived, get} from 'svelte/store'
 
 export const MAIN_STORAGE_KEY = 'SoshalThingSvelte'
@@ -126,7 +133,14 @@ function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | unde
 	)
 
 	if (endpoint === undefined) {
-		endpoint = constructorInfo.constructor(storage.params as any)
+		if (storage.params === undefined)
+			storage.params = {}
+
+		for (const [param, defaultValue] of constructorInfo.paramTemplate)
+			if (!storage.params.hasOwnProperty(param))
+				storage.params[param] = defaultValue
+
+		endpoint = constructorInfo.constructor(storage.params)
 		addEndpoint(endpoint)
 	}
 
@@ -215,7 +229,7 @@ const DEFAULT_TIMELINE_STORAGE: TimelineStorage = {
 type EndpointStorage = {
 	service: string
 	endpointType: number
-	params?: object
+	params?: EndpointConstructorParams
 	filters?: FilterInstance[]
 	autoRefresh?: boolean
 	onStart?: boolean

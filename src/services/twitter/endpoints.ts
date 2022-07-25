@@ -78,7 +78,7 @@ export class UserTimelineEndpoint extends V1Endpoint {
 	readonly maxCount = 200
 	autoRefreshInterval = 60_000	//Min 1000
 
-	constructor(readonly username: string) {
+	constructor(readonly username: string, public includeRetweets: boolean) {
 		super()
 
 		this.name = `User Timeline ${this.username}`
@@ -87,6 +87,7 @@ export class UserTimelineEndpoint extends V1Endpoint {
 	setSearchParams(url: URL, refreshType: RefreshType) {
 		super.setSearchParams(url, refreshType)
 		url.searchParams.set('screen_name', this.username)
+		url.searchParams.set('include_rts', this.includeRetweets.toString())
 	}
 
 	matchParams(params: any): boolean {
@@ -95,8 +96,8 @@ export class UserTimelineEndpoint extends V1Endpoint {
 
 	static readonly constructorInfo: EndpointConstructorInfo = {
 		name: 'UserTimelineEndpoint',
-		paramTemplate: [['username', '']],
-		constructor: params => new UserTimelineEndpoint(params.username as string)
+		paramTemplate: [['username', ''], ['includeRetweets', true]],
+		constructor: params => new UserTimelineEndpoint(params.username as string, params.includeRetweets as boolean)
 	}
 }
 
@@ -107,7 +108,7 @@ export class ListEndpoint extends V1Endpoint {
 	readonly maxCount = 200	//Not mentionned, assuming 200
 	autoRefreshInterval = 60_000	//Min 1000
 
-	constructor(readonly username: string, readonly slug: string) {
+	constructor(readonly username: string, readonly slug: string, public includeRetweets: boolean) {
 		super()
 
 		this.name = `List Endpoint ${this.username}/${this.slug}`
@@ -117,6 +118,7 @@ export class ListEndpoint extends V1Endpoint {
 		super.setSearchParams(url, refreshType)
 		url.searchParams.set('owner_screen_name', this.username)
 		url.searchParams.set('slug', this.slug)
+		url.searchParams.set('include_rts', this.includeRetweets.toString())
 	}
 
 	matchParams(params: any): boolean {
@@ -126,8 +128,12 @@ export class ListEndpoint extends V1Endpoint {
 
 	static readonly constructorInfo: EndpointConstructorInfo = {
 		name: 'ListEndpoint',
-		paramTemplate: [['username', ''], ['slug', '']],
-		constructor: params => new ListEndpoint(params.username as string, params.slug as string)
+		paramTemplate: [['username', ''], ['slug', ''], ['includeRetweets', true]],
+		constructor: params => new ListEndpoint(
+			params.username as string,
+			params.slug as string,
+			params.includeRetweets as boolean,
+		)
 	}
 }
 
@@ -205,4 +211,5 @@ TwitterService.endpointConstructors.push(
 	SearchEndpoint.constructorInfo,
 )
 
-TwitterService.userEndpoint = username => new UserTimelineEndpoint(username)
+//TODO Use filters to check if we include retweets
+TwitterService.userEndpoint = username => new UserTimelineEndpoint(username, false)

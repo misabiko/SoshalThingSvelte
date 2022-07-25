@@ -15,27 +15,13 @@ export type FilterInstance = {
 
 //TODO Add service nullable field, and add Deleted filter to Twitter
 export type Filter =
-	{
-		type: 'media'
-	} |
-	{
-		type: 'animated'
-	} |
-	{
-		type: 'notMarkedAsRead'
-	} |
-	{
-		type: 'notHidden'
-	} |
-	{
-		type: 'liked'
-	} |
-	{
-		type: 'reposted'
-	} |
-	{
-		type: 'noRef'
-	} |
+	{ type: 'media' } |
+	{ type: 'animated' } |
+	{ type: 'notMarkedAsRead' } |
+	{ type: 'notHidden' } |
+	{ type: 'liked' } |
+	{ type: 'reposted' } |
+	{ type: 'noRef' } |
 	{
 		type: 'repost'
 		byUsername?: string
@@ -43,6 +29,11 @@ export type Filter =
 	{
 		type: 'quote'
 		byUsername?: string
+	} | {
+		type: 'interval'
+		interval: number
+		offset: number
+		includeOffset: boolean
 	}
 
 export function getFilterName(filterType: Filter['type'], inverted: boolean): string {
@@ -66,6 +57,8 @@ export function getFilterName(filterType: Filter['type'], inverted: boolean): st
 				return 'Not a repost';
 			case 'quote':
 				return 'Not a quote';
+			case 'interval':
+				return `Not by interval`;
 		}
 	}else {
 		switch (filterType) {
@@ -87,6 +80,8 @@ export function getFilterName(filterType: Filter['type'], inverted: boolean): st
 				return 'Repost';
 			case 'quote':
 				return 'Quote';
+			case 'interval':
+				return 'By interval';
 		}
 	}
 }
@@ -104,7 +99,17 @@ export const filterTypes: Filter['type'][] = [
 ]
 
 export function defaultFilter(filterType: Filter['type']): Filter {
-	return { type: filterType }
+	switch (filterType) {
+		case 'interval':
+			return {
+				type: filterType,
+				interval: 3,
+				offset: 0,
+				includeOffset: false,
+			}
+		default:
+			return { type: filterType }
+	}
 }
 
 export const defaultFilterInstances: FilterInstance[] = [
@@ -119,7 +124,7 @@ export const defaultFilterInstances: FilterInstance[] = [
 	},
 ]
 
-export function keepArticle(articleWithRefs: ArticleWithRefs, filter: Filter): boolean {
+export function keepArticle(articleWithRefs: ArticleWithRefs, index: number, filter: Filter): boolean {
 	switch (filter.type) {
 		case 'media':
 			return !!articleWithRefs.article.medias.length ||
@@ -178,6 +183,11 @@ export function keepArticle(articleWithRefs: ArticleWithRefs, filter: Filter): b
 			}
 
 			return false
+		case 'interval':
+			if (index < filter.offset)
+				return filter.includeOffset
+			else
+				return (index - filter.offset) % filter.interval === filter.interval - 1
 	}
 }
 

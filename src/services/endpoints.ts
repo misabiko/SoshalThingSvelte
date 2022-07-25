@@ -96,9 +96,10 @@ export async function refreshEndpointName(endpointName: string, refreshType: Ref
 		.filter(te => te.endpoint !== undefined) as { endpoint: TimelineEndpoint, addArticles: (idPairs: ArticleIdPair[]) => void }[]
 
 	for (const timelineEndpoint of matchingTimelineEndpoints) {
+		//TODO Exclude interval from endpoint filters
 		const addedArticles = articles
 			.filter(articleWithRefs =>
-				timelineEndpoint.endpoint.filters.every(f => !f.enabled || (keepArticle(articleWithRefs, f.filter) !== f.inverted)),
+				timelineEndpoint.endpoint.filters.every(f => !f.enabled || (keepArticle(articleWithRefs, 0, f.filter) !== f.inverted)),
 			)
 		timelineEndpoint.addArticles(addedArticles.map(a => a.article.idPair))
 	}

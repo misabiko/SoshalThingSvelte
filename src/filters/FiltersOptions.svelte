@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import {Input} from 'svelma'
+	import {Input, Switch} from 'svelma'
 	import type {Filter, FilterInstance} from './index'
 	import Dropdown from "../Dropdown.svelte";
 	import {filterTypes, getFilterName} from "./index.js"
@@ -56,6 +56,40 @@
 			<div class="field-body">
 				<div class="control">
 					<Input bind:value={instance.filter.byUsername}/>
+				</div>
+			</div>
+		</div>
+	{:else if instance.filter.type === 'interval'}
+		<div class='field has-addons'>
+			<div class='field-label is-small'>
+				<!-- svelte-ignore a11y-label-has-associated-control -->
+				<label class='label'>Interval</label>
+			</div>
+			<div class='field-body'>
+				<div class='control'>
+					<input type='number' class='input' bind:value={instance.filter.interval} min={1}/>
+				</div>
+			</div>
+		</div>
+		<div class='field has-addons'>
+			<div class='field-label is-small'>
+				<!-- svelte-ignore a11y-label-has-associated-control -->
+				<label class='label'>Offset</label>
+			</div>
+			<div class='field-body'>
+				<div class='control'>
+					<input type='number' class='input' bind:value={instance.filter.offset} min={0}/>
+				</div>
+			</div>
+		</div>
+		<div class='field has-addons'>
+			<div class='field-label is-small'>
+				<!-- svelte-ignore a11y-label-has-associated-control -->
+				<label class='label'>Include Offset</label>
+			</div>
+			<div class='field-body'>
+				<div class='control'>
+					<Switch bind:checked={instance.filter.includeOffset}/>
 				</div>
 			</div>
 		</div>

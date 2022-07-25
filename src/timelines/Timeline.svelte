@@ -64,9 +64,9 @@
 		articlesWithRefs,
 		stores => {
 			let articleProps: ArticleProps[] = stores
-				.map(articleWithRefs => ({
+				.map((articleWithRefs, i) => ({
 					...articleWithRefs,
-					filteredOut: !data.filters.every(f => !f.enabled || (keepArticle(articleWithRefs, f.filter) !== f.inverted))
+					filteredOut: !data.filters.every(f => !f.enabled || (keepArticle(articleWithRefs, i, f.filter) !== f.inverted))
 				}))
 
 			if (data.hideFilteredOutArticles)

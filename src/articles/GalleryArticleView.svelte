@@ -104,19 +104,33 @@
 
 	//ul.articleTags
 	//	list-style-type: none
+
+	.imgPlaceHolder
+		width: 100%
+		background-color: grey
 </style>
 
 <div class='galleryArticle'>
 	<div>
 		{#each actualArticle.medias as media, i (i)}
 			{@const isLoading = loadingStates[i] === LoadingState.Loading}
+			{@const cropped = !!(media.offsetX || media.offsetY)}
+			{@const thumbnailCropped = !!(media.thumbnail?.offsetX || media.thumbnail?.offsetY)}
 			{#if loadingStates[i] === LoadingState.NotLoaded}
-				<img
-					alt={`${actualArticle.idPair.id} thumbnail`}
-					class='articleThumb'
-					src={media.thumbnail}
-					on:click={() => onMediaClick(actualArticle.idPair, i)}
-				/>
+				{#if media.thumbnail}
+					<img
+						alt={`${actualArticle.idPair.id} thumbnail`}
+						class='articleThumb'
+						src={media.thumbnail.src}
+						on:click={() => onMediaClick(actualArticle.idPair, i)}
+						style:object-fit={thumbnailCropped ? 'cover' : null}
+						style:object-position={thumbnailCropped ? `${media.thumbnail.offsetX ?? 0} ${media.thumbnail.offsetY ?? 0}` : null}
+						style:aspect-ratio={thumbnailCropped ? `1 / ${media.ratio}`: null}
+						style:width={thumbnailCropped ? '100%' : null}
+					/>
+				{:else}
+					<div class='imgPlaceHolder' style:aspect-ratio={1 / media.ratio}></div>
+				{/if}
 			{:else if media.mediaType === MediaType.Image || media.mediaType === MediaType.Gif}
 				<img
 					alt={actualArticle.idPair.id}
@@ -125,14 +139,26 @@
 					on:load={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
 					class:articleMediaLoading={isLoading}
 					bind:this={mediaRefs[i]}
+					style:object-fit={cropped ? 'cover' : null}
+					style:object-position={cropped ? `${media.offsetX ?? 0} ${media.offsetY ?? 0}` : null}
+					style:aspect-ratio={cropped ? `1 / ${media.ratio}`: null}
+					style:width={cropped ? '100%' : null}
 				/>
 				{#if isLoading}
-					<img
-						alt={`${actualArticle.idPair.id} thumbnail`}
-						class='articleThumb'
-						src={media.thumbnail}
-						on:click={() => onMediaClick(actualArticle.idPair, i)}
-					/>
+					{#if media.thumbnail}
+						<img
+							alt={`${actualArticle.idPair.id} thumbnail`}
+							class='articleThumb'
+							src={media.thumbnail.src}
+							on:click={() => onMediaClick(actualArticle.idPair, i)}
+							style:object-fit={thumbnailCropped ? 'cover' : null}
+							style:object-position={thumbnailCropped ? `${media.thumbnail.offsetX ?? 0} ${media.thumbnail.offsetY ?? 0}` : null}
+							style:aspect-ratio={thumbnailCropped ? `1 / ${media.thumbnail.ratio}`: null}
+							style:width={thumbnailCropped ? '100%' : null}
+						/>
+					{:else}
+						<div class='imgPlaceHolder' style:aspect-ratio={1 / media.ratio}></div>
+					{/if}
 				{/if}
 			{:else if !timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
 				<!-- svelte-ignore a11y-media-has-caption -->

@@ -83,7 +83,7 @@ export interface ArticleAuthor {
 	avatarUrl?: string;
 }
 
-export type ArticleMedia = {
+export type ArticleMedia = ({
 	src: string;
 	ratio: ValidRatio;
 	queueLoadInfo: MediaQueueInfo.DirectLoad | MediaQueueInfo.Thumbnail;
@@ -95,8 +95,15 @@ export type ArticleMedia = {
 	ratio: ValidRatio;
 	queueLoadInfo: MediaQueueInfo.LazyLoad;
 	mediaType: MediaType;
-	thumbnail?: string;
+	thumbnail?: {
+		src: string
+		offsetX?: string
+		offsetY?: string
+	};
 	loaded: boolean;
+}) & {
+	offsetX?: string
+	offsetY?: string
 }
 
 type ValidRatio = number;

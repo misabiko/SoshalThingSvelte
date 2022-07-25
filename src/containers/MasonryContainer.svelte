@@ -83,7 +83,6 @@
 	}
 
 	function addArticle(idPairStr: string): number {
-		//TODO Support rtl
 		const smallestIndex = columns.reduce((acc, curr, currIndex) => curr.ratio < columns[acc].ratio ? currIndex : acc, 0);
 		columns[smallestIndex].articles.push(idPairStr);
 		columns[smallestIndex].ratio += getRatio(uniqueArticles[idPairStr].articleProps);

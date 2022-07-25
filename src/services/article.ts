@@ -126,13 +126,13 @@ export enum MediaQueueInfo {
 	LazyLoad,
 }
 
+//TODO Dissolve QuoteRepost
 export enum ArticleRefType {
 	Repost,
 	Quote,
 	QuoteRepost,
 }
 
-//TODO Have reply as its own member
 export type ArticleRef =
 	{
 		type: ArticleRefType.Repost,

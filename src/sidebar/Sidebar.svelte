@@ -104,18 +104,19 @@
 					{/each}
 				</div>
 			{:else if menu === SidebarMenu.Undoables}
-					{#each [...$undoables] as undoable, index (undoable.text)}
-						<div class='box'>
-							<p>{undoable.text}</p>
-							<Button on:click={() => undoables.toggleDo(index)}>
-								{undoable.undid ? 'Redo' : 'Undo'}
-							</Button>
-						</div>
-					{:else}
-						<div class='box'>
-							Nothing to undo
-						</div>
-					{/each}
+				<!--TODO Add undoable ids-->
+				{#each [...$undoables] as undoable, index (`${undoable.text}/${index}`)}
+					<div class='box'>
+						<p>{undoable.text}</p>
+						<Button on:click={() => undoables.toggleDo(index)}>
+							{undoable.undid ? 'Redo' : 'Undo'}
+						</Button>
+					</div>
+				{:else}
+					<div class='box'>
+						Nothing to undo
+					</div>
+				{/each}
 			{:else if menu === SidebarMenu.Settings}
 				<SettingsMenu/>
 			{/if}

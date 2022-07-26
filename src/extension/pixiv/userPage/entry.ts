@@ -1,15 +1,18 @@
-import UserPage from './UserPage.svelte';
+import UserPage from './UserArtworksPage.svelte';
 
-console.log('Starting 3000ms timeout...')
-setTimeout(() => {
-	console.log('Injecting soshalthing...')
-	const sections = document.getElementsByTagName('section')
-	const target = sections[0]
-	if (target === null)
-		throw new Error("Couldn't find section")
+const path = window.location.pathname.split('/')
+if (path.length === 4 || path[4] === 'illustrations' || path[4] === 'artworks') {
+	console.log('Starting 3000ms timeout...')
+	setTimeout(() => {
+		console.log('Injecting soshalthing...')
+		const ul = document.querySelector('section > div > div > ul')
+		const target = ul?.parentElement?.parentElement?.parentElement
+		if (!target)
+			throw new Error("Couldn't find section")
 
-	new UserPage({
-		target,
-		anchor: sections[0].children[2]
-	})
-}, 3000)
+		new UserPage({
+			target,
+			anchor: ul.parentElement.parentElement,
+		})
+	}, 3000)
+}

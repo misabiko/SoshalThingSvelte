@@ -32,7 +32,7 @@
 	"content_scripts": [
 		{
 			"matches": [
-				"https://*.pixiv.net/*/users/*/artworks*"
+				"https://*.pixiv.net/*/users/*"
 			],
 			"js": ["dist/pixiv/userPage/entry.js"],
 			"css": ["dist/pixiv/userPage/entry.css"]

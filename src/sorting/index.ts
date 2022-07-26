@@ -23,7 +23,6 @@ export const allSortMethods = [
 export function compare(method: SortMethod): (a: ArticleProps, b: ArticleProps) => number {
 	return (a, b) => {
 		switch (method) {
-			//TODO Fix id sorting?
 			case SortMethod.Id:
 				return a.article.numberId > b.article.numberId ? 1 : (a.article.numberId < b.article.numberId ? -1 : 0);
 			case SortMethod.Date:

@@ -72,7 +72,7 @@
 			if (data.hideFilteredOutArticles)
 				articleProps = articleProps.filter(a => !a.filteredOut)
 
-			if (data.sortInfo.method)
+			if (data.sortInfo.method !== undefined)
 				articleProps.sort(compare(data.sortInfo.method))
 			if (data.sortInfo.reversed)
 				articleProps.reverse()

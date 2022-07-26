@@ -4,7 +4,7 @@
 		faArrowDown,
 		faArrowUp, faColumns,
 		faEllipsisV, faExpandAlt,
-		faEyeSlash,
+		faEyeSlash, faMaximize, faMinimize,
 		faRandom,
 		faScaleBalanced,
 		faScroll,
@@ -17,6 +17,7 @@
 	export let data: TimelineData
 	export let favviewerButtons: boolean
 	export let favviewerHidden: boolean
+	export let favviewerMaximized: boolean | undefined = undefined
 	export let fullscreen: FullscreenInfo | undefined = undefined
 	export let articleCountLabel: string
 	export let availableRefreshTypes: Set<RefreshType>
@@ -67,6 +68,11 @@
 				<button class='borderless-button' title='Toggle SoshalThing' on:click={() => favviewerHidden = !favviewerHidden}>
 					<Fa icon={faEyeSlash} size='large'/>
 				</button>
+				{#if favviewerMaximized !== undefined}
+					<button class='borderless-button' title='Maximize SoshalThing' on:click={() => favviewerMaximized = !favviewerMaximized}>
+						<Fa icon={favviewerMaximized ? faMinimize : faMaximize} size='large'/>
+					</button>
+				{/if}
 				<button class='borderless-button' title='Show Sidebar' on:click={() => showSidebar = !showSidebar}>
 					<Fa icon={faEllipsisV} size='large'/>
 				</button>

@@ -12,6 +12,7 @@
 	export let initTimelines: TimelineData[] = [];
 	export let fullscreen: FullscreenInfo;
 	export let favviewerHidden;
+	export let favviewerMaximized;
 	export let showSidebar;
 	export let sidebarMenu: SidebarMenu
 
@@ -139,6 +140,7 @@
 			<Timeline
 				favviewerButtons=true
 				bind:favviewerHidden
+				bind:favviewerMaximized
 				bind:showSidebar
 				data={timelines[fullscreen.index]}
 				{setModalTimeline}
@@ -162,6 +164,7 @@
 				<Timeline
 					favviewerButtons=true
 					bind:favviewerHidden
+					bind:favviewerMaximized
 					bind:showSidebar
 					{data}
 					{setModalTimeline}

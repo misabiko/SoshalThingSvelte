@@ -28,7 +28,7 @@
 	}
 
 	let favviewerHidden = false
-	let maximized = false
+	let favviewerMaximized = false
 	let activatorMount = document.querySelector('nav')
 
 	let fullscreen = {
@@ -44,10 +44,21 @@
 				display: none;
 			}
 		</style>
-	{:else if maximized}
+	{:else if favviewerMaximized}
 		<style>
 			.soshalthing {
-				height: 90.8vh;
+				position: absolute;
+				z-index: 3;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				overflow-y: auto;
+			}
+
+			#root {
+				overflow-y: hidden;
+				max-height: 100vh;
 			}
 		</style>
 	{:else}
@@ -73,6 +84,7 @@
 
 <SoshalThing
 	bind:favviewerHidden
+	bind:favviewerMaximized
 	initTimelines={[timeline]}
 	isInjected={true}
 	{fullscreen}

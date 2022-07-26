@@ -7,7 +7,7 @@ if (path.length === 4 || path[4] === 'illustrations' || path[4] === 'artworks') 
 	const intervalId = setInterval(() => {
 		console.log('Check if we can inject...')
 		ul = document.querySelector('section > div > div > ul')
-		if (ul !== null) {
+		if (ul?.children.length) {
 			clearInterval(intervalId)
 			console.log('Injecting soshalthing...')
 			const target = ul?.parentElement?.parentElement?.parentElement
@@ -18,6 +18,12 @@ if (path.length === 4 || path[4] === 'illustrations' || path[4] === 'artworks') 
 				target,
 				anchor: ul?.parentElement?.parentElement as HTMLElement,
 			})
+		}else
+			++attempts
+
+		if (attempts >= 10) {
+			clearInterval(intervalId)
+			console.warn("Couldn't inject after 10 attemps")
 		}
 	}, 500)
 }

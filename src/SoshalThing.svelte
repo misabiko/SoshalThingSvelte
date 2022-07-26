@@ -19,6 +19,7 @@
 	}
 	export let isInjected = true
 	export let favviewerHidden = false
+	export let favviewerMaximized: boolean | undefined = undefined
 
 	setContext('isInjected', isInjected)
 	let showSidebar = !isInjected
@@ -60,6 +61,7 @@
 	{/if}
 	<TimelineContainer
 		bind:favviewerHidden
+		bind:favviewerMaximized
 		bind:showSidebar
 		bind:sidebarMenu
 		{initTimelines}

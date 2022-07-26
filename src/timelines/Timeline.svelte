@@ -33,6 +33,7 @@
 
 	export let favviewerButtons = false
 	export let favviewerHidden = false
+	export let favviewerMaximized: boolean | undefined = undefined
 	export let showSidebar = true
 
 	let showOptions = false
@@ -276,6 +277,7 @@
 		bind:showOptions
 		bind:favviewerButtons
 		bind:favviewerHidden
+		bind:favviewerMaximized
 		{fullscreen}
 		{articleCountLabel}
 

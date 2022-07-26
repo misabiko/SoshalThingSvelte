@@ -141,16 +141,18 @@
 	<!--{ self.view_reply_label(ctx) }-->
 	<div class='media'>
 		<div class='media-left'>
-			<figure class='image is-64x64' class:sharedAvatar={isArticleRepost}>
-				{#if actualArticle.author?.url}
-					{#if isArticleRepost}
-						<img src={actualArticle.author.avatarUrl} alt={`${actualArticle.author.username}'s avatar`}/>
-						<img src={articleProps.article.author.avatarUrl} alt={`${articleProps.article.author.username}'s avatar`}/>
-					{:else}
-						<img src={actualArticle.author.avatarUrl} alt={`${actualArticle.author.username}'s avatar`}/>
+			{#if actualArticle.author?.avatarUrl}
+				<figure class='image is-64x64' class:sharedAvatar={isArticleRepost}>
+					{#if actualArticle.author?.url}
+						{#if isArticleRepost}
+							<img src={actualArticle.author.avatarUrl} alt={`${actualArticle.author.username}'s avatar`}/>
+							<img src={articleProps.article.author.avatarUrl} alt={`${articleProps.article.author.username}'s avatar`}/>
+						{:else}
+							<img src={actualArticle.author.avatarUrl} alt={`${actualArticle.author.username}'s avatar`}/>
+						{/if}
 					{/if}
-				{/if}
-			</figure>
+				</figure>
+			{/if}
 		</div>
 		<div class='media-content'>
 			<div class='content'>

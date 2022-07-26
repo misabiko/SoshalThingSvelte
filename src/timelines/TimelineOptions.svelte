@@ -17,7 +17,7 @@
 	export let sortOnce: (method: SortMethod, reversed: boolean) => void
 	export let articleCountLabel: string
 
-	let fullscreenContainerChecked = fullscreen?.container !== null
+	let fullscreenContainerChecked = fullscreen !== undefined && fullscreen.container !== null
 	let lastFullscreenContainerChecked = fullscreenContainerChecked
 	//TODO Just add on:change to Switch
 	$: if (fullscreenContainerChecked !== lastFullscreenContainerChecked) {
@@ -27,7 +27,7 @@
 			fullscreen.container = null
 		lastFullscreenContainerChecked = fullscreenContainerChecked
 	}
-	let fullscreenColumnCountChecked = fullscreen?.columnCount !== null
+	let fullscreenColumnCountChecked = fullscreen !== undefined && fullscreen.columnCount !== null
 	let lastFullscreenColumnCountChecked = fullscreenColumnCountChecked
 	$: if (fullscreenColumnCountChecked !== lastFullscreenColumnCountChecked) {
 		if (fullscreenColumnCountChecked)

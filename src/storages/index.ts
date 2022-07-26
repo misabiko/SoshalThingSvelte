@@ -28,7 +28,7 @@ export function loadMainStorage() {
 	const item = localStorage.getItem(MAIN_STORAGE_KEY)
 	const mainStorage: MainStorage = item ? JSON.parse(item) : {}
 
-	if (mainStorage.fullscreen === false)
+	if (!mainStorage.fullscreen && mainStorage.fullscreen !== 0)
 		mainStorage.fullscreen = {
 			index: null,
 			columnCount: null,

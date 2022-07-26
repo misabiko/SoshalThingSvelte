@@ -255,7 +255,7 @@
 		width: unset
 
 	:global(.articlesContainer)
-		overflow-y: scroll
+		overflow-y: auto
 		overflow-x: hidden
 		flex-grow: 1
 		height: 20%

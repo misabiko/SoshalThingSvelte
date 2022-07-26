@@ -8,7 +8,7 @@ const extensionBuildOptions = {
 	...buildOptions,
 	entryPoints: [
 		'./src/extension/background.js',
-		'./src/extension/favviewer/pixiv.ts',
+		'./src/extension/pixiv/userPage/entry.ts',
 	],
 	outdir,
 	splitting: false,

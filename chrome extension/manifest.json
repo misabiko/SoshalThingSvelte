@@ -32,11 +32,10 @@
 	"content_scripts": [
 		{
 			"matches": [
-				"https://*.pixiv.net/bookmark_new_illust*",
-				"https://*.pixiv.net/*/users/*"
+				"https://*.pixiv.net/*/users/*/artworks*"
 			],
-			"js": ["dist/favviewer/pixiv.js"],
-			"css": ["dist/favviewer/pixiv.css"]
+			"js": ["dist/pixiv/userPage/entry.js"],
+			"css": ["dist/pixiv/userPage/entry.css"]
 		}
 	]
 }

@@ -46,6 +46,42 @@ export abstract class Endpoint {
 	static readonly constructorInfo: EndpointConstructorInfo
 }
 
+export abstract class PageEndpoint extends Endpoint {
+	abstract readonly hostPage: number
+
+	async refresh(refreshType: RefreshType) {
+		return this.hostPageRefresh(refreshType)
+	}
+
+	hostPageRefresh(refreshType: RefreshType): ArticleWithRefs[] {
+		return this.parsePage(document.documentElement)
+	}
+
+	abstract parsePage(document: HTMLElement): ArticleWithRefs[]
+}
+
+export abstract class LoadablePageEndpoint extends PageEndpoint {
+	abstract currentPage: number
+
+	async refresh(refreshType: RefreshType) {
+		switch (refreshType) {
+			case RefreshType.LoadTop:
+				this.currentPage = Math.max(0, --this.currentPage)
+				break;
+			case RefreshType.LoadBottom:
+				++this.currentPage
+				break;
+		}
+
+		if (this.currentPage === this.hostPage)
+			return this.hostPageRefresh(refreshType)
+		else
+			return this.parsePage(await this.loadPage())
+	}
+
+	abstract loadPage(): Promise<HTMLElement>
+}
+
 export interface EndpointConstructorInfo {
 	readonly name: string;
 	readonly paramTemplate: [string, ParamType][];

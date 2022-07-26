@@ -85,14 +85,14 @@ export interface ArticleAuthor {
 
 export type ArticleMedia = ({
 	src: string;
-	ratio: ValidRatio;
+	ratio: ValidRatio | null;
 	queueLoadInfo: MediaQueueInfo.DirectLoad | MediaQueueInfo.Thumbnail;
 	mediaType: MediaType;
 	thumbnail?: undefined;
 	loaded?: undefined;
 } | {
 	src: string;
-	ratio: ValidRatio;
+	ratio: ValidRatio | null;
 	queueLoadInfo: MediaQueueInfo.LazyLoad;
 	mediaType: MediaType;
 	thumbnail?: {

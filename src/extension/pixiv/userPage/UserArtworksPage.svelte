@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import '../../../styles/favviewerGlobal.sass'
-	import SoshalThing from "../../../SoshalThing.svelte";
+	import SoshalThing from "../../../SoshalThing.svelte"
 	import type {TimelineData} from '../../../timelines'
 	import {defaultTimeline} from '../../../timelines'
 	import MasonryContainer from '../../../containers/MasonryContainer.svelte'
@@ -8,6 +8,7 @@
 	import UserPageEndpoint from '../../../services/pixiv/endpoints/user'
 	import {everyRefreshType} from '../../../services/endpoints'
 	import portal from '../../../usePortal'
+	import {SortMethod} from '../../../sorting'
 
 	const timeline: TimelineData = {
 		...defaultTimeline(),
@@ -20,6 +21,10 @@
 		container: MasonryContainer,
 		columnCount: 4,
 		animatedAsGifs: true,
+		sortInfo: {
+			method: SortMethod.Id,
+			reversed: true,
+		},
 	}
 
 	let favviewerHidden = false

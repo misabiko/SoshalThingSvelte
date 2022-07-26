@@ -90,7 +90,7 @@
 	}
 
 	function getRatio(article: ArticleWithRefs): number {
-		return 1 + getActualArticle(article).medias.reduce((acc, curr) => acc + curr.ratio, 0)
+		return 1 + getActualArticle(article).medias.reduce((acc, curr) => acc + (curr.ratio ?? 1), 0)
 	}
 </script>
 

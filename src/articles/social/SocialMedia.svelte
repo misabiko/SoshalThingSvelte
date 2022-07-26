@@ -2,10 +2,30 @@
 	import Article from '../../services/article'
 	import {MediaType} from "../../services/article.js";
 	import type {TimelineArticleProps} from '../index'
+	import {afterUpdate} from 'svelte'
+	import {getWritable} from '../../services/service'
 
 	export let article: Article
 	export let timelineProps: TimelineArticleProps
 	export let onMediaClick: (index: number) => void
+
+	let divRef: HTMLDivElement | null = null
+
+	afterUpdate(() => {
+		const articleMediaEls = divRef?.querySelectorAll('.articleMedia')
+		if (articleMediaEls) {
+			const modifiedMedias = []
+			for (let i = 0; i < article.medias.length; ++i)
+				if (article.medias[i].ratio === null)
+					modifiedMedias.push([i, articleMediaEls[i].clientHeight / articleMediaEls[i].clientWidth])
+
+			getWritable(article.idPair).update(a => {
+				for (const [i, ratio] of modifiedMedias)
+					a.medias[i].ratio = ratio
+				return a
+			})
+		}
+	})
 </script>
 
 <style lang='sass'>
@@ -67,24 +87,25 @@
 		background-color: grey
 </style>
 
-<div class='postMedia postImages'>
+<!--TODO Rename or get rid of postMedia, postImages etc-->
+<div class='postMedia postImages' bind:this={divRef}>
 	{#each article.medias as media, index (index)}
 		{#if media.mediaType === MediaType.Image || media.mediaType === MediaType.Gif}
 			<div class='mediaHolder'>
 				<div class='is-hidden imgPlaceHolder' style:aspect-ratio={1 / media.ratio}></div>
-				<img alt={article.id} src={media.src} on:click={() => onMediaClick(index)}/>
+				<img class='articleMedia' alt={article.id} src={media.src} on:click={() => onMediaClick(index)}/>
 			</div>
 		{:else if !timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
 			<div class='postMedia postVideo'>
 				<!-- svelte-ignore a11y-media-has-caption -->
-				<video controls on:click|preventDefault={() => onMediaClick(index)}>
+				<video class='articleMedia' controls on:click|preventDefault={() => onMediaClick(index)}>
 					<source src={media.src} type='video/mp4'/>
 				</video>
 			</div>
 		{:else if media.mediaType === MediaType.VideoGif || timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
 			<div class='postMedia postVideo'>
 				<!-- svelte-ignore a11y-media-has-caption -->
-				<video controls autoplay loop muted on:click|preventDefault={() => onMediaClick(index)}>
+				<video class='articleMedia' controls autoplay loop muted on:click|preventDefault={() => onMediaClick(index)}>
 					<source src={media.src} type='video/mp4'/>
 				</video>
 			</div>

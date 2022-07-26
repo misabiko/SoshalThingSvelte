@@ -12,7 +12,15 @@
 	import {afterUpdate} from 'svelte'
 	import {LoadingState, loadingStore} from '../bufferedMediaLoading'
 	import Dropdown from "../Dropdown.svelte"
-	import {fetchArticle, toggleHide, toggleMarkAsRead, articleAction, getArticleAction, STANDARD_ACTIONS} from "../services/service"
+	import {
+		fetchArticle,
+		toggleHide,
+		toggleMarkAsRead,
+		articleAction,
+		getArticleAction,
+		STANDARD_ACTIONS,
+		getWritable,
+	} from "../services/service"
 	import type {TimelineArticleProps} from './index'
 	import type {ArticleProps} from './index'
 
@@ -33,7 +41,24 @@
 			loadingStates.push(loadingStore.getLoadingState(actualArticle.idPair, mediaIndex, timelineProps.shouldLoadMedia))
 	}
 
+	let divRef: HTMLDivElement | null = null
+
 	afterUpdate(() => {
+		//TODO Use mediaRefs?
+		const articleMediaEls = divRef?.querySelectorAll('.articleMedia')
+		if (articleMediaEls) {
+			const modifiedMedias = []
+			for (let i = 0; i < article.medias.length; ++i)
+				if (article.medias[i].ratio === null)
+					modifiedMedias.push([i, articleMediaEls[i].clientHeight / articleMediaEls[i].clientWidth])
+
+			getWritable(article.idPair).update(a => {
+				for (const [i, ratio] of modifiedMedias)
+					a.medias[i].ratio = ratio
+				return a
+			})
+		}
+
 		const count = actualArticle.medias.length
 		for (let i = 0; i < count; ++i) {
 			if (actualArticle.medias[i].queueLoadInfo === MediaQueueInfo.LazyLoad && !actualArticle.medias[i].loaded) {
@@ -110,7 +135,7 @@
 		background-color: grey
 </style>
 
-<div class='galleryArticle'>
+<div class='galleryArticle' bind:this={divRef}>
 	<div>
 		{#each actualArticle.medias as media, i (i)}
 			{@const isLoading = loadingStates[i] === LoadingState.Loading}
@@ -120,7 +145,7 @@
 				{#if media.thumbnail}
 					<img
 						alt={`${actualArticle.idPair.id} thumbnail`}
-						class='articleThumb'
+						class='articleThumb articleMedia'
 						src={media.thumbnail.src}
 						on:click={() => onMediaClick(actualArticle.idPair, i)}
 						style:object-fit={thumbnailCropped ? 'cover' : null}
@@ -134,6 +159,7 @@
 			{:else if media.mediaType === MediaType.Image || media.mediaType === MediaType.Gif}
 				<img
 					alt={actualArticle.idPair.id}
+					class='articleMedia'
 					src={media.src}
 					on:click={() => onMediaClick(actualArticle.idPair, i)}
 					on:load={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
@@ -163,6 +189,7 @@
 			{:else if !timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
 				<!-- svelte-ignore a11y-media-has-caption -->
 				<video
+					class='articleMedia'
 					controls
 					on:click|preventDefault={() => onMediaClick(actualArticle.idPair, i)}
 					on:loadeddata={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
@@ -172,6 +199,7 @@
 				</video>
 			{:else}
 				<video
+					class='articleMedia'
 					controls
 					autoplay
 					loop

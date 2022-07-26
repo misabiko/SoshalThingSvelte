@@ -7,6 +7,7 @@
 	import {loadMainStorage} from '../../../storages'
 	import UserPageEndpoint from '../../../services/pixiv/endpoints/user'
 	import {everyRefreshType} from '../../../services/endpoints'
+	import portal from '../../../usePortal'
 
 	const timeline: TimelineData = {
 		...defaultTimeline(),
@@ -23,6 +24,7 @@
 
 	let favviewerHidden = false
 	let maximized = false
+	let activatorMount = document.querySelector('nav')
 
 	let fullscreen = {
 		...loadMainStorage().fullscreen,
@@ -54,6 +56,15 @@
 		</style>
 	{/if}
 </svelte:head>
+
+<a
+	use:portal={activatorMount}
+	id='favvieweractivator'
+	class={activatorMount.children[0].className}
+	on:click={() => favviewerHidden = !favviewerHidden}
+>
+	SoshalThing
+</a>
 
 <SoshalThing
 	bind:favviewerHidden

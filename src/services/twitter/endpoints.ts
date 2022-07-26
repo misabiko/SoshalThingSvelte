@@ -203,6 +203,8 @@ export class SearchEndpoint extends V1Endpoint {
 	}
 }
 
+//TODO Thread/ConversationEndpoint
+
 TwitterService.endpointConstructors.push(
 	HomeTimelineEndpoint.constructorInfo,
 	UserTimelineEndpoint.constructorInfo,

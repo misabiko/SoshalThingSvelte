@@ -30,6 +30,8 @@
 		{icon: faRotateLeft, menu: SidebarMenu.Undoables, title: 'Undoables'},
 		{icon: faSpinner, menu: SidebarMenu.MediaLoader, title: 'Loading medias'},
 	]
+
+	//TODO Batch action menu
 </script>
 
 <style lang='sass'>

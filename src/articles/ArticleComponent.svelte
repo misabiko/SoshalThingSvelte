@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import type {ArticleIdPair} from "../services/article"
-	import {toggleMarkAsRead, fetchArticle} from "../services/service"
+	import {toggleMarkAsRead} from "../services/service"
 	import Article, {getActualArticle} from '../services/article'
 	import type {ArticleProps, TimelineArticleProps} from './index'
 	import type {SvelteComponent} from 'svelte'
@@ -31,7 +31,8 @@
 		})
 	}
 
-	function onMediaClick(idPair: ArticleIdPair, index: number) {
+	function onMediaClick(idPair: ArticleIdPair, _index: number) {
+		//TODO Option for timeline local marked as read
 		toggleMarkAsRead(idPair)
 	}
 </script>

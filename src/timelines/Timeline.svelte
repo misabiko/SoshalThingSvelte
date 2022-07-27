@@ -143,7 +143,7 @@
 
 	function shuffle() {
 		data.articles.update(idPairs => {
-			let currentIndex = length,  randomIndex;
+			let currentIndex = idPairs.length,  randomIndex;
 
 			// While there remain elements to shuffle...
 			while (currentIndex != 0) {

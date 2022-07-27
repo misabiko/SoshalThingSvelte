@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type {FullscreenInfo, TimelineData} from './index'
-	import {defaultTimeline} from './index'
 	import Timeline from './Timeline.svelte'
 	import {afterUpdate, getContext, onMount} from 'svelte'
 	import {Modal} from 'svelma'
@@ -127,7 +126,8 @@
 
 <div id='timelineContainer'>
 	{#if modalTimeline !== null}
-		<Modal bind:active={modalTimelineActive}>
+		<!--TODO Replace onBody with mountElement-->
+		<Modal bind:active={modalTimelineActive} onBody={!isInjected}>
 			<Timeline
 				data={modalTimeline}
 				{setModalTimeline}

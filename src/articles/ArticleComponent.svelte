@@ -6,6 +6,7 @@
 	import type {SvelteComponent} from 'svelte'
 	//TODO Add type defs to svelma
 	import {Modal} from 'svelma'
+	import {getContext} from 'svelte'
 
 	export let articleProps: ArticleProps
 	export let timelineProps: TimelineArticleProps
@@ -13,6 +14,8 @@
 	export let style = ''; style;
 	let modal = false
 	let showAllMedia = false
+
+	const isInjected = getContext('isInjected') as boolean
 
 	let actualArticle: Readonly<Article>
 	$: actualArticle = getActualArticle(articleProps)
@@ -52,7 +55,7 @@
 </style>
 
 {#if modal}
-	<Modal bind:active={modal}>
+	<Modal bind:active={modal} onBody={!isInjected}>
 		<article class:transparent={articleProps.filteredOut}>
 			<svelte:component
 				this={view}

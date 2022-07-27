@@ -36,6 +36,14 @@
 			],
 			"js": ["dist/pixiv/userPage/entry.js"],
 			"css": ["dist/pixiv/userPage/entry.css"]
+		},
+		{
+			"matches": [
+				"https://*.pixiv.net/bookmark_new_illust.php*",
+				"https://*.pixiv.net/bookmark_new_illust_r18.php*"
+			],
+			"js": ["dist/pixiv/followIllusts/entry.js"],
+			"css": ["dist/pixiv/followIllusts/entry.css"]
 		}
 	]
 }

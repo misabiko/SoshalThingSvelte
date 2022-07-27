@@ -9,6 +9,7 @@ const extensionBuildOptions = {
 	entryPoints: [
 		'./src/extension/background.js',
 		'./src/extension/pixiv/userPage/entry.ts',
+		'./src/extension/pixiv/followIllusts/entry.ts',
 	],
 	outdir,
 	splitting: false,

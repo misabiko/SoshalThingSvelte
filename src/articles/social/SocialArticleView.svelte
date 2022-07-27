@@ -6,10 +6,6 @@
 	import SocialMedia from "./SocialMedia.svelte";
 	import SocialNav from "./SocialNav.svelte";
 	import Timestamp from "./Timestamp.svelte";
-	import {defaultFilterInstances} from '../../filters'
-	import {getServices} from '../../services/service'
-	import MasonryContainer from '../../containers/MasonryContainer.svelte'
-	import {everyRefreshType} from '../../services/endpoints'
 	import {newUserTimeline} from '../../timelines'
 
 	export let timelineProps: TimelineArticleProps
@@ -230,6 +226,7 @@
 	</div>
 	{#if actualArticle.medias.length && !minimized}
 		<SocialMedia
+			bind:showAllMedia
 			article={actualArticle}
 			{timelineProps}
 			onMediaClick={index => onMediaClick(actualArticle.idPair, index)}

@@ -93,7 +93,7 @@
 		{#if media.mediaType === MediaType.Image || media.mediaType === MediaType.Gif}
 			<div class='mediaHolder'>
 				<div class='is-hidden imgPlaceHolder' style:aspect-ratio={1 / media.ratio}></div>
-				<img class='articleMedia' alt={article.id} src={media.src} on:click={() => onMediaClick(index)}/>
+				<img class='articleMedia' alt={`${article.id}/${index}`} src={media.src} on:click={() => onMediaClick(index)}/>
 			</div>
 		{:else if !timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
 			<div class='postMedia postVideo'>

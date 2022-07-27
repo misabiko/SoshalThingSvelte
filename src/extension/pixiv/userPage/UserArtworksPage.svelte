@@ -63,7 +63,7 @@
 		</style>
 	{:else}
 		<style>
-			section:nth-of-type(1) > div:nth-child(4) {
+			section > div > div > ul > li {
 				display: none;
 			}
 			.soshalthing {

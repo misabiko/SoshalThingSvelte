@@ -144,7 +144,7 @@
 			{#if loadingStates[i] === LoadingState.NotLoaded}
 				{#if media.thumbnail}
 					<img
-						alt={`${actualArticle.idPair.id} thumbnail`}
+						alt={`${actualArticle.idPair.id}/${i} thumbnail`}
 						class='articleThumb articleMedia'
 						src={media.thumbnail.src}
 						on:click={() => onMediaClick(actualArticle.idPair, i)}
@@ -158,7 +158,7 @@
 				{/if}
 			{:else if media.mediaType === MediaType.Image || media.mediaType === MediaType.Gif}
 				<img
-					alt={actualArticle.idPair.id}
+					alt={`${actualArticle.idPair.id}/${i}`}
 					class='articleMedia'
 					src={media.src}
 					on:click={() => onMediaClick(actualArticle.idPair, i)}
@@ -173,7 +173,7 @@
 				{#if isLoading}
 					{#if media.thumbnail}
 						<img
-							alt={`${actualArticle.idPair.id} thumbnail`}
+							alt={`${actualArticle.idPair.id}/${i} thumbnail`}
 							class='articleThumb'
 							src={media.thumbnail.src}
 							on:click={() => onMediaClick(actualArticle.idPair, i)}

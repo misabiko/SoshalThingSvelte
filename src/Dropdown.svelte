@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Fa from 'svelte-fa/src/fa.svelte'
 	import { faAngleDown } from '@fortawesome/free-solid-svg-icons'
-	import {afterUpdate, onMount} from 'svelte'
+	import {onMount} from 'svelte'
 
 	export let isActive = false
 	export let isRight = false
@@ -39,7 +39,7 @@
 		</button>
 	</div>
 	<div class='dropdown-menu'>
-		<div class='dropdown-content'>
+		<div class='dropdown-content' on:auxclick={close}>
 			<slot></slot>
 		</div>
 	</div>

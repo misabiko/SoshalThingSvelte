@@ -7,7 +7,7 @@
 		faExternalLinkAlt,
 		faHeart,
 		faRetweet,
-		faEllipsisH,
+		faEllipsisH, faImages,
 	} from '@fortawesome/free-solid-svg-icons'
 	import {afterUpdate} from 'svelte'
 	import {LoadingState, loadingStore} from '../bufferedMediaLoading'
@@ -28,6 +28,7 @@
 	export let articleProps: ArticleProps; articleProps;
 	export let style = ''; style;
 	export let modal: boolean; modal;
+	export let showAllMedia: boolean;
 	export let actualArticle: Readonly<Article>
 	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number
 	export let onLogData: () => void
@@ -48,11 +49,11 @@
 		const articleMediaEls = divRef?.querySelectorAll('.articleMedia')
 		if (articleMediaEls) {
 			const modifiedMedias = []
-			for (let i = 0; i < article.medias.length; ++i)
-				if (article.medias[i].ratio === null)
+			for (let i = 0; i < actualArticle.medias.length; ++i)
+				if (actualArticle.medias[i].ratio === null)
 					modifiedMedias.push([i, articleMediaEls[i].clientHeight / articleMediaEls[i].clientWidth])
 
-			getWritable(article.idPair).update(a => {
+			getWritable(actualArticle.idPair).update(a => {
 				for (const [i, ratio] of modifiedMedias)
 					a.medias[i].ratio = ratio
 				return a
@@ -133,11 +134,18 @@
 	.imgPlaceHolder
 		width: 100%
 		background-color: grey
+
+	.moreMedia
+		display: flex
+	.moreMedia > button
+		margin-left: auto
+		margin-right: auto
+		padding-top: 5px
 </style>
 
 <div class='galleryArticle' bind:this={divRef}>
 	<div>
-		{#each actualArticle.medias as media, i (i)}
+		{#each actualArticle.medias.slice(0, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined) as media, i (i)}
 			{@const isLoading = loadingStates[i] === LoadingState.Loading}
 			{@const cropped = !!(media.offsetX || media.offsetY)}
 			{@const thumbnailCropped = !!(media.thumbnail?.offsetX || media.thumbnail?.offsetY)}
@@ -212,6 +220,13 @@
 				</video>
 			{/if}
 		{/each}
+		{#if !showAllMedia && timelineProps.maxMediaCount !== null && actualArticle.medias.length > timelineProps.maxMediaCount}
+			<div class='moreMedia'>
+				<button class='borderless-button' title='Load more medias' on:click={() => showAllMedia = true}>
+					<Fa icon={faImages} size='2x'/>
+				</button>
+			</div>
+		{/if}
 		<div class='holderBox holderBoxTop'>
 			<a class='button' title='External Link' href={actualArticle.url} target='_blank'>
 				<span class='icon darkIcon'>

@@ -120,6 +120,7 @@
 			compact: data.compact,
 			hideText: data.hideText,
 			shouldLoadMedia: data.shouldLoadMedia,
+			maxMediaCount: data.maxMediaCount,
 			setModalTimeline,
 		},
 		articleView: data.articleView,

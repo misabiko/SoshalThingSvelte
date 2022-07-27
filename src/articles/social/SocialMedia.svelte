@@ -4,9 +4,12 @@
 	import type {TimelineArticleProps} from '../index'
 	import {afterUpdate} from 'svelte'
 	import {getWritable} from '../../services/service'
+	import Fa from 'svelte-fa/src/fa.svelte'
+	import {faImages} from "@fortawesome/free-solid-svg-icons";
 
 	export let article: Article
 	export let timelineProps: TimelineArticleProps
+	export let showAllMedia: boolean;
 	export let onMediaClick: (index: number) => void
 
 	let divRef: HTMLDivElement | null = null
@@ -85,11 +88,18 @@
 	.imgPlaceHolder
 		width: 100%
 		background-color: grey
+
+	.moreMedia
+		display: flex
+	.moreMedia > button
+		margin-left: auto
+		margin-right: auto
+		padding-top: 5px
 </style>
 
 <!--TODO Rename or get rid of postMedia, postImages etc-->
 <div class='postMedia postImages' bind:this={divRef}>
-	{#each article.medias as media, index (index)}
+	{#each article.medias.slice(0, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined) as media, index (index)}
 		{#if media.mediaType === MediaType.Image || media.mediaType === MediaType.Gif}
 			<div class='mediaHolder'>
 				<div class='is-hidden imgPlaceHolder' style:aspect-ratio={1 / media.ratio}></div>
@@ -111,4 +121,11 @@
 			</div>
 		{/if}
 	{/each}
+	{#if !showAllMedia && timelineProps.maxMediaCount !== null && article.medias.length > timelineProps.maxMediaCount}
+		<div class='moreMedia'>
+			<button class='borderless-button' title='Load more medias' on:click={() => showAllMedia = true}>
+				<Fa icon={faImages} size='2x'/>
+			</button>
+		</div>
+	{/if}
 </div>

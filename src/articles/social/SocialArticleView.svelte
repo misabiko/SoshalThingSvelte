@@ -15,6 +15,7 @@
 	export let timelineProps: TimelineArticleProps
 	export let articleProps: ArticleProps
 	export let modal: boolean; modal;
+	export let showAllMedia: boolean;
 	export let actualArticle: Readonly<Article>
 	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number
 	export let onLogData: () => void
@@ -201,6 +202,7 @@
 							</p>
 						{/if}
 						<SocialMedia
+							bind:showAllMedia
 							article={quoted}
 							{timelineProps}
 							onMediaClick={index => onMediaClick(actualArticle.idPair, index)}

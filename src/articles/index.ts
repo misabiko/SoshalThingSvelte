@@ -7,6 +7,7 @@ export type TimelineArticleProps = {
 	compact: boolean;
 	hideText: boolean;
 	shouldLoadMedia: boolean;
+	maxMediaCount: number | null;
 	setModalTimeline: (data: TimelineData, width?: number) => void;
 }
 

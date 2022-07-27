@@ -12,7 +12,7 @@
 	export let initTimelines: TimelineData[] = [];
 	export let fullscreen: FullscreenInfo;
 	export let favviewerHidden;
-	export let favviewerMaximized;
+	export let favviewerMaximized: boolean | undefined;
 	export let showSidebar;
 	export let sidebarMenu: SidebarMenu
 

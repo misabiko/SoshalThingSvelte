@@ -10,8 +10,9 @@
 	export let articleProps: ArticleProps
 	export let timelineProps: TimelineArticleProps
 	export let view: typeof SvelteComponent
-	export let modal = false
 	export let style = ''; style;
+	let modal = false
+	let showAllMedia = false
 
 	let actualArticle: Readonly<Article>
 	$: actualArticle = getActualArticle(articleProps)
@@ -57,6 +58,7 @@
 				this={view}
 				{timelineProps}
 				bind:modal
+				bind:showAllMedia
 				{articleProps}
 				{actualArticle}
 				{onLogData}
@@ -72,6 +74,7 @@
 		this={view}
 		{timelineProps}
 		bind:modal
+		bind:showAllMedia
 		{articleProps}
 		{actualArticle}
 		{onLogData}

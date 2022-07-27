@@ -31,6 +31,7 @@ export type TimelineData = {
 	shouldLoadMedia: boolean;
 	hideFilteredOutArticles: boolean;
 	showArticleCount: boolean;
+	maxMediaCount: number | null;
 }
 
 export function defaultTimeline(): TimelineData {
@@ -56,6 +57,7 @@ export function defaultTimeline(): TimelineData {
 		shouldLoadMedia: true,
 		hideFilteredOutArticles: true,
 		showArticleCount: false,
+		maxMediaCount: 4,
 	}
 }
 

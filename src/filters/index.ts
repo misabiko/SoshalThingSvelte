@@ -201,3 +201,7 @@ function isAnimated(media: ArticleMedia): boolean {
 			return false;
 	}
 }
+
+export function useFilters(articlesWithRefs: ArticleWithRefs[], filters: FilterInstance[]): ArticleWithRefs[] {
+	return articlesWithRefs.filter((articleWithRefs, i) => filters.every(f => !f.enabled || (keepArticle(articleWithRefs, i, f.filter) !== f.inverted)))
+}

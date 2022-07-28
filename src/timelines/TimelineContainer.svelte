@@ -7,11 +7,13 @@
 	import portal from '../usePortal'
 	import TimelineEditMenu from "../sidebar/TimelineEditMenu.svelte";
 	import {SidebarMenu} from '../sidebar'
+	import BatchActions from "../sidebar/BatchActions.svelte";
+	import {type FilterInstance} from '../filters'
 
 	export let initTimelines: TimelineData[] = [];
 	export let fullscreen: FullscreenInfo;
 	export let favviewerHidden;
-	export let favviewerMaximized: boolean | undefined;
+	export let favviewerMaximized: boolean | undefined = undefined;
 	export let showSidebar;
 	export let sidebarMenu: SidebarMenu
 
@@ -21,6 +23,8 @@
 
 	const isInjected = getContext('isInjected');
 	let timelines: TimelineData[] = initTimelines;
+
+	let batchActionFilters: FilterInstance[] = []
 
 	$: {
 		const newTimelineEndpoints = timelines.map((t, i) => ({
@@ -115,11 +119,18 @@
 		flex-grow: 1
 </style>
 
-{#if sidebarMenu === SidebarMenu.TimelineEdit}
-	<div use:portal={document.querySelector('.sidebarMenu.timelineEdit')} class='box'>
+{#if sidebarMenu === TimelineEditMenu}
+	<div use:portal={document.querySelector('.sidebarMenu')} class='box'>
 		<TimelineEditMenu
 			{setModalTimeline}
 			{addTimeline}
+		/>
+	</div>
+{:else if sidebarMenu === SidebarMenu.BatchActions}
+	<div use:portal={document.querySelector('.sidebarMenu')} class='box'>
+		<BatchActions
+			bind:filterInstances={batchActionFilters}
+			{timelines}
 		/>
 	</div>
 {/if}

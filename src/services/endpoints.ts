@@ -1,6 +1,6 @@
 import type {TimelineEndpoint} from '../timelines'
 import type {ArticleIdPair, ArticleWithRefs} from './article'
-import {keepArticle} from '../filters'
+import {useFilters} from '../filters'
 import {addArticles, getServices} from './service'
 import {get, writable} from 'svelte/store'
 import type {Writable} from 'svelte/store'
@@ -53,7 +53,7 @@ export abstract class PageEndpoint extends Endpoint {
 		return this.hostPageRefresh(refreshType)
 	}
 
-	hostPageRefresh(refreshType: RefreshType): ArticleWithRefs[] {
+	hostPageRefresh(_refreshType: RefreshType): ArticleWithRefs[] {
 		return this.parsePage(document.documentElement)
 	}
 
@@ -133,11 +133,10 @@ export async function refreshEndpointName(endpointName: string, refreshType: Ref
 
 	for (const timelineEndpoint of matchingTimelineEndpoints) {
 		//TODO Exclude interval from endpoint filters
-		const addedArticles = articles
-			.filter(articleWithRefs =>
-				timelineEndpoint.endpoint.filters.every(f => !f.enabled || (keepArticle(articleWithRefs, 0, f.filter) !== f.inverted)),
-			)
-		timelineEndpoint.addArticles(addedArticles.map(a => a.article.idPair))
+		timelineEndpoint.addArticles(
+			useFilters(articles, timelineEndpoint.endpoint.filters)
+				.map(a => a.article.idPair)
+		)
 	}
 }
 

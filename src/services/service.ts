@@ -29,13 +29,24 @@ type ArticleAction = {
 export const STANDARD_ACTIONS = {
 	like: 'like',
 	repost: 'repost',
+	markAsRead: 'markAsRead',
+	hide: 'hide',
 };
 
 export function articleAction(action: string, idPair: ArticleIdPair) {
-	if (services[idPair.service].articleActions.hasOwnProperty(action))
-		services[idPair.service].articleActions[action].action(idPair)
-	else
-		console.warn(`${idPair.service} doesn't have action ${action}.`)
+	switch (action) {
+		case STANDARD_ACTIONS.markAsRead:
+			toggleMarkAsRead(idPair)
+			break;
+		case STANDARD_ACTIONS.hide:
+			toggleHide(idPair)
+			break;
+		default:
+			if (services[idPair.service].articleActions.hasOwnProperty(action))
+				services[idPair.service].articleActions[action].action(idPair)
+			else
+				console.warn(`${idPair.service} doesn't have action ${action}.`)
+	}
 }
 
 export function getArticleAction(action: string, service: string) {

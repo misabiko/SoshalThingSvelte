@@ -3,6 +3,7 @@
 	import type {IconDefinition} from '@fortawesome/free-solid-svg-icons'
 	import {
 		faAngleDoubleLeft,
+		faB,
 		faBarsProgress,
 		faCog,
 		faPlus,
@@ -10,26 +11,26 @@
 		faSpinner,
 	} from '@fortawesome/free-solid-svg-icons'
 	import {faGithub} from '@fortawesome/free-brands-svg-icons'
+	import MediaLoader from "./MediaLoader.svelte"
+	import Undoables from "./Undoables.svelte"
+	import Endpoints from "./Endpoints.svelte"
+	import {SvelteComponent} from 'svelte'
 	import SettingsMenu from "./SettingsMenu.svelte"
 	import {SidebarMenu} from './index'
-	import MediaLoader from "./MediaLoader.svelte";
-	import Undoables from "./Undoables.svelte";
-	import Endpoints from "./Endpoints.svelte";
 
-	export let menu: SidebarMenu | null;
+	export let menu: typeof SvelteComponent | SidebarMenu | null;
 
-	function toggleSidebarMenu(newMenu: SidebarMenu) {
+	function toggleSidebarMenu(newMenu: typeof SvelteComponent | SidebarMenu) {
 		menu = menu === newMenu ? null : newMenu;
 	}
 
-	const buttons: {icon: IconDefinition, menu: SidebarMenu, title: string}[] = [
+	const buttons: {icon: IconDefinition, menu: typeof SvelteComponent | SidebarMenu, title: string}[] = [
 		{icon: faPlus, menu: SidebarMenu.TimelineEdit, title: 'Add new timeline'},
-		{icon: faBarsProgress, menu: SidebarMenu.Endpoints, title: 'Endpoints'},
-		{icon: faRotateLeft, menu: SidebarMenu.Undoables, title: 'Undoables'},
-		{icon: faSpinner, menu: SidebarMenu.MediaLoader, title: 'Loading medias'},
+		{icon: faBarsProgress, menu: Endpoints, title: 'Endpoints'},
+		{icon: faRotateLeft, menu: Undoables, title: 'Undoables'},
+		{icon: faSpinner, menu: MediaLoader, title: 'Loading medias'},
+		{icon: faB, menu: SidebarMenu.BatchActions, title: 'Batch actions'},
 	]
-
-	//TODO Batch action menu
 </script>
 
 <style lang='sass'>
@@ -77,15 +78,9 @@
 
 <nav id='sidebar'>
 	{#if menu !== null}
-		<div class='sidebarMenu' class:timelineEdit={menu === SidebarMenu.TimelineEdit}>
-			{#if menu === SidebarMenu.Endpoints}
-				<Endpoints/>
-			{:else if menu === SidebarMenu.MediaLoader}
-				<MediaLoader/>
-			{:else if menu === SidebarMenu.Undoables}
-				<Undoables/>
-			{:else if menu === SidebarMenu.Settings}
-				<SettingsMenu/>
+		<div class='sidebarMenu'>
+			{#if menu instanceof SvelteComponent}
+				<svelte:component this={menu}/>
 			{/if}
 		</div>
 	{/if}
@@ -103,7 +98,7 @@
 			{/each}
 		</div>
 		<div>
-			<button class='borderless-button' title="Settings" on:click={() => toggleSidebarMenu(SidebarMenu.Settings)}>
+			<button class='borderless-button' title="Settings" on:click={() => toggleSidebarMenu(SettingsMenu)}>
 				<Fa icon={faCog} size='2x'/>
 			</button>
 			<a href="https://github.com/misabiko/SoshalThingSvelte" title="Github">

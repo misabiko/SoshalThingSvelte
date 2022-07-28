@@ -49,7 +49,7 @@ abstract class V1Endpoint extends Endpoint {
 		const {json, headers} = await fetchExtensionV1<TweetResponse[]>(url.toString())
 		this.rateLimitInfo = parseRateLimitInfo(headers)
 
-		return json.map(articleFromV1)
+		return json.map(a => articleFromV1(a))
 	}
 }
 
@@ -189,7 +189,8 @@ export class SearchEndpoint extends V1Endpoint {
 	async fetchTweets(url: URL): Promise<ArticleWithRefs[]> {
 		const {json, headers} = await fetchExtensionV1<SearchResponse>(url.toString())
 		this.rateLimitInfo = parseRateLimitInfo(headers)
-		return json.statuses.map(articleFromV1)
+
+		return json.statuses.map(a => articleFromV1(a))
 	}
 
 	matchParams(params: any): boolean {

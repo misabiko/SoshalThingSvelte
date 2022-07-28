@@ -19,7 +19,7 @@ export function getV1APIURL(resource: string): string {
 	return `https://api.twitter.com/1.1/${resource}.json`
 }
 
-export function articleFromV1(json: TweetResponse): ArticleWithRefs {
+export function articleFromV1(json: TweetResponse, isRef = false): ArticleWithRefs {
 	const rawText = json.full_text ?? json.text as string
 	const {text, textHtml} = parseText(rawText, json.entities, json.extended_entities)
 
@@ -28,7 +28,7 @@ export function articleFromV1(json: TweetResponse): ArticleWithRefs {
 	let actualArticleIndex: number | undefined
 	{
 		if (json.retweeted_status !== undefined) {
-			const retweet = articleFromV1(json.retweeted_status)
+			const retweet = articleFromV1(json.retweeted_status, true)
 
 			if (retweet.actualArticleRef?.type === ArticleRefType.Quote) {
 				actualArticleRef = {
@@ -45,18 +45,17 @@ export function articleFromV1(json: TweetResponse): ArticleWithRefs {
 			actualArticleIndex = 0
 		}else if (json.is_quote_status) {
 			if (json.quoted_status) {
-				const quote = articleFromV1(json.quoted_status)
-				if (quote.actualArticleRef?.type === ArticleRefType.Quote)
-					console.warn(`Quote(${json.id_str}) of a quote(${quote.actualArticleRef.quoted.idPair.id})?`)
+				const quote = articleFromV1(json.quoted_status, true)
 
 				actualArticleRef = {
 					type: ArticleRefType.Quote,
 					quoted: quote.article,
 				}
-			}else if (json.quoted_status_id_str) {
-				console.warn("Quote tweet doesn't include quoted tweet, need to get the tweet from service", json)
-			}else {
-				console.error('is_quote_status true, but no quote info', json)
+			}else if (!isRef) {	//Twitter won't give quoted_status for quote of quote
+				if (json.quoted_status_id_str)
+					console.warn("Quote tweet doesn't include quoted tweet, need to get the tweet from service", json)
+				else
+					console.error('is_quote_status true, but no quote info', json)
 			}
 		}
 	}
@@ -69,7 +68,7 @@ export function articleFromV1(json: TweetResponse): ArticleWithRefs {
 				id: json.user.id_str,
 				name: json.user.name,
 				username: json.user.screen_name,
-				url: "https://twitter.com/" + json.user.screen_name,
+				url: 'https://twitter.com/' + json.user.screen_name,
 				avatarUrl: json.user.profile_image_url_https,
 			},
 			new Date(json.created_at),

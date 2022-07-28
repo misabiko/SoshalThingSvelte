@@ -1,5 +1,4 @@
 <script lang='ts'>
-	import {Button} from 'svelma'
 	import Fa from 'svelte-fa/src/fa.svelte'
 	import type {IconDefinition} from '@fortawesome/free-solid-svg-icons'
 	import {
@@ -11,12 +10,11 @@
 		faSpinner,
 	} from '@fortawesome/free-solid-svg-icons'
 	import {faGithub} from '@fortawesome/free-brands-svg-icons'
-	import EndpointOptions from "./EndpointOptions.svelte"
-	import {loadingStore} from "../bufferedMediaLoading"
 	import SettingsMenu from "./SettingsMenu.svelte"
-	import {endpoints} from '../services/endpoints'
-	import {undoables} from "../undo.js"
 	import {SidebarMenu} from './index'
+	import MediaLoader from "./MediaLoader.svelte";
+	import Undoables from "./Undoables.svelte";
+	import Endpoints from "./Endpoints.svelte";
 
 	export let menu: SidebarMenu | null;
 
@@ -81,44 +79,11 @@
 	{#if menu !== null}
 		<div class='sidebarMenu' class:timelineEdit={menu === SidebarMenu.TimelineEdit}>
 			{#if menu === SidebarMenu.Endpoints}
-				<div class='box'>
-					{#each Object.entries(endpoints) as [name, endpoint] (name)}
-						<EndpointOptions {endpoint}/>
-					{:else}
-						No endpoints currently
-					{/each}
-				</div>
+				<Endpoints/>
 			{:else if menu === SidebarMenu.MediaLoader}
-				<Button on:click={loadingStore.clearLoadings}>Clear loadings</Button>
-				<Button on:click={loadingStore.clearQueue}>Clear queue</Button>
-				<div class='box'>
-					{#each [...$loadingStore.loadings] as idPair (idPair)}
-						{idPair}
-					{:else}
-						No media currently loading
-					{/each}
-				</div>
-				<div class='box'>
-					{#each [...$loadingStore.queue] as idPair (idPair)}
-						{idPair}
-					{:else}
-						No media currently queued
-					{/each}
-				</div>
+				<MediaLoader/>
 			{:else if menu === SidebarMenu.Undoables}
-				<!--TODO Add undoable ids-->
-				{#each [...$undoables] as undoable, index (`${undoable.text}/${index}`)}
-					<div class='box'>
-						<p>{undoable.text}</p>
-						<Button on:click={() => undoables.toggleDo(index)}>
-							{undoable.undid ? 'Redo' : 'Undo'}
-						</Button>
-					</div>
-				{:else}
-					<div class='box'>
-						Nothing to undo
-					</div>
-				{/each}
+				<Undoables/>
 			{:else if menu === SidebarMenu.Settings}
 				<SettingsMenu/>
 			{/if}

@@ -169,6 +169,9 @@
 				<Switch bind:checked={data.hideText}>Hide text</Switch>
 			</div>
 		{/if}
+		<Field label='Max media count'>
+			<input class='input' type='number' bind:value={data.maxMediaCount} min={1}/>
+		</Field>
 	</div>
 	<div class='box'>
 		<Field label='Endpoints'>

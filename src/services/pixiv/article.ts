@@ -9,7 +9,7 @@ export default class PixivArticle extends Article {
 		medias: ArticleMedia[],
 		title: string,
 		readonly author: PixivUser,
-		readonly creationTime: Date | undefined,
+		public creationTime: Date | undefined,
 		markedAsReadStorage: string[],
 		hiddenStorage: string[],
 		//TODO Rename to raw source

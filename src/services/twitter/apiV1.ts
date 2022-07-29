@@ -101,15 +101,16 @@ export async function toggleFavorite(idPair: ArticleIdPair) {
 		//TODO Add rate limit to actions
 		updateAPIResponse(response.json)
 	}catch (cause: ExtensionFetchResponse<V1ErrorResponse> | any) {
+		//TEST fetch errors
 		let shouldThrow = true
-		if (cause.json?.errors !== undefined && (cause.json as V1ErrorResponse).errors.some(e => e.code === 139)) {
+		if (cause.errors !== undefined && (cause as V1ErrorResponse).errors.some(e => e.code === 139)) {
 			console.warn(cause)
 			writable.update(a => {
 				a.liked = true
 				return a
 			})
 
-			if (cause.json.errors.length === 1)
+			if (cause.errors.length === 1)
 				shouldThrow = false
 		}
 

@@ -108,14 +108,14 @@
 		{:else if !timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
 			<div class='postMedia postVideo'>
 				<!-- svelte-ignore a11y-media-has-caption -->
-				<video class='articleMedia' controls on:click|preventDefault={() => onMediaClick(index)}>
+				<video class='articleMedia' controls preload='auto' on:click|preventDefault={() => onMediaClick(index)}>
 					<source src={media.src} type='video/mp4'/>
 				</video>
 			</div>
 		{:else if media.mediaType === MediaType.VideoGif || timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
 			<div class='postMedia postVideo'>
 				<!-- svelte-ignore a11y-media-has-caption -->
-				<video class='articleMedia' controls autoplay loop muted on:click|preventDefault={() => onMediaClick(index)}>
+				<video class='articleMedia' controls autoplay loop muted preload='auto' on:click|preventDefault={() => onMediaClick(index)}>
 					<source src={media.src} type='video/mp4'/>
 				</video>
 			</div>

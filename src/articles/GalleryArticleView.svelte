@@ -199,6 +199,7 @@
 				<video
 					class='articleMedia'
 					controls
+					preload='auto'
 					on:click|preventDefault={() => onMediaClick(actualArticle.idPair, i)}
 					on:loadeddata={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
 					on:load={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
@@ -212,6 +213,7 @@
 					autoplay
 					loop
 					muted
+					preload='auto'
 					on:click|preventDefault={() => onMediaClick(actualArticle.idPair, i)}
 					on:loadeddata={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
 					on:load={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}

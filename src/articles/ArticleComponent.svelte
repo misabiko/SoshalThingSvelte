@@ -4,7 +4,6 @@
 	import Article, {getActualArticle} from '../services/article'
 	import type {ArticleProps, TimelineArticleProps} from './index'
 	import type {SvelteComponent} from 'svelte'
-	//TODO Add type defs to svelma
 	import {Modal} from 'svelma'
 	import {getContext} from 'svelte'
 

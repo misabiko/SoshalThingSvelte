@@ -27,12 +27,14 @@
 		},
 	}
 
+	const mainStorage = loadMainStorage()
+
 	let favviewerHidden = false
-	let favviewerMaximized = false
+	let favviewerMaximized = mainStorage.maximized
 	let activatorMount = document.querySelector('nav')
 
 	let fullscreen = {
-		...loadMainStorage().fullscreen,
+		...mainStorage.fullscreen,
 		index: 0
 	}
 </script>

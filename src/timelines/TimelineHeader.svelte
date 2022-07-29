@@ -13,6 +13,7 @@
 	import MasonryContainer from "../containers/MasonryContainer.svelte"
 	import type {FullscreenInfo, TimelineData} from './index'
 	import {RefreshType} from '../services/endpoints'
+	import {updateMaximized} from "../storages";
 
 	export let data: TimelineData
 	export let favviewerButtons: boolean
@@ -69,7 +70,7 @@
 					<Fa icon={faEyeSlash} size='large'/>
 				</button>
 				{#if favviewerMaximized !== undefined}
-					<button class='borderless-button' title='Maximize SoshalThing' on:click={() => favviewerMaximized = !favviewerMaximized}>
+					<button class='borderless-button' title='Maximize SoshalThing' on:click={() => {favviewerMaximized = !favviewerMaximized; updateMaximized(favviewerMaximized)}}>
 						<Fa icon={favviewerMaximized ? faMinimize : faMaximize} size='large'/>
 					</button>
 				{/if}

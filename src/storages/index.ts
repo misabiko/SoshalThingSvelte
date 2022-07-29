@@ -51,13 +51,24 @@ export function loadMainStorage() {
 	if (containerString)
 		(mainStorage.fullscreen as FullscreenInfo).container = parseContainer(containerString)
 
-	return mainStorage as { fullscreen: FullscreenInfo }
+	if (!mainStorage.maximized)
+		mainStorage.maximized = false
+
+	return mainStorage as MainStorageParsed
 }
 
 export function updateFullscreenStorage(fullscreen: FullscreenInfo) {
 	const item = localStorage.getItem(MAIN_STORAGE_KEY)
 	const storage = item ? JSON.parse(item) : {}
 	storage.fullscreen = fullscreen
+
+	localStorage.setItem(MAIN_STORAGE_KEY, JSON.stringify(storage))
+}
+
+export function updateMaximized(maximized: boolean) {
+	const item = localStorage.getItem(MAIN_STORAGE_KEY)
+	const storage = item ? JSON.parse(item) : {}
+	storage.maximized = maximized
 
 	localStorage.setItem(MAIN_STORAGE_KEY, JSON.stringify(storage))
 }
@@ -200,6 +211,12 @@ function parseSortInfo({method, reversed}: {method?: string, reversed: boolean})
 
 type MainStorage = {
 	fullscreen?: boolean | number | FullscreenInfoStorage
+	maximized?: boolean
+}
+
+type MainStorageParsed = {
+	fullscreen: FullscreenInfo
+	maximized: boolean
 }
 
 type FullscreenInfoStorage = FullscreenInfo & {

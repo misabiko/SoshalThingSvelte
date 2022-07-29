@@ -190,7 +190,7 @@ function startAutoRefreshEndpoint(endpoint: Endpoint) {
 	if (endpoint.autoRefreshId === null) {
 		endpoint.autoRefreshId = setInterval(() => {
 			console.debug('Refreshing ' + endpoint.name)
-			refreshEndpointName(endpoint.name, RefreshType.Refresh, true)
+			refreshEndpointName(endpoint.name, RefreshType.Refresh, true).then()
 		}, endpoint.autoRefreshInterval)
 	}
 }

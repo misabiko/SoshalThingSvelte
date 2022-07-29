@@ -10,6 +10,7 @@
 	import SortOptions from "../sorting/SortOptions.svelte"
 	import {SortMethod} from '../sorting'
 	import type {FullscreenInfo} from './index'
+	import {updateFullscreenStorage} from '../storages'
 
 	export let data: TimelineData
 	export let fullscreen: FullscreenInfo | undefined = undefined
@@ -17,24 +18,22 @@
 	export let sortOnce: (method: SortMethod, reversed: boolean) => void
 	export let articleCountLabel: string
 
-	let fullscreenContainerChecked = fullscreen !== undefined && fullscreen.container !== null
-	let lastFullscreenContainerChecked = fullscreenContainerChecked
-	//TODO Just add on:change to Switch
-	$: if (fullscreenContainerChecked !== lastFullscreenContainerChecked) {
-		if (fullscreenContainerChecked)
-			fullscreen.container = data.container
+	function setFullscreenContainer(checked: boolean) {
+		if (checked)
+			fullscreen.container ??= data.container
 		else
 			fullscreen.container = null
-		lastFullscreenContainerChecked = fullscreenContainerChecked
+
+		updateFullscreenStorage(fullscreen)
 	}
-	let fullscreenColumnCountChecked = fullscreen !== undefined && fullscreen.columnCount !== null
-	let lastFullscreenColumnCountChecked = fullscreenColumnCountChecked
-	$: if (fullscreenColumnCountChecked !== lastFullscreenColumnCountChecked) {
-		if (fullscreenColumnCountChecked)
-			fullscreen.columnCount = data.columnCount
+
+	function setFullscreenColumnCount(checked: boolean) {
+		if (checked)
+			fullscreen.columnCount ??= data.columnCount
 		else
 			fullscreen.columnCount = null
-		lastFullscreenColumnCountChecked = fullscreenColumnCountChecked
+
+		updateFullscreenStorage(fullscreen)
 	}
 </script>
 
@@ -83,9 +82,13 @@
 		</Field>
 		{#if fullscreen !== undefined}
 			<Field label='Fullscreen Container'>
-				<Switch bind:checked={fullscreenContainerChecked}/>
-				{#if fullscreenContainerChecked}
-					<Select bind:selected={fullscreen.container} nativeSize={0}>
+				<Switch checked={!!fullscreen.container} on:input={e => setFullscreenContainer(e.target.checked)}/>
+				{#if fullscreen.container}
+					<Select
+						nativeSize={0}
+						bind:selected={fullscreen.container}
+						on:change={() => updateFullscreenStorage(fullscreen)}
+					>
 						<option value={ColumnContainer}>Column</option>
 						<option value={RowContainer}>Row</option>
 						<option value={MasonryContainer}>Masonry</option>
@@ -97,12 +100,31 @@
 			<Field label={`${fullscreen?.columnCount !== null ? 'Timeline ' : ''}Column Count`}>
 <!--				TODO Make <Input type='number' bind:value/> work in svelma-->
 				<input class='input' type='number' bind:value={data.columnCount} min={1}/>
+				<Button on:click={() => data.columnCount++}>
+					+
+				</Button>
+				<Button on:click={() => {if (data.columnCount > 1) data.columnCount--}}>
+					-
+				</Button>
 			</Field>
 			{#if fullscreen !== undefined}
 				<Field label={'Fullscreen Column Count'}>
-					<Switch bind:checked={fullscreenColumnCountChecked}/>
+					<Switch checked={fullscreen.columnCount !== null} on:input={e => setFullscreenColumnCount(e.target.checked)}/>
 					{#if fullscreen.columnCount !== null}
-						<input class='input' type='number' bind:value={fullscreen.columnCount} min={1}/>
+						<input
+							class='input'
+							type='number'
+							min={1}
+							value={fullscreen.columnCount}
+							on:change={e => {if (e.value) fullscreen.columnCount = parseInt(e.value)}}
+							on:change={() => updateFullscreenStorage(fullscreen)}
+						/>
+						<Button on:click={() => {fullscreen.columnCount++; updateFullscreenStorage(fullscreen)}}>
+							+
+						</Button>
+						<Button on:click={() => {if (fullscreen.columnCount > 1) fullscreen.columnCount--; updateFullscreenStorage(fullscreen)}}>
+							-
+						</Button>
 					{/if}
 				</Field>
 			{/if}

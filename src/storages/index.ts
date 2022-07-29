@@ -54,6 +54,14 @@ export function loadMainStorage() {
 	return mainStorage as { fullscreen: FullscreenInfo }
 }
 
+export function updateFullscreenStorage(fullscreen: FullscreenInfo) {
+	const item = localStorage.getItem(MAIN_STORAGE_KEY)
+	const storage = item ? JSON.parse(item) : {}
+	storage.fullscreen = fullscreen
+
+	localStorage.setItem(MAIN_STORAGE_KEY, JSON.stringify(storage))
+}
+
 export function loadTimelines(): TimelineData[] {
 	const item = localStorage.getItem(TIMELINE_STORAGE_KEY)
 	let storage: Partial<TimelineStorage>[] = item ? JSON.parse(item) : []

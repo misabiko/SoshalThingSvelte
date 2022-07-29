@@ -25,8 +25,12 @@ export const PixivService: PixivServiceType = {
 				a.medias[i] = {
 					src: page.urls.original,
 					ratio: getRatio(page.width, page.height),
-					queueLoadInfo: MediaQueueInfo.DirectLoad,
+					queueLoadInfo: MediaQueueInfo.LazyLoad,
 					mediaType: MediaType.Image,
+					thumbnail: a.medias[i].queueLoadInfo === MediaQueueInfo.Thumbnail ? {
+						src: a.medias[i].src
+					}: undefined,
+					loaded: false
 				}
 			}
 

@@ -79,7 +79,7 @@
 <nav id='sidebar'>
 	{#if menu !== null}
 		<div class='sidebarMenu'>
-			{#if menu instanceof SvelteComponent}
+			{#if !Object.values(SidebarMenu).includes(menu)}
 				<svelte:component this={menu}/>
 			{/if}
 		</div>

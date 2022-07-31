@@ -6,7 +6,7 @@
 	export let endpoint: Writable<Endpoint>
 </script>
 
-<div class='block'>
+<div class='block endpointOptions'>
 	{$endpoint.name}
 	{#if $endpoint.rateLimitInfo !== null}
 		{@const timeLeft = Math.ceil((($endpoint.rateLimitInfo.reset * 1000) - Date.now()) / 60000)}

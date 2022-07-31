@@ -110,7 +110,10 @@ test.describe('timelines', () => {
 			const endpointOptionGroup = page.locator('.timelineOptions .box', {hasText: 'Endpoints'})
 
 			await expect(endpointOptionGroup.locator('ul > *')).toHaveCount(0);
-			//TODO Assert sidebar
+
+			await page.click('#sidebarButtons button[title = "Endpoints"]')
+
+			await expect(page.locator('.sidebarMenu')).toHaveText('No endpoints currently')
 		});
 
 		test('with endpoints', async ({ page }) => {
@@ -138,7 +141,10 @@ test.describe('timelines', () => {
 
 			const endpointList = endpointOptionGroup.locator('ul > *');
 			await expect(endpointList).toHaveCount(2);
-			//TODO Assert sidebar
+
+			await page.click('#sidebarButtons button[title = "Endpoints"]')
+
+			await expect(page.locator('.sidebarMenu .endpointOptions')).toHaveCount(2)
 		});
 
 		test('with duplicate non-duplicatable endpoints', async ({ page }) => {
@@ -180,7 +186,9 @@ test.describe('timelines', () => {
 				await page.click(`.timeline:nth-child(${i}) .timelineButtons button[title = "Expand options"]`)
 			}
 
-			//TODO Assert sidebar
+			await page.click('#sidebarButtons button[title = "Endpoints"]')
+
+			await expect(page.locator('.sidebarMenu .endpointOptions')).toHaveCount(1)
 		});
 	});
 })

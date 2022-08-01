@@ -6,6 +6,7 @@ import {
 	getRefed,
 	MediaType,
 } from '../services/article'
+import {getServices} from '../services/service'
 
 export type FilterInstance = {
 	filter: Filter
@@ -13,30 +14,31 @@ export type FilterInstance = {
 	inverted: boolean
 }
 
-//TODO Add service nullable field, and add Deleted filter to Twitter
-export type Filter =
-	{ type: 'media' } |
-	{ type: 'animated' } |
-	{ type: 'notMarkedAsRead' } |
-	{ type: 'notHidden' } |
-	{ type: 'liked' } |
-	{ type: 'reposted' } |
-	{ type: 'noRef' } |
-	{
-		type: 'repost'
-		byUsername?: string
-	} |
-	{
-		type: 'quote'
-		byUsername?: string
-	} | {
-		type: 'interval'
-		interval: number
-		offset: number
-		includeOffset: boolean
-	}
+export type Filter = {
+	type: string
+	service: string
+} | GenericFilter
 
-export function getFilterName(filterType: Filter['type'], inverted: boolean): string {
+type GenericFilter = {
+	type: 'media' | 'animated' | 'notMarkedAsRead' | 'notHidden' | 'liked' | 'reposted' | 'noRef'
+	service: null
+} | {
+	type: 'repost'
+	byUsername?: string
+	service: null
+} | {
+	type: 'quote'
+	service: null
+	byUsername?: string
+} | {
+	type: 'interval'
+	service: null
+	interval: number
+	offset: number
+	includeOffset: boolean
+}
+
+export function getFilterName(filterType: GenericFilter['type'], inverted: boolean): string {
 	if (inverted) {
 		switch (filterType) {
 			case 'media':
@@ -98,7 +100,10 @@ export const filterTypes: Filter['type'][] = [
 	'quote'
 ]
 
-export function defaultFilter(filterType: Filter['type']): Filter {
+export function defaultFilter(filterType: string, service: string | null): Filter {
+	if (service)
+		return getServices()[service].defaultFilter(filterType)
+
 	switch (filterType) {
 		case 'interval':
 			return {
@@ -106,25 +111,33 @@ export function defaultFilter(filterType: Filter['type']): Filter {
 				interval: 3,
 				offset: 0,
 				includeOffset: false,
+				service: null,
 			}
 		default:
-			return { type: filterType }
+			return { type: filterType, service: null } as GenericFilter
 	}
 }
 
 export const defaultFilterInstances: FilterInstance[] = [
 	{
-		filter: {type: "notMarkedAsRead"},
+		filter: {type: 'notMarkedAsRead', service: null},
 		enabled: true,
 		inverted: false,
 	}, {
-		filter: {type: "notHidden"},
+		filter: {type: 'notHidden', service: null},
 		enabled: true,
 		inverted: false,
 	},
 ]
 
 export function keepArticle(articleWithRefs: ArticleWithRefs, index: number, filter: Filter): boolean {
+	if (filter.service !== null)
+		return getServices()[filter.service].keepArticle(articleWithRefs, index, filter)
+	else
+		return keepArticleGeneric(articleWithRefs, index, filter)
+}
+
+function keepArticleGeneric(articleWithRefs: ArticleWithRefs, index: number, filter: GenericFilter): boolean {
 	switch (filter.type) {
 		case 'media':
 			return !!articleWithRefs.article.medias.length ||

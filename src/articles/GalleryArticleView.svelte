@@ -16,13 +16,11 @@
 		fetchArticle,
 		toggleHide,
 		toggleMarkAsRead,
-		articleAction,
-		getArticleAction,
-		STANDARD_ACTIONS,
 		getWritable,
 	} from "../services/service"
 	import type {TimelineArticleProps} from './index'
 	import type {ArticleProps} from './index'
+	import {articleAction, getArticleAction, STANDARD_ACTIONS} from '../services/actions'
 
 	export let timelineProps: TimelineArticleProps
 	export let articleProps: ArticleProps; articleProps;

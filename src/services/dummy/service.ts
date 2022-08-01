@@ -1,13 +1,11 @@
 import {get} from 'svelte/store'
-import {getWritable, registerService, type Service, STANDARD_ACTIONS} from '../service'
+import {getWritable, newService, registerService, type Service} from '../service'
 import DummyArticle from './article'
 import type {ArticleIdPair} from '../article'
+import {STANDARD_ACTIONS} from '../actions'
 
 export const DummyService: Service<DummyArticle> = {
-	name: 'Dummy',
-	articles: {},
-	endpointConstructors: [],
-	userEndpoint: undefined,
+	...newService('Dummy'),
 	articleActions: {
 		[STANDARD_ACTIONS.like]: {
 			action: toggleLike,

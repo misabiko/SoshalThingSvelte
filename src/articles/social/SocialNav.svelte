@@ -8,9 +8,10 @@
 		faEllipsisH, faExpandAlt, faEye,
 	} from '@fortawesome/free-solid-svg-icons'
 	import Dropdown from '../../Dropdown.svelte'
-	import {toggleMarkAsRead, toggleHide, articleAction, getArticleAction, STANDARD_ACTIONS} from "../../services/service"
+	import {toggleMarkAsRead, toggleHide} from "../../services/service"
 	import Article from '../../services/article'
 	import type {TimelineArticleProps} from '../index'
+	import {articleAction, getArticleAction, STANDARD_ACTIONS} from '../../services/actions'
 
 	export let article: Article
 	export let repost: Article | undefined = undefined

@@ -1,20 +1,13 @@
 import PixivArticle from './article'
 import type {FetchingService, Service} from '../service'
-import {registerService} from '../service'
+import {newFetchingService, newService, registerService} from '../service'
 import type {Writable} from 'svelte/store'
 import {get} from 'svelte/store'
-import type {ArticleId} from '../article'
 import {getRatio, MediaQueueInfo, MediaType} from '../article'
 
 export const PixivService: PixivServiceType = {
-	name: 'Pixiv',
-	articles: {},
-	endpointConstructors: [],
-	userEndpoint: undefined,
-	articleActions: {},
-	fetchedArticles: new Set<ArticleId>(),
-	fetchedArticleQueue: 0,
-	fetchTimeout: undefined,
+	...newService('Pixiv'),
+	...newFetchingService(),
 	async fetchArticle(store: Writable<PixivArticle>) {
 		const article = get(store)
 		const json: PagesResponse = await fetch(`https://www.pixiv.net/ajax/illust/${article.id}/pages`).then(r => r.json())

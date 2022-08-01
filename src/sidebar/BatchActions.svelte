@@ -2,7 +2,7 @@
 	import {Button, Field, Select, Switch} from 'svelma'
 	import FiltersOptions from "../filters/FiltersOptions.svelte"
 	import {type FilterInstance, useFilters} from '../filters'
-	import {articleAction, getWritable, STANDARD_ACTIONS} from '../services/service'
+	import {getWritable} from '../services/service'
 	import {type TimelineData} from '../timelines'
 	import {derived, type Readable, type Writable} from 'svelte/store'
 	import Article, {
@@ -11,6 +11,7 @@
 		articleRefIdPairToRef,
 		type ArticleWithRefs,
 	} from '../services/article'
+	import {articleAction, STANDARD_ACTIONS} from '../services/actions'
 
 	export let timelines: TimelineData[]
 	export let filterInstances: FilterInstance[]

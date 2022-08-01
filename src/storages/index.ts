@@ -180,6 +180,11 @@ function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | unde
 	if (storage.autoRefresh)
 		startAutoRefresh(endpoint.name)
 
+	if (storage.filters)
+		for (const instance of storage.filters)
+			if (instance.filter.service !== null && !instance.filter.service)
+				console.error('Missing service on', instance)
+
 	return {
 		name: endpoint.name,
 		refreshTypes,

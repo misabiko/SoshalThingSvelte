@@ -4,9 +4,10 @@ import {getRefed} from './article'
 import type {Writable} from 'svelte/store'
 import {writable} from 'svelte/store'
 import {updateCachedArticlesStorage, updateHiddenStorage, updateMarkAsReadStorage} from '../storages/serviceCache'
-import type {EndpointConstructorInfo} from './endpoints'
-import type {Endpoint} from './endpoints'
+import type {Endpoint, EndpointConstructorInfo} from './endpoints'
 import {undoables} from '../undo'
+import type {Filter} from '../filters'
+import type {ArticleAction} from './actions'
 
 const services: { [name: string]: Service } = {}
 
@@ -19,40 +20,8 @@ export interface Service<A extends Article = Article> {
 	articleActions: { [name: string]: ArticleAction };
 	requestImageLoad?: (id: ArticleId, index: number) => void;
 	getCachedArticles?: () => {[id: string]: object}
-}
-
-type ArticleAction = {
-	action: (idPair: ArticleIdPair) => void;
-	togglable: boolean;
-};
-
-export const STANDARD_ACTIONS = {
-	like: 'like',
-	repost: 'repost',
-	markAsRead: 'markAsRead',
-	hide: 'hide',
-};
-
-export function articleAction(action: string, idPair: ArticleIdPair) {
-	switch (action) {
-		case STANDARD_ACTIONS.markAsRead:
-			toggleMarkAsRead(idPair)
-			break;
-		case STANDARD_ACTIONS.hide:
-			toggleHide(idPair)
-			break;
-		default:
-			if (services[idPair.service].articleActions.hasOwnProperty(action))
-				services[idPair.service].articleActions[action].action(idPair)
-			else
-				console.warn(`${idPair.service} doesn't have action ${action}.`)
-	}
-}
-
-export function getArticleAction(action: string, service: string) {
-	const actions = services[service].articleActions
-	if (actions.hasOwnProperty(action))
-		return actions[action]
+	keepArticle(articleWithRefs: ArticleWithRefs, index: number, filter: Filter): boolean
+	defaultFilter(filterType: string): Filter
 }
 
 export function addArticles(service: Service, ignoreRefs: boolean, ...articles: ArticleWithRefs[]) {
@@ -172,4 +141,25 @@ export interface FetchingService<A extends Article = Article> {
 	fetchedArticles: Set<ArticleId>;
 	fetchedArticleQueue: number;
 	fetchTimeout: undefined | number;
+}
+
+//TODO Consider making Service a class
+export function newService<A extends Article = Article>(name: string): Service<A> {
+	return {
+		name,
+		articles: {},
+		endpointConstructors: [],
+		userEndpoint: undefined,
+		articleActions: {},
+		keepArticle() { return true },
+		defaultFilter(filterType: string) { return {type:filterType, service: name}}
+	}
+}
+
+export function newFetchingService<A extends Article = Article>(): Omit<FetchingService<A>, 'fetchArticle'> {
+	return {
+		fetchedArticles: new Set(),
+		fetchedArticleQueue: 0,
+		fetchTimeout: undefined,
+	}
 }

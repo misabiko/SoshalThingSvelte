@@ -90,6 +90,8 @@ export function loadTimelines(): TimelineData[] {
 				endpoints.push(endpoint)
 		}
 
+		parseFilters(defaulted.filters)
+
 		return {
 			...defaultTimeline(),
 			title: defaulted.title,
@@ -180,10 +182,7 @@ function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | unde
 	if (storage.autoRefresh)
 		startAutoRefresh(endpoint.name)
 
-	if (storage.filters)
-		for (const instance of storage.filters)
-			if (instance.filter.service !== null && !instance.filter.service)
-				console.error('Missing service on', instance)
+	parseFilters(storage.filters)
 
 	return {
 		name: endpoint.name,
@@ -211,6 +210,18 @@ function parseSortInfo({method, reversed}: {method?: string, reversed: boolean})
 	return {
 		method: sortMethod,
 		reversed: reversed || false
+	}
+}
+
+function parseFilters(filters: FilterInstance[] | undefined) {
+	if (filters === undefined)
+		return
+
+	for (const instance of filters) {
+		instance.filter.service ??= null;
+
+		if (instance.filter.service !== null && !Object.hasOwn(getServices(), instance.filter.service))
+			console.error(`Service ${instance.filter.service} isn't registered.`, instance)
 	}
 }
 

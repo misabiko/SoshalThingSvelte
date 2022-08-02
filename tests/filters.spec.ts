@@ -1,29 +1,6 @@
 import {expect, test} from '@playwright/test'
 import {loadWithLocalStorage, TIMELINE_STORAGE_KEY} from './storages.spec.js'
 
-test('missing filter service', async ({page}) => {
-	page.on('console', message => {
-		expect(message.type()).toBe('error');
-		expect(message.text()).toContain('Missing service');
-	});
-
-	await loadWithLocalStorage(page, {
-		[TIMELINE_STORAGE_KEY]: [{
-			endpoints: [
-				{
-					service: 'Dummy',
-					endpointType: 0,
-				}
-			],
-			filters: [{
-				filter: {type: 'notMarkedAsRead'},
-				enabled: true,
-				inverted: false,
-			}]
-		}]
-	})
-})
-
 test.describe('mark as read/hide', () => {
 	test.beforeEach(async ({page}) => {
 		await loadWithLocalStorage(page, {

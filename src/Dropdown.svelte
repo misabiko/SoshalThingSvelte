@@ -12,7 +12,7 @@
 	let triggerRef: HTMLButtonElement | null = null
 
 	function close(e: MouseEvent) {
-		if (!triggerRef?.contains(e.target as Node))
+		if (e.button !== 2 && !triggerRef?.contains(e.target as Node))
 			isActive = false
 	}
 
@@ -23,6 +23,7 @@
 
 	onMount(() => () => document.removeEventListener('click', close))
 </script>
+
 <div
 	class='dropdown'
 	class:is-active={isActive}

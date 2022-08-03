@@ -119,7 +119,7 @@
 		flex-grow: 1
 </style>
 
-{#if sidebarMenu === TimelineEditMenu}
+{#if sidebarMenu === SidebarMenu.TimelineEdit}
 	<div use:portal={document.querySelector('.sidebarMenu')} class='box'>
 		<TimelineEditMenu
 			{setModalTimeline}

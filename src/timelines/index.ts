@@ -95,12 +95,12 @@ export function newUserTimeline(serviceName: string, username: string): Timeline
 		filters: [
 			...defaultFilterInstances,
 			{
-				filter: {type: 'media'},
+				filter: {type: 'media', service: null},
 				enabled: true,
 				inverted: false,
 			},
 			{
-				filter: {type: 'noRef'},
+				filter: {type: 'noRef', service: null},
 				enabled: true,
 				inverted: false,
 			}

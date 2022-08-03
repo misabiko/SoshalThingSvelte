@@ -14,9 +14,9 @@ export type Notification =
 		text: string
 	}
 
-const {subscribe, set, update} = writable<{[id: string]: Notification}>({})
+const {subscribe, update} = writable<{[id: string]: Notification}>({})
 let ids: string[]
-const localUnsubscribe = subscribe(value => ids = Object.keys(value))
+subscribe(value => ids = Object.keys(value))
 
 export const notifications = {
 	subscribe,
@@ -39,7 +39,6 @@ export const notifications = {
 //TODO Unit test that this generates "Generated0", "Generated1", etc
 //Even if "Generated1 is added manually
 function generateId(): string {
-	let i = 0
 	let id = 'Generated0'
 	for (let i = 1; ids.includes(id); ++i)
 		id = 'Generated' + i

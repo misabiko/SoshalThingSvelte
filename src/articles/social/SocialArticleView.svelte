@@ -192,7 +192,7 @@
 						</a>
 						<Timestamp date={quoted.creationTime}/>
 					</div>
-					{#if !(minimized || quoted.markedAsRead || quoted.hidden)} <!--	TODO Filter from timeline-->
+					{#if !(minimized || articleProps.quoted.filteredOut)}
 						{#if !timelineProps.hideText}
 							<p class='refArticleParagraph'>
 								{#if quoted.textHtml}

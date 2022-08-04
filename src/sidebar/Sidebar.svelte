@@ -16,9 +16,23 @@
 	import Endpoints from "./Endpoints.svelte"
 	import {SvelteComponent} from 'svelte'
 	import SettingsMenu from "./SettingsMenu.svelte"
-	import {SidebarMenu} from './index'
+	import TimelineEditMenu from "./TimelineEditMenu.svelte";
+	import BatchActions from "./BatchActions.svelte";
+	import type {TimelineData} from '../timelines'
+	import type {FilterInstance} from '../filters'
 
-	export let menu: typeof SvelteComponent | SidebarMenu | null;
+	enum SidebarMenu {
+		TimelineEdit,
+		BatchActions,
+		Undoables,
+	}
+
+	let menu: typeof SvelteComponent | SidebarMenu | null = null;
+
+	export let setModalTimeline: (data: TimelineData, width?: number) => void
+	export let addTimeline: (data: TimelineData) => void
+	export let timelines: TimelineData[]
+	export let batchActionFilters: FilterInstance[]
 
 	function toggleSidebarMenu(newMenu: typeof SvelteComponent | SidebarMenu) {
 		menu = menu === newMenu ? null : newMenu;
@@ -27,7 +41,7 @@
 	const buttons: {icon: IconDefinition, menu: typeof SvelteComponent | SidebarMenu, title: string}[] = [
 		{icon: faPlus, menu: SidebarMenu.TimelineEdit, title: 'Add new timeline'},
 		{icon: faBarsProgress, menu: Endpoints, title: 'Endpoints'},
-		{icon: faRotateLeft, menu: Undoables, title: 'Undoables'},
+		{icon: faRotateLeft, menu: SidebarMenu.Undoables, title: 'Undoables'},
 		{icon: faSpinner, menu: MediaLoader, title: 'Loading medias'},
 		{icon: faB, menu: SidebarMenu.BatchActions, title: 'Batch actions'},
 	]
@@ -79,7 +93,25 @@
 <nav id='sidebar'>
 	{#if menu !== null}
 		<div class='sidebarMenu'>
-			{#if !Object.values(SidebarMenu).includes(menu)}
+			{#if menu === SidebarMenu.TimelineEdit}
+				<div class='box'>
+					<TimelineEditMenu
+						{setModalTimeline}
+						{addTimeline}
+					/>
+				</div>
+			{:else if menu === SidebarMenu.BatchActions}
+				<div class='box'>
+					<BatchActions
+						bind:filterInstances={batchActionFilters}
+						{timelines}
+					/>
+				</div>
+			{:else if menu === SidebarMenu.Undoables}
+				<Undoables
+					{setModalTimeline}
+				/>
+			{:else if !Object.values(SidebarMenu).includes(menu)}
 				<svelte:component this={menu}/>
 			{/if}
 		</div>

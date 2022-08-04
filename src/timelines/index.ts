@@ -34,11 +34,11 @@ export type TimelineData = {
 	maxMediaCount: number | null;
 }
 
-export function defaultTimeline(): TimelineData {
+export function defaultTimeline(articles: ArticleIdPair[] = []): TimelineData {
 	return {
 		title: 'Timeline',
 		endpoints: [],
-		articles: writable([]),
+		articles: writable(articles),
 		section: {useSection: false, count: 100},
 		container: ColumnContainer,
 		articleView: SocialArticleView,

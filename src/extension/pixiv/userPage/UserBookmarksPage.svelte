@@ -86,7 +86,7 @@
 <SoshalThing
 	bind:favviewerHidden
 	bind:favviewerMaximized
-	initTimelines={[timeline]}
+	timelines={[timeline]}
 	isInjected={true}
 	{fullscreen}
 />

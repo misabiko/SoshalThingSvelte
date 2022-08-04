@@ -3,28 +3,21 @@
 	import Timeline from './Timeline.svelte'
 	import {afterUpdate, getContext, onMount} from 'svelte'
 	import {Modal} from 'svelma'
-	import {refreshEndpoint, refreshEndpointName, RefreshType, timelineEndpoints} from '../services/endpoints'
-	import portal from '../usePortal'
-	import TimelineEditMenu from "../sidebar/TimelineEditMenu.svelte";
-	import {SidebarMenu} from '../sidebar'
-	import BatchActions from "../sidebar/BatchActions.svelte";
-	import {type FilterInstance} from '../filters'
+	import {timelineEndpoints} from '../services/endpoints'
 
-	export let initTimelines: TimelineData[] = [];
+	export let timelines: TimelineData[] = []
+	export let modalTimeline: TimelineData | null;
+	export let setModalTimeline: (data: TimelineData, width?: number) => void
+	export let removeTimeline: (index: number) => void
+	export let initialRefresh: (...refreshingTimelines: TimelineData[]) => void
+
 	export let fullscreen: FullscreenInfo;
 	export let favviewerHidden;
 	export let favviewerMaximized: boolean | undefined = undefined;
 	export let showSidebar;
-	export let sidebarMenu: SidebarMenu
-
-	//We could make this a stack of timelines
-	let modalTimeline: TimelineData | null = null
-	let modalTimelineActive = false
+	export let modalTimelineActive: boolean
 
 	const isInjected = getContext('isInjected');
-	let timelines: TimelineData[] = initTimelines;
-
-	let batchActionFilters: FilterInstance[] = []
 
 	$: {
 		const newTimelineEndpoints = timelines.map((t, i) => ({
@@ -57,20 +50,6 @@
 		timelineEndpoints.set(newTimelineEndpoints)
 	}
 
-	function removeTimeline(index: number) {
-		timelines.splice(index, 1)
-	}
-
-	function setModalTimeline(data: TimelineData, width = 3) {
-		modalTimeline = {
-			...data,
-			width,
-		}
-		modalTimelineActive = true
-
-		initialRefresh(modalTimeline)
-	}
-
 	afterUpdate(() => {
 		//Workaround for https://github.com/sveltejs/svelte/issues/5268
 		//During Modal's close transition, the child Timeline still calls reactive statements for modalTimeline
@@ -84,31 +63,6 @@
 			...(modalTimeline === null ? [] : [modalTimeline])
 		])
 	})
-
-	function addTimeline(data: TimelineData) {
-		timelines.push(data)
-		timelines = timelines
-	}
-
-	function initialRefresh(...refreshingTimelines: TimelineData[]) {
-		const endpointNames = new Set<string>()
-		for (const timeline of refreshingTimelines)
-			for (const timelineEndpoint of timeline.endpoints)
-				if (timelineEndpoint.name !== undefined)
-					endpointNames.add(timelineEndpoint.name)
-				else
-					refreshEndpoint(timelineEndpoint.endpoint, RefreshType.RefreshStart)
-						.then(articles => {
-							if (articles.length)
-								timeline.articles.update(idPairs => {
-									idPairs.push(...articles.map(a => a.article.idPair))
-									return idPairs
-								})
-						})
-
-		for (const endpointName of endpointNames.values())
-			refreshEndpointName(endpointName, RefreshType.RefreshStart)
-	}
 </script>
 
 <style lang='sass'>
@@ -118,22 +72,6 @@
 		display: flex
 		flex-grow: 1
 </style>
-
-{#if sidebarMenu === SidebarMenu.TimelineEdit}
-	<div use:portal={document.querySelector('.sidebarMenu')} class='box'>
-		<TimelineEditMenu
-			{setModalTimeline}
-			{addTimeline}
-		/>
-	</div>
-{:else if sidebarMenu === SidebarMenu.BatchActions}
-	<div use:portal={document.querySelector('.sidebarMenu')} class='box'>
-		<BatchActions
-			bind:filterInstances={batchActionFilters}
-			{timelines}
-		/>
-	</div>
-{/if}
 
 <div id='timelineContainer'>
 	{#if modalTimeline !== null}
@@ -146,7 +84,7 @@
 			/>
 		</Modal>
 	{/if}
-	{#if fullscreen.index !== null}
+	{#if fullscreen.index !== null && timelines[fullscreen.index] !== undefined}
 		{#if isInjected}
 			<Timeline
 				favviewerButtons=true

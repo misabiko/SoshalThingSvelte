@@ -1,4 +1,5 @@
 import {writable} from 'svelte/store'
+import type {ArticleIdPair} from './services/article'
 
 export const undoables = (() => {
 	const {subscribe, update} = writable<Undoable[]>([])
@@ -31,4 +32,5 @@ export type Undoable = {
 	redo: () => void
 	undid: boolean
 	text: string
+	articleIdPair: ArticleIdPair
 }

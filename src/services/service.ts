@@ -68,7 +68,8 @@ export function toggleMarkAsRead(idPair: ArticleIdPair) {
 				})
 			},
 			undid: false,
-			text: `Article ${idPair.service}/${idPair.id} was marked as ${oldValue ? 'unread' : 'read'}`
+			text: `Article ${idPair.service}/${idPair.id} was marked as ${oldValue ? 'unread' : 'read'}`,
+			articleIdPair: idPair,
 		})
 		return a
 	})
@@ -96,7 +97,8 @@ export function toggleHide(idPair: ArticleIdPair) {
 				})
 			},
 			undid: false,
-			text: `Article ${idPair.service}/${idPair.id} was ${oldValue ? 'unhidden' : 'hidden'}`
+			text: `Article ${idPair.service}/${idPair.id} was ${oldValue ? 'unhidden' : 'hidden'}`,
+			articleIdPair: idPair,
 		})
 		return a
 	})

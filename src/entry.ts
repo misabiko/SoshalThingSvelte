@@ -7,7 +7,7 @@ import {loadMainStorage, loadTimelines} from './storages'
 import type {FullscreenInfo} from './timelines'
 
 const {fullscreen: storageFullscreen} = loadMainStorage();
-const initTimelines = loadTimelines();
+const timelines = loadTimelines();
 
 const searchParams = new URLSearchParams(location.search)
 let fullscreen: FullscreenInfo = parseFullscreen(searchParams) ?? storageFullscreen
@@ -16,7 +16,7 @@ new SoshalThing({
 	target: document.body,
 	props: {
 		isInjected: false,
-		initTimelines,
+		timelines,
 		fullscreen,
 	}
 })

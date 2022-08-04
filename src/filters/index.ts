@@ -5,7 +5,9 @@ import {
 
 } from '../articles'
 import {getServices} from '../services/service'
-import {ArticleMedia, MediaType} from '../articles/media'
+import {type ArticleMedia, MediaType} from '../articles/media'
+
+//TODO Filter groups and boolean filters
 
 export type FilterInstance = {
 	filter: Filter
@@ -148,9 +150,6 @@ function keepArticleGeneric(articleWithRefs: ArticleWithRefs, index: number, fil
 					return !articleWithRefs.article.markedAsRead
 				case 'repost':
 					return !articleWithRefs.article.markedAsRead && keepArticleGeneric(articleWithRefs.reposted, index, filter)
-				case 'quote':
-					//TODO Filter out nested articles
-					return !articleWithRefs.article.markedAsRead
 			}
 		case 'notHidden':
 			switch (articleWithRefs.type) {
@@ -158,9 +157,6 @@ function keepArticleGeneric(articleWithRefs: ArticleWithRefs, index: number, fil
 					return !articleWithRefs.article.hidden
 				case 'repost':
 					return !articleWithRefs.article.hidden && keepArticleGeneric(articleWithRefs.reposted, index, filter)
-				case 'quote':
-					//TODO Filter out nested articles
-					return !articleWithRefs.article.hidden
 			}
 		case 'liked':
 			return getActualArticle(articleWithRefs).getLiked();

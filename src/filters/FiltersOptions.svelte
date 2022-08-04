@@ -7,6 +7,8 @@
 
 	export let instances: FilterInstance[]
 
+	//TODO UI to add service filters
+
 	function addFilter(filterType: Filter['type'], inverted: boolean) {
 		instances.push({
 			filter: defaultFilter(filterType, null),

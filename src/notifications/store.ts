@@ -36,7 +36,7 @@ export const notifications = {
 	}
 }
 
-//TODO Unit test that this generates "Generated0", "Generated1", etc
+//TEST Unit test that this generates "Generated0", "Generated1", etc
 //Even if "Generated1 is added manually
 function generateId(): string {
 	let id = 'Generated0'

@@ -27,9 +27,10 @@ export const undoables = (() => {
 })()
 
 export type Undoable = {
-	//TODO Find a way to make todo/redo private
+	//Supposed to be called only in this file
 	undo: () => void
 	redo: () => void
+	//TODO Remove undid, and on undo, remove undoable from stack and add togglable command on top
 	undid: boolean
 	text: string
 	articleIdPair: ArticleIdPair

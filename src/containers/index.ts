@@ -1,5 +1,6 @@
 import type {ArticleWithRefs, ArticleProps, TimelineArticleProps} from '../articles'
 import type {SvelteComponent} from 'svelte'
+import {getRootArticle} from '../articles'
 
 export type ContainerProps = {
 	articles: ArticleProps[];
@@ -14,9 +15,9 @@ export function articlesWithUniqueKeys(articles: ArticleWithRefs[]): [ArticleWit
 	const idPairs = new Set<string>()
 	return articles.map(a => {
 		let i = 0
-		let key = `${a.article.idPairStr}/${i}`
+		let key = `${getRootArticle(a).idPairStr}/${i}`
 		while (idPairs.has(key)) {
-			key = `${a.article.idPairStr}/${++i}`
+			key = `${getRootArticle(a).idPairStr}/${++i}`
 		}
 
 		idPairs.add(key)

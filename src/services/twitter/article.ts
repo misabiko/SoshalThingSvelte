@@ -4,7 +4,7 @@ import type {ArticleMedia} from '../../articles/media'
 
 export default class TwitterArticle extends Article {
 	static service: string;
-	//TODO deleted = false
+	deleted = false
 	//TODO Disable like/retweet actions for deleted articles
 
 	constructor(
@@ -22,7 +22,7 @@ export default class TwitterArticle extends Article {
 		public likeCount: number,
 		public retweeted: boolean,
 		public retweetCount: number,
-		json: any
+		rawSource: any
 	) {
 		super({
 			id,
@@ -36,12 +36,18 @@ export default class TwitterArticle extends Article {
 			hiddenStorage,
 			actualArticleRef,
 			//replyRef,
-			json,
+			rawSource,
 		});
 	}
 
 	get numberId() {
 		return BigInt(this.id)
+	}
+
+	update(newArticle: this) {
+		super.update(newArticle)
+
+		this.deleted ||= newArticle.deleted
 	}
 
 	getLikeCount(): number {

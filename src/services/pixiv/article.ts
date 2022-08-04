@@ -15,8 +15,7 @@ export default class PixivArticle extends Article {
 		public creationTime: Date | undefined,
 		markedAsReadStorage: string[],
 		hiddenStorage: string[],
-		//TODO Rename to raw source
-		json: any | undefined,
+		rawSource: any | undefined,
 		public bookmarked: boolean,
 	) {
 		super({
@@ -28,7 +27,7 @@ export default class PixivArticle extends Article {
 			markedAsReadStorage,
 			hiddenStorage,
 			text: title,
-			json,
+			rawSource,
 		})
 	}
 

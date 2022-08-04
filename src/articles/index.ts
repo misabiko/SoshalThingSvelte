@@ -25,7 +25,7 @@ export default abstract class Article {
 	//readonly replyRef?: ArticleIdPair
 
 	fetched: boolean
-	json: any
+	rawSource: any
 
 	protected constructor(params: {
 		id: ArticleId,
@@ -40,7 +40,7 @@ export default abstract class Article {
 		actualArticleRef?: ArticleRefIdPair
 		//replyRef?: ArticleIdPair
 		fetched?: boolean,
-		json?: any,
+		rawSource?: any,
 	}) {
 		this.text = params.text
 		this.textHtml = params.textHtml
@@ -51,7 +51,7 @@ export default abstract class Article {
 		this.actualArticleRef = params.actualArticleRef
 		//this.replyRef = params.replyRef
 		this.fetched = params.fetched || false
-		this.json = params.json
+		this.rawSource = params.rawSource
 
 		this.idPair = {
 			service: (this.constructor as typeof Article).service,
@@ -86,7 +86,7 @@ export type ArticleId = string | number | bigint
 export interface ArticleAuthor {
 	username: string;
 	name: string;
-	url: string;	//TODO delegate to service
+	url: string;
 	avatarUrl?: string;
 }
 

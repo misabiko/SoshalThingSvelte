@@ -18,7 +18,6 @@
 	let action = STANDARD_ACTIONS.markAsRead
 	let onlyListedArticles = true
 
-	//TODO Abstract this
 	let articleIdPairs: Writable<ArticleIdPair[]> = timelines[timelineIndex].articles
 
 	let articles: Readable<Article[]>

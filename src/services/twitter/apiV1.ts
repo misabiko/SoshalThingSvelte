@@ -8,7 +8,7 @@ import type {ExtensionFetchResponse} from '../extension'
 import {get} from 'svelte/store'
 import {addArticles, getWritable} from '../service'
 import type {RateLimitInfo} from '../endpoints'
-import {ArticleMedia, getRatio, MediaLoadType, MediaType} from '../../articles/media'
+import {type ArticleMedia, getRatio, MediaLoadType, MediaType} from '../../articles/media'
 
 export function getV1APIURL(resource: string): string {
 	return `https://api.twitter.com/1.1/${resource}.json`
@@ -18,7 +18,6 @@ export function articleFromV1(json: TweetResponse, isRef = false): ArticleWithRe
 	const rawText = json.full_text ?? json.text as string
 	const {text, textHtml} = parseText(rawText, json.entities, json.extended_entities)
 
-	let actualArticleIndex: number | undefined
 	let actualArticleRefIdPair: ArticleRefIdPair | undefined
 
 	const makeArticle = () => new TwitterArticle(
@@ -58,7 +57,6 @@ export function articleFromV1(json: TweetResponse, isRef = false): ArticleWithRe
 				reposted: getRootArticle(retweeted).idPair,
 			}
 		}
-		actualArticleIndex = 0
 
 		return {
 			type: 'repost',
@@ -110,15 +108,29 @@ export async function toggleFavorite(idPair: ArticleIdPair) {
 	}catch (cause: ExtensionFetchResponse<V1ErrorResponse> | any) {
 		//TEST fetch errors
 		let shouldThrow = true
-		if (cause.errors !== undefined && (cause as V1ErrorResponse).errors.some(e => e.code === 139)) {
-			console.warn(cause)
-			writable.update(a => {
-				a.liked = true
-				return a
-			})
+		if (cause.errors !== undefined) {
+			for (const err of cause.errors)
+				switch (err.code) {
+					case 139:
+						console.warn(cause)
+						writable.update(a => {
+							a.liked = true
+							return a
+						})
 
-			if (cause.errors.length === 1)
-				shouldThrow = false
+						if (cause.errors.length === 1)
+							shouldThrow = false
+						break
+					case 144:
+						writable.update(a => {
+							a.deleted = true
+							return a
+						})
+
+						if (cause.errors.length === 1)
+							shouldThrow = false
+						break
+				}
 		}
 
 		if (shouldThrow)
@@ -131,12 +143,27 @@ export async function retweet(idPair: ArticleIdPair) {
 	if (get(writable).retweeted)
 		return
 
-	const response = await fetchExtensionV1(
-		`${getV1APIURL('statuses/retweet')}?id=${idPair.id}`,
-		'POST',
-	)
+	try {
+		const response = await fetchExtensionV1(
+			`${getV1APIURL('statuses/retweet')}?id=${idPair.id}`,
+			'POST',
+		)
 
-	updateAPIResponse(response.json)
+		updateAPIResponse(response.json)
+	}catch (err: V1ErrorResponse | any) {
+		if (err.errors !== undefined) {
+			if ((err as V1ErrorResponse).errors.some(e => e.code === 144)) {
+				writable.update(a => {
+					a.deleted = true
+					return a
+				})
+				if (err.errors.length === 1)
+					return
+			}
+		}
+
+		throw new Error(err)
+	}
 }
 
 export async function fetchExtensionV1<T = TweetResponse>(url: string, method = 'GET', body?: any): Promise<ExtensionFetchResponse<T>> {
@@ -150,15 +177,6 @@ export async function fetchExtensionV1<T = TweetResponse>(url: string, method = 
 
 	if ((response.json as V1ErrorResponse).errors !== undefined)
 		return Promise.reject(response.json)
-	//TODO Handle deleted tweet
-	// {
-	// 	"errors": [
-	// 		{
-	// 			"code": 144,
-	// 			"message": "No status found with that ID."
-	// 		}
-	// 	]
-	// }
 
 	return response as ExtensionFetchResponse<T>
 }

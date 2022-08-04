@@ -33,19 +33,19 @@
 			case 'normal':
 				console.dir({
 					...articleProps,
-					article: articleProps.article.json,
+					article: articleProps.article.rawSource,
 				})
 				break;
 			case 'reposts':
 				console.dir({
 					...articleProps,
-					reposted: getRootArticle(articleProps.reposted).json
+					reposted: getRootArticle(articleProps.reposted).rawSource
 				})
 				break;
 			case 'quote':
 				console.dir({
-					article: getRootArticle(articleProps).json,
-					quoted: getRootArticle(articleProps.quoted).json
+					article: getRootArticle(articleProps).rawSource,
+					quoted: getRootArticle(articleProps.quoted).rawSource
 				})
 				break;
 		}

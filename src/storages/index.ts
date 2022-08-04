@@ -206,8 +206,8 @@ function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | unde
 	}
 }
 
-function parseSortInfo({method, reversed}: {method?: string, reversed: boolean}): SortInfo {
-	let sortMethod: SortMethod | undefined
+function parseSortInfo({method, reversed}: TimelineStorage['sortInfo']): SortInfo {
+	let sortMethod: SortMethod | null = null
 	switch (method?.toLowerCase()) {
 		case 'id':
 			sortMethod = SortMethod.Id
@@ -263,7 +263,7 @@ type TimelineStorage = {
 	width: number
 	filters: FilterInstance[],
 	sortInfo: {
-		method?: string
+		method?: string | null
 		reversed: boolean
 	},
 	compact: boolean
@@ -285,7 +285,7 @@ const DEFAULT_TIMELINE_STORAGE: TimelineStorage = {
 	hideText: false,
 	filters: defaultFilterInstances,
 	sortInfo: {
-		method: undefined,
+		method: null,
 		reversed: false,
 	}
 }

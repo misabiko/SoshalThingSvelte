@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import Article, {MediaQueueInfo, MediaType} from '../articles'
-	import type {ArticleIdPair} from '../articles'
+	import type {ArticleIdPair} from './index'
 	import Fa from 'svelte-fa/src/fa.svelte'
 	import {
 		faExpandArrowsAlt,
@@ -27,6 +27,7 @@
 	export let style = ''; style;
 	export let modal: boolean; modal;
 	export let showAllMedia: boolean;
+	export let rootArticle: Readonly<Article>
 	export let actualArticle: Readonly<Article>
 	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number
 	export let onLogData: () => void

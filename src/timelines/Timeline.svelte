@@ -5,7 +5,7 @@
 	import Article, {
 		articleWithRefToArray,
 		deriveArticleRefs,
-		getActualArticle, getDerivedArticleWithRefs,
+		getActualArticle, getDerivedArticleWithRefs, getRootArticle, idPairEqual,
 	} from '../articles'
 	import {fetchArticle, getWritable} from '../services/service'
 	import {onMount} from 'svelte'
@@ -205,9 +205,9 @@
 					.then(articles => {
 						if (articles.length)
 							data.articles.update(idPairs => {
-								for (const a of articles)
-									if (!idPairs.some(idp => idp.service === a.article.idPair.service && idp.id === a.article.idPair.id))
-										idPairs.push(a.article.idPair)
+								for (const idPair of articles.map(a => getRootArticle(a).idPair))
+									if (!idPairs.some(idp => idPairEqual(idPair, idp)))
+										idPairs.push(idPair)
 								return idPairs
 							})
 					})
@@ -217,7 +217,7 @@
 		const sorted = get(articlesWithRefs).sort(compare(method))
 		if (reversed)
 			sorted.reverse()
-		data.articles.set(sorted.map(a => a.article.idPair))
+		data.articles.set(sorted.map(a => getRootArticle(a).idPair))
 	}
 
 	onMount(async () => {

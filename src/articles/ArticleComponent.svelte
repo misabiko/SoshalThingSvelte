@@ -17,8 +17,12 @@
 
 	const isInjected = getContext('isInjected') as boolean
 
+	let rootArticle: Readonly<Article>
 	let actualArticle: Readonly<Article>
-	$: actualArticle = getActualArticle(articleProps)
+	$: {
+		rootArticle = getRootArticle(articleProps)
+		actualArticle = getActualArticle(articleProps)
+	}
 
 	function onLogData() {
 		console.dir(articleProps)
@@ -75,6 +79,7 @@
 				bind:modal
 				bind:showAllMedia
 				{articleProps}
+				{rootArticle}
 				{actualArticle}
 				{onLogData}
 				{onLogJSON}
@@ -91,6 +96,7 @@
 		bind:modal
 		bind:showAllMedia
 		{articleProps}
+		{rootArticle}
 		{actualArticle}
 		{onLogData}
 		{onLogJSON}

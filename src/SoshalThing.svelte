@@ -5,8 +5,9 @@
 	import TimelineContainer from "./timelines/TimelineContainer.svelte"
 	import {notifications} from './notifications/store'
 	import Notification from "./notifications/Notification.svelte";
-	import {refreshEndpoint, refreshEndpointName, RefreshType} from './services/endpoints'
+	import {Endpoint, refreshEndpoint, refreshEndpointName, RefreshType} from './services/endpoints'
 	import type {FilterInstance} from './filters'
+	import {getRootArticle} from './articles'
 
 	(BigInt.prototype as any).toJSON = function () {
 		return this.toString();
@@ -56,11 +57,11 @@
 				if (timelineEndpoint.name !== undefined)
 					endpointNames.add(timelineEndpoint.name)
 				else
-					refreshEndpoint(timelineEndpoint.endpoint, RefreshType.RefreshStart)
+					refreshEndpoint(timelineEndpoint.endpoint as Endpoint, RefreshType.RefreshStart)
 						.then(articles => {
 							if (articles.length)
 								timeline.articles.update(idPairs => {
-									idPairs.push(...articles.map(a => a.article.idPair))
+									idPairs.push(...articles.map(a => getRootArticle(a).idPair))
 									return idPairs
 								})
 						})

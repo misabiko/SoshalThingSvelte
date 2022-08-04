@@ -1,6 +1,6 @@
 <script lang="ts">
 	import ArticleComponent from "../articles/ArticleComponent.svelte";
-	import type {ArticleWithRefs, ArticleProps} from '../articles'
+	import type {ArticleProps} from '../articles'
 	import {getActualArticle, getRootArticle} from '../articles'
 	import type {ContainerProps} from './index'
 

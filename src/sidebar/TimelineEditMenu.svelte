@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import {Field, Input, Button} from 'svelma'
-	import {defaultTimeline, newUserTimeline} from '../timelines'
+	import {newUserTimeline} from '../timelines'
 	import type {TimelineData} from '../timelines'
 	import Timeline from '../timelines/Timeline.svelte'
 	import {TwitterService} from '../services/twitter/service'

@@ -12,6 +12,7 @@
 	export let articleProps: ArticleProps
 	export let modal: boolean; modal;
 	export let showAllMedia: boolean;
+	export let rootArticle: Readonly<Article>
 	export let actualArticle: Readonly<Article>
 	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number
 	export let onLogData: () => void
@@ -129,9 +130,9 @@
 
 <div class='socialArticle'>
 	<div class='repostLabel'>
-		{#if isArticleRepost && articleProps.article.author}
-			<a href={articleProps.article.author.url} target='_blank' on:click|preventDefault={() => onUsernameClick(articleProps.article)}>
-				{articleProps.article.author.name} reposted - {shortTimestamp(articleProps.article.creationTime)}
+		{#if isArticleRepost && rootArticle.author}
+			<a href={rootArticle.author.url} target='_blank' on:click|preventDefault={() => onUsernameClick(rootArticle)}>
+				{rootArticle.author.name} reposted - {shortTimestamp(rootArticle.creationTime)}
 			</a>
 		{/if}
 	</div>
@@ -143,7 +144,7 @@
 					{#if actualArticle.author?.url}
 						{#if isArticleRepost}
 							<img src={actualArticle.author.avatarUrl} alt={`${actualArticle.author.username}'s avatar`}/>
-							<img src={articleProps.article.author.avatarUrl} alt={`${articleProps.article.author.username}'s avatar`}/>
+							<img src={rootArticle.author.avatarUrl} alt={`${rootArticle.author.username}'s avatar`}/>
 						{:else}
 							<img src={actualArticle.author.avatarUrl} alt={`${actualArticle.author.username}'s avatar`}/>
 						{/if}
@@ -218,7 +219,7 @@
 				article={actualArticle}
 				bind:modal
 				{timelineProps}
-				repost={isArticleRepost ? articleProps.article : undefined}
+				repost={isArticleRepost ? rootArticle : undefined}
 				{onLogData}
 				{onLogJSON}
 			/>

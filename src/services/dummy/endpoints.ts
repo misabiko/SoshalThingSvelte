@@ -9,7 +9,7 @@ export class DummyEndpoint extends Endpoint {
 	readonly name = 'DummyEndpoint'
 	readonly service = DummyService.name
 
-	async refresh(refreshType: RefreshType) {
+	async refresh(_refreshType: RefreshType) {
 		const markAsReadStorage = getMarkedAsReadStorage(DummyService)
 		const hiddenStorage = getHiddenStorage(DummyService)
 
@@ -25,7 +25,7 @@ export class DummyEndpoint extends Endpoint {
 		constructor: () => new DummyEndpoint()
 	}
 
-	matchParams(params: any): boolean {
+	matchParams(_params: any): boolean {
 		return true
 	}
 }
@@ -40,7 +40,7 @@ export class DummyEndpointWithParam extends Endpoint {
 		this.name = `Dummy Endpoint ${query}`
 	}
 
-	async refresh(refreshType: RefreshType) {
+	async refresh(_refreshType: RefreshType) {
 		return []
 	}
 

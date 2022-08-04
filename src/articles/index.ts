@@ -141,22 +141,26 @@ export enum MediaQueueInfo {
 	LazyLoad,
 }
 
-export type ArticleWithRefs = Readonly<
-	{
+export type ArticleWithRefs<ExtraParams = {}> = Readonly<
+	({
 		type: 'normal'
 		article: Article
 	} |
 	{
 		type: 'repost'
 		article: Article
-		//TODO type: Extract<ArticleWithRefs['type'], 'repost'>
-		reposted: ArticleWithRefs & {type: 'normal' | 'quote'}
+		reposted: ArticleWithRefs<ExtraParams> & Readonly<{type: 'normal' | 'quote'}>
+	} |
+	{
+		type: 'reposts'
+		reposts: Article[]
+		reposted: ArticleWithRefs<ExtraParams> & Readonly<{type: 'normal' | 'quote'}>
 	} |
 	{
 		type: 'quote'
 		article: Article
-		quoted: ArticleWithRefs & {type: 'normal' | 'quote'}
-	}
+		quoted: ArticleWithRefs<ExtraParams> & Readonly<{type: 'normal' | 'quote'}>
+	}) & ExtraParams
 >
 
 export type DerivedArticleWithRefs = Readonly<
@@ -177,29 +181,15 @@ export type DerivedArticleWithRefs = Readonly<
 	>
 
 //TODO Try adding type: reposts to ArticleWithRefs and pass {filteredOut} as type param
-export type ArticleProps = Readonly<
-	{
-		type: 'normal'
-		article: Article
-		filteredOut: boolean
-	} |
-	{
-		type: 'reposts'
-		reposts: Article[]
-		reposted: ArticleProps & Readonly<{type: 'normal' | 'quote'}>
-		filteredOut: boolean
-	} |
-	{
-		type: 'quote'
-		article: Article
-		quoted: ArticleProps & Readonly<{type: 'normal' | 'quote'}>
-		filteredOut: boolean
-	}
->
+export type ArticleProps = ArticleWithRefs<{filteredOut: boolean}>
 
 export interface ArticleIdPair {
 	service: string;
 	id: ArticleId
+}
+
+export function idPairEqual(a: ArticleIdPair, b: ArticleIdPair) {
+	return a.service === b.service && a.id === b.id
 }
 
 export type ArticleRefIdPair =

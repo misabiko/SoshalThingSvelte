@@ -3,7 +3,7 @@ import type {ArticleProps, ArticleWithRefs} from '../articles'
 import {getRootArticle} from '../articles'
 
 export type SortInfo = {
-	method?: SortMethod,
+	method: SortMethod | null,
 	reversed: boolean
 }
 

@@ -7,7 +7,7 @@
 	import {derived, type Readable, type Writable} from 'svelte/store'
 	import Article, {
 		type ArticleIdPair,
-		type ArticleWithRefs, deriveArticleRefs, getDerivedArticleWithRefs,
+		type ArticleWithRefs, deriveArticleRefs, getDerivedArticleWithRefs, getRootArticle,
 	} from '../articles'
 	import {articleAction, STANDARD_ACTIONS} from '../services/actions'
 
@@ -38,7 +38,7 @@
 
 	function doAction() {
 		for (const articleWithRefs of $filteredArticles) {
-			articleAction(action, articleWithRefs.article.idPair)
+			articleAction(action, getRootArticle(articleWithRefs).idPair)
 		}
 	}
 </script>

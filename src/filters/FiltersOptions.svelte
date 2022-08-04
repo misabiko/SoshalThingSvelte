@@ -9,7 +9,7 @@
 
 	function addFilter(filterType: Filter['type'], inverted: boolean) {
 		instances.push({
-			filter: defaultFilter(filterType),
+			filter: defaultFilter(filterType, null),
 			enabled: true,
 			inverted
 		})

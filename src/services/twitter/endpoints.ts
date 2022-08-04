@@ -60,7 +60,7 @@ export class HomeTimelineEndpoint extends V1Endpoint {
 	readonly maxCount = 200	//Default 20
 	autoRefreshInterval = 90_000	//Min 60_000
 
-	matchParams(params: any): boolean {
+	matchParams(_params: any): boolean {
 		return true;
 	}
 

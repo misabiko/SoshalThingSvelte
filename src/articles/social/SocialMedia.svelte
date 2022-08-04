@@ -31,17 +31,18 @@
 </script>
 
 <style lang='sass'>
-	.postMedia
+	.socialMedia
 		margin-top: 1rem
 
-	.postVideo video
+	.socialMedia video
 		width: 100%
+		border-radius: 8px
 
-	//TODO .postImagesCompact
+	//TODO .socialMediaCompact
 	//	display: flex
 	//	flex-wrap: wrap
 
-	.mediaHolder
+	.imagesHolder
 		overflow: hidden
 		display: flex
 		justify-content: center
@@ -54,7 +55,7 @@
 			align-self: center
 			width: 100%
 
-	//&.mediaHolderCompact
+	//&.imagesHolderCompact
 	//	max-height: 16vh
 	//	width: 100%
 	//
@@ -96,28 +97,23 @@
 		padding-top: 5px
 </style>
 
-<!--TODO Rename or get rid of postMedia, postImages etc-->
-<div class='postMedia postImages' bind:this={divRef}>
+<div class='socialMedia' bind:this={divRef}>
 	{#each article.medias.slice(0, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined) as media, index (index)}
 		{#if media.mediaType === MediaType.Image || media.mediaType === MediaType.Gif}
-			<div class='mediaHolder'>
+			<div class='imagesHolder'>
 				<div class='is-hidden imgPlaceHolder' style:aspect-ratio={1 / media.ratio}></div>
 				<img class='articleMedia' alt={`${article.id}/${index}`} src={media.src} on:click={() => onMediaClick(index)}/>
 			</div>
 		{:else if !timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
-			<div class='postMedia postVideo'>
-				<!-- svelte-ignore a11y-media-has-caption -->
-				<video class='articleMedia' controls preload='auto' on:click|preventDefault={() => onMediaClick(index)}>
-					<source src={media.src} type='video/mp4'/>
-				</video>
-			</div>
+			<!-- svelte-ignore a11y-media-has-caption -->
+			<video class='articleMedia' controls preload='auto' on:click|preventDefault={() => onMediaClick(index)}>
+				<source src={media.src} type='video/mp4'/>
+			</video>
 		{:else if media.mediaType === MediaType.VideoGif || timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
-			<div class='postMedia postVideo'>
-				<!-- svelte-ignore a11y-media-has-caption -->
-				<video class='articleMedia' controls autoplay loop muted preload='auto' on:click|preventDefault={() => onMediaClick(index)}>
-					<source src={media.src} type='video/mp4'/>
-				</video>
-			</div>
+			<!-- svelte-ignore a11y-media-has-caption -->
+			<video class='articleMedia' controls autoplay loop muted preload='auto' on:click|preventDefault={() => onMediaClick(index)}>
+				<source src={media.src} type='video/mp4'/>
+			</video>
 		{/if}
 	{/each}
 	{#if !showAllMedia && timelineProps.maxMediaCount !== null && article.medias.length > timelineProps.maxMediaCount}

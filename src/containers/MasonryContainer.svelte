@@ -105,7 +105,7 @@
 	.masonryColumn
 		flex: 1 1 0
 
-	//.masonryColumn .postMedia img
+	//.masonryColumn .socialMedia img
 	//	width: 100%
 
 	:global(.fullscreenTimeline .masonryColumn)

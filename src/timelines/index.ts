@@ -30,6 +30,7 @@ export type TimelineData = {
 	compact: boolean;
 	shouldLoadMedia: boolean;
 	hideFilteredOutArticles: boolean;
+	mergeReposts: boolean;
 	showArticleCount: boolean;
 	maxMediaCount: number | null;
 }
@@ -56,6 +57,7 @@ export function defaultTimeline(articles: ArticleIdPair[] = []): TimelineData {
 		compact: false,
 		shouldLoadMedia: true,
 		hideFilteredOutArticles: true,
+		mergeReposts: true,
 		showArticleCount: false,
 		maxMediaCount: 4,
 	}

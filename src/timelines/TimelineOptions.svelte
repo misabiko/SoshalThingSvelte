@@ -158,9 +158,9 @@
 		<div class='field'>
 			<Switch bind:checked={data.hideFilteredOutArticles}>Hide filtered out articles</Switch>
 		</div>
-		<!--				<div class='field'>-->
-		<!--					<Switch bind:checked={lazyLoading}>Lazy media loading</Switch>-->
-		<!--				</div>-->
+		<div class='field'>
+			<Switch bind:checked={data.mergeReposts}>Merge duplicate reposts</Switch>
+		</div>
 		{#if data.articleView === SocialArticleView}
 			<div class='field'>
 				<Switch bind:checked={data.compact}>Compact articles</Switch>

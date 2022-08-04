@@ -47,6 +47,41 @@
 		let articleProps: ArticleProps[] = stores
 			.map((articleWithRefs, i) => addProps(articleWithRefs, i))
 
+		if (data.mergeReposts) {
+			let merged: ArticleProps[] = []
+			for (const a of articleProps) {
+				if (a.type === 'reposts') {
+					const aIdPair = getRootArticle(a.reposted).idPair
+
+					//Checking if the reposted article is already in merged
+					const plainIndex = merged.findIndex(m =>
+						idPairEqual(getRootArticle(m).idPair, aIdPair)
+					)
+					if (plainIndex > -1) {
+						//Replacing it with the repost
+						merged[plainIndex] = a
+						continue
+					}
+
+					//Checking if a duplicate repost is in merged
+					const index = merged.findIndex(m =>
+						m.type === 'reposts' &&
+						idPairEqual(getRootArticle(m.reposted).idPair, aIdPair)
+					)
+
+					if (index > -1)
+						(merged[index] as any).reposts.push(...a.reposts)
+					else
+						merged.push(a)
+				}else
+					merged.push(a)
+			}
+
+			articleProps = merged
+
+			//TODO Sort reposts
+		}
+
 		if (data.hideFilteredOutArticles)
 			articleProps = articleProps.filter(a => !a.filteredOut)
 
@@ -71,7 +106,8 @@
 				}
 			case 'repost':
 				return {
-					...articleWithRefs,
+					type: 'reposts',
+					reposts: [articleWithRefs.article],
 					filteredOut,
 					reposted: addProps(articleWithRefs.reposted, index)
 				} as ArticleProps

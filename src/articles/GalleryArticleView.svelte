@@ -27,7 +27,7 @@
 	export let style = ''; style;
 	export let modal: boolean; modal;
 	export let showAllMedia: boolean;
-	export let rootArticle: Readonly<Article>
+	export let rootArticle: Readonly<Article>; rootArticle;
 	export let actualArticle: Readonly<Article>
 	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number
 	export let onLogData: () => void

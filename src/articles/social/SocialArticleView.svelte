@@ -132,7 +132,11 @@
 	<div class='repostLabel'>
 		{#if isArticleRepost && rootArticle.author}
 			<a href={rootArticle.author.url} target='_blank' on:click|preventDefault={() => onUsernameClick(rootArticle)}>
-				{rootArticle.author.name} reposted - {shortTimestamp(rootArticle.creationTime)}
+				{#if articleProps.reposts.length > 1}
+					{articleProps.reposts.map(r => r.author.name).join(', ')} reposted - {shortTimestamp(rootArticle.creationTime)}
+				{:else}
+					{rootArticle.author.name} reposted - {shortTimestamp(rootArticle.creationTime)}
+				{/if}
 			</a>
 		{/if}
 	</div>

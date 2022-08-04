@@ -37,8 +37,9 @@ export const PixivService: PixivServiceType = {
 	},
 	articleActions: {
 		[STANDARD_ACTIONS.like]: {
+			togglable: false,
 			async action(idPair: ArticleIdPair) {
-				const csrfToken = getServiceStorage(PixivService.name, 'csrfToken')
+				const csrfToken = getServiceStorage(PixivService.name)['csrfToken'] as string | undefined
 				if (!csrfToken)
 				 	return
 
@@ -70,7 +71,48 @@ export const PixivService: PixivServiceType = {
 					return a
 				})
 			},
-			togglable: false
+		},
+		//TODO Change name to bookmark
+		[STANDARD_ACTIONS.repost]: {
+			togglable: false,
+			async action(idPair) {
+				const storage = getServiceStorage(PixivService.name)
+				const csrfToken = storage['csrfToken'] as string | undefined
+				if (!csrfToken)
+					return
+
+				const privateBookmark = (storage['privateBookmark'] as boolean | undefined) ?? false
+
+				const response : BookmarkResponse = await fetch('https://www.pixiv.net/ajax/illusts/bookmarks/add', {
+					method: "POST",
+					credentials: "same-origin",
+					cache: "no-cache",
+					headers: {
+						"Accept": "application/json",
+						"Content-Type": "application/json",
+						"Cache-Control": "no-cache",
+						'X-CSRF-TOKEN': csrfToken,
+					},
+					body: JSON.stringify({
+						illust_id: idPair.id,
+						restrict: privateBookmark ? 1 : 0,
+						comment: "",
+						tags: [],
+					}),
+				}).then(r => r.json())
+
+				if (response.error) {
+					console.error("Error during bookmark: ", response)
+					return
+				}
+
+				console.debug('Bookmarked ' + idPair.id)
+
+				getWritable<PixivArticle>(idPair).update(a => {
+					a.bookmarked = true
+					return a
+				})
+			}
 		}
 	}
 }
@@ -97,7 +139,16 @@ type PagesResponse = {
 }
 
 type LikeResponse = {
-	body : { is_liked : boolean }
 	error : boolean
 	message : string
+	body : { is_liked : boolean }
+}
+
+type BookmarkResponse = {
+	error : boolean,
+	message : string,
+	body : {
+		last_bookmark_id : string,
+		stacc_status_id : any
+	}
 }

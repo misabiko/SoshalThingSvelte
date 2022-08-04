@@ -5,6 +5,7 @@ export default class PixivArticle extends Article {
 	static service: string
 
 	liked = false
+	bookmarked = false
 
 	constructor(
 		readonly id: number,
@@ -36,6 +37,10 @@ export default class PixivArticle extends Article {
 
 	getLiked(): boolean {
 		return this.liked
+	}
+
+	getReposted(): boolean {
+		return this.bookmarked
 	}
 }
 

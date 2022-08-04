@@ -1,9 +1,9 @@
 <script lang='ts'>
-	import {Field, Input, Button} from 'svelma'
+	import {Field, Input, Button, Switch} from 'svelma'
 	import {extensionCheck, extensionContextStore, fetchExtension} from "../services/extension.js"
 	import {TwitterService} from '../services/twitter/service'
 	import {PixivService} from "../services/pixiv/service.js";
-	import {updateServiceStorage} from "../storages";
+	import {getServiceStorage, updateServiceStorage} from "../storages"
 
 	let oauthToken: string | undefined
 	let oobPIN: string
@@ -21,6 +21,8 @@
 		//TODO Add service and request to extensionCheck
 		await extensionCheck()
 	}
+
+	const pixivStorage = getServiceStorage(PixivService.name)
 </script>
 
 <Field label='Extension Id' addons={false}>
@@ -47,5 +49,8 @@
 {/if}
 
 <Field label='Pixiv token' addons={false}>
-	<Input on:change={e => updateServiceStorage(PixivService.name, 'csrfToken', e.target.value)}/>
+	<Input value={pixivStorage.csrfToken} on:change={e => updateServiceStorage(PixivService.name, 'csrfToken', e.target.value)}/>
+</Field>
+<Field label='Pixiv bookmark as private' addons={false}>
+	<Switch checked={pixivStorage.privateBookmark ?? false} on:input={e => updateServiceStorage(PixivService.name, 'privateBookmark', e.target.checked)}/>
 </Field>

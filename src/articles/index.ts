@@ -141,30 +141,6 @@ export enum MediaQueueInfo {
 	LazyLoad,
 }
 
-//TODO Merge ArticleWithRefs['type'] into ArticleRefType
-//TODO Dissolve QuoteRepost
-export enum ArticleRefType {
-	Repost,
-	Quote,
-	QuoteRepost,
-}
-
-//TODO Replace with ArticleWithRefs?
-export type ArticleRef =
-	{
-		type: ArticleRefType.Repost,
-		reposted: Article,
-	} |
-	{
-		type: ArticleRefType.Quote,
-		quoted: Article,
-	} |
-	{
-		type: ArticleRefType.QuoteRepost,
-		reposted: Article,
-		quoted: Article,
-	}
-
 export type ArticleWithRefs = Readonly<
 	{
 		type: 'normal'
@@ -228,52 +204,20 @@ export interface ArticleIdPair {
 
 export type ArticleRefIdPair =
 	{
-		type: ArticleRefType.Repost,
+		type: 'repost',
 		reposted: ArticleIdPair,
 	} |
 	{
-		type: ArticleRefType.Quote,
-		quoted: ArticleIdPair,
-	} |
-	{
-		type: ArticleRefType.QuoteRepost,
-		reposted: ArticleIdPair,
+		type: 'quote',
 		quoted: ArticleIdPair,
 	}
 
-export function articleRefToIdPair(ref: ArticleRef): ArticleRefIdPair {
+export function getRefed(ref: ArticleRefIdPair): ArticleIdPair[] {
 	switch (ref.type) {
-		case ArticleRefType.Repost:
-			return {
-				type: ref.type,
-				reposted: ref.reposted.idPair,
-			}
-		case ArticleRefType.Quote:
-			return {
-				type: ref.type,
-				quoted: ref.quoted.idPair,
-			}
-		case ArticleRefType.QuoteRepost:
-			return {
-				type: ref.type,
-				reposted: ref.reposted.idPair,
-				quoted: ref.quoted.idPair,
-			}
-	}
-}
-
-type ArticlesOrIdPairs<T extends ArticleRef | ArticleRefIdPair> = T extends ArticleRef
-	? Article[]
-	: ArticleIdPair[]
-
-export function getRefed<T extends ArticleRef | ArticleRefIdPair>(ref: T) {
-	switch (ref.type) {
-		case ArticleRefType.Repost:
-			return [ref.reposted] as ArticlesOrIdPairs<T>
-		case ArticleRefType.Quote:
-			return [ref.quoted] as ArticlesOrIdPairs<T>
-		case ArticleRefType.QuoteRepost:
-			return [ref.reposted, ref.quoted] as ArticlesOrIdPairs<T>
+		case 'repost':
+			return [ref.reposted]
+		case 'quote':
+			return [ref.quoted]
 	}
 }
 
@@ -292,11 +236,7 @@ export function articleWithRefToArray(articleWithRefs: ArticleWithRefs | Article
 
 export function getActualArticleIdPair(article: Article): Readonly<ArticleIdPair> {
 	switch (article.actualArticleRef?.type) {
-		case ArticleRefType.Repost:
-			return article.actualArticleRef.reposted;
-		case ArticleRefType.Quote:
-			return article.idPair;
-		case ArticleRefType.QuoteRepost:
+		case 'repost':
 			return article.actualArticleRef.reposted;
 		default:
 			return article.idPair;
@@ -330,8 +270,7 @@ export function deriveArticleRefs(article: Article): Readable<DerivedArticleWith
 				type: 'normal',
 				article,
 			})
-		case ArticleRefType.Repost:
-		case ArticleRefType.QuoteRepost:
+		case 'repost':
 			return derived(getWritable(article.actualArticleRef.reposted), repostedArticle =>
 				({
 					type: 'repost',
@@ -339,7 +278,7 @@ export function deriveArticleRefs(article: Article): Readable<DerivedArticleWith
 					reposted: deriveArticleRefs(repostedArticle),
 				} as DerivedArticleWithRefs)
 			)
-		case ArticleRefType.Quote:
+		case 'quote':
 			return derived(getWritable(article.actualArticleRef.quoted), quotedArticle =>
 				({
 					type: 'quote',

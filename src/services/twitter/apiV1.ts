@@ -1,10 +1,5 @@
 import type {ArticleMedia, ArticleWithRefs, ArticleIdPair, ArticleRefIdPair} from '../../articles'
-import {
-	ArticleRefType,
-	getRatio,
-	MediaQueueInfo,
-	MediaType,
-} from '../../articles'
+import {getRatio, MediaQueueInfo, MediaType} from '../../articles'
 import TwitterArticle from './article'
 import {getHiddenStorage, getMarkedAsReadStorage} from '../../storages/serviceCache'
 import {TwitterService} from './service'
@@ -53,13 +48,12 @@ export function articleFromV1(json: TweetResponse, isRef = false): ArticleWithRe
 
 		if (retweeted.type === 'quote') {
 			actualArticleRefIdPair = {
-				type: ArticleRefType.QuoteRepost,
-				reposted: retweeted.article.idPair,
+				type: 'quote',
 				quoted: retweeted.quoted.article.idPair,
 			}
 		}else {
 			actualArticleRefIdPair = {
-				type: ArticleRefType.Repost,
+				type: 'repost',
 				reposted: retweeted.article.idPair,
 			}
 		}
@@ -75,7 +69,7 @@ export function articleFromV1(json: TweetResponse, isRef = false): ArticleWithRe
 			const quoted = articleFromV1(json.quoted_status, true)
 
 			actualArticleRefIdPair = {
-				type: ArticleRefType.Quote,
+				type: 'quote',
 				quoted: quoted.article.idPair,
 			}
 

@@ -1,10 +1,11 @@
 <script lang='ts'>
 	import type {TimelineArticleProps} from '../index'
-	import Article, {MediaType} from "../index";
+	import Article from "../index";
 	import {afterUpdate} from 'svelte'
 	import {getWritable} from '../../services/service'
 	import Fa from 'svelte-fa/src/fa.svelte'
 	import {faImages} from "@fortawesome/free-solid-svg-icons";
+	import {MediaType} from '../media'
 
 	export let article: Article
 	export let timelineProps: TimelineArticleProps

@@ -1,5 +1,5 @@
-import type {ArticleMedia, ArticleWithRefs, ArticleIdPair, ArticleRefIdPair} from '../../articles'
-import {getRatio, getRootArticle, MediaLoadType, MediaType} from '../../articles'
+import type {ArticleWithRefs, ArticleIdPair, ArticleRefIdPair} from '../../articles'
+import {getRootArticle} from '../../articles'
 import TwitterArticle from './article'
 import {getHiddenStorage, getMarkedAsReadStorage} from '../../storages/serviceCache'
 import {TwitterService} from './service'
@@ -8,6 +8,7 @@ import type {ExtensionFetchResponse} from '../extension'
 import {get} from 'svelte/store'
 import {addArticles, getWritable} from '../service'
 import type {RateLimitInfo} from '../endpoints'
+import {ArticleMedia, getRatio, MediaLoadType, MediaType} from '../../articles/media'
 
 export function getV1APIURL(resource: string): string {
 	return `https://api.twitter.com/1.1/${resource}.json`

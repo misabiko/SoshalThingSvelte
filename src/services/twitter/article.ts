@@ -1,5 +1,6 @@
-import type {ArticleAuthor, ArticleMedia, ArticleRefIdPair} from '../../articles'
+import type {ArticleAuthor, ArticleRefIdPair} from '../../articles'
 import Article from '../../articles'
+import type {ArticleMedia} from '../../articles/media'
 
 export default class TwitterArticle extends Article {
 	static service: string;

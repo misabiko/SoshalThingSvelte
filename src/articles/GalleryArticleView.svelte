@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import Article, {MediaLoadType, MediaType} from '../articles'
+	import Article from '../articles'
 	import type {ArticleIdPair} from './index'
 	import Fa from 'svelte-fa/src/fa.svelte'
 	import {
@@ -21,6 +21,7 @@
 	import type {TimelineArticleProps} from './index'
 	import type {ArticleProps} from './index'
 	import {articleAction, getArticleAction, STANDARD_ACTIONS} from '../services/actions'
+	import {MediaLoadType, MediaType} from './media'
 
 	export let timelineProps: TimelineArticleProps
 	export let articleProps: ArticleProps; articleProps;

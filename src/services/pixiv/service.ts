@@ -3,9 +3,10 @@ import type {FetchingService, Service} from '../service'
 import {getWritable, newFetchingService, newService, registerService} from '../service'
 import type {Writable} from 'svelte/store'
 import {get} from 'svelte/store'
-import {type ArticleIdPair, getRatio, MediaLoadType, MediaType} from '../../articles'
+import {type ArticleIdPair} from '../../articles'
 import {STANDARD_ACTIONS} from '../actions'
 import {getServiceStorage} from '../../storages'
+import {getRatio, MediaLoadType, MediaType} from '../../articles/media'
 
 export const PixivService: PixivServiceType = {
 	...newService('Pixiv'),

@@ -1,10 +1,11 @@
-import type { ArticleMedia, ArticleWithRefs } from '../articles'
+import type { ArticleWithRefs } from '../articles'
 import {
 	articleWithRefToArray,
 	getActualArticle,
-	MediaType,
+
 } from '../articles'
 import {getServices} from '../services/service'
+import {ArticleMedia, MediaType} from '../articles/media'
 
 export type FilterInstance = {
 	filter: Filter

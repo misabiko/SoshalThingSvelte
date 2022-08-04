@@ -2,6 +2,7 @@ import type {TimelineData} from '../timelines'
 import {getWritable} from '../services/service'
 import type {Readable} from 'svelte/store'
 import {derived, get, readable} from 'svelte/store'
+import type {ArticleMedia} from './media'
 
 export default abstract class Article {
 	static readonly service: string
@@ -87,57 +88,6 @@ export interface ArticleAuthor {
 	name: string;
 	url: string;	//TODO delegate to service
 	avatarUrl?: string;
-}
-
-export type ArticleMedia = ({
-	src: string;
-	ratio: ValidRatio | null;
-	queueLoadInfo: MediaLoadType.DirectLoad | MediaLoadType.Thumbnail;
-	mediaType: MediaType;
-	thumbnail?: undefined;
-	loaded?: undefined;
-} | {
-	src: string;
-	ratio: ValidRatio | null;
-	queueLoadInfo: MediaLoadType.LazyLoad;
-	mediaType: MediaType;
-	thumbnail?: {
-		src: string
-		offsetX?: string
-		offsetY?: string
-	};
-	loaded: boolean;
-}) & {
-	offsetX?: string
-	offsetY?: string
-}
-
-type ValidRatio = number;
-
-export function getRatio(width: number, height: number): ValidRatio {
-	if (isNaN(width))
-		throw 'Width is NaN'
-	if (isNaN(height))
-		throw 'Height is NaN'
-	if (width <= 0)
-		throw "Width isn't positive"
-	if (height <= 0)
-		throw "Height isn't positive"
-
-	return height / width
-}
-
-export enum MediaType {
-	Image,
-	Video,
-	VideoGif,
-	Gif,
-}
-
-export enum MediaLoadType {
-	DirectLoad,
-	Thumbnail,
-	LazyLoad,
 }
 
 export type ArticleWithRefs<ExtraParams = {}> = Readonly<

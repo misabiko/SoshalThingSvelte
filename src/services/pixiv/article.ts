@@ -4,6 +4,8 @@ import type {ArticleAuthor, ArticleMedia} from '../article'
 export default class PixivArticle extends Article {
 	static service: string
 
+	liked = false
+
 	constructor(
 		readonly id: number,
 		medias: ArticleMedia[],
@@ -30,6 +32,10 @@ export default class PixivArticle extends Article {
 
 	get numberId() {
 		return this.id
+	}
+
+	getLiked(): boolean {
+		return this.liked
 	}
 }
 

@@ -65,6 +65,22 @@ export function updateFullscreenStorage(fullscreen: FullscreenInfo) {
 	localStorage.setItem(MAIN_STORAGE_KEY, JSON.stringify(storage))
 }
 
+export function getServiceStorage(service: string, key: string): any | undefined {
+	const storageKey = `${MAIN_STORAGE_KEY} ${service}`
+	const item = localStorage.getItem(storageKey)
+	const storage = item ? JSON.parse(item) : {}
+	return storage[key]
+}
+
+export function updateServiceStorage(service: string, key: string, value: any) {
+	const storageKey = `${MAIN_STORAGE_KEY} ${service}`
+	const item = localStorage.getItem(storageKey)
+	const storage = item ? JSON.parse(item) : {}
+	storage[key] = value
+
+	localStorage.setItem(storageKey, JSON.stringify(storage))
+}
+
 export function updateMaximized(maximized: boolean) {
 	const item = localStorage.getItem(MAIN_STORAGE_KEY)
 	const storage = item ? JSON.parse(item) : {}

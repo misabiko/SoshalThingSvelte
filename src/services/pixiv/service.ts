@@ -1,9 +1,11 @@
 import PixivArticle from './article'
 import type {FetchingService, Service} from '../service'
-import {newFetchingService, newService, registerService} from '../service'
+import {getWritable, newFetchingService, newService, registerService} from '../service'
 import type {Writable} from 'svelte/store'
 import {get} from 'svelte/store'
-import {getRatio, MediaQueueInfo, MediaType} from '../article'
+import {type ArticleIdPair, getRatio, MediaQueueInfo, MediaType} from '../article'
+import {STANDARD_ACTIONS} from '../actions'
+import {getServiceStorage} from '../../storages'
 
 export const PixivService: PixivServiceType = {
 	...newService('Pixiv'),
@@ -33,6 +35,44 @@ export const PixivService: PixivServiceType = {
 			return a
 		})
 	},
+	articleActions: {
+		[STANDARD_ACTIONS.like]: {
+			async action(idPair: ArticleIdPair) {
+				const csrfToken = getServiceStorage(PixivService.name, 'csrfToken')
+				if (!csrfToken)
+				 	return
+
+				const response : LikeResponse = await fetch('https://www.pixiv.net/ajax/illusts/like', {
+					method: "POST",
+					credentials: "same-origin",
+					cache: "no-cache",
+					headers: {
+						"Accept": "application/json",
+						"Content-Type": "application/json",
+						"Cache-Control": "no-cache",
+						'X-CSRF-TOKEN': csrfToken,
+					},
+					body: JSON.stringify({illust_id: idPair.id}),
+				}).then(r => r.json())
+
+				if (response.error) {
+					console.error("Error during like: ", response)
+					return
+				}
+
+				if (response.body.is_liked)
+					console.debug(idPair.id + ' was already liked.')
+				else
+					console.debug('Liked ' + idPair.id)
+
+				getWritable<PixivArticle>(idPair).update(a => {
+					a.liked = true
+					return a
+				})
+			},
+			togglable: false
+		}
+	}
 }
 PixivArticle.service = PixivService.name
 
@@ -54,4 +94,10 @@ type PagesResponse = {
 			width: number
 			height: number
 		}[]
+}
+
+type LikeResponse = {
+	body : { is_liked : boolean }
+	error : boolean
+	message : string
 }

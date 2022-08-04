@@ -2,6 +2,8 @@
 	import {Field, Input, Button} from 'svelma'
 	import {extensionCheck, extensionContextStore, fetchExtension} from "../services/extension.js"
 	import {TwitterService} from '../services/twitter/service'
+	import {PixivService} from "../services/pixiv/service.js";
+	import {updateServiceStorage} from "../storages";
 
 	let oauthToken: string | undefined
 	let oobPIN: string
@@ -43,3 +45,7 @@
 		{/if}
 	</Field>
 {/if}
+
+<Field label='Pixiv token' addons={false}>
+	<Input on:change={e => updateServiceStorage(PixivService.name, 'csrfToken', e.target.value)}/>
+</Field>

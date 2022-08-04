@@ -3,7 +3,7 @@ import type {FetchingService, Service} from '../service'
 import {getWritable, newFetchingService, newService, registerService} from '../service'
 import type {Writable} from 'svelte/store'
 import {get} from 'svelte/store'
-import {type ArticleIdPair, getRatio, MediaQueueInfo, MediaType} from '../../articles'
+import {type ArticleIdPair, getRatio, MediaLoadType, MediaType} from '../../articles'
 import {STANDARD_ACTIONS} from '../actions'
 import {getServiceStorage} from '../../storages'
 
@@ -20,9 +20,9 @@ export const PixivService: PixivServiceType = {
 				a.medias[i] = {
 					src: page.urls.original,
 					ratio: getRatio(page.width, page.height),
-					queueLoadInfo: MediaQueueInfo.LazyLoad,
+					queueLoadInfo: MediaLoadType.LazyLoad,
 					mediaType: MediaType.Image,
-					thumbnail: a.medias[i].queueLoadInfo === MediaQueueInfo.Thumbnail ? {
+					thumbnail: a.medias[i].queueLoadInfo === MediaLoadType.Thumbnail ? {
 						src: a.medias[i].src
 					}: undefined,
 					loaded: false

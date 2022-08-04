@@ -1,5 +1,5 @@
 import type {ArticleMedia, ArticleWithRefs, ArticleIdPair, ArticleRefIdPair} from '../../articles'
-import {getRatio, MediaQueueInfo, MediaType} from '../../articles'
+import {getRatio, getRootArticle, MediaLoadType, MediaType} from '../../articles'
 import TwitterArticle from './article'
 import {getHiddenStorage, getMarkedAsReadStorage} from '../../storages/serviceCache'
 import {TwitterService} from './service'
@@ -54,7 +54,7 @@ export function articleFromV1(json: TweetResponse, isRef = false): ArticleWithRe
 		}else {
 			actualArticleRefIdPair = {
 				type: 'repost',
-				reposted: retweeted.article.idPair,
+				reposted: getRootArticle(retweeted).idPair,
 			}
 		}
 		actualArticleIndex = 0
@@ -70,7 +70,7 @@ export function articleFromV1(json: TweetResponse, isRef = false): ArticleWithRe
 
 			actualArticleRefIdPair = {
 				type: 'quote',
-				quoted: quoted.article.idPair,
+				quoted: getRootArticle(quoted).idPair,
 			}
 
 			return {
@@ -253,7 +253,7 @@ function parseMedia(extendedEntities?: ExtendedEntities): ArticleMedia[] {
 					mediaType: MediaType.Image,
 					src: media.media_url_https,
 					ratio: getRatio(media.sizes.large.w, media.sizes.large.h),
-					queueLoadInfo: MediaQueueInfo.DirectLoad,
+					queueLoadInfo: MediaLoadType.DirectLoad,
 				}
 			case 'video':
 				return getMP4(media.video_info, MediaType.Video)
@@ -272,7 +272,7 @@ function getMP4(videoInfo: VideoInfo, mediaType: MediaType): ArticleMedia {
 		mediaType,
 		src: variant.url,
 		ratio: getRatio(videoInfo.aspect_ratio[0], videoInfo.aspect_ratio[1]),
-		queueLoadInfo: MediaQueueInfo.DirectLoad,
+		queueLoadInfo: MediaLoadType.DirectLoad,
 	}
 }
 

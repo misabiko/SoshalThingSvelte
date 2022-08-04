@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import Article, {MediaQueueInfo, MediaType} from '../articles'
+	import Article, {MediaLoadType, MediaType} from '../articles'
 	import type {ArticleIdPair} from './index'
 	import Fa from 'svelte-fa/src/fa.svelte'
 	import {
@@ -61,7 +61,7 @@
 
 		const count = actualArticle.medias.length
 		for (let i = 0; i < count; ++i) {
-			if (actualArticle.medias[i].queueLoadInfo === MediaQueueInfo.LazyLoad && !actualArticle.medias[i].loaded) {
+			if (actualArticle.medias[i].queueLoadInfo === MediaLoadType.LazyLoad && !actualArticle.medias[i].loaded) {
 				if (mediaRefs[i]?.complete)
 					loadingStore.mediaLoaded(actualArticle.idPair, i)
 			}

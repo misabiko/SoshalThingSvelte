@@ -92,14 +92,14 @@ export interface ArticleAuthor {
 export type ArticleMedia = ({
 	src: string;
 	ratio: ValidRatio | null;
-	queueLoadInfo: MediaQueueInfo.DirectLoad | MediaQueueInfo.Thumbnail;
+	queueLoadInfo: MediaLoadType.DirectLoad | MediaLoadType.Thumbnail;
 	mediaType: MediaType;
 	thumbnail?: undefined;
 	loaded?: undefined;
 } | {
 	src: string;
 	ratio: ValidRatio | null;
-	queueLoadInfo: MediaQueueInfo.LazyLoad;
+	queueLoadInfo: MediaLoadType.LazyLoad;
 	mediaType: MediaType;
 	thumbnail?: {
 		src: string
@@ -134,8 +134,7 @@ export enum MediaType {
 	Gif,
 }
 
-//TODO Rename to MediaLoadType?
-export enum MediaQueueInfo {
+export enum MediaLoadType {
 	DirectLoad,
 	Thumbnail,
 	LazyLoad,
@@ -180,7 +179,6 @@ export type DerivedArticleWithRefs = Readonly<
 	}
 	>
 
-//TODO Try adding type: reposts to ArticleWithRefs and pass {filteredOut} as type param
 export type ArticleProps = ArticleWithRefs<{filteredOut: boolean}>
 
 export interface ArticleIdPair {

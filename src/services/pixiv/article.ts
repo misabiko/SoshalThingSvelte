@@ -5,7 +5,6 @@ export default class PixivArticle extends Article {
 	static service: string
 
 	liked = false
-	bookmarked = false
 
 	constructor(
 		readonly id: number,
@@ -16,7 +15,8 @@ export default class PixivArticle extends Article {
 		markedAsReadStorage: string[],
 		hiddenStorage: string[],
 		//TODO Rename to raw source
-		json: any | undefined
+		json: any | undefined,
+		public bookmarked: boolean,
 	) {
 		super({
 			id,

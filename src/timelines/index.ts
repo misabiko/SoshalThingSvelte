@@ -1,4 +1,4 @@
-import type {ArticleIdPair} from '../services/article'
+import type {ArticleIdPair} from '../articles'
 import type {SvelteComponent} from 'svelte'
 import type {FilterInstance} from '../filters'
 import {SortMethod, type SortInfo} from '../sorting'

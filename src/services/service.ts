@@ -1,6 +1,6 @@
-import type Article from './article'
-import type { ArticleId, ArticleIdPair, ArticleWithRefs } from './article'
-import {getRefed} from './article'
+import type Article from '../articles'
+import type { ArticleId, ArticleIdPair, ArticleWithRefs, ArticleProps } from '../articles'
+import {articleWithRefToArray} from '../articles'
 import type {Writable} from 'svelte/store'
 import {writable} from 'svelte/store'
 import {updateCachedArticlesStorage, updateHiddenStorage, updateMarkAsReadStorage} from '../storages/serviceCache'
@@ -20,21 +20,25 @@ export interface Service<A extends Article = Article> {
 	articleActions: { [name: string]: ArticleAction };
 	requestImageLoad?: (id: ArticleId, index: number) => void;
 	getCachedArticles?: () => {[id: string]: object}
-	keepArticle(articleWithRefs: ArticleWithRefs, index: number, filter: Filter): boolean
+	keepArticle(articleWithRefs: ArticleWithRefs | ArticleProps, index: number, filter: Filter): boolean
 	defaultFilter(filterType: string): Filter
 }
 
-export function addArticles(service: Service, ignoreRefs: boolean, ...articles: ArticleWithRefs[]) {
-	for (const {article, actualArticleRef, replyRef} of articles) {
-		//https://github.com/microsoft/TypeScript/issues/46395
-		service.articles[article.idPair.id as string] = writable(article)
-		if (!ignoreRefs && actualArticleRef)
-			for (const ref of getRefed(actualArticleRef)) {
-				if (!service.articles.hasOwnProperty(ref.idPair.id as string))
-					service.articles[ref.idPair.id as string] = writable(ref)
-			}
-		if (replyRef && (!ignoreRefs || !service.articles.hasOwnProperty(replyRef.idPair.id as string)))
-			service.articles[replyRef.idPair.id.toString()] = writable(replyRef)
+export function addArticles(service: Service, ignoreRefs: boolean, ...articlesWithRefs: ArticleWithRefs[]) {
+	const articles = ignoreRefs
+		? articlesWithRefs.map(a => a.article)
+		: articlesWithRefs.flatMap(articleWithRefToArray)
+
+	for (const article of articles) {
+		if (service.articles.hasOwnProperty(article.idPair.id as string)) {
+			service.articles[article.idPair.id as string].update(a => {
+				a.update(article)
+				return a
+			})
+		}else {
+			//https://github.com/microsoft/TypeScript/issues/46395
+			service.articles[article.idPair.id as string] = writable(article)
+		}
 	}
 
 	updateCachedArticlesStorage()

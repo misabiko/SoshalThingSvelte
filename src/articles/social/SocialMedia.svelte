@@ -1,7 +1,6 @@
 <script lang='ts'>
-	import Article from '../../services/article'
-	import {MediaType} from "../../services/article.js";
 	import type {TimelineArticleProps} from '../index'
+	import Article, {MediaType} from "../index";
 	import {afterUpdate} from 'svelte'
 	import {getWritable} from '../../services/service'
 	import Fa from 'svelte-fa/src/fa.svelte'

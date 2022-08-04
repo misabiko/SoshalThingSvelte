@@ -7,10 +7,8 @@
 	import {derived, type Readable, type Writable} from 'svelte/store'
 	import Article, {
 		type ArticleIdPair,
-		type ArticleRef,
-		articleRefIdPairToRef,
-		type ArticleWithRefs,
-	} from '../services/article'
+		type ArticleWithRefs, deriveArticleRefs, getDerivedArticleWithRefs,
+	} from '../articles'
 	import {articleAction, STANDARD_ACTIONS} from '../services/actions'
 
 	export let timelines: TimelineData[]
@@ -27,19 +25,7 @@
 	$: articles = derived($articleIdPairs.map(getWritable), a => a)
 
 	let articlesWithRefs: Readable<ArticleWithRefs[]>
-	$: articlesWithRefs = derived($articles.map(article => {
-		const stores: Readable<ArticleRef | Article>[] = []
-		if (article.actualArticleRef)
-			stores.push(articleRefIdPairToRef(article.actualArticleRef))
-		if (article.replyRef)
-			stores.push(getWritable(article.replyRef))
-
-		return derived(stores, refs => ({
-			article,
-			actualArticleRef: article.actualArticleRef ? refs[0] as ArticleRef : undefined,
-			replyRef: article.replyRef ? (article.actualArticleRef ? refs[1] : refs[0]) as Article : undefined,
-		}))
-	}), a => a)
+	$: articlesWithRefs = derived($articles.map(deriveArticleRefs), a => a.map(getDerivedArticleWithRefs))
 
 	let filteredArticles: Readable<ArticleWithRefs[]>
 	$: filteredArticles = derived(

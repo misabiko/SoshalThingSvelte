@@ -1,11 +1,12 @@
 <script lang='ts'>
-	import type {ArticleIdPair} from "../services/article"
+	import type {ArticleIdPair} from "./index"
 	import {toggleMarkAsRead} from "../services/service"
-	import Article, {getActualArticle} from '../services/article'
+	import Article, {getActualArticle} from '../articles'
 	import type {ArticleProps, TimelineArticleProps} from './index'
 	import type {SvelteComponent} from 'svelte'
 	import {Modal} from 'svelma'
 	import {getContext} from 'svelte'
+	import {getRootArticle} from './index'
 
 	export let articleProps: ArticleProps
 	export let timelineProps: TimelineArticleProps
@@ -24,14 +25,26 @@
 	}
 
 	function onLogJSON() {
-		console.dir({
-			article: articleProps.article.json,
-			actualArticleRef: {
-				reposted: (articleProps.actualArticleRef as {reposted?: Article})?.reposted?.json,
-				quoted: (articleProps.actualArticleRef as {quoted?: Article})?.quoted?.json,
-			},
-			replyRef: articleProps.replyRef?.json,
-		})
+		switch (articleProps.type) {
+			case 'normal':
+				console.dir({
+					...articleProps,
+					article: articleProps.article.json,
+				})
+				break;
+			case 'reposts':
+				console.dir({
+					...articleProps,
+					reposted: getRootArticle(articleProps.reposted).json
+				})
+				break;
+			case 'quote':
+				console.dir({
+					article: getRootArticle(articleProps).json,
+					quoted: getRootArticle(articleProps.quoted).json
+				})
+				break;
+		}
 	}
 
 	function onMediaClick(idPair: ArticleIdPair, _index: number) {

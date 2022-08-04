@@ -1,7 +1,7 @@
 import {get} from 'svelte/store'
 import {getWritable, newService, registerService, type Service} from '../service'
 import DummyArticle from './article'
-import type {ArticleIdPair} from '../article'
+import type {ArticleIdPair} from '../../articles'
 import {STANDARD_ACTIONS} from '../actions'
 
 export const DummyService: Service<DummyArticle> = {

@@ -1,4 +1,4 @@
-import type {ArticleIdPair} from './article'
+import type {ArticleIdPair} from '../articles'
 import {getServices, toggleHide, toggleMarkAsRead} from './service'
 
 export type ArticleAction = {

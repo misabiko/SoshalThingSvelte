@@ -1,5 +1,5 @@
-import Article from '../article'
-import type {ArticleAuthor, ArticleMedia} from '../article'
+import Article from '../../articles'
+import type {ArticleAuthor, ArticleMedia} from '../../articles'
 
 export default class PixivArticle extends Article {
 	static service: string
@@ -33,6 +33,13 @@ export default class PixivArticle extends Article {
 
 	get numberId() {
 		return this.id
+	}
+
+	update(newArticle: this) {
+		super.update(newArticle)
+
+		this.liked ||= newArticle.liked
+		this.bookmarked ||= newArticle.bookmarked
 	}
 
 	getLiked(): boolean {

@@ -1,5 +1,4 @@
-import type {ArticleWithRefs} from '../services/article'
-import type {ArticleProps, TimelineArticleProps} from '../articles'
+import type {ArticleWithRefs, ArticleProps, TimelineArticleProps} from '../articles'
 import type {SvelteComponent} from 'svelte'
 
 export type ContainerProps = {

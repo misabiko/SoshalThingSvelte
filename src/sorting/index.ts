@@ -1,5 +1,6 @@
-import {getActualArticle} from '../services/article'
-import type {ArticleProps} from '../articles'
+import {getActualArticle} from '../articles'
+import type {ArticleProps, ArticleWithRefs} from '../articles'
+import {getRootArticle} from '../articles'
 
 export type SortInfo = {
 	method?: SortMethod,
@@ -20,13 +21,16 @@ export const allSortMethods = [
 	SortMethod.Reposts,
 ]
 
-export function compare(method: SortMethod): (a: ArticleProps, b: ArticleProps) => number {
+export function compare(method: SortMethod): (a: ArticleWithRefs | ArticleProps, b: ArticleWithRefs | ArticleProps) => number {
 	return (a, b) => {
 		switch (method) {
-			case SortMethod.Id:
-				return a.article.numberId > b.article.numberId ? 1 : (a.article.numberId < b.article.numberId ? -1 : 0);
+			case SortMethod.Id: {
+				const aRoot = getRootArticle(a)
+				const bRoot = getRootArticle(b)
+				return aRoot.numberId > bRoot.numberId ? 1 : (aRoot.numberId < bRoot.numberId ? -1 : 0)
+			}
 			case SortMethod.Date:
-				return (a.article.creationTime?.getTime() || 0) - (b.article.creationTime?.getTime() || 0);
+				return (getRootArticle(a).creationTime?.getTime() || 0) - (getRootArticle(b).creationTime?.getTime() || 0);
 			case SortMethod.Likes:
 				return getActualArticle(a).getLikeCount() - getActualArticle(b).getLikeCount();
 			case SortMethod.Reposts:

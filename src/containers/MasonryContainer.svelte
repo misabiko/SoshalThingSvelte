@@ -1,7 +1,7 @@
 <script lang="ts">
 	import ArticleComponent from "../articles/ArticleComponent.svelte";
-	import {getActualArticle} from '../services/article'
-	import type {ArticleWithRefs} from '../services/article'
+	import type {ArticleWithRefs, ArticleProps} from '../articles'
+	import {getActualArticle, getRootArticle} from '../articles'
 	import type {ContainerProps} from './index'
 
 	export let containerRef = undefined;
@@ -9,15 +9,15 @@
 	let lastRebalanceTrigger = false
 	let lastColumnCount = props.columnCount
 
-	let uniqueArticles: { [idPairStr: string]: { articleProps: ArticleWithRefs, index: number } }
+	let uniqueArticles: { [idPairStr: string]: { articleProps: ArticleProps, index: number } }
 	$: {
 		uniqueArticles = {}
 		const idPairs = new Set<string>()
 		for (const a of props.articles) {
 			let lastSize = idPairs.size
-			idPairs.add(a.article.idPairStr)
+			idPairs.add(getRootArticle(a).idPairStr)
 			if (idPairs.size > lastSize) {
-				uniqueArticles[a.article.idPairStr] = {articleProps: a, index: lastSize}
+				uniqueArticles[getRootArticle(a).idPairStr] = {articleProps: a, index: lastSize}
 			}
 		}
 	}
@@ -52,8 +52,8 @@
 			}
 
 			for (const {articleProps, index} of Object.values(uniqueArticles)) {
-				if (!columns.some(c => c.articles.some(idPair => uniqueArticles[idPair].articleProps.article.idPairStr === articleProps.article.idPairStr))) {
-					addedArticles.push({idPairStr: articleProps.article.idPairStr, index})
+				if (!columns.some(c => c.articles.some(idPair => getRootArticle(uniqueArticles[idPair].articleProps).idPairStr === getRootArticle(articleProps).idPairStr))) {
+					addedArticles.push({idPairStr: getRootArticle(articleProps).idPairStr, index})
 				}
 			}
 
@@ -77,7 +77,7 @@
 		const sortedArticles = Object.values(uniqueArticles)
 		sortedArticles.sort((a, b) => a.index - b.index)
 		for (const {articleProps} of sortedArticles)
-			addArticle(articleProps.article.idPairStr)
+			addArticle(getRootArticle(articleProps).idPairStr)
 
 		return columns
 	}
@@ -89,7 +89,7 @@
 		return smallestIndex
 	}
 
-	function getRatio(article: ArticleWithRefs): number {
+	function getRatio(article: ArticleProps): number {
 		return 1 + getActualArticle(article).medias.reduce((acc, curr) => acc + (curr.ratio ?? 1), 0)
 	}
 </script>

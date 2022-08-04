@@ -1,11 +1,9 @@
+import type { ArticleMedia, ArticleWithRefs } from '../articles'
 import {
-	type ArticleMedia,
-	ArticleRefType,
-	type ArticleWithRefs,
+	articleWithRefToArray,
 	getActualArticle,
-	getRefed,
 	MediaType,
-} from '../services/article'
+} from '../articles'
 import {getServices} from '../services/service'
 
 export type FilterInstance = {
@@ -140,58 +138,49 @@ export function keepArticle(articleWithRefs: ArticleWithRefs, index: number, fil
 function keepArticleGeneric(articleWithRefs: ArticleWithRefs, index: number, filter: GenericFilter): boolean {
 	switch (filter.type) {
 		case 'media':
-			return !!articleWithRefs.article.medias.length ||
-				(
-					articleWithRefs.actualArticleRef !== undefined &&
-					getRefed(articleWithRefs.actualArticleRef)
-						.some(ref => !!ref.medias.length)
-				);
+			return articleWithRefToArray(articleWithRefs).some(a => a.medias.length > 0)
 		case 'animated':
-			return articleWithRefs.article.medias.some(isAnimated) ||
-				(
-					articleWithRefs.actualArticleRef !== undefined &&
-					getRefed(articleWithRefs.actualArticleRef)
-						.some(ref => ref.medias.some(isAnimated))
-				);
+			return articleWithRefToArray(articleWithRefs).some(a => a.medias.some(isAnimated))
 		case 'notMarkedAsRead':
-			return !articleWithRefs.article.markedAsRead &&
-				(
-					(
-						articleWithRefs.actualArticleRef?.type !== ArticleRefType.Repost &&
-						articleWithRefs.actualArticleRef?.type !== ArticleRefType.QuoteRepost
-					) || !articleWithRefs.actualArticleRef.reposted.markedAsRead
-				);
+			switch (articleWithRefs.type) {
+				case 'normal':
+					return !articleWithRefs.article.markedAsRead
+				case 'repost':
+					return !articleWithRefs.article.markedAsRead && keepArticleGeneric(articleWithRefs.reposted, index, filter)
+				case 'quote':
+					//TODO Filter out nested articles
+					return !articleWithRefs.article.markedAsRead
+			}
 		case 'notHidden':
-			return !articleWithRefs.article.hidden &&
-				(
-					(
-						articleWithRefs.actualArticleRef?.type !== ArticleRefType.Repost &&
-						articleWithRefs.actualArticleRef?.type !== ArticleRefType.QuoteRepost
-					) || !articleWithRefs.actualArticleRef.reposted.hidden
-				);
+			switch (articleWithRefs.type) {
+				case 'normal':
+					return !articleWithRefs.article.hidden
+				case 'repost':
+					return !articleWithRefs.article.hidden && keepArticleGeneric(articleWithRefs.reposted, index, filter)
+				case 'quote':
+					//TODO Filter out nested articles
+					return !articleWithRefs.article.hidden
+			}
 		case 'liked':
 			return getActualArticle(articleWithRefs).getLiked();
 		case 'reposted':
 			return getActualArticle(articleWithRefs).getReposted();
 		case 'noRef':
-			return articleWithRefs.actualArticleRef === undefined;
+			return articleWithRefs.type === 'normal'
 		case 'repost':
-			if (articleWithRefs.actualArticleRef?.type === ArticleRefType.Repost || articleWithRefs.actualArticleRef?.type === ArticleRefType.QuoteRepost) {
-				if (filter.byUsername)
+			if (articleWithRefs.type === 'repost') {
+				if (filter.byUsername) {
 					return articleWithRefs.article.author?.username === filter.byUsername
-				else
+				}else
 					return true
 			}
 
 			return false
 		case 'quote':
-			if (articleWithRefs.actualArticleRef?.type === ArticleRefType.Quote || articleWithRefs.actualArticleRef?.type === ArticleRefType.QuoteRepost) {
-				if (filter.byUsername) {
-					if (articleWithRefs.actualArticleRef.type === ArticleRefType.QuoteRepost)
-						return articleWithRefs.actualArticleRef.reposted.author?.username === filter.byUsername
-					else
-						return articleWithRefs.article.author?.username === filter.byUsername
-				}else
+			if (articleWithRefs.type === 'quote') {
+				if (filter.byUsername)
+					return articleWithRefs.article.author?.username === filter.byUsername
+				else
 					return true
 			}
 

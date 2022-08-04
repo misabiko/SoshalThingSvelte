@@ -1,11 +1,10 @@
-import type {ArticleMedia, ArticleRef, ArticleWithRefs, ArticleIdPair} from '../article'
-import Article, {
-	articleRefToIdPair,
+import type {ArticleMedia, ArticleWithRefs, ArticleIdPair, ArticleRefIdPair} from '../../articles'
+import {
 	ArticleRefType,
 	getRatio,
 	MediaQueueInfo,
 	MediaType,
-} from '../article'
+} from '../../articles'
 import TwitterArticle from './article'
 import {getHiddenStorage, getMarkedAsReadStorage} from '../../storages/serviceCache'
 import {TwitterService} from './service'
@@ -23,35 +22,70 @@ export function articleFromV1(json: TweetResponse, isRef = false): ArticleWithRe
 	const rawText = json.full_text ?? json.text as string
 	const {text, textHtml} = parseText(rawText, json.entities, json.extended_entities)
 
-	let actualArticleRef: ArticleRef | undefined
-	let replyRef: Article | undefined
 	let actualArticleIndex: number | undefined
-	{
-		if (json.retweeted_status !== undefined) {
-			const retweet = articleFromV1(json.retweeted_status, true)
+	let actualArticleRefIdPair: ArticleRefIdPair | undefined
 
-			if (retweet.actualArticleRef?.type === ArticleRefType.Quote) {
-				actualArticleRef = {
-					type: ArticleRefType.QuoteRepost,
-					reposted: retweet.article,
-					quoted: retweet.actualArticleRef.quoted,
-				}
-			}else {
-				actualArticleRef = {
-					type: ArticleRefType.Repost,
-					reposted: retweet.article,
-				}
+	const makeArticle = () => new TwitterArticle(
+		BigInt(json.id_str),
+		text,
+		textHtml,
+		{
+			id: json.user.id_str,
+			name: json.user.name,
+			username: json.user.screen_name,
+			url: 'https://twitter.com/' + json.user.screen_name,
+			avatarUrl: json.user.profile_image_url_https,
+		},
+		new Date(json.created_at),
+		getMarkedAsReadStorage(TwitterService),
+		getHiddenStorage(TwitterService),
+		actualArticleRefIdPair,
+		parseMedia(json.extended_entities),
+		json.favorited,
+		json.favorite_count,
+		json.retweeted,
+		json.retweet_count,
+		json,
+	)
+
+	if (json.retweeted_status !== undefined) {
+		const retweeted = articleFromV1(json.retweeted_status, true)
+
+		if (retweeted.type === 'quote') {
+			actualArticleRefIdPair = {
+				type: ArticleRefType.QuoteRepost,
+				reposted: retweeted.article.idPair,
+				quoted: retweeted.quoted.article.idPair,
 			}
-			actualArticleIndex = 0
-		}else if (json.is_quote_status) {
-			if (json.quoted_status) {
-				const quote = articleFromV1(json.quoted_status, true)
+		}else {
+			actualArticleRefIdPair = {
+				type: ArticleRefType.Repost,
+				reposted: retweeted.article.idPair,
+			}
+		}
+		actualArticleIndex = 0
 
-				actualArticleRef = {
-					type: ArticleRefType.Quote,
-					quoted: quote.article,
-				}
-			}else if (!isRef) {	//Twitter won't give quoted_status for quote of quote
+		return {
+			type: 'repost',
+			article: makeArticle(),
+			reposted: retweeted as ArticleWithRefs & {type: 'normal' | 'quote'}
+		}
+	}else if (json.is_quote_status) {
+		if (json.quoted_status) {
+			const quoted = articleFromV1(json.quoted_status, true)
+
+			actualArticleRefIdPair = {
+				type: ArticleRefType.Quote,
+				quoted: quoted.article.idPair,
+			}
+
+			return {
+				type: 'quote',
+				article: makeArticle(),
+				quoted: quoted as ArticleWithRefs & {type: 'normal' | 'quote'},
+			}
+		}else {
+			if (!isRef) {	//Twitter won't give quoted_status for quote of quote
 				if (json.quoted_status_id_str)
 					console.warn("Quote tweet doesn't include quoted tweet, need to get the tweet from service", json)
 				else
@@ -59,32 +93,10 @@ export function articleFromV1(json: TweetResponse, isRef = false): ArticleWithRe
 			}
 		}
 	}
+
 	return {
-		article: new TwitterArticle(
-			BigInt(json.id_str),
-			text,
-			textHtml,
-			{
-				id: json.user.id_str,
-				name: json.user.name,
-				username: json.user.screen_name,
-				url: 'https://twitter.com/' + json.user.screen_name,
-				avatarUrl: json.user.profile_image_url_https,
-			},
-			new Date(json.created_at),
-			getMarkedAsReadStorage(TwitterService),
-			getHiddenStorage(TwitterService),
-			actualArticleRef ? articleRefToIdPair(actualArticleRef) : undefined,
-			replyRef?.idPair,
-			parseMedia(json.extended_entities),
-			json.favorited,
-			json.favorite_count,
-			json.retweeted,
-			json.retweet_count,
-			json,
-		),
-		actualArticleRef,
-		replyRef,
+		type: 'normal',
+		article: makeArticle()
 	}
 }
 

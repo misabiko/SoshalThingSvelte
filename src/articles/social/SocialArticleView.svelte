@@ -1,6 +1,6 @@
 <script lang='ts'>
-	import Article from '../../services/article'
-	import type {ArticleIdPair} from '../../services/article'
+	import Article from '../../articles'
+	import type {ArticleIdPair} from '../index'
 	import type {ArticleProps, TimelineArticleProps} from '../index'
 	import {shortTimestamp} from "../index";
 	import SocialMedia from "./SocialMedia.svelte";
@@ -18,7 +18,7 @@
 	export let onLogJSON: () => void
 
 	let minimized = false
-	const isArticleRepost = articleProps.actualArticleRef && 'reposted' in articleProps.actualArticleRef
+	const isArticleRepost = articleProps.type === 'reposts'
 
 	function onUsernameClick(clickedArticle: Article) {
 		const username = clickedArticle.author?.username
@@ -177,8 +177,8 @@
 					</p>
 				{/if}
 			</div>
-			{#if articleProps.actualArticleRef?.quoted}
-				{@const quoted = articleProps.actualArticleRef.quoted}
+			{#if articleProps.type === 'quote'}
+				{@const quoted = articleProps.quoted.article}
 				<div class='quotedPost'>
 					<div class='articleHeader'>
 						<a class='names' href={quoted.author.url} target='_blank'>

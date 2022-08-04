@@ -1,6 +1,6 @@
 <script lang='ts'>
-	import Article, {MediaQueueInfo, MediaType} from '../services/article'
-	import type {ArticleIdPair} from '../services/article'
+	import Article, {MediaQueueInfo, MediaType} from '../articles'
+	import type {ArticleIdPair} from '../articles'
 	import Fa from 'svelte-fa/src/fa.svelte'
 	import {
 		faExpandArrowsAlt,

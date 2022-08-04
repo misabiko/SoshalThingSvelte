@@ -1,5 +1,6 @@
 import type {TimelineEndpoint} from '../timelines'
-import type {ArticleIdPair, ArticleWithRefs} from './article'
+import type {ArticleIdPair, ArticleWithRefs} from '../articles'
+import {getRootArticle} from '../articles'
 import {useFilters} from '../filters'
 import {addArticles, getServices} from './service'
 import {get, writable} from 'svelte/store'
@@ -135,7 +136,7 @@ export async function refreshEndpointName(endpointName: string, refreshType: Ref
 		//TODO Exclude interval from endpoint filters
 		timelineEndpoint.addArticles(
 			useFilters(articles, timelineEndpoint.endpoint.filters)
-				.map(a => a.article.idPair)
+				.map(a => getRootArticle(a).idPair)
 		)
 	}
 }
@@ -163,12 +164,13 @@ export async function refreshEndpoint(endpoint: Endpoint, refreshType: RefreshTy
 	//Filtering articles the endpoint already has
 	//TODO Update current articles
 	endpoint.articleIdPairs.push(...articles
-		.filter(a => !endpoint.articleIdPairs
+		.map(a => getRootArticle(a).idPair)
+		.filter(idPair => !endpoint.articleIdPairs
 			.some(pair =>
-				pair.service === a.article.idPair.service &&
-				pair.id === a.article.idPair.id,
-			))
-		.map(a => a.article.idPair),
+				pair.service === idPair.service &&
+				pair.id === idPair.id,
+			)
+		)
 	)
 
 	addArticles(getServices()[endpoint.service], false, ...articles)

@@ -3,7 +3,7 @@ import type {FetchingService, Service} from '../service'
 import {getWritable, newFetchingService, newService, registerService} from '../service'
 import type {Writable} from 'svelte/store'
 import {get} from 'svelte/store'
-import {type ArticleIdPair, getRatio, MediaQueueInfo, MediaType} from '../article'
+import {type ArticleIdPair, getRatio, MediaQueueInfo, MediaType} from '../../articles'
 import {STANDARD_ACTIONS} from '../actions'
 import {getServiceStorage} from '../../storages'
 

@@ -1,27 +1,21 @@
 <script lang='ts'>
 	import type {Readable, Writable} from 'svelte/store'
 	import {derived, get} from 'svelte/store'
-	import type {ArticleIdPair, ArticleRef, ArticleWithRefs} from '../services/article'
-	import Article, {articleRefIdPairToRef, articleWithRefToArray, getActualArticle} from '../services/article'
-	import {
-		fetchArticle,
-		getWritable,
-
-	} from '../services/service'
+	import type {ArticleIdPair, ArticleProps, ArticleWithRefs} from '../articles'
+	import Article, {
+		articleWithRefToArray,
+		deriveArticleRefs,
+		getActualArticle, getDerivedArticleWithRefs,
+	} from '../articles'
+	import {fetchArticle, getWritable} from '../services/service'
 	import {onMount} from 'svelte'
 	import type {FullscreenInfo, TimelineData} from './index'
 	import {keepArticle} from '../filters'
 	import {compare, SortMethod} from '../sorting'
 	import type {ContainerProps} from '../containers'
-	import TimelineHeader from "./TimelineHeader.svelte";
-	import TimelineOptions from "./TimelineOptions.svelte";
-	import type {ArticleProps} from '../articles'
-	import {
-		endpoints,
-		refreshEndpoint,
-		refreshEndpointName,
-		RefreshType,
-	} from '../services/endpoints'
+	import TimelineHeader from "./TimelineHeader.svelte"
+	import TimelineOptions from "./TimelineOptions.svelte"
+	import {endpoints, refreshEndpoint, refreshEndpointName, RefreshType} from '../services/endpoints'
 	import {loadingStore} from '../bufferedMediaLoading'
 
 	export let data: TimelineData
@@ -46,44 +40,49 @@
 	$: articles = derived($articleIdPairs.map(getWritable), a => a)
 
 	let articlesWithRefs: Readable<ArticleWithRefs[]>
-	$: articlesWithRefs = derived($articles.map(article => {
-		const stores: Readable<ArticleRef | Article>[] = []
-		if (article.actualArticleRef)
-			stores.push(articleRefIdPairToRef(article.actualArticleRef))
-		if (article.replyRef)
-			stores.push(getWritable(article.replyRef))
-
-		return derived(stores, refs => ({
-			article,
-			actualArticleRef: article.actualArticleRef ? refs[0] as ArticleRef : undefined,
-			replyRef: article.replyRef ? (article.actualArticleRef ? refs[1] : refs[0]) as Article : undefined,
-		}))
-	}), a => a)
+	$: articlesWithRefs = derived($articles.map(deriveArticleRefs), a => a.map(getDerivedArticleWithRefs))
 
 	let filteredArticles: Readable<ArticleProps[]>
-	$: filteredArticles = derived(
-		articlesWithRefs,
-		stores => {
-			let articleProps: ArticleProps[] = stores
-				.map((articleWithRefs, i) => ({
+	$: filteredArticles = derived(articlesWithRefs, stores => {
+		let articleProps: ArticleProps[] = stores
+			.map((articleWithRefs, i) => addProps(articleWithRefs, i))
+
+		if (data.hideFilteredOutArticles)
+			articleProps = articleProps.filter(a => !a.filteredOut)
+
+		if (data.sortInfo.method !== undefined)
+			articleProps.sort(compare(data.sortInfo.method))
+		if (data.sortInfo.reversed)
+			articleProps.reverse()
+
+		if (data.section.useSection)
+			articleProps = articleProps.slice(0, data.section.count)
+
+		return articleProps
+	})
+
+	function addProps(articleWithRefs: ArticleWithRefs, index: number): ArticleProps {
+		const filteredOut = !data.filters.every(f => !f.enabled || (keepArticle(articleWithRefs, index, f.filter) !== f.inverted))
+		switch (articleWithRefs.type) {
+			case 'normal':
+				return {
 					...articleWithRefs,
-					filteredOut: !data.filters.every(f => !f.enabled || (keepArticle(articleWithRefs, i, f.filter) !== f.inverted))
-				}))
-
-			if (data.hideFilteredOutArticles)
-				articleProps = articleProps.filter(a => !a.filteredOut)
-
-			if (data.sortInfo.method !== undefined)
-				articleProps.sort(compare(data.sortInfo.method))
-			if (data.sortInfo.reversed)
-				articleProps.reverse()
-
-			if (data.section.useSection)
-				articleProps = articleProps.slice(0, data.section.count)
-
-			return articleProps
-		},
-	)
+					filteredOut
+				}
+			case 'repost':
+				return {
+					...articleWithRefs,
+					filteredOut,
+					reposted: addProps(articleWithRefs.reposted, index)
+				} as ArticleProps
+			case 'quote':
+				return {
+					...articleWithRefs,
+					filteredOut,
+					quoted: addProps(articleWithRefs.quoted, index)
+				} as ArticleProps
+		}
+	}
 
 	let articleCountLabel: string
 	$: if ($filteredArticles.length)

@@ -9,7 +9,7 @@
 	} from '@fortawesome/free-solid-svg-icons'
 	import Dropdown from '../../Dropdown.svelte'
 	import {toggleMarkAsRead, toggleHide} from "../../services/service"
-	import Article from '../../services/article'
+	import Article from '../../articles'
 	import type {TimelineArticleProps} from '../index'
 	import {articleAction, getArticleAction, STANDARD_ACTIONS} from '../../services/actions'
 

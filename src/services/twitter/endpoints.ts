@@ -1,4 +1,4 @@
-import type {ArticleWithRefs} from '../article'
+import type {ArticleWithRefs} from '../../articles'
 import {TwitterService} from './service'
 import type {SearchResponse, TweetResponse} from './apiV1'
 import {articleFromV1, fetchExtensionV1, getV1APIURL, parseRateLimitInfo} from './apiV1'

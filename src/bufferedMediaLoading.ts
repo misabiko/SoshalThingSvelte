@@ -1,5 +1,5 @@
-import type Article from './services/article'
-import type {ArticleIdPair} from './services/article'
+import type Article from './articles'
+import type {ArticleIdPair} from './articles'
 import {getWritable} from './services/service'
 import {get, writable} from 'svelte/store'
 

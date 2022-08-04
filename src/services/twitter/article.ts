@@ -1,5 +1,5 @@
-import type {ArticleAuthor, ArticleIdPair, ArticleMedia, ArticleRefIdPair} from '../article'
-import Article from '../article'
+import type {ArticleAuthor, ArticleMedia, ArticleRefIdPair} from '../../articles'
+import Article from '../../articles'
 
 export default class TwitterArticle extends Article {
 	static service: string;
@@ -15,7 +15,7 @@ export default class TwitterArticle extends Article {
 		markedAsReadStorage: string[],
 		hiddenStorage: string[],
 		actualArticleRef: ArticleRefIdPair | undefined,
-		replyRef: ArticleIdPair | undefined,
+		//replyRef: ArticleIdPair | undefined,
 		medias: ArticleMedia[],
 		public liked: boolean,
 		public likeCount: number,
@@ -34,7 +34,7 @@ export default class TwitterArticle extends Article {
 			markedAsReadStorage,
 			hiddenStorage,
 			actualArticleRef,
-			replyRef,
+			//replyRef,
 			json,
 		});
 	}

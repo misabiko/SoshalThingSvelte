@@ -47,6 +47,9 @@
 		let articleProps: ArticleProps[] = stores
 			.map((articleWithRefs, i) => addProps(articleWithRefs, i))
 
+		if (data.hideFilteredOutArticles)
+			articleProps = articleProps.filter(a => !a.filteredOut)
+
 		if (data.mergeReposts) {
 			let merged: ArticleProps[] = []
 			for (const a of articleProps) {
@@ -81,9 +84,6 @@
 
 			//TODO Sort reposts
 		}
-
-		if (data.hideFilteredOutArticles)
-			articleProps = articleProps.filter(a => !a.filteredOut)
 
 		if (data.sortInfo.method !== undefined)
 			articleProps.sort(compare(data.sortInfo.method))

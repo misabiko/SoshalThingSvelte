@@ -46,6 +46,9 @@
 		&:hover span
 			color: $primary
 
+	:global(button.articleButton.borderless-button.actionned > span > svg)
+		color: $primary
+
 	//&:hover.commentButton span
 	//	color: $comment-color
 

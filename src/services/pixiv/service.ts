@@ -7,6 +7,7 @@ import type {ArticleIdPair} from '../../articles'
 import {STANDARD_ACTIONS} from '../actions'
 import {getServiceStorage} from '../../storages'
 import {getRatio, MediaLoadType, MediaType} from '../../articles/media'
+import {faFaceSmile} from '@fortawesome/free-solid-svg-icons'
 
 export const PixivService: PixivServiceType = {
 	...newService('Pixiv'),
@@ -39,7 +40,8 @@ export const PixivService: PixivServiceType = {
 	articleActions: {
 		[STANDARD_ACTIONS.like.key]: {
 			...STANDARD_ACTIONS.like,
-			//TODO Use smiley icon
+			icon: faFaceSmile,
+			color: undefined,
 			toggle: null,
 			async action(idPair: ArticleIdPair) {
 				const csrfToken = getServiceStorage(PixivService.name)['csrfToken'] as string | undefined
@@ -76,11 +78,12 @@ export const PixivService: PixivServiceType = {
 			},
 			actionned(article) { return article.liked },
 		},
-		//TODO Change name to bookmark
 		bookmark: {
-			...STANDARD_ACTIONS.repost,
 			name: 'Bookmark',
+			color: STANDARD_ACTIONS.like.color,
+			icon: STANDARD_ACTIONS.like.icon,
 			toggle: null,
+			index: 1,
 			async action(idPair) {
 				const storage = getServiceStorage(PixivService.name)
 				const csrfToken = storage['csrfToken'] as string | undefined

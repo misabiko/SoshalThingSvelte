@@ -15,7 +15,7 @@
 	export let filterInstances: FilterInstance[]
 
 	let timelineIndex: number = 0
-	let action = STANDARD_ACTIONS.markAsRead
+	let action = STANDARD_ACTIONS.markAsRead.key
 	let onlyListedArticles = true
 
 	let articleIdPairs: Writable<ArticleIdPair[]> = timelines[timelineIndex].articles

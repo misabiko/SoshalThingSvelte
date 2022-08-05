@@ -5,8 +5,6 @@
 	import {
 		faExpandArrowsAlt,
 		faExternalLinkAlt,
-		faHeart,
-		faRetweet,
 		faEllipsisH, faImages,
 	} from '@fortawesome/free-solid-svg-icons'
 	import {afterUpdate} from 'svelte'
@@ -16,11 +14,10 @@
 		fetchArticle,
 		toggleHide,
 		toggleMarkAsRead,
-		getWritable,
+		getWritable, getServices,
 	} from "../services/service"
 	import type {TimelineArticleProps} from './index'
 	import type {ArticleProps} from './index'
-	import {articleAction, getArticleAction, STANDARD_ACTIONS} from '../services/actions'
 	import {MediaLoadType, MediaType} from './media'
 
 	export let timelineProps: TimelineArticleProps
@@ -69,8 +66,9 @@
 		}
 	})
 
-	const likeAction = getArticleAction(STANDARD_ACTIONS.like, actualArticle.idPair.service)
-	const repostAction = getArticleAction(STANDARD_ACTIONS.repost, actualArticle.idPair.service)
+	let actions = Object.values(getServices()[rootArticle.idPair.service].articleActions)
+		.filter(a => a.icon !== undefined)
+		.sort((a, b) => a.index - b.index)
 </script>
 
 <style lang='sass'>
@@ -286,26 +284,24 @@
 			</Dropdown>
 		</div>
 		<div class='holderBox holderBoxBottom'>
-			{#if likeAction && !(actualArticle.getLiked() && !likeAction.togglable)}
-				<button
-					class='button'
-					on:click={() => articleAction(STANDARD_ACTIONS.like, actualArticle.idPair)}
-				>
-					<span class='icon darkIcon'>
-						<Fa icon={faHeart} class='is-small'/>
-					</span>
-				</button>
-			{/if}
-			{#if repostAction && !(actualArticle.getReposted() && !repostAction.togglable)}
-				<button
-					class='button'
-					on:click={() => articleAction(STANDARD_ACTIONS.repost, actualArticle.idPair)}
-				>
-					<span class='icon darkIcon'>
-						<Fa icon={faRetweet} class='is-small'/>
-					</span>
-				</button>
-			{/if}
+			{#each actions as action (action.key)}
+				{@const actionned = action.actionned(rootArticle)}
+				{@const disabled = action.disabled ? action.disabled(rootArticle) : false}
+				{#if !actionned || action.toggle}
+					<!-- svelte-ignore a11y-mouse-events-have-key-events -->
+					<button
+						class='button'
+						class:actionned
+						title={action.name}
+						on:click={() => action.action(rootArticle.idPair)}
+						{disabled}
+					>
+						<span class='icon darkIcon'>
+							<Fa icon={action.toggle?.icon && actionned ? action.toggle.icon : action.icon} class='is-small'/>
+						</span>
+					</button>
+				{/if}
+			{/each}
 		</div>
 	</div>
 </div>

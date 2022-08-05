@@ -7,13 +7,16 @@ import {STANDARD_ACTIONS} from '../actions'
 export const DummyService: Service<DummyArticle> = {
 	...newService('Dummy'),
 	articleActions: {
-		[STANDARD_ACTIONS.like]: {
+		[STANDARD_ACTIONS.like.key]: {
+			...STANDARD_ACTIONS.like,
 			action: toggleLike,
-			togglable: true,
+			actionned(article) { return article.liked },
 		},
-		[STANDARD_ACTIONS.repost]: {
+		[STANDARD_ACTIONS.repost.key]: {
+			...STANDARD_ACTIONS.repost,
+			toggle: null,
 			action: repost,
-			togglable: false,
+			actionned(article) { return article.reposted },
 		},
 	},
 }

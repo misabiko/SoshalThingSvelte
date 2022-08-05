@@ -1,6 +1,6 @@
 import type Article from '../articles'
 import type { ArticleId, ArticleIdPair, ArticleWithRefs, ArticleProps } from '../articles'
-import {articleWithRefToArray} from '../articles'
+import {articleWithRefToArray, getRootArticle} from '../articles'
 import type {Writable} from 'svelte/store'
 import {writable} from 'svelte/store'
 import {updateCachedArticlesStorage, updateHiddenStorage, updateMarkAsReadStorage} from '../storages/serviceCache'
@@ -9,7 +9,7 @@ import {undoables} from '../undo'
 import type {Filter} from '../filters'
 import type {ArticleAction} from './actions'
 
-const services: { [name: string]: Service } = {}
+const services: { [name: string]: Service<any> } = {}
 
 export interface Service<A extends Article = Article> {
 	readonly name: string;
@@ -17,7 +17,7 @@ export interface Service<A extends Article = Article> {
 	//TODO Store constructors by name
 	readonly endpointConstructors: EndpointConstructorInfo[]
 	userEndpoint: ((username: string) => Endpoint) | undefined,
-	articleActions: { [name: string]: ArticleAction };
+	articleActions: { [name: string]: ArticleAction<A> };
 	requestImageLoad?: (id: ArticleId, index: number) => void;
 	getCachedArticles?: () => {[id: string]: object}
 	keepArticle(articleWithRefs: ArticleWithRefs | ArticleProps, index: number, filter: Filter): boolean
@@ -26,7 +26,7 @@ export interface Service<A extends Article = Article> {
 
 export function addArticles(service: Service, ignoreRefs: boolean, ...articlesWithRefs: ArticleWithRefs[]) {
 	const articles = ignoreRefs
-		? articlesWithRefs.map(a => a.article)
+		? articlesWithRefs.map(getRootArticle)
 		: articlesWithRefs.flatMap(articleWithRefToArray)
 
 	for (const article of articles) {
@@ -44,7 +44,7 @@ export function addArticles(service: Service, ignoreRefs: boolean, ...articlesWi
 	updateCachedArticlesStorage()
 }
 
-export function registerService(service: Service) {
+export function registerService(service: Service<any>) {
 	services[service.name] = service
 }
 

@@ -1,9 +1,6 @@
 <script lang='ts'>
 	import Fa from 'svelte-fa/src/fa.svelte'
-	import {faHeart} from '@fortawesome/free-regular-svg-icons'
 	import {
-		faRetweet,
-		faHeart as faHeartFilled,
 		faEyeSlash,
 		faEllipsisH, faExpandAlt, faEye,
 	} from '@fortawesome/free-solid-svg-icons'
@@ -11,7 +8,7 @@
 	import {toggleMarkAsRead, toggleHide} from "../../services/service"
 	import Article from '../../articles'
 	import type {TimelineArticleProps} from '../index'
-	import {articleAction, getArticleAction, STANDARD_ACTIONS} from '../../services/actions'
+	import {getServices} from "../../services/service.js";
 
 	export let article: Article
 	export let repost: Article | undefined = undefined
@@ -20,6 +17,20 @@
 	export let timelineProps: TimelineArticleProps
 	export let onLogData: () => void
 	export let onLogJSON: () => void
+
+	let actions = Object.values(getServices()[article.idPair.service].articleActions)
+		.filter(a => a.icon !== undefined)
+		.sort((a, b) => a.index - b.index)
+
+	let hoveredActions = new Set<string>()
+	function updateActionHover(key: string, hovered: boolean) {
+		if (hovered)
+			hoveredActions.add(key)
+		else
+			hoveredActions.delete(key)
+
+		hoveredActions = hoveredActions
+	}
 </script>
 
 <style lang='sass'>
@@ -46,13 +57,6 @@
 	//
 	//.fade-enter, .fade-leave-to
 	//	opacity: 0
-
-	button.likeButton
-		color: $light
-
-		&:hover, &.likedPostButton
-			span, :global(span > svg)
-				color: $like-color
 
 	//@keyframes heart
 	//	0%, 17.5%
@@ -85,13 +89,6 @@
 	//		height: $bubble-d
 	//		background: gold
 
-	button.repostButton
-		color: $light
-
-		&:hover, &.repostedPostButton
-			span, :global(span > svg)
-				color: $repost-color
-
 	//:global(article.socialArticle .icon > svg)
 	//	will-change: transform
 	//	transition: transform .5s ease-in-out
@@ -102,38 +99,32 @@
 
 <nav class='level is-mobile'>
 	<div class='level-left'>
-		{#if getArticleAction(STANDARD_ACTIONS.repost, article.idPair.service)}
+		{#each actions as action (action.key)}
+			{@const count = action.count ? action.count(article) : 0}
+			{@const disabled = action.disabled ? action.disabled(article) : false}
+			{@const actionned = action.actionned(article)}
+			{@const isHovered = hoveredActions.has(action.key)}
+			<!-- svelte-ignore a11y-mouse-events-have-key-events -->
 			<button
-				class='level-item articleButton repostButton borderless-button'
-				class:repostedPostButton={article.getReposted()}
-				title='Repost'
-				on:click={() => articleAction(STANDARD_ACTIONS.repost, article.idPair)}
-				disabled={article.getReposted() && !getArticleAction(STANDARD_ACTIONS.repost, article.idPair.service).togglable}
-			>
-							<span class='icon'>
-								<Fa icon={faRetweet}/>
-							</span>
-				{#if article.getRepostCount()}
-					<span>{article.getRepostCount()}</span>
-				{/if}
-			</button>
-		{/if}
-		{#if getArticleAction(STANDARD_ACTIONS.like, article.idPair.service)}
-			<button
-				class='level-item articleButton likeButton borderless-button'
-				class:likedPostButton={article.getLiked()}
-				title='Like'
-				on:click={() => articleAction(STANDARD_ACTIONS.like, article.idPair)}
-				disabled={article.getLiked() && !getArticleAction(STANDARD_ACTIONS.like, article.idPair.service).togglable}
+				class='level-item articleButton borderless-button'
+				class:actionned
+				title={action.name}
+				on:click={() => action.action(article.idPair)}
+				disabled={disabled || (actionned && !action.toggle)}
+				on:mouseover={() => updateActionHover(action.key, true)}
+				on:mouseout={() => updateActionHover(action.key, false)}
 			>
 				<span class='icon'>
-					<Fa icon={article.getLiked() ? faHeartFilled : faHeart}/>
+					<Fa
+						icon={action.toggle?.icon && actionned ? action.toggle.icon : action.icon}
+						color={!disabled && (actionned || isHovered) ? action.color : undefined}
+					/>
 				</span>
-				{#if article.getLikeCount()}
-					<span>{article.getLikeCount()}</span>
+				{#if count}
+					<span style:color={!disabled && (actionned || isHovered) ? action.color : 'inherit'}>{count}</span>
 				{/if}
 			</button>
-		{/if}
+		{/each}
 		<button
 			class='level-item articleButton borderless-button'
 			title='Mark as read'

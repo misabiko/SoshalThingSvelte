@@ -37,8 +37,10 @@ export const PixivService: PixivServiceType = {
 		})
 	},
 	articleActions: {
-		[STANDARD_ACTIONS.like]: {
-			togglable: false,
+		[STANDARD_ACTIONS.like.key]: {
+			...STANDARD_ACTIONS.like,
+			//TODO Use smiley icon
+			toggle: null,
 			async action(idPair: ArticleIdPair) {
 				const csrfToken = getServiceStorage(PixivService.name)['csrfToken'] as string | undefined
 				if (!csrfToken)
@@ -72,10 +74,13 @@ export const PixivService: PixivServiceType = {
 					return a
 				})
 			},
+			actionned(article) { return article.liked },
 		},
 		//TODO Change name to bookmark
-		[STANDARD_ACTIONS.repost]: {
-			togglable: false,
+		bookmark: {
+			...STANDARD_ACTIONS.repost,
+			name: 'Bookmark',
+			toggle: null,
 			async action(idPair) {
 				const storage = getServiceStorage(PixivService.name)
 				const csrfToken = storage['csrfToken'] as string | undefined
@@ -113,7 +118,8 @@ export const PixivService: PixivServiceType = {
 					a.bookmarked = true
 					return a
 				})
-			}
+			},
+			actionned(article) { return article.bookmarked },
 		}
 	}
 }

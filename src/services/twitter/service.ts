@@ -9,13 +9,20 @@ import type {Filter} from '../../filters'
 export const TwitterService: Service<TwitterArticle> = {
 	...newService('Twitter'),
 	articleActions: {
-		[STANDARD_ACTIONS.like]: {
+		[STANDARD_ACTIONS.like.key]: {
+			...STANDARD_ACTIONS.like,
 			action: toggleFavorite,
-			togglable: true,
+			actionned(article) { return article.liked },
+			disabled(article) { return article.deleted },
+			count(article) { return article.likeCount },
 		},
-		[STANDARD_ACTIONS.repost]: {
+		[STANDARD_ACTIONS.repost.key]: {
+			...STANDARD_ACTIONS.repost,
+			toggle: null,
 			action: retweet,
-			togglable: false,
+			actionned(article) { return article.retweeted },
+			disabled(article) { return article.deleted },
+			count(article) { return article.retweetCount },
 		},
 	},
 	keepArticle(articleWithRefs: ArticleWithRefs, index: number, filter: Filter): boolean {

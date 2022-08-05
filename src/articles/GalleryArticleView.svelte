@@ -287,7 +287,7 @@
 			{#each actions as action (action.key)}
 				{@const actionned = action.actionned(rootArticle)}
 				{@const disabled = action.disabled ? action.disabled(rootArticle) : false}
-				{#if !actionned || action.toggle}
+				{#if !actionned || action.togglable}
 					<!-- svelte-ignore a11y-mouse-events-have-key-events -->
 					<button
 						class='button'
@@ -297,7 +297,7 @@
 						{disabled}
 					>
 						<span class='icon darkIcon'>
-							<Fa icon={action.toggle?.icon && actionned ? action.toggle.icon : action.icon} class='is-small'/>
+							<Fa icon={action.actionnedIcon && actionned ? action.actionnedIcon : action.icon} class='is-small'/>
 						</span>
 					</button>
 				{/if}

@@ -113,13 +113,13 @@
 				class:actionned
 				title={action.name}
 				on:click={() => action.action(article.idPair)}
-				disabled={disabled || (actionned && !action.toggle)}
+				disabled={disabled || (actionned && !action.togglable)}
 				on:mouseover={() => updateActionHover(action.key, true)}
 				on:mouseout={() => updateActionHover(action.key, false)}
 			>
 				<span class='icon'>
 					<Fa
-						icon={action.toggle?.icon && actionned ? action.toggle.icon : action.icon}
+						icon={action.actionnedIcon && actionned ? action.actionnedIcon : action.icon}
 						color={!disabled && (actionned || isHovered) ? action.color : undefined}
 					/>
 				</span>

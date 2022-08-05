@@ -10,10 +10,9 @@ export type ArticleAction<A extends Article = Article> = {
 	name: string
 	actionned: (article: A) => boolean
 	disabled?: (article: A) => boolean
-	toggle: {
-		icon?: IconDefinition
-	} | null
+	togglable: boolean
 	icon?: IconDefinition
+	actionnedIcon?: IconDefinition
 	color?: string
 	count?: ((article: A) => number)
 	index: number
@@ -22,8 +21,9 @@ export type ArticleAction<A extends Article = Article> = {
 type StandardAction = {
 	key: string
 	name: string
-	toggle: ArticleAction['toggle']
+	toggle: ArticleAction['togglable']
 	icon?: IconDefinition
+	actionnedIcon?: IconDefinition
 	color?: string
 	index: number
 }
@@ -34,7 +34,8 @@ export const STANDARD_ACTIONS: { [key: string]: StandardAction } = {
 		name: 'Like',
 		icon: faHeartReg,
 		color: '#e0245e',
-		toggle: { icon: faHeart },
+		toggle: true,
+		actionnedIcon: faHeart,
 		index: 2,
 	},
 	repost: {
@@ -42,20 +43,21 @@ export const STANDARD_ACTIONS: { [key: string]: StandardAction } = {
 		name: 'Repost',
 		icon: faRetweet,
 		color: '#17bf63',
-		toggle: null,
+		toggle: false,
 		index: 1,
 	},
 	markAsRead: {
 		key: 'markAsRead',
 		name: 'Mark as read',
 		icon: faEyeSlash,
-		toggle: { icon: faEye },
+		actionnedIcon: faEye,
+		toggle: true,
 		index: 3,
 	},
 	hide: {
 		key: 'hide',
 		name: 'Hide',
-		toggle: {},
+		toggle: true,
 		index: 4,
 	},
 }

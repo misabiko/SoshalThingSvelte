@@ -41,8 +41,9 @@ export const PixivService: PixivServiceType = {
 		[STANDARD_ACTIONS.like.key]: {
 			...STANDARD_ACTIONS.like,
 			icon: faFaceSmile,
+			actionnedIcon: undefined,
 			color: undefined,
-			toggle: null,
+			togglable: false,
 			async action(idPair: ArticleIdPair) {
 				const csrfToken = getServiceStorage(PixivService.name)['csrfToken'] as string | undefined
 				if (!csrfToken)
@@ -82,7 +83,8 @@ export const PixivService: PixivServiceType = {
 			name: 'Bookmark',
 			color: STANDARD_ACTIONS.like.color,
 			icon: STANDARD_ACTIONS.like.icon,
-			toggle: null,
+			actionnedIcon: STANDARD_ACTIONS.like.actionnedIcon,
+			togglable: false,
 			index: 1,
 			async action(idPair) {
 				const storage = getServiceStorage(PixivService.name)

@@ -18,7 +18,7 @@ export const TwitterService: Service<TwitterArticle> = {
 		},
 		[STANDARD_ACTIONS.repost.key]: {
 			...STANDARD_ACTIONS.repost,
-			toggle: null,
+			toggle: false,
 			action: retweet,
 			actionned(article) { return article.retweeted },
 			disabled(article) { return article.deleted },

@@ -5,7 +5,6 @@ import type {ArticleMedia} from '../../articles/media'
 export default class TwitterArticle extends Article {
 	static service: string;
 	deleted = false
-	//TODO Disable like/retweet actions for deleted articles
 
 	constructor(
 		readonly id: bigint,

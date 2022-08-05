@@ -104,19 +104,19 @@ export function updateCachedArticlesStorage() {
 	sessionStorage.setItem(MAIN_STORAGE_KEY, JSON.stringify(storage))
 }
 
-export function getMarkedAsReadStorage(service: Service): string[] {
+export function getMarkedAsReadStorage(service: Service<any>): string[] {
 	const item = sessionStorage.getItem(MAIN_STORAGE_KEY)
 	const parsed: SessionCacheStorage | null = item !== null ? JSON.parse(item) : null
 	return parsed?.services[service.name]?.articlesMarkedAsRead || []
 }
 
-export function getHiddenStorage(service: Service): string[] {
+export function getHiddenStorage(service: Service<any>): string[] {
 	const item = localStorage.getItem(LOCAL_CACHE_STORAGE_KEY)
 	const parsed: LocalCacheStorage | null = item !== null ? JSON.parse(item) : null
 	return parsed?.services[service.name]?.hiddenArticles || []
 }
 
-export function getCachedArticlesStorage(service: Service): { [id: string]: object } {
+export function getCachedArticlesStorage(service: Service<any>): { [id: string]: object } {
 	const item = sessionStorage.getItem(MAIN_STORAGE_KEY)
 	const parsed = item !== null ? JSON.parse(item) : null
 	return parsed?.services[service.name]?.cachedArticles || {}

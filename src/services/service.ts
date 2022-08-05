@@ -24,7 +24,7 @@ export interface Service<A extends Article = Article> {
 	defaultFilter(filterType: string): Filter
 }
 
-export function addArticles(service: Service, ignoreRefs: boolean, ...articlesWithRefs: ArticleWithRefs[]) {
+export function addArticles(service: Service<any>, ignoreRefs: boolean, ...articlesWithRefs: ArticleWithRefs[]) {
 	const articles = ignoreRefs
 		? articlesWithRefs.map(getRootArticle)
 		: articlesWithRefs.flatMap(articleWithRefToArray)

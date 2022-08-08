@@ -31,6 +31,7 @@ export function compare(method: SortMethod): (a: ArticleWithRefs | ArticleProps,
 			}
 			case SortMethod.Date:
 				return (getRootArticle(a).creationTime?.getTime() || 0) - (getRootArticle(b).creationTime?.getTime() || 0);
+			//TODO Replace with per-service sort method
 			case SortMethod.Likes:
 				return getActualArticle(a).getLikeCount() - getActualArticle(b).getLikeCount();
 			case SortMethod.Reposts:

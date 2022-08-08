@@ -124,7 +124,7 @@ export const PixivService: PixivServiceType = {
 					return a
 				})
 			},
-			actionned(article) { return article.bookmarked },
+			actionned(article) { return article.bookmarked === true },
 		}
 	}
 }

@@ -16,7 +16,7 @@ export default class PixivArticle extends Article {
 		markedAsReadStorage: string[],
 		hiddenStorage: string[],
 		rawSource: any | undefined,
-		public bookmarked: boolean,
+		public bookmarked: boolean | null,
 	) {
 		super({
 			id,
@@ -39,7 +39,11 @@ export default class PixivArticle extends Article {
 		super.update(newArticle)
 
 		this.liked ||= newArticle.liked
-		this.bookmarked ||= newArticle.bookmarked
+		//Probably simplifiable
+		if (this.bookmarked === null)
+			this.bookmarked = newArticle.bookmarked
+		else
+			this.bookmarked ||= newArticle.bookmarked
 	}
 
 	getLiked(): boolean {
@@ -47,7 +51,7 @@ export default class PixivArticle extends Article {
 	}
 
 	getReposted(): boolean {
-		return this.bookmarked
+		return !!this.bookmarked
 	}
 }
 

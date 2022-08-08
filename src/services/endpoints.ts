@@ -28,7 +28,7 @@ export abstract class Endpoint {
 		public refreshTypes = new Set<RefreshType>([
 			RefreshType.RefreshStart,
 			RefreshType.Refresh,
-		]),
+		])
 	) {
 		this.autoRefreshId = null
 	}
@@ -64,10 +64,21 @@ export abstract class PageEndpoint extends Endpoint {
 export abstract class LoadablePageEndpoint extends PageEndpoint {
 	abstract currentPage: number
 
+	//Need a way to add RefreshType.LoadTop if currentPage > 0
+	protected constructor(refreshTypes = new Set<RefreshType>([
+		RefreshType.RefreshStart,
+		RefreshType.Refresh,
+		RefreshType.LoadBottom,
+	])) {
+		super(refreshTypes)
+	}
+
 	async refresh(refreshType: RefreshType) {
 		switch (refreshType) {
 			case RefreshType.LoadTop:
 				this.currentPage = Math.max(0, --this.currentPage)
+				if (this.currentPage === 0)
+					this.refreshTypes.delete(RefreshType.LoadTop)
 				break;
 			case RefreshType.LoadBottom:
 				++this.currentPage
@@ -81,6 +92,36 @@ export abstract class LoadablePageEndpoint extends PageEndpoint {
 	}
 
 	abstract loadPage(): Promise<HTMLElement>
+}
+
+//Maybe could use mixins to avoid duplicating Loadable part
+export abstract class LoadableEndpoint extends Endpoint {
+	abstract currentPage: number
+
+	protected constructor(refreshTypes = new Set<RefreshType>([
+		RefreshType.RefreshStart,
+		RefreshType.Refresh,
+		RefreshType.LoadBottom,
+	])) {
+		super(refreshTypes)
+	}
+
+	async refresh(refreshType: RefreshType) {
+		switch (refreshType) {
+			case RefreshType.LoadTop:
+				this.currentPage = Math.max(0, --this.currentPage)
+				if (this.currentPage === 0)
+					this.refreshTypes.delete(RefreshType.LoadTop)
+				break;
+			case RefreshType.LoadBottom:
+				++this.currentPage
+				break;
+		}
+
+		return await this._refresh(refreshType)
+	}
+
+	abstract _refresh(refreshType: RefreshType): Promise<ArticleWithRefs[]>;
 }
 
 export interface EndpointConstructorInfo {

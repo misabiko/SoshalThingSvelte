@@ -8,13 +8,14 @@
 	import {everyRefreshType} from '../../../services/endpoints'
 	import portal from '../../../usePortal'
 	import {SortMethod} from '../../../sorting'
-	import {FollowPageEndpoint} from '../../../services/pixiv/endpoints/follow'
+	import {FollowAPIEndpoint} from '../../../services/pixiv/endpoints/follow'
+	import {getCurrentPage} from '../../../services/pixiv/endpoints'
 
 	const timeline: TimelineData = {
 		...defaultTimeline(),
 		title: 'Follows',
 		endpoints: [{
-			endpoint: new FollowPageEndpoint(),
+			endpoint: new FollowAPIEndpoint(getCurrentPage()),
 			refreshTypes: everyRefreshType,
 			filters: [],
 		}],

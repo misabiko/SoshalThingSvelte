@@ -66,6 +66,7 @@ export default abstract class Article {
 	}
 
 	//TODO Replace with dynamic action buttons
+	//Currently only used to sort by likes
 	getLikeCount() {
 		return 0
 	}
@@ -85,7 +86,7 @@ export type ArticleId = string | number | bigint
 
 export interface ArticleAuthor {
 	username: string;
-	name: string;
+	name: string;	//TODO Make author name optional
 	url: string;
 	avatarUrl?: string;
 }

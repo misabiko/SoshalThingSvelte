@@ -2,7 +2,7 @@
 	import Fa from 'svelte-fa/src/fa.svelte'
 	import {
 		faEyeSlash,
-		faEllipsisH, faExpandAlt, faEye,
+		faEllipsisH, faExpandAlt, faEye, faSpinner,
 	} from '@fortawesome/free-solid-svg-icons'
 	import Dropdown from '../../Dropdown.svelte'
 	import {toggleMarkAsRead, toggleHide} from "../../services/service"
@@ -31,6 +31,9 @@
 
 		hoveredActions = hoveredActions
 	}
+
+	//TODO Check if article is loading media, fetching, etc
+	let status: string | null = null
 </script>
 
 <style lang='sass'>
@@ -188,4 +191,13 @@
 			{/if}
 		</Dropdown>
 	</div>
+	{#if status !== null}
+		<div class='level-right'>
+			<button class='level-item' title={status}>
+				<span class='icon'>
+					<Fa icon={faSpinner}/>
+				</span>
+			</button>
+		</div>
+	{/if}
 </nav>

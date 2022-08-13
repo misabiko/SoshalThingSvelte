@@ -21,7 +21,7 @@ export type ArticleAction<A extends Article = Article> = {
 type StandardAction = {
 	key: string
 	name: string
-	toggle: ArticleAction['togglable']
+	togglable: ArticleAction['togglable']
 	icon?: IconDefinition
 	actionnedIcon?: IconDefinition
 	color?: string
@@ -34,7 +34,7 @@ export const STANDARD_ACTIONS: { [key: string]: StandardAction } = {
 		name: 'Like',
 		icon: faHeartReg,
 		color: '#e0245e',
-		toggle: true,
+		togglable: true,
 		actionnedIcon: faHeart,
 		index: 2,
 	},
@@ -43,7 +43,7 @@ export const STANDARD_ACTIONS: { [key: string]: StandardAction } = {
 		name: 'Repost',
 		icon: faRetweet,
 		color: '#17bf63',
-		toggle: false,
+		togglable: false,
 		index: 1,
 	},
 	markAsRead: {
@@ -51,13 +51,13 @@ export const STANDARD_ACTIONS: { [key: string]: StandardAction } = {
 		name: 'Mark as read',
 		icon: faEyeSlash,
 		actionnedIcon: faEye,
-		toggle: true,
+		togglable: true,
 		index: 3,
 	},
 	hide: {
 		key: 'hide',
 		name: 'Hide',
-		toggle: true,
+		togglable: true,
 		index: 4,
 	},
 }

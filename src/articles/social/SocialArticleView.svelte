@@ -145,13 +145,11 @@
 		<div class='media-left'>
 			{#if actualArticle.author?.avatarUrl}
 				<figure class='image is-64x64' class:sharedAvatar={isArticleRepost}>
-					{#if actualArticle.author?.url}
-						{#if isArticleRepost}
-							<img src={actualArticle.author.avatarUrl} alt={`${actualArticle.author.username}'s avatar`}/>
-							<img src={rootArticle.author.avatarUrl} alt={`${rootArticle.author.username}'s avatar`}/>
-						{:else}
-							<img src={actualArticle.author.avatarUrl} alt={`${actualArticle.author.username}'s avatar`}/>
-						{/if}
+					{#if isArticleRepost}
+						<img src={actualArticle.author.avatarUrl} alt={`${actualArticle.author.username}'s avatar`}/>
+						<img src={rootArticle.author.avatarUrl} alt={`${rootArticle.author.username}'s avatar`}/>
+					{:else}
+						<img src={actualArticle.author.avatarUrl} alt={`${actualArticle.author.username}'s avatar`}/>
 					{/if}
 				</figure>
 			{/if}

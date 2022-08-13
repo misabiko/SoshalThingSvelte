@@ -108,32 +108,70 @@ export class ListEndpoint extends V1Endpoint {
 	readonly maxCount = 200	//Not mentionned, assuming 200
 	autoRefreshInterval = 60_000	//Min 1000
 
-	constructor(readonly username: string, readonly slug: string, public includeRetweets: boolean) {
+	constructor(readonly identifier: {
+		type: 'slug',
+		username: string,
+		slug: string
+	} | {
+		type: 'id',
+		id: string
+	}, public includeRetweets: boolean) {
 		super()
 
-		this.name = `List Endpoint ${this.username}/${this.slug}`
+		switch (identifier.type) {
+			case 'id':
+				this.name = `List Endpoint ${identifier.id}`
+				break;
+			case 'slug':
+				this.name = `List Endpoint ${identifier.username}/${identifier.slug}`
+				break;
+		}
 	}
 
 	setSearchParams(url: URL, refreshType: RefreshType) {
 		super.setSearchParams(url, refreshType)
-		url.searchParams.set('owner_screen_name', this.username)
-		url.searchParams.set('slug', this.slug)
+		switch (this.identifier.type) {
+			case 'id':
+				url.searchParams.set('list_id', this.identifier.id)
+				break;
+			case 'slug':
+				url.searchParams.set('owner_screen_name', this.identifier.username)
+				url.searchParams.set('slug', this.identifier.slug)
+				break;
+		}
 		url.searchParams.set('include_rts', this.includeRetweets.toString())
 	}
 
 	matchParams(params: any): boolean {
-		return params.username === this.username &&
-			params.slug === this.slug;
+		switch (this.identifier.type) {
+			case 'id':
+				return params.id === this.identifier.id;
+			case 'slug':
+				return params.username === this.identifier.username &&
+					params.slug === this.identifier.slug;
+		}
 	}
 
 	static readonly constructorInfo: EndpointConstructorInfo = {
 		name: 'ListEndpoint',
-		paramTemplate: [['username', ''], ['slug', ''], ['includeRetweets', true]],
-		constructor: params => new ListEndpoint(
-			params.username as string,
-			params.slug as string,
-			params.includeRetweets as boolean,
-		)
+		paramTemplate: [
+			['username', ''],
+			['slug', ''],
+			['id', ''],
+			['includeRetweets', true]
+		],
+		constructor: params =>
+			new ListEndpoint(
+				params.id ? {
+					type: 'id',
+					id: params.id as string,
+				} : {
+					type: 'slug',
+					username: params.username as string,
+					slug: params.slug as string,
+				},
+				params.includeRetweets as boolean,
+			)
 	}
 }
 

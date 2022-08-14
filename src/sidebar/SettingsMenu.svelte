@@ -3,7 +3,8 @@
 	import {extensionCheck, extensionContextStore, fetchExtension} from "../services/extension.js"
 	import {TwitterService} from '../services/twitter/service'
 	import {PixivService} from "../services/pixiv/service.js";
-	import {getServiceStorage, updateServiceStorage} from "../storages"
+	import {getServiceStorage, loadMainStorage, updateServiceStorage} from "../storages"
+	import {updateMainStorage} from "../storages";
 
 	let oauthToken: string | undefined
 	let oobPIN: string
@@ -23,6 +24,7 @@
 	}
 
 	const pixivStorage = getServiceStorage(PixivService.name)
+	const mainStorage = loadMainStorage()
 </script>
 
 <Field label='Extension Id' addons={false}>
@@ -30,6 +32,10 @@
 	<Button on:click={extensionCheck}>Check Extension</Button>
 </Field>
 <Field label={`Available: ${$extensionContextStore.available}`}></Field>
+
+<Field label='Mark as read in local storage' addons={false}>
+	<Switch checked={mainStorage.markAsReadLocal ?? false} on:input={e => updateMainStorage('markAsReadLocal', e.target.checked)}/>
+</Field>
 
 {#if $extensionContextStore.hasAccessToken}
 	<Field label='Twitter logged in'></Field>

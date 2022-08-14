@@ -57,14 +57,6 @@ export function loadMainStorage() {
 	return mainStorage as MainStorageParsed
 }
 
-export function updateFullscreenStorage(fullscreen: FullscreenInfo) {
-	const item = localStorage.getItem(MAIN_STORAGE_KEY)
-	const storage = item ? JSON.parse(item) : {}
-	storage.fullscreen = fullscreen
-
-	localStorage.setItem(MAIN_STORAGE_KEY, JSON.stringify(storage))
-}
-
 export function getServiceStorage(service: string): { [key: string]: any } {
 	const storageKey = `${MAIN_STORAGE_KEY} ${service}`
 	const item = localStorage.getItem(storageKey)
@@ -80,12 +72,20 @@ export function updateServiceStorage(service: string, key: string, value: any) {
 	localStorage.setItem(storageKey, JSON.stringify(storage))
 }
 
-export function updateMaximized(maximized: boolean) {
+export function updateMainStorage(key: string, value: any) {
 	const item = localStorage.getItem(MAIN_STORAGE_KEY)
 	const storage = item ? JSON.parse(item) : {}
-	storage.maximized = maximized
+	storage[key] = value
 
 	localStorage.setItem(MAIN_STORAGE_KEY, JSON.stringify(storage))
+}
+
+export function updateMaximized(maximized: boolean) {
+	updateMainStorage('maximized', maximized)
+}
+
+export function updateFullscreenStorage(fullscreen: FullscreenInfo) {
+	updateMainStorage('fullscreen', fullscreen)
 }
 
 export function loadTimelines(): TimelineData[] {
@@ -240,14 +240,14 @@ function parseFilters(filters: FilterInstance[] | undefined) {
 	}
 }
 
-type MainStorage = {
+type MainStorage = Partial<MainStorageParsed> & {
 	fullscreen?: boolean | number | FullscreenInfoStorage
-	maximized?: boolean
 }
 
 type MainStorageParsed = {
 	fullscreen: FullscreenInfo
 	maximized: boolean
+	markAsReadLocal: boolean
 }
 
 type FullscreenInfoStorage = FullscreenInfo & {

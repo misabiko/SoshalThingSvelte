@@ -1,4 +1,4 @@
-import {MAIN_STORAGE_KEY} from './index'
+import {loadMainStorage, MAIN_STORAGE_KEY} from './index'
 import {derived, get} from 'svelte/store'
 import type {Service} from '../services/service'
 import {getServices} from '../services/service'
@@ -25,10 +25,14 @@ type LocalCacheStorage = {
 }
 
 export function updateMarkAsReadStorage() {
-	const item = sessionStorage.getItem(MAIN_STORAGE_KEY)
+	const {markAsReadLocal} = loadMainStorage()
+	const storageType = (markAsReadLocal ? localStorage : sessionStorage)
+	const item = storageType.getItem(MAIN_STORAGE_KEY)
 	let storage : SessionCacheStorage | null = item !== null ? JSON.parse(item) : null
 	if (storage === null)
 		storage = {services: {}}
+	else if (storage.services === undefined)
+		storage.services = {}
 
 	for (const service of Object.values(getServices())) {
 		const articlesMarkedAsRead = new Set(storage.services[service.name]?.articlesMarkedAsRead)
@@ -48,7 +52,7 @@ export function updateMarkAsReadStorage() {
 			}
 	}
 
-	sessionStorage.setItem(MAIN_STORAGE_KEY, JSON.stringify(storage))
+	storageType.setItem(MAIN_STORAGE_KEY, JSON.stringify(storage))
 }
 
 export function updateHiddenStorage() {
@@ -56,6 +60,8 @@ export function updateHiddenStorage() {
 	let storage : LocalCacheStorage | null = item !== null ? JSON.parse(item) : null
 	if (storage === null)
 		storage = {services: {}}
+	else if (storage.services === undefined)
+		storage.services = {}
 
 	for (const service of Object.values(getServices())) {
 		const hiddenArticles = new Set(storage.services[service.name]?.hiddenArticles || [])
@@ -82,6 +88,8 @@ export function updateCachedArticlesStorage() {
 	let storage = item !== null ? JSON.parse(item) : null
 	if (storage === null)
 		storage = {services: {}}
+	else if (storage.services === undefined)
+		storage.services = {}
 
 	for (const service of Object.values(getServices())) {
 		const getCachedArticles = service.getCachedArticles
@@ -105,21 +113,28 @@ export function updateCachedArticlesStorage() {
 }
 
 export function getMarkedAsReadStorage(service: Service<any>): string[] {
-	const item = sessionStorage.getItem(MAIN_STORAGE_KEY)
+	const {markAsReadLocal} = loadMainStorage()
+	const item = (markAsReadLocal ? localStorage : sessionStorage).getItem(MAIN_STORAGE_KEY)
 	const parsed: SessionCacheStorage | null = item !== null ? JSON.parse(item) : null
-	return parsed?.services[service.name]?.articlesMarkedAsRead || []
+	if (parsed?.services === undefined)
+		return []
+	return parsed.services[service.name]?.articlesMarkedAsRead || []
 }
 
 export function getHiddenStorage(service: Service<any>): string[] {
 	const item = localStorage.getItem(LOCAL_CACHE_STORAGE_KEY)
 	const parsed: LocalCacheStorage | null = item !== null ? JSON.parse(item) : null
-	return parsed?.services[service.name]?.hiddenArticles || []
+	if (parsed?.services === undefined)
+		return []
+	return parsed.services[service.name]?.hiddenArticles || []
 }
 
 export function getCachedArticlesStorage(service: Service<any>): { [id: string]: object } {
 	const item = sessionStorage.getItem(MAIN_STORAGE_KEY)
 	const parsed = item !== null ? JSON.parse(item) : null
-	return parsed?.services[service.name]?.cachedArticles || {}
+	if (parsed?.services === undefined)
+		return {}
+	return parsed.services[service.name]?.cachedArticles || {}
 }
 
 function getServiceArticles(service: Service): Article[] {

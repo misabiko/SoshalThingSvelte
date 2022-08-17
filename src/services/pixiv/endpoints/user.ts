@@ -69,6 +69,8 @@ export class UserAPIEndpoint extends LoadableEndpoint {
 		url.searchParams.set('lang', 'en`')
 		let listResponse: UserListAjaxResponse = await fetch(url.toString()).then(r => r.json())
 		const illustIds = Object.keys(listResponse.body.illusts)
+		//Decreasing order sort
+		illustIds.sort((a, b) => parseInt(b) - parseInt(a))
 
 		url = new URL(`https://www.pixiv.net/ajax/user/${this.userId}/profile/illusts`)
 
@@ -123,7 +125,7 @@ export class UserAPIEndpoint extends LoadableEndpoint {
 	}
 
 	static readonly constructorInfo: EndpointConstructorInfo = {
-		name: 'SearchEndpoint',
+		name: 'User Endpoint',
 		paramTemplate: [
 			['userId', 0],
 			['page', 0],

@@ -1,11 +1,12 @@
-import {PageEndpoint, RefreshType} from '../../endpoints'
+import {type EndpointConstructorInfo, LoadableEndpoint, PageEndpoint, RefreshType} from '../../endpoints'
 import type {ArticleWithRefs} from '../../../articles'
 import {PixivService} from '../service'
-import type PixivArticle from '../article'
+import PixivArticle from '../article'
 import type {PixivUser} from '../article'
 import {getHiddenStorage, getMarkedAsReadStorage} from '../../../storages/serviceCache'
 import {getWritable} from '../../service'
-import {getUserUrl, parseThumbnail} from './index'
+import {getEachPageURL, getUserUrl, parseThumbnail} from './index'
+import {MediaLoadType, MediaType} from '../../../articles/media'
 
 export default class BookmarkPageEndpoint extends PageEndpoint {
 	readonly name = 'Bookmark Endpoint'
@@ -77,6 +78,81 @@ export default class BookmarkPageEndpoint extends PageEndpoint {
 	}
 }
 
+export class BookmarkAPIEndpoint extends LoadableEndpoint {
+	readonly name = 'Pixiv Bookmark API Endpoint'
+	readonly service = PixivService.name
+
+	constructor(readonly userId: number, readonly r18: boolean, public currentPage = 0) {
+		super()
+
+		if (this.currentPage > 0)
+			this.refreshTypes.add(RefreshType.LoadTop)
+	}
+
+	async _refresh(_refreshType: RefreshType): Promise<ArticleWithRefs[]> {
+		const url = new URL(`https://www.pixiv.net/ajax/user/${this.userId}/illusts/bookmarks?tag=&offset=0&limit=48&rest=hide&lang=en`)
+
+		//url.searchParams.set('tag', '')
+		//url.searchParams.set('offset', '')
+		//url.searchParams.set('limit', '')
+		url.searchParams.set('rest', this.r18 ? 'hide' : 'show')
+		url.searchParams.set('lang', 'en')
+
+		const response: FollowAjaxResponse = await fetch(url.toString()).then(r => r.json())
+		if (response.error) {
+			console.error('Failed to fetch', response)
+			return []
+		}
+
+		const markedAsReadStorage = getMarkedAsReadStorage(PixivService)
+		const hiddenStorage = getHiddenStorage(PixivService)
+
+		//For now, I'm only parsing illusts, not novels
+		return Object.values(response.body.works).map(illust => {
+			return {
+				type: 'normal',
+				article: new PixivArticle(
+					parseInt(illust.id),
+					getEachPageURL(illust.url, illust.pageCount).map(src => ({
+						mediaType: MediaType.Image,
+						src,
+						ratio: null,
+						queueLoadInfo: MediaLoadType.Thumbnail,
+					})),
+					illust.title,
+					{
+						id: parseInt(illust.userId),
+						url: getUserUrl(illust.userId),
+						username: illust.userName,
+						name: illust.userName,
+						avatarUrl: illust.profileImageUrl,
+					},
+					new Date(illust.createDate),
+					markedAsReadStorage,
+					hiddenStorage,
+					illust,
+					null,
+				),
+			}
+		})
+	}
+
+	matchParams(params: any): boolean {
+		return this.userId === params.userId && this.r18 === params.r18
+	}
+
+	static readonly constructorInfo: EndpointConstructorInfo = {
+		name: 'Bookmark Endpoint',
+		paramTemplate: [
+			['userId', 0],
+			['r18', false],
+			['page', 0],
+		],
+		constructor: params => new BookmarkAPIEndpoint(params.userId as number, params.r18 as boolean, params.page as number)
+	}
+}
+
+//TODO Abstract responses
 type FollowAjaxResponse = {
 	error: boolean
 	message: string

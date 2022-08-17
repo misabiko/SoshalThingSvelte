@@ -7,13 +7,14 @@
 	import {loadMainStorage} from '../../../storages'
 	import {everyRefreshType} from '../../../services/endpoints'
 	import portal from '../../../usePortal'
-	import BookmarkPageEndpoint from '../../../services/pixiv/endpoints/bookmarks'
+	import BookmarkPageEndpoint, {BookmarkAPIEndpoint} from '../../../services/pixiv/endpoints/bookmarks'
+	import {getUserId} from '../../../services/pixiv/endpoints/user'
 
 	const timeline: TimelineData = {
 		...defaultTimeline(),
 		title: 'Bookmarks',
 		endpoints: [{
-			endpoint: new BookmarkPageEndpoint(),
+			endpoint: new BookmarkAPIEndpoint(getUserId(), new URLSearchParams(window.location.search).get('rest') === 'hide'),
 			refreshTypes: everyRefreshType,
 			filters: [],
 		}],

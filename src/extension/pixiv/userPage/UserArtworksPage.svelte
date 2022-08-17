@@ -5,7 +5,7 @@
 	import {defaultTimeline} from '../../../timelines'
 	import MasonryContainer from '../../../containers/MasonryContainer.svelte'
 	import {loadMainStorage} from '../../../storages'
-	import UserPageEndpoint from '../../../services/pixiv/endpoints/user'
+	import UserPageEndpoint, {getUserId, UserAPIEndpoint} from '../../../services/pixiv/endpoints/user'
 	import {everyRefreshType} from '../../../services/endpoints'
 	import portal from '../../../usePortal'
 	import {SortMethod} from '../../../sorting'
@@ -14,7 +14,7 @@
 		...defaultTimeline(),
 		title: 'User',
 		endpoints: [{
-			endpoint: new UserPageEndpoint(),
+			endpoint: new UserAPIEndpoint(getUserId()),
 			refreshTypes: everyRefreshType,
 			filters: [],
 		}],

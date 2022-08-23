@@ -1,4 +1,4 @@
-import type {ArticleIdPair} from '../articles'
+import type {ArticleAuthor, ArticleIdPair} from '../articles'
 import type {SvelteComponent} from 'svelte'
 import type {FilterInstance} from '../filters'
 import {SortMethod, type SortInfo} from '../sorting'
@@ -81,16 +81,16 @@ export type FullscreenInfo = {
 	container: typeof SvelteComponent | null;
 }
 
-export function newUserTimeline(serviceName: string, username: string): TimelineData | undefined {
+export function newUserTimeline(serviceName: string, author: ArticleAuthor): TimelineData | undefined {
 	const endpointConstructor = getServices()[serviceName].userEndpoint
 	if (endpointConstructor === undefined)
 		return undefined
 
 	return {
 		...defaultTimeline(),
-		title: username,
+		title: author.name,
 		endpoints: [{
-			endpoint: endpointConstructor(username),
+			endpoint: endpointConstructor(author),
 			refreshTypes: everyRefreshType,
 			filters: [],
 		}],

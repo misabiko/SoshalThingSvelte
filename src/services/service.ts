@@ -1,4 +1,5 @@
 import type Article from '../articles'
+import type { ArticleAuthor } from '../articles'
 import type { ArticleId, ArticleIdPair, ArticleWithRefs, ArticleProps } from '../articles'
 import {articleWithRefToArray, getRootArticle} from '../articles'
 import type {Writable} from 'svelte/store'
@@ -16,7 +17,7 @@ export interface Service<A extends Article = Article> {
 	readonly articles: { [id: string]: Writable<A> };
 	//TODO Store constructors by name
 	readonly endpointConstructors: EndpointConstructorInfo[]
-	userEndpoint: ((username: string) => Endpoint) | undefined,
+	userEndpoint: ((author: ArticleAuthor) => Endpoint) | undefined,
 	articleActions: { [name: string]: ArticleAction<A> };
 	requestImageLoad?: (id: ArticleId, index: number) => void;
 	getCachedArticles?: () => {[id: string]: object}

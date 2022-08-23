@@ -253,4 +253,4 @@ TwitterService.endpointConstructors.push(
 )
 
 //TODO Use filters to check if we include retweets
-TwitterService.userEndpoint = username => new UserTimelineEndpoint(username, false)
+TwitterService.userEndpoint = user => new UserTimelineEndpoint(user.username, false)

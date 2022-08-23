@@ -22,11 +22,10 @@
 	const isArticleRepost = articleProps.type === 'reposts'
 
 	function onUsernameClick(clickedArticle: Article) {
-		const username = clickedArticle.author?.username
-		if (!username)
+		if (!clickedArticle.author)
 			return
 
-		const data = newUserTimeline(clickedArticle.idPair.service, username)
+		const data = newUserTimeline(clickedArticle.idPair.service, clickedArticle.author)
 		if (!data)
 			return
 

@@ -40,7 +40,7 @@ export function defaultTimeline(articles: ArticleIdPair[] = []): TimelineData {
 	return {
 		title: 'Timeline',
 		endpoints: [],
-		addedIdPairs: writable(articles),
+		addedIdPairs: writable([...articles]),
 		articles: writable(articles),
 		section: {useSection: false, count: 100},
 		container: ColumnContainer,

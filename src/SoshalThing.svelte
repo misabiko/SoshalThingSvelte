@@ -59,11 +59,17 @@
 				else
 					refreshEndpoint(timelineEndpoint.endpoint as Endpoint, RefreshType.RefreshStart)
 						.then(articles => {
-							if (articles.length)
-								timeline.articles.update(idPairs => {
-									idPairs.push(...articles.map(a => getRootArticle(a).idPair))
+							if (articles.length) {
+								const newAddedIdPairs = articles.map(a => getRootArticle(a).idPair)
+								timeline.addedIdPairs.update(idPairs => {
+									idPairs.push(...newAddedIdPairs)
 									return idPairs
 								})
+								timeline.articles.update(idPairs => {
+									idPairs.push(...newAddedIdPairs)
+									return idPairs
+								})
+							}
 						})
 
 		for (const endpointName of endpointNames.values())

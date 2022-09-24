@@ -24,11 +24,18 @@
 			endpoints: t.endpoints,
 			addArticles(newIdPairs) {
 				if (newIdPairs.length)
-					timelines[i].articles.update(idPairs => {
+					timelines[i].addedIdPairs.update(addedIdPairs => {
+						const newAddedIdPairs = []
 						for (const idPair of newIdPairs)
-							if (!idPairs.some(idp => idp.service === idPair.service && idp.id === idPair.id))
-								idPairs.push(idPair)
-						return idPairs
+							if (!addedIdPairs.some(idp => idp.service === idPair.service && idp.id === idPair.id)) {
+								addedIdPairs.push(idPair)
+								newAddedIdPairs.push(idPair)
+							}
+						timelines[i].articles.update(actualIdPairs => {
+							actualIdPairs.push(...newAddedIdPairs)
+							return actualIdPairs
+						})
+						return addedIdPairs
 					})
 			}
 		}))
@@ -38,11 +45,18 @@
 				endpoints: modalTimeline.endpoints,
 				addArticles(newIdPairs) {
 					if (newIdPairs.length)
-						modalTimeline.articles.update(idPairs => {
+						modalTimeline.addedIdPairs.update(addedIdPairs => {
+							const newAddedIdPairs = []
 							for (const idPair of newIdPairs)
-								if (!idPairs.some(idp => idp.service === idPair.service && idp.id === idPair.id))
-									idPairs.push(idPair)
-							return idPairs
+								if (!addedIdPairs.some(idp => idp.service === idPair.service && idp.id === idPair.id)) {
+									addedIdPairs.push(idPair)
+									newAddedIdPairs.push(idPair)
+								}
+							modalTimeline.articles.update(actualIdPairs => {
+								actualIdPairs.push(...newAddedIdPairs)
+								return actualIdPairs
+							})
+							return addedIdPairs
 						})
 				}
 			})

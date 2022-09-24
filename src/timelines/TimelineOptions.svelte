@@ -185,7 +185,9 @@
 	</div>
 	<div class='box'>
 		<FiltersOptions bind:instances={data.filters}/>
-		<Button on:click={removeFiltered}>Remove filtered articles</Button>
+		<div class='control'>
+			<Button on:click={removeFiltered}>Remove filtered articles</Button>
+		</div>
 	</div>
 	<div class='box'>
 		<SortOptions bind:sortInfo={data.sortInfo} {sortOnce}/>

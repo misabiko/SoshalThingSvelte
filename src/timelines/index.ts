@@ -15,6 +15,7 @@ import {getServices} from '../services/service'
 export type TimelineData = {
 	title: string;
 	endpoints: TimelineEndpoint[];
+	addedIdPairs: Writable<ArticleIdPair[]>;
 	articles: Writable<ArticleIdPair[]>;
 	section: { useSection: boolean; count: number };
 	container: typeof SvelteComponent;
@@ -39,6 +40,7 @@ export function defaultTimeline(articles: ArticleIdPair[] = []): TimelineData {
 	return {
 		title: 'Timeline',
 		endpoints: [],
+		addedIdPairs: writable(articles),
 		articles: writable(articles),
 		section: {useSection: false, count: 100},
 		container: ColumnContainer,

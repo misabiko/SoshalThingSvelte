@@ -239,13 +239,21 @@
 			else
 				refreshEndpoint(timelineEndpoint.endpoint, refreshType)
 					.then(articles => {
-						if (articles.length)
-							data.articles.update(idPairs => {
+						if (articles.length) {
+							data.addedIdPairs.update(addedIdPairs => {
+								const newAddedIdPairs = []
 								for (const idPair of articles.map(a => getRootArticle(a).idPair))
-									if (!idPairs.some(idp => idPairEqual(idPair, idp)))
-										idPairs.push(idPair)
-								return idPairs
+									if (!addedIdPairs.some(idp => idPairEqual(idPair, idp))) {
+										addedIdPairs.push(idPair)
+										newAddedIdPairs.push(idPair)
+									}
+								data.articles.update(actualIdPairs => {
+									actualIdPairs.push(...newAddedIdPairs)
+									return actualIdPairs
+								})
+								return addedIdPairs
 							})
+						}
 					})
 	}
 

@@ -52,6 +52,7 @@ export default class UserPageEndpoint extends PageEndpoint {
 	}
 }
 
+//TODO Mark as bookmarked
 export class UserAPIEndpoint extends LoadableEndpoint {
 	readonly name = 'Pixiv User API Endpoint'
 	readonly service = PixivService.name
@@ -254,4 +255,5 @@ type UserAjaxResponse = {
 	}
 }
 
+//TODO PixivService.userEndpoint
 PixivService.userEndpoint = user => new UserAPIEndpoint((user as PixivUser).id)

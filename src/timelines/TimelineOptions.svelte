@@ -17,6 +17,7 @@
 	export let removeTimeline: () => void
 	export let sortOnce: (method: SortMethod, reversed: boolean) => void
 	export let articleCountLabel: string
+	export let removeFiltered: () => void
 
 	function setFullscreenContainer(checked: boolean) {
 		if (checked)
@@ -184,6 +185,7 @@
 	</div>
 	<div class='box'>
 		<FiltersOptions bind:instances={data.filters}/>
+		<Button on:click={removeFiltered}>Remove filtered articles</Button>
 	</div>
 	<div class='box'>
 		<SortOptions bind:sortInfo={data.sortInfo} {sortOnce}/>

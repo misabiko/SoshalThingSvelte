@@ -264,6 +264,19 @@
 			console.log('Destroying timeline ' + data.title)
 		}
 	})
+
+	function removeFiltered() {
+		//TODO Prevent articles from just being added back
+		data.articles.set(
+			get(articlesWithRefs)
+				.filter((a, i) =>
+					data.filters.every(f =>
+						!f.enabled || (keepArticle(a, i, f.filter) !== f.inverted)
+					)
+				)
+				.map(a => getRootArticle(a).idPair)
+		)
+	}
 </script>
 
 <style lang='sass'>
@@ -329,6 +342,7 @@
 			{sortOnce}
 			{removeTimeline}
 			{articleCountLabel}
+			{removeFiltered}
 		/>
 	{/if}
 	{#if $filteredArticles.length}

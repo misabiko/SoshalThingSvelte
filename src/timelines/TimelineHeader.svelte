@@ -70,7 +70,10 @@
 					<Fa icon={faEyeSlash} size='large'/>
 				</button>
 				{#if favviewerMaximized !== undefined}
-					<button class='borderless-button' title='Maximize SoshalThing' on:click={() => {favviewerMaximized = !favviewerMaximized; updateMaximized(favviewerMaximized)}}>
+					<button class='borderless-button'
+							title={favviewerMaximized ? 'Minimize SoshalThing' : 'Maximize SoshalThing'}
+							on:click={() => {favviewerMaximized = !favviewerMaximized; updateMaximized(favviewerMaximized)}}
+					>
 						<Fa icon={favviewerMaximized ? faMinimize : faMaximize} size='large'/>
 					</button>
 				{/if}

@@ -13,6 +13,7 @@
 	let currentMethodName: string
 	$: {
 		switch (sortInfo.method) {
+			case null:
 			case undefined:
 				currentMethodName = 'Unsorted';
 				break;

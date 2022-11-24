@@ -86,7 +86,7 @@
 		}
 
 		if (data.sortInfo.method !== undefined)
-			articleProps.sort(compare(data.sortInfo.method))
+			articleProps.sort(compare(data.sortInfo))
 		if (data.sortInfo.reversed)
 			articleProps.reverse()
 
@@ -258,7 +258,7 @@
 	}
 
 	function sortOnce(method: SortMethod, reversed: boolean) {
-		const sorted = get(articlesWithRefs).sort(compare(method))
+		const sorted = get(articlesWithRefs).sort(compare({method, reversed, customMethod: undefined}))
 		if (reversed)
 			sorted.reverse()
 		data.articles.set(sorted.map(a => getRootArticle(a).idPair))

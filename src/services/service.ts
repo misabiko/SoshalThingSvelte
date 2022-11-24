@@ -23,6 +23,11 @@ export interface Service<A extends Article = Article> {
 	getCachedArticles?: () => {[id: string]: object}
 	keepArticle(articleWithRefs: ArticleWithRefs | ArticleProps, index: number, filter: Filter): boolean
 	defaultFilter(filterType: string): Filter
+	sortMethods: { [name: string]: {
+		name: string
+		compare(a: ArticleWithRefs | ArticleProps, b: ArticleWithRefs | ArticleProps): number
+		directionLabel(reversed: boolean): string
+	} }
 }
 
 export function addArticles(service: Service<any>, ignoreRefs: boolean, ...articlesWithRefs: ArticleWithRefs[]) {
@@ -159,7 +164,8 @@ export function newService<A extends Article = Article>(name: string): Service<A
 		userEndpoint: undefined,
 		articleActions: {},
 		keepArticle() { return true },
-		defaultFilter(filterType: string) { return {type:filterType, service: name}}
+		defaultFilter(filterType: string) { return {type:filterType, service: name}},
+		sortMethods: {},
 	}
 }
 

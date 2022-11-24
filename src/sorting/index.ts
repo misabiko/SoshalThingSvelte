@@ -1,9 +1,18 @@
 import {getActualArticle} from '../articles'
 import type {ArticleProps, ArticleWithRefs} from '../articles'
 import {getRootArticle} from '../articles'
+import {getServices} from '../services/service'
 
 export type SortInfo = {
-	method: SortMethod | null,
+	method: SortMethod | null
+	customMethod: undefined
+	reversed: boolean
+} | {
+	method: SortMethod.Custom
+	customMethod: {
+		service: string
+		method: string
+	},
 	reversed: boolean
 }
 
@@ -12,18 +21,19 @@ export enum SortMethod {
 	Date,
 	Likes,
 	Reposts,
+	Custom,
 }
 
-export const allSortMethods = [
+export const genericSortMethods = [
 	SortMethod.Id,
 	SortMethod.Date,
 	SortMethod.Likes,
 	SortMethod.Reposts,
 ]
 
-export function compare(method: SortMethod): (a: ArticleWithRefs | ArticleProps, b: ArticleWithRefs | ArticleProps) => number {
+export function compare(info: SortInfo): (a: ArticleWithRefs | ArticleProps, b: ArticleWithRefs | ArticleProps) => number {
 	return (a, b) => {
-		switch (method) {
+		switch (info.method) {
 			case SortMethod.Id: {
 				const aRoot = getRootArticle(a)
 				const bRoot = getRootArticle(b)
@@ -36,6 +46,13 @@ export function compare(method: SortMethod): (a: ArticleWithRefs | ArticleProps,
 				return getActualArticle(a).getLikeCount() - getActualArticle(b).getLikeCount();
 			case SortMethod.Reposts:
 				return getActualArticle(a).getRepostCount() - getActualArticle(b).getRepostCount();
+			case SortMethod.Custom: {
+				if (getRootArticle(a).idPair.service !== info?.customMethod?.service || getRootArticle(b).idPair.service !== info.customMethod.service)
+					return 0
+				else
+					return getServices()[info.customMethod.service]?.sortMethods[info.customMethod.method]?.compare(a, b) || 0
+			}case null:
+				return 0
 		}
 	}
 }
@@ -59,5 +76,7 @@ export function methodName(method: SortMethod): string {
 			return 'Likes';
 		case SortMethod.Reposts:
 			return 'Reposts';
+		case SortMethod.Custom:
+			return 'Custom'
 	}
 }

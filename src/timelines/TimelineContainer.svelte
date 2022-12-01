@@ -4,6 +4,7 @@
 	import {afterUpdate, getContext, onMount} from 'svelte'
 	import {Modal} from 'svelma'
 	import {timelineEndpoints} from '../services/endpoints'
+	import {updateMainStorage} from '../storages'
 
 	export let timelines: TimelineData[] = []
 	export let modalTimeline: TimelineData | null;
@@ -109,7 +110,7 @@
 				{setModalTimeline}
 				bind:fullscreen
 				removeTimeline={() => removeTimeline(fullscreen.index)}
-				toggleFullscreen={() => fullscreen.index = null}
+				toggleFullscreen={() => {fullscreen.index = null; updateMainStorage('fullscreen', fullscreen)}}
 			/>
 		{:else}
 			<Timeline
@@ -117,7 +118,7 @@
 				{setModalTimeline}
 				bind:fullscreen
 				removeTimeline={() => removeTimeline(fullscreen.index)}
-				toggleFullscreen={() => fullscreen.index = null}
+				toggleFullscreen={() => {fullscreen.index = null; updateMainStorage('fullscreen', fullscreen)}}
 			/>
 		{/if}
 	{:else}
@@ -132,14 +133,14 @@
 					{data}
 					{setModalTimeline}
 					removeTimeline={() => removeTimeline(i)}
-					toggleFullscreen={() => fullscreen.index = i}
+					toggleFullscreen={() => {fullscreen.index = i; updateMainStorage('fullscreen', fullscreen)}}
 				/>
 			{:else}
 				<Timeline
 					{data}
 					{setModalTimeline}
 					removeTimeline={() => removeTimeline(i)}
-					toggleFullscreen={() => fullscreen.index = i}
+					toggleFullscreen={() => {fullscreen.index = i; updateMainStorage('fullscreen', fullscreen)}}
 				/>
 			{/if}
 		{/each}

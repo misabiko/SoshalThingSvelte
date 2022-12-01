@@ -4,14 +4,16 @@
 	import Dropdown from "../Dropdown.svelte";
 	import {filterTypes, getFilterName} from "./index.js"
 	import {defaultFilter} from './index'
+	import {getServices} from '../services/service'
 
 	export let instances: FilterInstance[]
 
-	//TODO UI to add service filters
+	//[ServiceName, FilterName, FilterTypeInfo][]
+	const serviceFilterTypes: [string, string, object][] = Object.values(getServices()).flatMap(s => Object.entries(s.filterTypes).map(m => [s.name, ...m]))
 
-	function addFilter(filterType: Filter['type'], inverted: boolean) {
+	function addFilter(filterType: Filter['type'], inverted: boolean, service: string = null) {
 		instances.push({
-			filter: defaultFilter(filterType, null),
+			filter: defaultFilter(filterType, service),
 			enabled: true,
 			inverted
 		})
@@ -28,7 +30,11 @@
 	<div class="field has-addons">
 		<div class="field-label is-normal">
 			<!-- svelte-ignore a11y-label-has-associated-control -->
-			<label class="label">{ getFilterName(instance.filter.type, instance.inverted) }</label>
+			<label class="label">{
+				instance.filter.service === null ?
+					getFilterName(instance.filter.type, instance.inverted) :
+					getServices()[instance.filter.service].filterTypes[instance.filter.type].name(instance.inverted)
+			}</label>
 		</div>
 		<div class="field-body">
 			<div class="control">
@@ -105,12 +111,24 @@
 			{ getFilterName(filterType, false) }
 		</a>
 	{/each}
+	{#each serviceFilterTypes as filterType}
+		<!-- svelte-ignore a11y-missing-attribute -->
+		<a class='dropdown-item' on:click={() => addFilter(filterType[1], false, filterType[0])}>
+			{ filterType[2].name(false) }
+		</a>
+	{/each}
 </Dropdown>
 <Dropdown labelText='New Inverted Filter'>
 	{#each filterTypes as filterType}
 		<!-- svelte-ignore a11y-missing-attribute -->
 		<a class="dropdown-item" on:click={() => addFilter(filterType, true)}>
 			{ getFilterName(filterType, true) }
+		</a>
+	{/each}
+	{#each serviceFilterTypes as filterType}
+		<!-- svelte-ignore a11y-missing-attribute -->
+		<a class="dropdown-item" on:click={() => addFilter(filterType[1], true, filterType[0])}>
+			{ filterType[2].name(true) }
 		</a>
 	{/each}
 </Dropdown>

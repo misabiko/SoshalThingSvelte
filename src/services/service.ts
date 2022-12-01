@@ -23,6 +23,9 @@ export interface Service<A extends Article = Article> {
 	getCachedArticles?: () => {[id: string]: object}
 	keepArticle(articleWithRefs: ArticleWithRefs | ArticleProps, index: number, filter: Filter): boolean
 	defaultFilter(filterType: string): Filter
+	filterTypes: { [name: string]: {
+			name(inverted: boolean): string
+		} }
 	sortMethods: { [name: string]: {
 		name: string
 		compare(a: ArticleWithRefs | ArticleProps, b: ArticleWithRefs | ArticleProps): number
@@ -165,6 +168,7 @@ export function newService<A extends Article = Article>(name: string): Service<A
 		articleActions: {},
 		keepArticle() { return true },
 		defaultFilter(filterType: string) { return {type:filterType, service: name}},
+		filterTypes: {},
 		sortMethods: {},
 	}
 }

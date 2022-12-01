@@ -7,8 +7,8 @@
 	export let sortInfo: SortInfo
 	export let sortOnce: (method: SortMethod, reversed: boolean) => void
 
-	const serviceSortMethods = Object.values(getServices()).flatMap(s => Object.entries(s.sortMethods).map(m => [s.name, ...m]))
-	console.log(serviceSortMethods);
+	//[ServiceName, MethodName, MethodInfo][]
+	const serviceSortMethods: [string, string, object][] = Object.values(getServices()).flatMap(s => Object.entries(s.sortMethods).map(m => [s.name, ...m]))
 
 	let currentMethodName: string
 	$: {

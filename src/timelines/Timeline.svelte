@@ -136,7 +136,7 @@
 			if (data.shouldLoadMedia)
 				for (const article of articleWithRefToArray(articleProps))
 					for (let i = 0; i < article.medias.length; ++i)
-						if (!article.medias[i].loaded)
+						if (article.medias[i].loaded === false)
 							loadingStore.requestLoad(article.idPair, i)
 		}
 	}

@@ -6,16 +6,22 @@
 <Button on:click={loadingStore.clearLoadings}>Clear loadings</Button>
 <Button on:click={loadingStore.clearQueue}>Clear queue</Button>
 <div class='box'>
-	{#each [...$loadingStore.loadings] as idPair (idPair)}
-		{idPair}
+	{#if $loadingStore.loadings.length}
+		Currently loading:
+		{#each [...$loadingStore.loadings] as idPair (idPair)}
+			{idPair}
+		{/each}
 	{:else}
 		No media currently loading
-	{/each}
+	{/if}
 </div>
 <div class='box'>
-	{#each [...$loadingStore.queue] as idPair (idPair)}
-		{idPair}
+	{#if $loadingStore.queue.length}
+		Currently queued:
+		{#each [...$loadingStore.queue] as idPair (idPair)}
+			{idPair}
+		{/each}
 	{:else}
 		No media currently queued
-	{/each}
+	{/if}
 </div>

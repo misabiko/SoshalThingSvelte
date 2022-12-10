@@ -44,6 +44,14 @@ export const buildOptions = {
 		esbuildSvelte({
 			compilerOptions: {dev: true},
 			preprocess: sveltePreprocess(),
+			filterWarnings: warning => {
+				switch (warning.code) {
+					case 'a11y-click-events-have-key-events':
+						return false;
+					default:
+						return true;
+				}
+			}
 		}),
 		DedupSvelteInternalPlugin,
 		sassPlugin(),

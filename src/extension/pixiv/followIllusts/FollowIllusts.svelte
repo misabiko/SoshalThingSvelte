@@ -12,7 +12,7 @@
 	import {getCurrentPage} from '../../../services/pixiv/endpoints'
 
 	const timelines: TimelineCollection = {
-		0: {
+		'Follows': {
 			...defaultTimeline(),
 			title: 'Follows',
 			endpoints: [{
@@ -38,7 +38,7 @@
 	let activatorMount = document.querySelector('nav')
 
 	const timelineView: TimelineView = {
-		timelineIds: [0],
+		timelineIds: Object.keys(timelines),
 		fullscreen: {
 			...mainStorage.fullscreen,
 			index: 0

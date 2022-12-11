@@ -22,6 +22,7 @@
 			container: null,
 		}
 	}
+	export let timelineViews: {[name: string]: TimelineView} = {}
 	export let isInjected = true
 	export let favviewerHidden = false
 	export let favviewerMaximized: boolean | undefined = undefined
@@ -36,14 +37,14 @@
 
 	function addTimeline(data: TimelineData) {
 		let id = 0;
-		while (timelines.hasOwnProperty(id))
+		while (timelines.hasOwnProperty(`Timeline ${id}`))
 			id += 1;
-		
-		timelines[id] = data;
+
+		timelines[`Timeline ${id}`] = data;
 		timelines = timelines
 	}
 
-	function removeTimeline(id: number) {
+	function removeTimeline(id: string) {
 		delete timelines[id];
 		//We don't cache index since TimelineView.timelineIds might hold duplicates
 		if (timelineView.fullscreen.index === timelineView.timelineIds.indexOf(id))
@@ -123,8 +124,9 @@
 	{#if showSidebar}
 		<Sidebar
 			bind:batchActionFilters
+			bind:timelineView
 			{timelines}
-			{timelineView}
+			{timelineViews}
 			{setModalTimeline}
 			{addTimeline}
 		/>

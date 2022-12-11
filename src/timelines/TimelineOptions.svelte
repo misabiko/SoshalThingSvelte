@@ -192,4 +192,9 @@
 	<div class='box'>
 		<SortOptions bind:sortInfo={data.sortInfo} {sortOnce}/>
 	</div>
+	<div class='box'>
+		<Button on:click={() => console.log(data)}>
+			Log Timeline Data
+		</Button>
+	</div>
 </div>

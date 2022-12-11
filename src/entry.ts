@@ -6,10 +6,10 @@ import SoshalThing from "./SoshalThing.svelte"
 import {loadMainStorage, loadTimelines} from './storages'
 import type {FullscreenInfo, TimelineView} from './timelines'
 
-const {timelineIds, fullscreen} = loadMainStorage();
+const {timelineIds, fullscreen, timelineViews} = loadMainStorage();
 const timelines = loadTimelines();
 const timelineView: TimelineView = {
-	timelineIds: timelineIds ?? Object.keys(timelines).map(id => parseInt(id)),
+	timelineIds: timelineIds ?? Object.keys(timelines),
 	fullscreen,
 }
 
@@ -24,6 +24,7 @@ new SoshalThing({
 		isInjected: false,
 		timelines,
 		timelineView,
+		timelineViews,
 	}
 })
 

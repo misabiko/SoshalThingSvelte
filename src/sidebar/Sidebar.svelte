@@ -18,8 +18,9 @@
 	import SettingsMenu from "./SettingsMenu.svelte"
 	import TimelineEditMenu from "./TimelineEditMenu.svelte";
 	import BatchActions from "./BatchActions.svelte";
-	import type {TimelineData} from '../timelines'
+	import type {TimelineData, TimelineView} from '../timelines'
 	import type {FilterInstance} from '../filters'
+	import {faTableColumns} from "@fortawesome/free-solid-svg-icons/faTableColumns";
 
 	enum SidebarMenu {
 		TimelineEdit,
@@ -33,6 +34,8 @@
 	export let addTimeline: (data: TimelineData) => void
 	export let timelines: TimelineData[]
 	export let batchActionFilters: FilterInstance[]
+	export let timelineViews: {[name: string]: TimelineView}
+	export let timelineView: TimelineView
 
 	function toggleSidebarMenu(newMenu: typeof SvelteComponent | SidebarMenu) {
 		menu = menu === newMenu ? null : newMenu;
@@ -126,6 +129,11 @@
 			{#each buttons as {icon, menu, title}}
 				<button class='borderless-button' {title} on:click={() => toggleSidebarMenu(menu)}>
 					<Fa icon={icon} size='2x'/>
+				</button>
+			{/each}
+			{#each Object.entries(timelineViews) as [name, view]}
+				<button class='borderless-button' title={`Set view: ${name}`} on:click='{() => timelineView = view}'>
+					<Fa icon={faTableColumns} size='2x'/>
 				</button>
 			{/each}
 		</div>

@@ -30,31 +30,17 @@ export function loadMainStorage() {
 
 	mainStorage.timelineIds ??= null;
 
-	if (!mainStorage.fullscreen && mainStorage.fullscreen !== 0)
-		mainStorage.fullscreen = {
-			index: null,
-			columnCount: null,
-			container: null
-		}
-	else if (mainStorage.fullscreen === true)
-		mainStorage.fullscreen = {
-			index: 0,
-			columnCount: null,
-			container: null
-		}
-	else if (typeof mainStorage.fullscreen === 'number')
-		mainStorage.fullscreen = {
-			index: mainStorage.fullscreen,
-			columnCount: null,
-			container: null,
-		}
-
-	const containerString = mainStorage.fullscreen?.container
-	if (containerString)
-		(mainStorage.fullscreen as FullscreenInfo).container = parseContainer(containerString)
+	(mainStorage as MainStorageParsed).fullscreen = parseFullscreenInfo(mainStorage.fullscreen);
 
 	if (!mainStorage.maximized)
 		mainStorage.maximized = false
+
+	if (!mainStorage.timelineViews)
+		mainStorage.timelineViews = {}
+	else
+		for (const view in mainStorage.timelineViews)
+			if (mainStorage.timelineViews.hasOwnProperty(view))
+				(mainStorage as MainStorageParsed).timelineViews[view].fullscreen = parseFullscreenInfo(mainStorage.timelineViews[view].fullscreen)
 
 	return mainStorage as MainStorageParsed
 }
@@ -92,9 +78,13 @@ export function updateFullscreenStorage(fullscreen: FullscreenInfo) {
 
 export function loadTimelines(): TimelineCollection {
 	const item = localStorage.getItem(TIMELINE_STORAGE_KEY)
-	let storage: Partial<TimelineStorage>[] = item ? JSON.parse(item) : []
+	let storage: {[id: string]: Partial<TimelineStorage>} = item ? JSON.parse(item) : []
+	if (storage instanceof Array) {
+		console.warn("SoshalThingSvelte Timelines should be an object {[id: string]: TimelineStorage}");
+		storage = Object.assign({}, storage);
+	}
 
-	return Object.assign({}, storage.map(t => {
+	return Object.fromEntries(Object.entries(storage).map(([id, t]) => {
 		const defaulted: TimelineStorage = {
 			...DEFAULT_TIMELINE_STORAGE,
 			...t,
@@ -109,7 +99,7 @@ export function loadTimelines(): TimelineCollection {
 
 		parseFilters(defaulted.filters)
 
-		return {
+		return [id, {
 			...defaultTimeline(),
 			title: defaulted.title,
 			endpoints,
@@ -123,7 +113,7 @@ export function loadTimelines(): TimelineCollection {
 				useSection: false,
 				count: 100
 			}
-		}
+		}]
 	}))
 }
 
@@ -243,12 +233,41 @@ function parseFilters(filters: FilterInstance[] | undefined) {
 	}
 }
 
+function parseFullscreenInfo(fullscreen?: boolean | number | FullscreenInfoStorage): FullscreenInfo {
+	if (!fullscreen && fullscreen !== 0)
+		fullscreen = {
+			index: null,
+			columnCount: null,
+			container: null
+		}
+	else if (fullscreen === true)
+		fullscreen = {
+			index: 0,
+			columnCount: null,
+			container: null
+		}
+	else if (typeof fullscreen === 'number')
+		fullscreen = {
+			index: fullscreen,
+			columnCount: null,
+			container: null,
+		}
+
+	const containerString = fullscreen?.container as string | undefined
+	if (containerString)
+		(fullscreen as FullscreenInfo).container = parseContainer(containerString)
+
+	return fullscreen
+}
+
 type MainStorage = Partial<MainStorageParsed> & {
+	timelineViews: {[name: string]: TimelineViewStorage}
 	fullscreen?: boolean | number | FullscreenInfoStorage
 }
 
 type MainStorageParsed = {
 	timelineIds: TimelineView['timelineIds'] | null
+	timelineViews: {[name: string]: TimelineView}
 	fullscreen: FullscreenInfo
 	maximized: boolean
 	markAsReadLocal: boolean
@@ -256,6 +275,10 @@ type MainStorageParsed = {
 
 type FullscreenInfoStorage = FullscreenInfo & {
 	container: string | null
+}
+
+type TimelineViewStorage = TimelineView & {
+	fullscreen: FullscreenInfoStorage
 }
 
 type TimelineStorage = {

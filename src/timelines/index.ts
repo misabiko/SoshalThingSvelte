@@ -66,10 +66,10 @@ export function defaultTimeline(articles: ArticleIdPair[] = []): TimelineData {
 	}
 }
 
-export type TimelineCollection = {[id: number]: TimelineData}
+export type TimelineCollection = {[id: string]: TimelineData}
 
 export type TimelineView = {
-	timelineIds: number[];
+	timelineIds: string[];
 	fullscreen: FullscreenInfo;
 }
 

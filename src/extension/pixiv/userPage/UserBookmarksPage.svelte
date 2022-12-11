@@ -11,7 +11,7 @@
 	import {getUserId} from '../../../services/pixiv/endpoints/user'
 
 	const timelines: TimelineCollection = {
-		0: {
+		'Bookmarks': {
 			...defaultTimeline(),
 			title: 'Bookmarks',
 			endpoints: [{
@@ -24,6 +24,7 @@
 			animatedAsGifs: true,
 			sortInfo: {
 				method: null,
+				customMethod: null,
 				reversed: false,
 			},
 		}
@@ -36,7 +37,7 @@
 	let activatorMount = document.querySelector('nav')
 
 	const timelineView: TimelineView = {
-		timelineIds: [0],
+		timelineIds: Object.keys(timelines),
 		fullscreen: {
 			...mainStorage.fullscreen,
 			index: 0

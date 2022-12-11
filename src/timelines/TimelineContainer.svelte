@@ -14,7 +14,7 @@
 	}
 
 	export let setModalTimeline: (data: TimelineData, width?: number) => void
-	export let removeTimeline: (index: number) => void
+	export let removeTimeline: (id: string) => void
 	export let initialRefresh: (...refreshingTimelines: TimelineData[]) => void
 
 	export let favviewerHidden;
@@ -25,18 +25,24 @@
 	const isInjected = getContext('isInjected');
 
 	$: {
-		const newTimelineEndpoints = timelineView.timelineIds.map((t, i) => ({
-			endpoints: timelines[t].endpoints,
+		for (const id of timelineView.timelineIds)
+			if (!timelines.hasOwnProperty(id))
+				console.error(`Timeline with id "${id}" not found.\nTimeline ids: `, Object.keys(timelines), '\nTimeline View: ', timelineView)
+	}
+
+	$: {
+		const newTimelineEndpoints = timelineView.timelineIds.map(id => ({
+			endpoints: timelines[id].endpoints,
 			addArticles(newIdPairs) {
 				if (newIdPairs.length)
-					timelines[t].addedIdPairs.update(addedIdPairs => {
+					timelines[id].addedIdPairs.update(addedIdPairs => {
 						const newAddedIdPairs = []
 						for (const idPair of newIdPairs)
 							if (!addedIdPairs.some(idp => idp.service === idPair.service && idp.id === idPair.id)) {
 								addedIdPairs.push(idPair)
 								newAddedIdPairs.push(idPair)
 							}
-						timelines[t].articles.update(actualIdPairs => {
+						timelines[id].articles.update(actualIdPairs => {
 							actualIdPairs.push(...newAddedIdPairs)
 							return actualIdPairs
 						})

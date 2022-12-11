@@ -21,7 +21,7 @@ export type Filter = {
 } | GenericFilter
 
 type GenericFilter = {
-	type: 'media' | 'animated' | 'notMarkedAsRead' | 'notHidden' | 'liked' | 'reposted' | 'noRef'
+	type: 'media' | 'animated' | 'notMarkedAsRead' | 'notHidden' | 'liked' | 'reposted' | 'noRef' | 'selfRepost' | 'selfQuote'
 	service: null
 } | {
 	type: 'repost'
@@ -60,6 +60,10 @@ export function getFilterName(filterType: GenericFilter['type'], inverted: boole
 				return 'Not a repost';
 			case 'quote':
 				return 'Not a quote';
+			case 'selfRepost':
+				return 'Not a self repost';
+			case 'selfQuote':
+				return 'Not a self quote';
 			case 'interval':
 				return `Not by interval`;
 		}
@@ -83,6 +87,10 @@ export function getFilterName(filterType: GenericFilter['type'], inverted: boole
 				return 'Repost';
 			case 'quote':
 				return 'Quote';
+			case 'selfRepost':
+				return 'Self repost';
+			case 'selfQuote':
+				return 'Self quote';
 			case 'interval':
 				return 'By interval';
 		}
@@ -98,7 +106,9 @@ export const filterTypes: Filter['type'][] = [
 	'reposted',
 	'noRef',
 	'repost',
-	'quote'
+	'quote',
+	'selfRepost',
+	'selfQuote',
 ]
 
 export function defaultFilter(filterType: string, service: string | null): Filter {
@@ -180,6 +190,16 @@ function keepArticleGeneric(articleWithRefs: ArticleWithRefs, index: number, fil
 				else
 					return true
 			}
+
+			return false
+		case 'selfRepost':
+			if (articleWithRefs.type === 'repost')
+				return articleWithRefs.article.author?.username === articleWithRefs.reposted.article.author?.username
+
+			return false
+		case 'selfQuote':
+			if (articleWithRefs.type === 'quote')
+				return articleWithRefs.article.author?.username === articleWithRefs.quoted.article.author?.username
 
 			return false
 		case 'interval':

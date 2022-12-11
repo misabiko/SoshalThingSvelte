@@ -252,5 +252,5 @@ TwitterService.endpointConstructors.push(
 	SearchEndpoint.constructorInfo,
 )
 
-//TODO Use filters to check if we include retweets
+//Tried to use SearchEndpoint, but query `from:${user.username}` didn't give anything, plus we're limited to 7 days
 TwitterService.userEndpoint = user => new UserTimelineEndpoint(user.username, false)

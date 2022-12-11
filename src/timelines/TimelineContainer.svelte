@@ -110,27 +110,29 @@
 		</Modal>
 	{/if}
 	{#if timelineView.fullscreen.index !== null}
-		{#if isInjected}
-			<Timeline
-				favviewerButtons=true
-				bind:favviewerHidden
-				bind:favviewerMaximized
-				bind:showSidebar
-				data={timelines[timelineView.timelineIds[timelineView.fullscreen.index]]}
-				{setModalTimeline}
-				bind:fullscreen={timelineView.fullscreen}
-				removeTimeline={() => removeTimeline(timelineView.timelineIds[timelineView.fullscreen.index])}
-				toggleFullscreen={() => {timelineView.fullscreen.index = null; updateMainStorage('fullscreen', timelineView.fullscreen)}}
-			/>
-		{:else}
-			<Timeline
-				data={timelines[timelineView.timelineIds[timelineView.fullscreen.index]]}
-				{setModalTimeline}
-				bind:fullscreen={timelineView.fullscreen}
-				removeTimeline={() => removeTimeline(timelineView.timelineIds[timelineView.fullscreen.index])}
-				toggleFullscreen={() => {timelineView.fullscreen.index = null; updateMainStorage('fullscreen', timelineView.fullscreen)}}
-			/>
-		{/if}
+		{#key `${timelineView.timelineIds[timelineView.fullscreen.index]}/${timelineView.fullscreen.index}`}
+			{#if isInjected}
+				<Timeline
+					favviewerButtons=true
+					bind:favviewerHidden
+					bind:favviewerMaximized
+					bind:showSidebar
+					data={timelines[timelineView.timelineIds[timelineView.fullscreen.index]]}
+					{setModalTimeline}
+					bind:fullscreen={timelineView.fullscreen}
+					removeTimeline={() => removeTimeline(timelineView.timelineIds[timelineView.fullscreen.index])}
+					toggleFullscreen={() => {timelineView.fullscreen.index = null; updateMainStorage('fullscreen', timelineView.fullscreen)}}
+				/>
+			{:else}
+				<Timeline
+					data={timelines[timelineView.timelineIds[timelineView.fullscreen.index]]}
+					{setModalTimeline}
+					bind:fullscreen={timelineView.fullscreen}
+					removeTimeline={() => removeTimeline(timelineView.timelineIds[timelineView.fullscreen.index])}
+					toggleFullscreen={() => {timelineView.fullscreen.index = null; updateMainStorage('fullscreen', timelineView.fullscreen)}}
+				/>
+			{/if}
+		{/key}
 	{:else}
 		{#each timelineView.timelineIds as id, i (`${id}/${i}`)}
 			{#if isInjected && i === 0}

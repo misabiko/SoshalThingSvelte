@@ -224,7 +224,7 @@ function parseSortInfo({method, reversed}: TimelineStorage['sortInfo']): SortInf
 	}
 	return {
 		method: sortMethod,
-		customMethod: undefined,
+		customMethod: null,
 		reversed: reversed || false
 	}
 }

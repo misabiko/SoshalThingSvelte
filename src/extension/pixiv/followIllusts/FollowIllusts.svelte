@@ -25,6 +25,7 @@
 			animatedAsGifs: true,
 			sortInfo: {
 				method: SortMethod.Id,
+				customMethod: null,
 				reversed: true,
 			},
 		}

@@ -38,7 +38,7 @@
 			<Dropdown labelText={currentMethodName}>
 				{#each genericSortMethods as method}
 					<!-- svelte-ignore a11y-missing-attribute -->
-					<a class='dropdown-item' on:click={() => {sortInfo.method = method; sortInfo.customMethod = undefined}}>
+					<a class='dropdown-item' on:click={() => {sortInfo.method = method; sortInfo.customMethod = null}}>
 						{ `${methodName(method)} - ${directionLabel(method, sortInfo.reversed || false)}` }
 					</a>
 				{/each}

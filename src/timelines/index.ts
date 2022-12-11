@@ -51,7 +51,7 @@ export function defaultTimeline(articles: ArticleIdPair[] = []): TimelineData {
 		filters: defaultFilterInstances,
 		sortInfo: {
 			method: SortMethod.Date,
-			customMethod: undefined,
+			customMethod: null,
 			reversed: true,
 		},
 		animatedAsGifs: false,

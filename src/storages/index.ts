@@ -1,4 +1,4 @@
-import type {FullscreenInfo, TimelineCollection, TimelineData, TimelineEndpoint} from '../timelines'
+import type {FullscreenInfo, TimelineCollection, TimelineEndpoint, TimelineView} from '../timelines'
 import type {SvelteComponent} from 'svelte'
 import ColumnContainer from '../containers/ColumnContainer.svelte'
 import RowContainer from '../containers/RowContainer.svelte'
@@ -27,6 +27,8 @@ export const TIMELINE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Timelines'
 export function loadMainStorage() {
 	const item = localStorage.getItem(MAIN_STORAGE_KEY)
 	const mainStorage: MainStorage = item ? JSON.parse(item) : {}
+
+	mainStorage.timelineIds ??= null;
 
 	if (!mainStorage.fullscreen && mainStorage.fullscreen !== 0)
 		mainStorage.fullscreen = {
@@ -246,6 +248,7 @@ type MainStorage = Partial<MainStorageParsed> & {
 }
 
 type MainStorageParsed = {
+	timelineIds: TimelineView['timelineIds'] | null
 	fullscreen: FullscreenInfo
 	maximized: boolean
 	markAsReadLocal: boolean

@@ -44,19 +44,41 @@ test.describe('app options', () => {
 		await expect(page.locator('.timeline')).toHaveCount(3)
 		await expect(page.locator('.fullscreenTimeline')).toHaveCount(0)
 	});
+
 	test('fullscreen index', async ({page}) => {
 		await loadWithLocalStorage(page, {
 			[MAIN_STORAGE_KEY]: {
 				fullscreen: 1
 			},
 			[TIMELINE_STORAGE_KEY]: [
-				{}, {}, {}
+				{title: 'Timeline 1'},
+				{title: 'Timeline 2'},
+				{title: 'Timeline 3'},
 			]
 		})
 
 		const timeline = page.locator('.timeline')
 		await expect(timeline).toHaveCount(1)
 		await expect(timeline).toHaveClass(/fullscreenTimeline/)
+		await expect(timeline.locator('.timelineLeftHeader strong')).toHaveText('Timeline 2');
+	});
+
+	test('timelineIds', async ({page}) => {
+		await loadWithLocalStorage(page, {
+			[MAIN_STORAGE_KEY]: {
+				timelineIds: [0, 2]
+			},
+			[TIMELINE_STORAGE_KEY]: [
+				{title: 'Timeline 1'},
+				{title: 'Timeline 2'},
+				{title: 'Timeline 3'},
+			]
+		})
+
+		const timeline = page.locator('.timeline')
+		await expect(timeline).toHaveCount(2)
+		await expect(timeline.nth(0).locator('.timelineLeftHeader strong')).toHaveText('Timeline 1');
+		await expect(timeline.nth(1).locator('.timelineLeftHeader strong')).toHaveText('Timeline 3');
 	});
 })
 

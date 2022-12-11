@@ -4,25 +4,26 @@ import 'styles/global.sass'
 import './services/twitter/endpoints'
 import SoshalThing from "./SoshalThing.svelte"
 import {loadMainStorage, loadTimelines} from './storages'
-import type {FullscreenInfo} from './timelines'
+import type {FullscreenInfo, TimelineView} from './timelines'
 
-const {fullscreen: storageFullscreen} = loadMainStorage();
+const {timelineIds, fullscreen} = loadMainStorage();
 const timelines = loadTimelines();
+const timelineView: TimelineView = {
+	timelineIds: timelineIds ?? Object.keys(timelines).map(id => parseInt(id)),
+	fullscreen,
+}
 
 const searchParams = new URLSearchParams(location.search)
-let fullscreen: FullscreenInfo = parseFullscreen(searchParams) ?? storageFullscreen
+const searchParamsFullscreen = parseFullscreen(searchParams)
+if (searchParamsFullscreen !== undefined)
+	timelineView.fullscreen = searchParamsFullscreen
 
 new SoshalThing({
 	target: document.body,
 	props: {
 		isInjected: false,
 		timelines,
-		//TODO Move timelineView to loadMainStorage()
-		timelineView: {
-			//TODO Separate timeline definition from view in storage
-			timelineIds: Object.keys(timelines),
-			fullscreen,
-		}
+		timelineView,
 	}
 })
 

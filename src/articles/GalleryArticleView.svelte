@@ -228,7 +228,7 @@
 			</div>
 		{/if}
 		<div class='holderBox holderBoxTop'>
-			<a class='button' title='External Link' href={actualArticle.url} target='_blank'>
+			<a class='button' title='External Link' href={actualArticle.url} target='_blank' rel='noreferrer'>
 				<span class='icon darkIcon'>
 					<Fa icon={faExternalLinkAlt} class='is-small'/>
 				</span>
@@ -264,6 +264,7 @@
 					class='dropdown-item'
 					href={ actualArticle.url }
 					target='_blank'
+					rel='noreferrer'
 				>
 					External Link
 				</a>

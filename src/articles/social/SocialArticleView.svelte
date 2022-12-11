@@ -132,7 +132,7 @@
 <div class='socialArticle'>
 	<div class='repostLabel'>
 		{#if isArticleRepost && rootArticle.author}
-			<a href={rootArticle.author.url} target='_blank' on:click|preventDefault={() => onUsernameClick(rootArticle)}>
+			<a href={rootArticle.author.url} target='_blank' rel='noreferrer' on:click|preventDefault={() => onUsernameClick(rootArticle)}>
 				{#if articleProps.reposts.length > 1}
 					{articleProps.reposts.map(r => r.author.name).join(', ')} reposted - {shortTimestamp(rootArticle.creationTime)}
 				{:else}
@@ -162,6 +162,7 @@
 						class='names'
 						href={actualArticle.author?.url}
 						target='_blank'
+						rel='noreferrer'
 						on:click|preventDefault={() => onUsernameClick(actualArticle)}
 					>
 						<strong>{ actualArticle.author?.name }</strong>
@@ -185,7 +186,7 @@
 				{@const quoted = articleProps.quoted.article}
 				<div class='quotedPost'>
 					<div class='articleHeader'>
-						<a class='names' href={quoted.author.url} target='_blank'>
+						<a class='names' href={quoted.author.url} target='_blank' rel='noreferrer'>
 							<strong>{ quoted.author.name }</strong>
 							<small>{ `@${quoted.author.username}` }</small>
 						</a>

@@ -43,7 +43,7 @@
 	<Field label='Twitter' addons={false}>
 		<Button on:click={twitterRequestToken}>Request Token</Button>
 		{#if oauthToken}
-			<a class='button' href={`https://api.twitter.com/oauth/authenticate?oauth_token=${oauthToken}`} target='_blank'>
+			<a class='button' href={`https://api.twitter.com/oauth/authenticate?oauth_token=${oauthToken}`} target='_blank' rel='noreferrer'>
 				Authenticate
 			</a>
 		{/if}

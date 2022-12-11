@@ -31,7 +31,7 @@ export default abstract class Article {
 		id: ArticleId,
 		text?: string,
 		textHtml?: string,
-		url: string,//TODO Make optional
+		url: string,//TODO Make article url optional
 		medias: ArticleMedia[],
 		markedAsRead: boolean,
 		hidden: boolean,

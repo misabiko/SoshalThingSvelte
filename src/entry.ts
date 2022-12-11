@@ -8,12 +8,14 @@ import type {FullscreenInfo, TimelineView} from './timelines'
 
 const {timelineIds, fullscreen, timelineViews} = loadMainStorage();
 const timelines = loadTimelines();
-const timelineView: TimelineView = {
-	timelineIds: timelineIds ?? Object.keys(timelines),
-	fullscreen,
-}
 
 const searchParams = new URLSearchParams(location.search)
+
+const searchTimelineView = parseTimelineView(timelineViews, searchParams)
+const timelineView: TimelineView = searchTimelineView ?? {
+	timelineIds: timelineIds ?? Object.keys(timelines),
+	fullscreen,
+};
 const searchParamsFullscreen = parseFullscreen(searchParams)
 if (searchParamsFullscreen !== undefined)
 	timelineView.fullscreen = searchParamsFullscreen
@@ -57,4 +59,16 @@ function parseFullscreen(search: URLSearchParams): FullscreenInfo | undefined {
 		container: null,
 		columnCount: null,
 	}
+}
+
+function parseTimelineView(timelineViews: {[name: string]: TimelineView}, search: URLSearchParams): TimelineView | undefined {
+	const param = search.get('view')
+
+	if (!param?.length)
+		return undefined
+	else if (!timelineViews.hasOwnProperty(param)) {
+		console.error(`Couldn't find timeline view "${param}"\nAvailable views: `, timelineViews)
+		return undefined;
+	}else
+		return timelineViews[param]
 }

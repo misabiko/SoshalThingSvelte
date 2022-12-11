@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import {loadWithLocalStorage, TIMELINE_STORAGE_KEY} from './storages.spec.js'
+import {loadWithLocalStorage, MAIN_STORAGE_KEY, TIMELINE_STORAGE_KEY} from './storages.spec.js'
 
 test.describe('fullscreen timeline', () => {
 	test.describe('via search param', () => {
@@ -76,6 +76,31 @@ test.describe('fullscreen timeline', () => {
 			.toHaveText('Timeline3', {timeout: 500});
 	});
 });
+
+test.describe('timeline views', () => {
+	test('via search param', async ({page}) => {
+		await loadWithLocalStorage(page, {
+			[TIMELINE_STORAGE_KEY]: {
+				'Timeline 1': {title: 'Timeline 1'},
+				'Timeline 2': {title: 'Timeline 2'},
+				'Timeline 3': {title: 'Timeline 3'},
+			},
+			[MAIN_STORAGE_KEY]: {
+				timelineViews: {
+					myView: {
+						timelineIds: ['Timeline 1', 'Timeline 3']
+					}
+				}
+			}
+		})
+		await page.goto('/?view=myView');
+
+		const timeline = page.locator('.timeline')
+		await expect(timeline).toHaveCount(2)
+		await expect(timeline.nth(0).locator('.timelineLeftHeader strong')).toHaveText('Timeline 1');
+		await expect(timeline.nth(1).locator('.timelineLeftHeader strong')).toHaveText('Timeline 3');
+	})
+})
 
 test.describe('autoscroll', () => {
 	test.beforeEach(async ({page}) => {

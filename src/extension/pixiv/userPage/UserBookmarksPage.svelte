@@ -1,7 +1,7 @@
 <script lang='ts'>
 	import '../../../styles/favviewerGlobal.sass'
 	import SoshalThing from "../../../SoshalThing.svelte"
-	import type {TimelineData} from '../../../timelines'
+	import type {TimelineCollection, TimelineView} from '../../../timelines'
 	import {defaultTimeline} from '../../../timelines'
 	import MasonryContainer from '../../../containers/MasonryContainer.svelte'
 	import {loadMainStorage} from '../../../storages'
@@ -10,21 +10,23 @@
 	import BookmarkPageEndpoint, {BookmarkAPIEndpoint} from '../../../services/pixiv/endpoints/bookmarks'
 	import {getUserId} from '../../../services/pixiv/endpoints/user'
 
-	const timeline: TimelineData = {
-		...defaultTimeline(),
-		title: 'Bookmarks',
-		endpoints: [{
-			endpoint: new BookmarkAPIEndpoint(getUserId(), new URLSearchParams(window.location.search).get('rest') === 'hide'),
-			refreshTypes: everyRefreshType,
-			filters: [],
-		}],
-		container: MasonryContainer,
-		columnCount: 4,
-		animatedAsGifs: true,
-		sortInfo: {
-			method: null,
-			reversed: false,
-		},
+	const timelines: TimelineCollection = {
+		0: {
+			...defaultTimeline(),
+			title: 'Bookmarks',
+			endpoints: [{
+				endpoint: new BookmarkAPIEndpoint(getUserId(), new URLSearchParams(window.location.search).get('rest') === 'hide'),
+				refreshTypes: everyRefreshType,
+				filters: [],
+			}],
+			container: MasonryContainer,
+			columnCount: 4,
+			animatedAsGifs: true,
+			sortInfo: {
+				method: null,
+				reversed: false,
+			},
+		}
 	}
 
 	const mainStorage = loadMainStorage()
@@ -33,9 +35,12 @@
 	let favviewerMaximized = mainStorage.maximized
 	let activatorMount = document.querySelector('nav')
 
-	let fullscreen = {
-		...mainStorage.fullscreen,
-		index: 0
+	const timelineView: TimelineView = {
+		timelineIds: [0],
+		fullscreen: {
+			...mainStorage.fullscreen,
+			index: 0
+		}
 	}
 </script>
 
@@ -87,7 +92,7 @@
 <SoshalThing
 	bind:favviewerHidden
 	bind:favviewerMaximized
-	timelines={[timeline]}
+	{timelines}
+	{timelineView}
 	isInjected={true}
-	{fullscreen}
 />

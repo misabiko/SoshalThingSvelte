@@ -70,8 +70,6 @@ test.describe('fullscreen timeline', () => {
 
 		await page.click('text=Remove timeline');
 
-		await page.click('.timelineHeader button[title = "Disable fullscreen"]');
-
 		await expect(page.locator('.timeline:nth-child(1) .timelineLeftHeader > strong'))
 			.toHaveText('Timeline1', {timeout: 500});
 		await expect(page.locator('.timeline:nth-child(2) .timelineLeftHeader > strong'))

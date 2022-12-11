@@ -1,7 +1,7 @@
 <script lang='ts'>
 	import {setContext} from 'svelte'
 	import Sidebar from "./sidebar/Sidebar.svelte"
-	import type {FullscreenInfo, TimelineData} from "./timelines"
+	import type {FullscreenInfo, TimelineCollection, TimelineData, TimelineView} from "./timelines"
 	import TimelineContainer from "./timelines/TimelineContainer.svelte"
 	import {notifications} from './notifications/store'
 	import Notification from "./notifications/Notification.svelte";
@@ -13,11 +13,14 @@
 		return this.toString();
 	};
 
-	export let timelines: TimelineData[] = []
-	export let fullscreen: FullscreenInfo = {
-		index: null,
-		columnCount: null,
-		container: null,
+	export let timelines: TimelineCollection = {}
+	export let timelineView: TimelineView = {
+		timelineIds: [],
+		fullscreen: {
+			index: null,
+			columnCount: null,
+			container: null,
+		}
 	}
 	export let isInjected = true
 	export let favviewerHidden = false
@@ -29,15 +32,25 @@
 	let batchActionFilters: FilterInstance[] = []
 
 	setContext('isInjected', isInjected)
-	let showSidebar = !isInjected
+	let showSidebar = !isInjected && favviewerMaximized !== true
 
 	function addTimeline(data: TimelineData) {
-		timelines.push(data)
+		let id = 0;
+		while (timelines.hasOwnProperty(id))
+			id += 1;
+		
+		timelines[id] = data;
 		timelines = timelines
 	}
 
-	function removeTimeline(index: number) {
-		timelines.splice(index, 1)
+	function removeTimeline(id: number) {
+		delete timelines[id];
+		//We don't cache index since TimelineView.timelineIds might hold duplicates
+		if (timelineView.fullscreen.index === timelineView.timelineIds.indexOf(id))
+			timelineView.fullscreen.index = null;
+		
+		timelineView.timelineIds = timelineView.timelineIds.filter(viewId => viewId !== id);
+		timelineView = timelineView;
 	}
 
 	function setModalTimeline(data: TimelineData, width = 3) {
@@ -111,18 +124,19 @@
 		<Sidebar
 			bind:batchActionFilters
 			{timelines}
+			{timelineView}
 			{setModalTimeline}
 			{addTimeline}
 		/>
 	{/if}
 	<TimelineContainer
 		bind:timelines
+		bind:timelineView
 		bind:modalTimeline
 		bind:modalTimelineActive
 		bind:favviewerHidden
 		bind:favviewerMaximized
 		bind:showSidebar
-		{fullscreen}
 		{setModalTimeline}
 		{removeTimeline}
 		{initialRefresh}

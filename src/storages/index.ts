@@ -1,4 +1,4 @@
-import type {FullscreenInfo, TimelineData, TimelineEndpoint} from '../timelines'
+import type {FullscreenInfo, TimelineCollection, TimelineData, TimelineEndpoint} from '../timelines'
 import type {SvelteComponent} from 'svelte'
 import ColumnContainer from '../containers/ColumnContainer.svelte'
 import RowContainer from '../containers/RowContainer.svelte'
@@ -88,11 +88,11 @@ export function updateFullscreenStorage(fullscreen: FullscreenInfo) {
 	updateMainStorage('fullscreen', fullscreen)
 }
 
-export function loadTimelines(): TimelineData[] {
+export function loadTimelines(): TimelineCollection {
 	const item = localStorage.getItem(TIMELINE_STORAGE_KEY)
 	let storage: Partial<TimelineStorage>[] = item ? JSON.parse(item) : []
 
-	return storage.map(t => {
+	return Object.assign({}, storage.map(t => {
 		const defaulted: TimelineStorage = {
 			...DEFAULT_TIMELINE_STORAGE,
 			...t,
@@ -122,7 +122,7 @@ export function loadTimelines(): TimelineData[] {
 				count: 100
 			}
 		}
-	})
+	}))
 }
 
 function parseContainer(container: string | undefined): typeof SvelteComponent {
@@ -224,6 +224,7 @@ function parseSortInfo({method, reversed}: TimelineStorage['sortInfo']): SortInf
 	}
 	return {
 		method: sortMethod,
+		customMethod: undefined,
 		reversed: reversed || false
 	}
 }

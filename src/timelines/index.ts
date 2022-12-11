@@ -51,6 +51,7 @@ export function defaultTimeline(articles: ArticleIdPair[] = []): TimelineData {
 		filters: defaultFilterInstances,
 		sortInfo: {
 			method: SortMethod.Date,
+			customMethod: undefined,
 			reversed: true,
 		},
 		animatedAsGifs: false,
@@ -63,6 +64,13 @@ export function defaultTimeline(articles: ArticleIdPair[] = []): TimelineData {
 		showArticleCount: false,
 		maxMediaCount: 4,
 	}
+}
+
+export type TimelineCollection = {[id: number]: TimelineData}
+
+export type TimelineView = {
+	timelineIds: number[];
+	fullscreen: FullscreenInfo;
 }
 
 export type TimelineEndpoint = {

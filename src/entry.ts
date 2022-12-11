@@ -17,7 +17,12 @@ new SoshalThing({
 	props: {
 		isInjected: false,
 		timelines,
-		fullscreen,
+		//TODO Move timelineView to loadMainStorage()
+		timelineView: {
+			//TODO Separate timeline definition from view in storage
+			timelineIds: Object.keys(timelines),
+			fullscreen,
+		}
 	}
 })
 

@@ -1,18 +1,22 @@
 <script lang="ts">
-	import type {FullscreenInfo, TimelineData} from './index'
+	import type {TimelineCollection, TimelineData, TimelineView} from './index'
 	import Timeline from './Timeline.svelte'
 	import {afterUpdate, getContext, onMount} from 'svelte'
 	import {Modal} from 'svelma'
 	import {timelineEndpoints} from '../services/endpoints'
 	import {updateMainStorage} from '../storages'
 
-	export let timelines: TimelineData[] = []
+	export let timelines: TimelineCollection = {}
 	export let modalTimeline: TimelineData | null;
+	export let timelineView: TimelineView = {
+		timelineIds: [],
+		fullscreen: null,
+	}
+
 	export let setModalTimeline: (data: TimelineData, width?: number) => void
 	export let removeTimeline: (index: number) => void
 	export let initialRefresh: (...refreshingTimelines: TimelineData[]) => void
 
-	export let fullscreen: FullscreenInfo;
 	export let favviewerHidden;
 	export let favviewerMaximized: boolean | undefined = undefined;
 	export let showSidebar;
@@ -21,18 +25,18 @@
 	const isInjected = getContext('isInjected');
 
 	$: {
-		const newTimelineEndpoints = timelines.map((t, i) => ({
-			endpoints: t.endpoints,
+		const newTimelineEndpoints = timelineView.timelineIds.map((t, i) => ({
+			endpoints: timelines[t].endpoints,
 			addArticles(newIdPairs) {
 				if (newIdPairs.length)
-					timelines[i].addedIdPairs.update(addedIdPairs => {
+					timelines[t].addedIdPairs.update(addedIdPairs => {
 						const newAddedIdPairs = []
 						for (const idPair of newIdPairs)
 							if (!addedIdPairs.some(idp => idp.service === idPair.service && idp.id === idPair.id)) {
 								addedIdPairs.push(idPair)
 								newAddedIdPairs.push(idPair)
 							}
-						timelines[i].articles.update(actualIdPairs => {
+						timelines[t].articles.update(actualIdPairs => {
 							actualIdPairs.push(...newAddedIdPairs)
 							return actualIdPairs
 						})
@@ -74,7 +78,7 @@
 
 	onMount(() => {
 		initialRefresh(...[
-			...timelines,
+			...timelineView.timelineIds.map(id => timelines[id]),
 			...(modalTimeline === null ? [] : [modalTimeline])
 		])
 	})
@@ -87,7 +91,7 @@
 		display: flex
 		flex-grow: 1
 </style>
-<!--TODO id → class-->
+<!--TODO id → class, to have multiple favviewer per page-->
 <div id='timelineContainer'>
 	{#if modalTimeline !== null}
 		<!--TODO Replace onBody with mountElement-->
@@ -99,48 +103,47 @@
 			/>
 		</Modal>
 	{/if}
-	{#if fullscreen.index !== null && timelines[fullscreen.index] !== undefined}
+	{#if timelineView.fullscreen.index !== null}
 		{#if isInjected}
 			<Timeline
 				favviewerButtons=true
 				bind:favviewerHidden
 				bind:favviewerMaximized
 				bind:showSidebar
-				data={timelines[fullscreen.index]}
+				data={timelines[timelineView.timelineIds[timelineView.fullscreen.index]]}
 				{setModalTimeline}
-				bind:fullscreen
-				removeTimeline={() => removeTimeline(fullscreen.index)}
-				toggleFullscreen={() => {fullscreen.index = null; updateMainStorage('fullscreen', fullscreen)}}
+				bind:fullscreen={timelineView.fullscreen}
+				removeTimeline={() => removeTimeline(timelineView.timelineIds[timelineView.fullscreen.index])}
+				toggleFullscreen={() => {timelineView.fullscreen.index = null; updateMainStorage('fullscreen', timelineView.fullscreen)}}
 			/>
 		{:else}
 			<Timeline
-				data={timelines[fullscreen.index]}
+				data={timelines[timelineView.timelineIds[timelineView.fullscreen.index]]}
 				{setModalTimeline}
-				bind:fullscreen
-				removeTimeline={() => removeTimeline(fullscreen.index)}
-				toggleFullscreen={() => {fullscreen.index = null; updateMainStorage('fullscreen', fullscreen)}}
+				bind:fullscreen={timelineView.fullscreen}
+				removeTimeline={() => removeTimeline(timelineView.timelineIds[timelineView.fullscreen.index])}
+				toggleFullscreen={() => {timelineView.fullscreen.index = null; updateMainStorage('fullscreen', timelineView.fullscreen)}}
 			/>
 		{/if}
 	{:else}
-		<!--TODO Add id to timeline, just to use as key-->
-		{#each timelines as data, i (`${data.name}/${i}`)}
+		{#each timelineView.timelineIds as id, i (`${id}/${i}`)}
 			{#if isInjected && i === 0}
 				<Timeline
 					favviewerButtons=true
 					bind:favviewerHidden
 					bind:favviewerMaximized
 					bind:showSidebar
-					{data}
+					data={timelines[id]}
 					{setModalTimeline}
 					removeTimeline={() => removeTimeline(i)}
-					toggleFullscreen={() => {fullscreen.index = i; updateMainStorage('fullscreen', fullscreen)}}
+					toggleFullscreen={() => {timelineView.fullscreen.index = i; updateMainStorage('fullscreen', timelineView.fullscreen)}}
 				/>
 			{:else}
 				<Timeline
-					{data}
+					data={timelines[id]}
 					{setModalTimeline}
 					removeTimeline={() => removeTimeline(i)}
-					toggleFullscreen={() => {fullscreen.index = i; updateMainStorage('fullscreen', fullscreen)}}
+					toggleFullscreen={() => {timelineView.fullscreen.index = i; updateMainStorage('fullscreen', timelineView.fullscreen)}}
 				/>
 			{/if}
 		{/each}

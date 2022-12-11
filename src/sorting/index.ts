@@ -5,6 +5,7 @@ import {getServices} from '../services/service'
 
 export type SortInfo = {
 	method: SortMethod | null
+	//TODO Change to null
 	customMethod: undefined
 	reversed: boolean
 } | {

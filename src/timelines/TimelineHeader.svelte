@@ -55,6 +55,12 @@
 	.timelineButtons
 		display: flex
 		flex-wrap: nowrap
+		//noinspection CssInvalidPropertyValue
+		overflow-x: overlay
+		overflow-y: clip
+
+	.timelineRightHeader.timelineButtons
+		flex-direction: row-reverse
 
 	.timelineButtons > button
 		height: 100%
@@ -83,7 +89,39 @@
 			</div>
 		{/if}
 	</div>
-	<div class='timelineButtons'>
+	<div class='timelineRightHeader timelineButtons'>
+		<button class='borderless-button' title='Expand options' on:click='{() => showOptions = !showOptions}'>
+			<Fa icon={faEllipsisV} size='large'/>
+		</button>
+		{#if availableRefreshTypes.has(RefreshType.LoadTop)}
+			<button class='borderless-button' title='Load Top'
+					on:click={() => refresh(RefreshType.LoadTop)}>
+				<Fa icon={faArrowUp} size='large'/>
+			</button>
+		{/if}
+		{#if availableRefreshTypes.has(RefreshType.LoadBottom)}
+			<button class='borderless-button' title='Load Bottom'
+					on:click={() => refresh(RefreshType.LoadBottom)}>
+				<Fa icon={faArrowDown} size='large'/>
+			</button>
+		{/if}
+		{#if availableRefreshTypes.has(RefreshType.Refresh)}
+			<button class='borderless-button' title='Refresh' on:click={() => refresh(RefreshType.Refresh)}>
+				<Fa icon={faSyncAlt} size='large'/>
+			</button>
+		{/if}
+		<button class='borderless-button timelineAutoscroll' title='Autoscroll' on:click={autoscroll}>
+			<Fa icon={faScroll} size='large'/>
+		</button>
+		<button class='borderless-button' title='Shuffle' on:click={shuffle}>
+			<Fa icon={faRandom} size='large'/>
+		</button>
+		{#if data.container === MasonryContainer}
+			<button class='borderless-button' title='Organize Container'
+					on:click={() => containerRebalance = !containerRebalance}>
+				<Fa icon={faScaleBalanced} size='large'/>
+			</button>
+		{/if}
 		{#if toggleFullscreen}
 			<button
 				class='borderless-button'
@@ -93,37 +131,5 @@
 				<Fa icon={fullscreen ? faColumns: faExpandAlt} size='large'/>
 			</button>
 		{/if}
-		{#if data.container === MasonryContainer}
-			<button class='borderless-button' title='Organize Container'
-					on:click={() => containerRebalance = !containerRebalance}>
-				<Fa icon={faScaleBalanced} size='large'/>
-			</button>
-		{/if}
-		<button class='borderless-button' title='Shuffle' on:click={shuffle}>
-			<Fa icon={faRandom} size='large'/>
-		</button>
-		<button class='borderless-button timelineAutoscroll' title='Autoscroll' on:click={autoscroll}>
-			<Fa icon={faScroll} size='large'/>
-		</button>
-		{#if availableRefreshTypes.has(RefreshType.Refresh)}
-			<button class='borderless-button' title='Refresh' on:click={() => refresh(RefreshType.Refresh)}>
-				<Fa icon={faSyncAlt} size='large'/>
-			</button>
-		{/if}
-		{#if availableRefreshTypes.has(RefreshType.LoadBottom)}
-			<button class='borderless-button' title='Load Bottom'
-					on:click={() => refresh(RefreshType.LoadBottom)}>
-				<Fa icon={faArrowDown} size='large'/>
-			</button>
-		{/if}
-		{#if availableRefreshTypes.has(RefreshType.LoadTop)}
-			<button class='borderless-button' title='Load Top'
-					on:click={() => refresh(RefreshType.LoadTop)}>
-				<Fa icon={faArrowUp} size='large'/>
-			</button>
-		{/if}
-		<button class='borderless-button' title='Expand options' on:click='{() => showOptions = !showOptions}'>
-			<Fa icon={faEllipsisV} size='large'/>
-		</button>
 	</div>
 </div>

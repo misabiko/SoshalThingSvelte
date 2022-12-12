@@ -88,7 +88,7 @@
 					<Select
 						nativeSize={0}
 						bind:selected={fullscreen.container}
-						on:change={() => updateFullscreenStorage(fullscreen)}
+						on:input={() => updateFullscreenStorage(fullscreen)}
 					>
 						<option value={ColumnContainer}>Column</option>
 						<option value={RowContainer}>Row</option>

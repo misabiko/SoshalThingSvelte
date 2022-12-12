@@ -73,7 +73,11 @@ export function updateMaximized(maximized: boolean) {
 }
 
 export function updateFullscreenStorage(fullscreen: FullscreenInfo) {
-	updateMainStorage('fullscreen', fullscreen)
+	const stringified: any = {...fullscreen};
+	if (stringified.container)
+		stringified.container = stringified.container.name;
+
+	updateMainStorage('fullscreen', stringified)
 }
 
 export function loadTimelines(): TimelineCollection {

@@ -1,7 +1,7 @@
 /** @type {import('@playwright/test').PlaywrightTestConfig} */
 const config = {
 	webServer: {
-		command: 'npm run build -- --entry ./tests/entry.ts && npm run serve:static -- --port 8089',
+		command: 'npm run build -- --entry ./tests/e2e/entry.ts && npm run serve:static -- --port 8089',
 		port: 8089,
 		reuseExistingServer: !process.env.CI,
 	},
@@ -11,7 +11,7 @@ const config = {
 	fullyParallel: true,
 	reporter: process.env.CI ? 'github' : 'list',
 	//Unit tests are built separately, and ran from /dist-test
-	testIgnore: ['**/tests/unit/**'],
+	testDir: 'tests/e2e/',
 };
 
 export default config;

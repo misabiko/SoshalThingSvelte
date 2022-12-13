@@ -1,7 +1,7 @@
 import {expect, test} from '@playwright/test'
 import {parseText} from "../../src/services/twitter/apiV1";
+import {generateId, notifications} from "../../src/notifications/store";
 
-//Not an actual automated ttest, but I'll commit it for debugging
 test('twitter V1 parseText', () => {
 	//1549147268195966979
 	const raw: any = {
@@ -115,4 +115,25 @@ test('twitter V1 parseText', () => {
 	expect(textHtml).toStrictEqual(`where can i find a sound pack of old gamey beeps n boops? 👀🎶🤖
 
 <a href='https://twitter.com/hashtag/gamedev'>#gamedev</a> <a href='https://twitter.com/hashtag/sounds'>#sounds</a>`)
+})
+
+test.describe('notifications', () => {
+	test('without adding notification', () => {
+		for (let i = 0; i < 3; ++i)
+			expect(generateId()).toEqual('Generated0')
+	})
+
+	test('adding notifications', () => {
+		let ids: string[] = [];
+		notifications.subscribe(value => ids = Object.keys(value));
+		for (let i = 0; i < 3; ++i)
+			notifications.notify({type: 'generic', text: 'text ' + i})
+
+		expect(generateId()).toEqual('Generated3')
+		expect(ids).toEqual([
+			'Generated0',
+			'Generated1',
+			'Generated2'
+		])
+	})
 })

@@ -1,6 +1,7 @@
 import fs from 'fs';
 import esbuild from 'esbuild';
 import {buildOptions, errorHandler} from "./buildscript.js";
+import glob from 'resolve-glob';
 
 const outdir = './dist-test';
 
@@ -11,7 +12,7 @@ if (!fs.existsSync(outdir))
 esbuild
 	.build({
 		...buildOptions,
-		entryPoints: ['tests/unit/spec.ts'],
+		entryPoints: glob.sync(['./tests/unit/**/spec.ts', './tests/unit/**/*.spec.ts']),
 		outdir,
 		platform: 'node',
 		external: ['@playwright/test'],

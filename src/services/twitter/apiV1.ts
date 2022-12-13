@@ -209,7 +209,7 @@ function updateAPIResponse(response: TweetResponse) {
 			addArticles(TwitterService, false, articleFromV1(response.quoted_status))
 }
 
-function parseText(rawText: string, entities: Entities, extendedEntities?: ExtendedEntities): { text: string, textHtml: string } {
+export function parseText(rawText: string, entities: Entities, extendedEntities?: ExtendedEntities): { text: string, textHtml: string } {
 	let trimmedText = rawText
 	const mediaUrls = extendedEntities?.media.map(media => media.url) || []
 

@@ -10,5 +10,6 @@ node_modules
 /chrome extension/dist/
 /chrome extension/_metadata/
 /dist/
+/dist-test/
 /types/
 /test-results/

@@ -10,6 +10,8 @@ const config = {
 	},
 	fullyParallel: true,
 	reporter: process.env.CI ? 'github' : 'list',
+	//Unit tests are built separately, and ran from /dist-test
+	testIgnore: ['**/tests/unit/**'],
 };
 
 export default config;

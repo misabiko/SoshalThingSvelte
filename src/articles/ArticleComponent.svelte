@@ -52,7 +52,6 @@
 	}
 
 	function onMediaClick(idPair: ArticleIdPair, _index: number) {
-		//TODO Option for timeline local marked as read
 		toggleMarkAsRead(idPair)
 	}
 </script>

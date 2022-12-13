@@ -247,7 +247,6 @@ export function getDerivedArticleWithRefs(a: DerivedArticleWithRefs): ArticleWit
 
 //Props for every article in the timeline
 export type TimelineArticleProps = {
-	//TODO Add ESLint just to unify line ending
 	animatedAsGifs: boolean;
 	compact: boolean;
 	hideText: boolean;

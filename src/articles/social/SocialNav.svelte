@@ -32,7 +32,6 @@
 		hoveredActions = hoveredActions
 	}
 
-	//TODO Check if article is loading media, fetching, etc
 	let status: string | null = null
 </script>
 

@@ -158,7 +158,6 @@ export interface FetchingService<A extends Article = Article> {
 	fetchTimeout: undefined | number;
 }
 
-//TODO Consider making Service a class
 export function newService<A extends Article = Article>(name: string): Service<A> {
 	return {
 		name,

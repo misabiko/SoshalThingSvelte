@@ -31,7 +31,6 @@
 
 		timelineProps.setModalTimeline(data)
 	}
-	//TODO Modal for changing view options with visualization
 	//TODO Fix overflowing profile pic (find example)
 </script>
 

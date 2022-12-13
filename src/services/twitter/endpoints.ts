@@ -20,7 +20,6 @@ abstract class V1Endpoint extends Endpoint {
 		]))
 	}
 
-	//TODO Pass endpoint filters to exclude retweets
 	async refresh(refreshType: RefreshType) {
 		const url = new URL(getV1APIURL(this.resource))
 		this.setSearchParams(url, refreshType)
@@ -241,8 +240,6 @@ export class SearchEndpoint extends V1Endpoint {
 		constructor: params => new SearchEndpoint(params.query as string)
 	}
 }
-
-//TODO Thread/ConversationEndpoint
 
 TwitterService.endpointConstructors.push(
 	HomeTimelineEndpoint.constructorInfo,

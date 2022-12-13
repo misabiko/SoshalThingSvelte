@@ -6,7 +6,7 @@
     "serve": "node buildscript.js --serve",
     "serve:static": "node src/staticServer.js",
     "build:extension": "node extensionbuildscript.js",
-    "build:unit": "node testbuildscript.js --entry tests/unit/spec.ts",
+    "build:unit": "node testbuildscript.js",
     "test": "npm run build:unit && playwright test",
     "test:headed": "playwright test --headed",
     "check": "svelte-check --tsconfig tsconfig.json --fail-on-warnings  --fail-on-hints",

@@ -6,6 +6,7 @@ import type {PixivUser} from '../article'
 import PixivArticle from '../article'
 import {getCurrentPage, getEachPageURL, getUserUrl, parseThumbnail} from './index'
 import {MediaLoadType, MediaType} from '../../../articles/media'
+import {avatarHighRes} from "./bookmarks";
 
 export class FollowPageEndpoint extends PageEndpoint {
 	readonly name = 'Follow Endpoint'
@@ -85,7 +86,7 @@ export class FollowAPIEndpoint extends LoadableEndpoint {
 						url: getUserUrl(illust.userId),
 						username: illust.userName,
 						name: illust.userName,
-						avatarUrl: illust.profileImageUrl,
+						avatarUrl: avatarHighRes(illust.profileImageUrl),
 					},
 					new Date(illust.createDate),
 					markedAsReadStorage,

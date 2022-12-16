@@ -125,7 +125,7 @@ export class BookmarkAPIEndpoint extends LoadableEndpoint {
 						url: getUserUrl(illust.userId),
 						username: illust.userName,
 						name: illust.userName,
-						avatarUrl: illust.profileImageUrl,
+						avatarUrl: avatarHighRes(illust.profileImageUrl),
 					},
 					new Date(illust.createDate),
 					markedAsReadStorage,
@@ -216,4 +216,8 @@ type FollowAjaxResponse = {
 			descriptionHeader: string
 		}
 	}
+}
+
+export function avatarHighRes(url: string): string {
+	return url.replace(/_\d+\.(\w{3,4})$/, '_170.$1');
 }

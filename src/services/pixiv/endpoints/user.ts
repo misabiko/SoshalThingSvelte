@@ -4,9 +4,9 @@ import {PixivService} from '../service'
 import PixivArticle from '../article'
 import type {PixivUser} from '../article'
 import {getHiddenStorage, getMarkedAsReadStorage} from '../../../storages/serviceCache'
-import {getWritable} from '../../service'
 import {getEachPageURL, getUserUrl, parseThumbnail} from './index'
 import {MediaLoadType, MediaType} from '../../../articles/media'
+import {avatarHighRes} from "./bookmarks";
 
 export default class UserPageEndpoint extends PageEndpoint {
 	readonly name = 'User Endpoint'
@@ -109,7 +109,7 @@ export class UserAPIEndpoint extends LoadableEndpoint {
 						url: getUserUrl(illust.userId),
 						username: illust.userName,
 						name: illust.userName,
-						avatarUrl: illust.profileImageUrl,
+						avatarUrl: avatarHighRes(illust.profileImageUrl),
 					},
 					new Date(illust.createDate),
 					markedAsReadStorage,

@@ -31,7 +31,6 @@
 
 		timelineProps.setModalTimeline(data)
 	}
-	//TODO Fix overflowing profile pic (find example)
 </script>
 
 <style lang='sass'>
@@ -49,8 +48,8 @@
 			color: $white-ter
 
 	figure
-		img
-			border-radius: 4px
+		overflow: hidden
+		border-radius: 4px
 
 		&.sharedAvatar
 			position: relative

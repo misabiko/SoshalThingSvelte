@@ -11,7 +11,8 @@
 	let username = ''
 
 	function userTimeline() {
-		return newUserTimeline(TwitterService.name, username)
+		//TODO Have per-service UI or per-service newUserTimeline()
+		return newUserTimeline(TwitterService.name, {username, name: username, url: ''})
 	}
 </script>
 

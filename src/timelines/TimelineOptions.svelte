@@ -4,7 +4,7 @@
 	import RowContainer from "../containers/RowContainer.svelte"
 	import MasonryContainer from "../containers/MasonryContainer.svelte"
 	import SocialArticleView from "../articles/social/SocialArticleView.svelte"
-	import GalleryArticleView from "../articles/GalleryArticleView.svelte"
+	import GalleryArticleView from "../articles/gallery/GalleryArticleView.svelte"
 	import type {TimelineData} from './index'
 	import FiltersOptions from "../filters/FiltersOptions.svelte"
 	import SortOptions from "../sorting/SortOptions.svelte"

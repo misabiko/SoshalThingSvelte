@@ -14,9 +14,12 @@ export type ArticleMedia = ({
 		src: string
 		offsetX?: string
 		offsetY?: string
+		ratio?: ValidRatio;
+		cropRatio?: ValidRatio;
 	};
 	loaded: boolean;
 }) & {
+	cropRatio?: ValidRatio;
 	offsetX?: string
 	offsetY?: string
 }

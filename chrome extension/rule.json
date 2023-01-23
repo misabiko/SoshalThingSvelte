@@ -3,7 +3,6 @@
     "priority": 1,
     "action": { "type": "allowAllRequests" },
     "condition": {
-        "urlFilter": "again make sure you are very specific with this.",
         "resourceTypes": ["main_frame"]
     }
 }]

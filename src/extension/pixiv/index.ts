@@ -15,7 +15,7 @@ export async function tryInject(elementQuery: () => Element | null): Promise<Ele
 
 			if (attempts >= 10) {
 				clearInterval(intervalId)
-				reject("Couldn't inject after 10 attemps")
+				reject("Couldn't inject after 10 attempts")
 			}
 		}, 500)
 	})

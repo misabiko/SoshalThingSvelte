@@ -37,21 +37,27 @@
 		<div class='control'>
 			<Dropdown labelText={currentMethodName}>
 				{#each genericSortMethods as method}
-					<!-- svelte-ignore a11y-missing-attribute -->
-					<a class='dropdown-item' on:click={() => {sortInfo.method = method; sortInfo.customMethod = null}}>
-						{ `${methodName(method)} - ${directionLabel(method, sortInfo.reversed || false)}` }
-					</a>
+					{#each [false, true] as reversed}
+						<!-- svelte-ignore a11y-missing-attribute -->
+						<a class='dropdown-item' on:click={() => {sortInfo.method = method; sortInfo.customMethod = null; sortInfo.reversed = reversed}}>
+							{ `${methodName(method)} - ${directionLabel(method, reversed)}` }
+						</a>
+					{/each}
 				{/each}
 				{#each serviceSortMethods as method}
-					<!-- svelte-ignore a11y-missing-attribute -->
-					<a class='dropdown-item' on:click={() => {
-						sortInfo.method = SortMethod.Custom;
-						sortInfo.customMethod = {
-							method: method[1],
-							service: method[0]
-						}}}>
-						{ `${method[2].name} - ${method[2].directionLabel(sortInfo.reversed || false)}` }
-					</a>
+					{#each [false, true] as reversed}
+						<!-- svelte-ignore a11y-missing-attribute -->
+						<a class='dropdown-item' on:click={() => {
+							sortInfo.method = SortMethod.Custom;
+							sortInfo.customMethod = {
+								method: method[1],
+								service: method[0]
+							};
+							sortInfo.reversed = reversed;
+						}}>
+							{ `${method[2].name} - ${method[2].directionLabel(reversed)}` }
+						</a>
+					{/each}
 				{/each}
 				<!-- svelte-ignore a11y-missing-attribute -->
 				<a class='dropdown-item' on:click={() => sortInfo.method = undefined}>

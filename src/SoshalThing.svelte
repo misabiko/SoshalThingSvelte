@@ -49,7 +49,7 @@
 		//We don't cache index since TimelineView.timelineIds might hold duplicates
 		if (timelineView.fullscreen.index === timelineView.timelineIds.indexOf(id))
 			timelineView.fullscreen.index = null;
-		
+
 		timelineView.timelineIds = timelineView.timelineIds.filter(viewId => viewId !== id);
 		timelineView = timelineView;
 	}
@@ -125,8 +125,8 @@
 		<Sidebar
 			bind:batchActionFilters
 			bind:timelineView
-			{timelines}
-			{timelineViews}
+			bind:timelineViews
+			bind:timelines
 			{setModalTimeline}
 			{addTimeline}
 		/>

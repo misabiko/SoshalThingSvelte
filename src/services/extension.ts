@@ -58,6 +58,7 @@ export async function fetchExtension<T>(service: string, request: string, url: s
 					return ctx
 				})
 				resolve({
+					//TODO Check for undefined response
 					json: response.json,
 					headers: new Headers(response.headers)
 				})

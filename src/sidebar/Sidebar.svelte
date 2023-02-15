@@ -21,6 +21,7 @@
 	import type {TimelineData, TimelineView} from '../timelines'
 	import type {FilterInstance} from '../filters'
 	import {faTableColumns} from "@fortawesome/free-solid-svg-icons/faTableColumns";
+	import TimelineViewEdit from "./TimelineViewEdit.svelte";
 
 	enum SidebarMenu {
 		TimelineEdit,
@@ -101,6 +102,12 @@
 					<TimelineEditMenu
 						{setModalTimeline}
 						{addTimeline}
+					/>
+				</div>
+				<div class='box'>
+					<TimelineViewEdit
+						bind:timelineViews
+						bind:timelines
 					/>
 				</div>
 			{:else if menu === SidebarMenu.BatchActions}

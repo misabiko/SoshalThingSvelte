@@ -52,8 +52,10 @@
 			"ES2021",
 			"ESNext",
 			"DOM",
-			"DOM.Iterable",
-		]
+			"DOM.Iterable"
+		],
+
+		"resolveJsonModule": true
 	},
 	"include": ["src/**/*.ts", "tests/**/*.ts"],
 	"exclude": ["node_modules/**", "dist/**"]

@@ -6,6 +6,7 @@
     import Dropdown from "../Dropdown.svelte";
 
     export let timelineViews: { [name: string]: TimelineView }
+	export let timelineView: TimelineView
     export let timelines: TimelineCollection
 
     let newViewName = '';
@@ -59,11 +60,18 @@
 
         updateMainStorage('timelineViews', timelineViews);
 	}
+
+	function setView(view: string) {
+		timelineView = timelineViews[view];
+
+		updateMainStorage('defaultTimelineView', view);
+	}
 </script>
 
 {#each Object.entries(timelineViews) as [viewName, timelineView]}
-	<Button on:click={() => removeView(viewName)}>Remove View</Button>
 	<Field label={viewName} addons={false}>
+		<Button on:click={() => setView(viewName)}>Set View</Button>
+		<Button on:click={() => removeView(viewName)}>Remove View</Button>
 		{@const newTimelines = Object.keys(timelines).filter(t => !timelineView.timelineIds.includes(t))}
 		{#each timelineView.timelineIds as id, index (id)}
 			<div class='buttons has-addons'>

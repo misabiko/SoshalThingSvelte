@@ -67,10 +67,10 @@
 	function initialRefresh(...refreshingTimelines: TimelineData[]) {
 		const endpointNames = new Set<string>()
 		for (const timeline of refreshingTimelines)
-			for (const timelineEndpoint of timeline.endpoints)
+			for (const timelineEndpoint of timeline.endpoints.filter(e => e.refreshTypes.has(RefreshType.RefreshStart)))
 				if (timelineEndpoint.name !== undefined)
 					endpointNames.add(timelineEndpoint.name)
-				else
+				else if (timelineEndpoint.endpoint?.refreshTypes?.has(RefreshType.RefreshStart))
 					refreshEndpoint(timelineEndpoint.endpoint as Endpoint, RefreshType.RefreshStart)
 						.then(articles => {
 							if (articles.length) {

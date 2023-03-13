@@ -163,7 +163,11 @@ export function addEndpoint(endpoint: Endpoint) {
 }
 
 export async function refreshEndpointName(endpointName: string, refreshType: RefreshType, autoRefreshing = false) {
-	const articles = await refreshEndpoint(get(endpoints[endpointName]), refreshType, autoRefreshing)
+	const endpoint = get(endpoints[endpointName]);
+	if (!endpoint.refreshTypes.has(refreshType))
+		return;
+
+	const articles = await refreshEndpoint(endpoint, refreshType, autoRefreshing)
 
 	const matchingTimelineEndpoints = timelineEndpointsValue
 		.map(te => ({

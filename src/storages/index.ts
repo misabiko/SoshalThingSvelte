@@ -40,7 +40,9 @@ export function loadMainStorage() {
 	else
 		for (const view in mainStorage.timelineViews)
 			if (mainStorage.timelineViews.hasOwnProperty(view))
-				(mainStorage as MainStorageParsed).timelineViews[view].fullscreen = parseFullscreenInfo(mainStorage.timelineViews[view].fullscreen)
+				(mainStorage as MainStorageParsed).timelineViews[view].fullscreen = parseFullscreenInfo(mainStorage.timelineViews[view].fullscreen);
+
+	(mainStorage as MainStorageParsed).defaultTimelineView = mainStorage.defaultTimelineView ?? null;
 
 	return mainStorage as MainStorageParsed
 }
@@ -265,12 +267,14 @@ function parseFullscreenInfo(fullscreen?: boolean | number | FullscreenInfoStora
 }
 
 type MainStorage = Partial<MainStorageParsed> & {
+	defaultTimelineView?: string
 	timelineViews: {[name: string]: TimelineViewStorage}
 	fullscreen?: boolean | number | FullscreenInfoStorage
 }
 
 type MainStorageParsed = {
 	timelineIds: TimelineView['timelineIds'] | null
+	defaultTimelineView: string | null
 	timelineViews: {[name: string]: TimelineView}
 	fullscreen: FullscreenInfo
 	maximized: boolean

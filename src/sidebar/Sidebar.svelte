@@ -107,6 +107,7 @@
 				<div class='box'>
 					<TimelineViewEdit
 						bind:timelineViews
+						bind:timelineView
 						bind:timelines
 					/>
 				</div>

@@ -6,13 +6,15 @@ import SoshalThing from "./SoshalThing.svelte"
 import {loadMainStorage, loadTimelines} from './storages'
 import type {FullscreenInfo, TimelineView} from './timelines'
 
-const {timelineIds, fullscreen, timelineViews} = loadMainStorage();
+const {timelineIds, fullscreen, timelineViews, defaultTimelineView} = loadMainStorage();
 const timelines = loadTimelines();
 
 const searchParams = new URLSearchParams(location.search)
 
 const searchTimelineView = parseTimelineView(timelineViews, searchParams)
-const timelineView: TimelineView = searchTimelineView ?? {
+const timelineView: TimelineView = searchTimelineView ??
+	(defaultTimelineView !== null ? timelineViews[defaultTimelineView]: null) ??
+	{
 	timelineIds: timelineIds ?? Object.keys(timelines),
 	fullscreen,
 };

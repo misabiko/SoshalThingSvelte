@@ -141,6 +141,7 @@
 		<Field label='AutoScroll Speed'>
 			<input class='input' type='number' bind:value={data.scrollSpeed} min={0}/>
 		</Field>
+<!--		TODO Update on confirm-->
 		<Field label='Section' addons={false}>
 			<Switch bind:checked={data.section.useSection}>Section articles</Switch>
 			<input class='input' type='number' bind:value={data.section.count} min={0}/>

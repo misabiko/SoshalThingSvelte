@@ -25,6 +25,7 @@ export interface Service<A extends Article = Article> {
 	defaultFilter(filterType: string): Filter
 	filterTypes: { [name: string]: {
 			name(inverted: boolean): string
+			props: string[]
 		} }
 	sortMethods: { [name: string]: {
 		name: string

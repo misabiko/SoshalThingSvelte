@@ -55,6 +55,22 @@
 		</div>
 	</div>
 
+	{#if instance.filter.service !== null}
+		{#each getServices()[instance.filter.service].filterTypes[instance.filter.type].props as prop}
+			<div class="field has-addons">
+				<div class="field-label is-small">
+					<!-- svelte-ignore a11y-label-has-associated-control -->
+					<label class="label">{prop}</label>
+				</div>
+				<div class="field-body">
+					<div class="control">
+						<Input bind:value={instance.filter[prop]}/>
+					</div>
+				</div>
+			</div>
+		{/each}
+	{/if}
+
 	{#if instance.filter.type === 'repost' || instance.filter.type === 'quote'}
 		<div class="field has-addons">
 			<div class="field-label is-small">

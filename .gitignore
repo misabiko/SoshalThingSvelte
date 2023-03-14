@@ -13,3 +13,4 @@ node_modules
 /dist-test/
 /types/
 /test-results/
+/src/services/misskey/emojis.json

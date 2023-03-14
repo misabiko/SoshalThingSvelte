@@ -27,12 +27,9 @@ export class TimelineEndpoint extends Endpoint {
 	}
 
 	async refresh(refreshType: RefreshType): Promise<ArticleWithRefs[]> {
-		console.log('fetching meta...')
 		const limit = refreshType === RefreshType.RefreshStart ? undefined : 50;
 		const notes = await this.cli.request('notes/timeline', {
 			limit,
-			// @ts-ignore
-			// withFiles: true
 		});
 
 		const markedAsReadStorage = getMarkedAsReadStorage(MisskeyService);

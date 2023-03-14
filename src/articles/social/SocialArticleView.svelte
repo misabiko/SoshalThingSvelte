@@ -174,7 +174,7 @@
 					<p class='articleParagraph'>
 						{#if actualArticle.textHtml}
 							{@html actualArticle.textHtml}
-						{:else}
+						{:else if actualArticle.text}
 							{actualArticle.text}
 						{/if}
 					</p>

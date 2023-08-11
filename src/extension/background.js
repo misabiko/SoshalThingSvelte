@@ -20,17 +20,17 @@ function twitterAuthHeaders(url, method, token) {
 			url,
 			method,
 		}, token)
-	)
+	);
 }
 
 function twitterAccessAuthHeaders(url, method) {
 	return twitterAuthHeaders(url, method, {
 		key: twitter.access_key,
 		secret: twitter.access_secret,
-	})
+	});
 }
 
-let oauthToken
+let oauthToken;
 
 chrome.runtime.onMessageExternal.addListener(
 	function(request, sender, sendResponse) {
@@ -45,7 +45,7 @@ chrome.runtime.onMessageExternal.addListener(
 				id: chrome.runtime.id,
 				available: true,
 				hasAccessToken: twitter?.access_key?.length > 0
-			})
+			});
 		else if (request.service === 'Twitter') {
 			switch (request.request) {
 				case 'fetchV1':
@@ -59,15 +59,15 @@ chrome.runtime.onMessageExternal.addListener(
 						)
 						.then(response => {
 							console.dir(response);
-							sendResponse(response)
+							sendResponse(response);
 						})
 						.catch(err => {
 							console.dir(err);
-							sendResponse(err)
-						})
+							sendResponse(err);
+						});
 					break;
 				case 'oauth1.0aRequestToken': {
-					const url = 'https://api.twitter.com/oauth/request_token?oauth_callback=oob'
+					const url = 'https://api.twitter.com/oauth/request_token?oauth_callback=oob';
 					fetch(url, {
 						headers: twitterAuthHeaders(url, 'POST'),
 						method: 'POST'
@@ -80,16 +80,16 @@ chrome.runtime.onMessageExternal.addListener(
 						)
 						.then(response => {
 							console.dir(response);
-							oauthToken = response.json.oauth_token
-							sendResponse(response)
+							oauthToken = response.json.oauth_token;
+							sendResponse(response);
 						})
 						.catch(err => {
 							console.dir(err);
-							sendResponse(err)
-						})
+							sendResponse(err);
+						});
 				} break;
 				case 'oauth1.0aAccessToken': {
-					const url = `https://api.twitter.com/oauth/access_token?oauth_token=${oauthToken}&oauth_verifier=${request?.body.oauthVerifier}`
+					const url = `https://api.twitter.com/oauth/access_token?oauth_token=${oauthToken}&oauth_verifier=${request?.body.oauthVerifier}`;
 					fetch(url, {
 						headers: twitterAuthHeaders(url, 'POST'),
 						method: 'POST'
@@ -98,14 +98,14 @@ chrome.runtime.onMessageExternal.addListener(
 						.then(text => Object.fromEntries(new URLSearchParams(text).entries()))
 						.then(response => {
 							console.dir(response);
-							twitter.access_key = response.oauth_token
-							twitter.access_secret = response.oauth_token_secret
-							sendResponse({json: {soshalthing: true}, headers: {}})
+							twitter.access_key = response.oauth_token;
+							twitter.access_secret = response.oauth_token_secret;
+							sendResponse({json: {soshalthing: true}, headers: {}});
 						})
 						.catch(err => {
 							console.dir(err);
-							sendResponse(err)
-						})
+							sendResponse(err);
+						});
 				} break;
 			}
 		}

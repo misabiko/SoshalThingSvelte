@@ -1,16 +1,16 @@
-import type {ArticleAuthor, ArticleIdPair} from '../articles'
-import type {SvelteComponent} from 'svelte'
-import type {FilterInstance} from '../filters'
-import {SortMethod, type SortInfo} from '../sorting'
-import ColumnContainer from '../containers/ColumnContainer.svelte'
-import SocialArticleView from '../articles/social/SocialArticleView.svelte'
-import {defaultFilterInstances} from '../filters'
-import type {Endpoint, RefreshType} from '../services/endpoints'
-import type {Writable} from 'svelte/store'
-import {writable} from 'svelte/store'
-import {everyRefreshType} from '../services/endpoints'
-import MasonryContainer from '../containers/MasonryContainer.svelte'
-import {getServices} from '../services/service'
+import type { ArticleAuthor, ArticleIdPair } from '../articles';
+import type { SvelteComponent } from 'svelte';
+import type { FilterInstance } from '../filters';
+import { SortMethod, type SortInfo } from '../sorting';
+import ColumnContainer from '../containers/ColumnContainer.svelte';
+import SocialArticleView from '../articles/social/SocialArticleView.svelte';
+import { defaultFilterInstances } from '../filters';
+import type { Endpoint, RefreshType } from '../services/endpoints';
+import type { Writable } from 'svelte/store';
+import { writable } from 'svelte/store';
+import { everyRefreshType } from '../services/endpoints';
+import MasonryContainer from '../containers/MasonryContainer.svelte';
+import { getServices } from '../services/service';
 
 export type TimelineData = {
 	title: string;
@@ -42,7 +42,7 @@ export function defaultTimeline(articles: ArticleIdPair[] = []): TimelineData {
 		endpoints: [],
 		addedIdPairs: writable([...articles]),
 		articles: writable(articles),
-		section: {useSection: false, count: 100},
+		section: { useSection: false, count: 100 },
 		container: ColumnContainer,
 		articleView: SocialArticleView,
 		columnCount: 1,
@@ -63,10 +63,10 @@ export function defaultTimeline(articles: ArticleIdPair[] = []): TimelineData {
 		mergeReposts: true,
 		showArticleCount: false,
 		maxMediaCount: 4,
-	}
+	};
 }
 
-export type TimelineCollection = {[id: string]: TimelineData}
+export type TimelineCollection = { [id: string]: TimelineData }
 
 export type TimelineView = {
 	timelineIds: string[];
@@ -92,9 +92,9 @@ export type FullscreenInfo = {
 }
 
 export function newUserTimeline(serviceName: string, author: ArticleAuthor): TimelineData | undefined {
-	const endpointConstructor = getServices()[serviceName].userEndpoint
+	const endpointConstructor = getServices()[serviceName].userEndpoint;
 	if (endpointConstructor === undefined)
-		return undefined
+		return undefined;
 
 	return {
 		...defaultTimeline(),
@@ -107,17 +107,17 @@ export function newUserTimeline(serviceName: string, author: ArticleAuthor): Tim
 		filters: [
 			...defaultFilterInstances,
 			{
-				filter: {type: 'media', service: null},
+				filter: { type: 'media', service: null },
 				enabled: true,
 				inverted: false,
 			},
 			{
-				filter: {type: 'noRef', service: null},
+				filter: { type: 'noRef', service: null },
 				enabled: true,
 				inverted: false,
 			}
 		],
 		container: MasonryContainer,
 		columnCount: 3,
-	}
+	};
 }

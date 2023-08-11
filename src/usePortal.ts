@@ -7,7 +7,7 @@ export default function portal(node: HTMLElement, target: HTMLElement) {
 				if (node?.parentNode) {
 					node.parentNode?.removeChild(node);
 				}
-			})
+			});
 		}
-	}
+	};
 }

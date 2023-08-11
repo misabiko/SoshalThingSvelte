@@ -1,11 +1,11 @@
 import type {EndpointConstructorInfo} from '../../endpoints';
-import {Endpoint, RefreshType} from "../../endpoints";
-import type {ArticleWithRefs} from "../../../articles";
+import {Endpoint, RefreshType} from '../../endpoints';
+import type {ArticleWithRefs} from '../../../articles';
 import * as Misskey from 'misskey-js';
 import {misskey} from '../../../../credentials.json';
-import {fromAPI} from "../article";
-import {getHiddenStorage, getMarkedAsReadStorage} from "../../../storages/serviceCache";
-import {MisskeyService} from "../service";
+import {fromAPI} from '../article';
+import {getHiddenStorage, getMarkedAsReadStorage} from '../../../storages/serviceCache';
+import {MisskeyService} from '../service';
 
 export class TimelineEndpoint extends Endpoint {
 	readonly name = 'Timeline Endpoint';
@@ -22,7 +22,7 @@ export class TimelineEndpoint extends Endpoint {
 	}
 
 
-	matchParams(params: any): boolean {
+	matchParams(_params: any): boolean {
 		return true;
 	}
 

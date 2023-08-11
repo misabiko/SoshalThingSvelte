@@ -55,7 +55,7 @@ export function getFilterName(filterType: GenericFilter['type'], inverted: boole
 			case 'reposted':
 				return 'Not reposted';
 			case 'noRef':
-				return "References other articles";
+				return 'References other articles';
 			case 'repost':
 				return 'Not a repost';
 			case 'quote':
@@ -65,7 +65,7 @@ export function getFilterName(filterType: GenericFilter['type'], inverted: boole
 			case 'selfQuote':
 				return 'Not a self quote';
 			case 'interval':
-				return `Not by interval`;
+				return 'Not by interval';
 		}
 	}else {
 		switch (filterType) {

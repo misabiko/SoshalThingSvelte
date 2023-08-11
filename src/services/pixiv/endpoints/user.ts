@@ -6,7 +6,7 @@ import type {PixivUser} from '../article';
 import {getHiddenStorage, getMarkedAsReadStorage} from '../../../storages/serviceCache';
 import {getEachPageURL, getUserUrl, parseThumbnail} from './index';
 import {MediaLoadType, MediaType} from '../../../articles/media';
-import {avatarHighRes} from "./bookmarks";
+import {avatarHighRes} from './bookmarks';
 
 export default class UserPageEndpoint extends PageEndpoint {
 	readonly name = 'User Endpoint';
@@ -141,7 +141,7 @@ export function getUserId() : number {
 
 type UserListAjaxResponse = {
 	error: false,
-	message: "",
+	message: '',
 	body: {
 		illusts: { [id: string]: null }
 		manga: { [id: string]: null }

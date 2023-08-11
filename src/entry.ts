@@ -2,7 +2,7 @@ import 'styles/global.sass';
 
 //Add service endpoints here to include them
 import './services/twitter/endpoints';
-import SoshalThing from "./SoshalThing.svelte";
+import SoshalThing from './SoshalThing.svelte';
 import {loadMainStorage, loadTimelines} from './storages';
 import type {FullscreenInfo, TimelineView} from './timelines';
 

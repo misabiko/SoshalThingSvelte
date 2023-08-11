@@ -47,23 +47,23 @@ export const PixivService: PixivServiceType = {
 			async action(idPair: ArticleIdPair) {
 				const csrfToken = getServiceStorage(PixivService.name)['csrfToken'] as string | undefined;
 				if (!csrfToken)
-				 	return;
+					return;
 
 				const response : LikeResponse = await fetch('https://www.pixiv.net/ajax/illusts/like', {
-					method: "POST",
-					credentials: "same-origin",
-					cache: "no-cache",
+					method: 'POST',
+					credentials: 'same-origin',
+					cache: 'no-cache',
 					headers: {
-						"Accept": "application/json",
-						"Content-Type": "application/json",
-						"Cache-Control": "no-cache",
+						'Accept': 'application/json',
+						'Content-Type': 'application/json',
+						'Cache-Control': 'no-cache',
 						'X-CSRF-TOKEN': csrfToken,
 					},
 					body: JSON.stringify({illust_id: idPair.id}),
 				}).then(r => r.json());
 
 				if (response.error) {
-					console.error("Error during like: ", response);
+					console.error('Error during like: ', response);
 					return;
 				}
 
@@ -95,25 +95,25 @@ export const PixivService: PixivServiceType = {
 				const privateBookmark = (storage['privateBookmark'] as boolean | undefined) ?? false;
 
 				const response : BookmarkResponse = await fetch('https://www.pixiv.net/ajax/illusts/bookmarks/add', {
-					method: "POST",
-					credentials: "same-origin",
-					cache: "no-cache",
+					method: 'POST',
+					credentials: 'same-origin',
+					cache: 'no-cache',
 					headers: {
-						"Accept": "application/json",
-						"Content-Type": "application/json",
-						"Cache-Control": "no-cache",
+						'Accept': 'application/json',
+						'Content-Type': 'application/json',
+						'Cache-Control': 'no-cache',
 						'X-CSRF-TOKEN': csrfToken,
 					},
 					body: JSON.stringify({
 						illust_id: idPair.id,
 						restrict: privateBookmark ? 1 : 0,
-						comment: "",
+						comment: '',
 						tags: [],
 					}),
 				}).then(r => r.json());
 
 				if (response.error) {
-					console.error("Error during bookmark: ", response);
+					console.error('Error during bookmark: ', response);
 					return;
 				}
 

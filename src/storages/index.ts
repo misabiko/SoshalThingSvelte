@@ -86,7 +86,7 @@ export function loadTimelines(): TimelineCollection {
 	const item = localStorage.getItem(TIMELINE_STORAGE_KEY);
 	let storage: {[id: string]: Partial<TimelineStorage>} = item ? JSON.parse(item) : [];
 	if (storage instanceof Array) {
-		console.warn("SoshalThingSvelte Timelines should be an object {[id: string]: TimelineStorage}");
+		console.warn('SoshalThingSvelte Timelines should be an object {[id: string]: TimelineStorage}');
 		storage = Object.assign({}, storage);
 	}
 

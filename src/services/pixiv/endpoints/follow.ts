@@ -6,7 +6,7 @@ import type {PixivUser} from '../article';
 import PixivArticle from '../article';
 import {getCurrentPage, getEachPageURL, getUserUrl, parseThumbnail} from './index';
 import {MediaLoadType, MediaType} from '../../../articles/media';
-import {avatarHighRes} from "./bookmarks";
+import {avatarHighRes} from './bookmarks';
 
 export class FollowPageEndpoint extends PageEndpoint {
 	readonly name = 'Follow Endpoint';

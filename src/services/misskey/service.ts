@@ -1,10 +1,9 @@
-import MisskeyArticle from "./article";
-import type {Service} from "../service";
-import {newService, registerService} from "../service";
-import {TimelineEndpoint} from "./endpoints/timelineEndpoint";
-import * as Misskey from "misskey-js";
-import {emojis} from './emojis.json'
-import type {APIClient} from "misskey-js/built/api";
+import MisskeyArticle from './article';
+import type {Service} from '../service';
+import {newService, registerService} from '../service';
+import {TimelineEndpoint} from './endpoints/timelineEndpoint';
+import {emojis} from './emojis.json';
+import type {APIClient} from 'misskey-js/built/api';
 
 export const MisskeyService: MisskeyServiceType = {
 	...newService('Misskey'),

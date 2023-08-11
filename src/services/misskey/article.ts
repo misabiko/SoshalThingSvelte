@@ -1,12 +1,12 @@
-import type {ArticleAuthor, ArticleWithRefs} from "../../articles";
-import Article, {getRootArticle} from "../../articles";
-import type {ArticleRefIdPair} from "../../articles";
-import type {Note, User} from "misskey-js/built/entities";
-import type {ArticleMedia} from "../../articles/media";
-import {getRatio, MediaLoadType, MediaType} from "../../articles/media";
+import type {ArticleAuthor, ArticleWithRefs} from '../../articles';
+import Article, {getRootArticle} from '../../articles';
+import type {ArticleRefIdPair} from '../../articles';
+import type {Note, User} from 'misskey-js/built/entities';
+import type {ArticleMedia} from '../../articles/media';
+import {getRatio, MediaLoadType, MediaType} from '../../articles/media';
 import * as mfm from 'mfm-js';
-import type {MfmNode} from "mfm-js/built/node";
-import {MisskeyService} from "./service";
+import type {MfmNode} from 'mfm-js/built/node';
+import {MisskeyService} from './service';
 
 export default class MisskeyArticle extends Article {
 	static service: string;
@@ -44,8 +44,8 @@ export default class MisskeyArticle extends Article {
 }
 
 interface MisskeyUser extends ArticleAuthor {
-	id: User["id"],
-	avatarUrl: User["avatarUrl"],
+	id: User['id'],
+	avatarUrl: User['avatarUrl'],
 }
 
 export function fromAPI(

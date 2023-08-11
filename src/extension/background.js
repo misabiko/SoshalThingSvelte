@@ -37,7 +37,7 @@ chrome.runtime.onMessageExternal.addListener(
 		if (!request.soshalthing)
 			return;
 
-		console.log("Extension received message");
+		console.log('Extension received message');
 		console.dir(request);
 
 		if (request.request === 'extensionCheck')

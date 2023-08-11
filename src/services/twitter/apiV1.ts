@@ -104,7 +104,7 @@ export async function toggleFavorite(idPair: ArticleIdPair) {
 		);
 
 		//TODO Add rate limit to actions
-		updateAPIResponse(response.json)
+		updateAPIResponse(response.json);
 	}catch (cause: ExtensionFetchResponse<V1ErrorResponse> | any) {
 		//TEST fetch errors
 		let shouldThrow = true;
@@ -298,13 +298,13 @@ function getMP4(videoInfo: VideoInfo, mediaType: MediaType): ArticleMedia {
 export function parseRateLimitInfo(headers: Headers): RateLimitInfo {
 	const limit = headers.get('x-rate-limit-limit');
 	if (limit === null)
-		throw new Error("Missing x-rate-limit-limit header.\n" + JSON.stringify(Object.fromEntries(headers.entries()), null, '\t'));
+		throw new Error('Missing x-rate-limit-limit header.\n' + JSON.stringify(Object.fromEntries(headers.entries()), null, '\t'));
 	const remaining = headers.get('x-rate-limit-remaining');
 	if (remaining === null)
-		throw new Error("Missing x-rate-limit-remaining header.\n" + JSON.stringify(Object.fromEntries(headers.entries()), null, '\t'));
+		throw new Error('Missing x-rate-limit-remaining header.\n' + JSON.stringify(Object.fromEntries(headers.entries()), null, '\t'));
 	const reset = headers.get('x-rate-limit-reset');
 	if (reset === null)
-		throw new Error("Missing x-rate-limit-reset header.\n" + JSON.stringify(Object.fromEntries(headers.entries()), null, '\t'));
+		throw new Error('Missing x-rate-limit-reset header.\n' + JSON.stringify(Object.fromEntries(headers.entries()), null, '\t'));
 
 	return {
 		limit: parseInt(limit),

@@ -1,11 +1,11 @@
-import Article from '../../articles'
-import type {ArticleAuthor} from '../../articles'
-import type {ArticleMedia} from '../../articles/media'
+import Article from '../../articles';
+import type {ArticleAuthor} from '../../articles';
+import type {ArticleMedia} from '../../articles/media';
 
 export default class PixivArticle extends Article {
-	static service: string
+	static service: string;
 
-	liked = false
+	liked = false;
 
 	constructor(
 		readonly id: number,
@@ -28,30 +28,30 @@ export default class PixivArticle extends Article {
 			hiddenStorage,
 			text: title,
 			rawSource,
-		})
+		});
 	}
 
 	get numberId() {
-		return this.id
+		return this.id;
 	}
 
 	update(newArticle: this) {
-		super.update(newArticle)
+		super.update(newArticle);
 
-		this.liked ||= newArticle.liked
+		this.liked ||= newArticle.liked;
 		//Probably simplifiable
 		if (this.bookmarked === null)
-			this.bookmarked = newArticle.bookmarked
+			this.bookmarked = newArticle.bookmarked;
 		else
-			this.bookmarked ||= newArticle.bookmarked
+			this.bookmarked ||= newArticle.bookmarked;
 	}
 
 	getLiked(): boolean {
-		return this.liked
+		return this.liked;
 	}
 
 	getReposted(): boolean {
-		return !!this.bookmarked
+		return !!this.bookmarked;
 	}
 }
 

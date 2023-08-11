@@ -1,7 +1,7 @@
-import {getActualArticle} from '../articles'
-import type {ArticleProps, ArticleWithRefs} from '../articles'
-import {getRootArticle} from '../articles'
-import {getServices} from '../services/service'
+import {getActualArticle} from '../articles';
+import type {ArticleProps, ArticleWithRefs} from '../articles';
+import {getRootArticle} from '../articles';
+import {getServices} from '../services/service';
 
 export type SortInfo = {
 	method: SortMethod | null
@@ -29,15 +29,15 @@ export const genericSortMethods = [
 	SortMethod.Date,
 	SortMethod.Likes,
 	SortMethod.Reposts,
-]
+];
 
 export function compare(info: SortInfo): (a: ArticleWithRefs | ArticleProps, b: ArticleWithRefs | ArticleProps) => number {
 	return (a, b) => {
 		switch (info.method) {
 			case SortMethod.Id: {
-				const aRoot = getRootArticle(a)
-				const bRoot = getRootArticle(b)
-				return aRoot.numberId > bRoot.numberId ? 1 : (aRoot.numberId < bRoot.numberId ? -1 : 0)
+				const aRoot = getRootArticle(a);
+				const bRoot = getRootArticle(b);
+				return aRoot.numberId > bRoot.numberId ? 1 : (aRoot.numberId < bRoot.numberId ? -1 : 0);
 			}
 			case SortMethod.Date:
 				return (getRootArticle(a).creationTime?.getTime() || 0) - (getRootArticle(b).creationTime?.getTime() || 0);
@@ -48,21 +48,21 @@ export function compare(info: SortInfo): (a: ArticleWithRefs | ArticleProps, b: 
 				return getActualArticle(a).getRepostCount() - getActualArticle(b).getRepostCount();
 			case SortMethod.Custom: {
 				if (getRootArticle(a).idPair.service !== info?.customMethod?.service || getRootArticle(b).idPair.service !== info.customMethod.service)
-					return 0
+					return 0;
 				else
-					return getServices()[info.customMethod.service]?.sortMethods[info.customMethod.method]?.compare(a, b) || 0
+					return getServices()[info.customMethod.service]?.sortMethods[info.customMethod.method]?.compare(a, b) || 0;
 			}case null:
-				return 0
+				return 0;
 		}
-	}
+	};
 }
 
 export function directionLabel(method: SortMethod, reversed: boolean): string {
 	switch (method) {
 		case SortMethod.Date:
-			return reversed ? 'Reverse chronological' : 'Chronological'
+			return reversed ? 'Reverse chronological' : 'Chronological';
 		default:
-			return reversed ? 'Descending' : 'Ascending'
+			return reversed ? 'Descending' : 'Ascending';
 	}
 }
 
@@ -77,6 +77,6 @@ export function methodName(method: SortMethod): string {
 		case SortMethod.Reposts:
 			return 'Reposts';
 		case SortMethod.Custom:
-			return 'Custom'
+			return 'Custom';
 	}
 }

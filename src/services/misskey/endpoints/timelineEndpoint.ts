@@ -1,8 +1,8 @@
-import type {EndpointConstructorInfo} from '../../endpoints'
+import type {EndpointConstructorInfo} from '../../endpoints';
 import {Endpoint, RefreshType} from "../../endpoints";
 import type {ArticleWithRefs} from "../../../articles";
 import * as Misskey from 'misskey-js';
-import {misskey} from '../../../../credentials.json'
+import {misskey} from '../../../../credentials.json';
 import {fromAPI} from "../article";
 import {getHiddenStorage, getMarkedAsReadStorage} from "../../../storages/serviceCache";
 import {MisskeyService} from "../service";
@@ -43,5 +43,5 @@ export class TimelineEndpoint extends Endpoint {
 		name: 'TimelineEndpoint',
 		paramTemplate: [],
 		constructor: () => new TimelineEndpoint()
-	}
+	};
 }

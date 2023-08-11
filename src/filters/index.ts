@@ -1,11 +1,11 @@
-import type { ArticleWithRefs } from '../articles'
+import type { ArticleWithRefs } from '../articles';
 import {
 	articleWithRefToArray,
 	getActualArticle,
 
-} from '../articles'
-import {getServices} from '../services/service'
-import {type ArticleMedia, MediaType} from '../articles/media'
+} from '../articles';
+import {getServices} from '../services/service';
+import {type ArticleMedia, MediaType} from '../articles/media';
 
 //TODO Filter groups and boolean filters
 
@@ -109,11 +109,11 @@ export const filterTypes: Filter['type'][] = [
 	'quote',
 	'selfRepost',
 	'selfQuote',
-]
+];
 
 export function defaultFilter(filterType: string, service: string | null): Filter {
 	if (service)
-		return getServices()[service].defaultFilter(filterType)
+		return getServices()[service].defaultFilter(filterType);
 
 	switch (filterType) {
 		case 'interval':
@@ -123,9 +123,9 @@ export function defaultFilter(filterType: string, service: string | null): Filte
 				offset: 0,
 				includeOffset: false,
 				service: null,
-			}
+			};
 		default:
-			return { type: filterType, service: null } as GenericFilter
+			return { type: filterType, service: null } as GenericFilter;
 	}
 }
 
@@ -139,74 +139,74 @@ export const defaultFilterInstances: FilterInstance[] = [
 		enabled: true,
 		inverted: false,
 	},
-]
+];
 
 export function keepArticle(articleWithRefs: ArticleWithRefs, index: number, filter: Filter): boolean {
 	if (filter.service !== null)
-		return getServices()[filter.service].keepArticle(articleWithRefs, index, filter)
+		return getServices()[filter.service].keepArticle(articleWithRefs, index, filter);
 	else
-		return keepArticleGeneric(articleWithRefs, index, filter)
+		return keepArticleGeneric(articleWithRefs, index, filter);
 }
 
 function keepArticleGeneric(articleWithRefs: ArticleWithRefs, index: number, filter: GenericFilter): boolean {
 	switch (filter.type) {
 		case 'media':
-			return articleWithRefToArray(articleWithRefs).some(a => a.medias.length > 0)
+			return articleWithRefToArray(articleWithRefs).some(a => a.medias.length > 0);
 		case 'animated':
-			return articleWithRefToArray(articleWithRefs).some(a => a.medias.some(isAnimated))
+			return articleWithRefToArray(articleWithRefs).some(a => a.medias.some(isAnimated));
 		case 'notMarkedAsRead':
 			switch (articleWithRefs.type) {
 				case 'normal':
-					return !articleWithRefs.article.markedAsRead
+					return !articleWithRefs.article.markedAsRead;
 				case 'repost':
-					return !articleWithRefs.article.markedAsRead && keepArticleGeneric(articleWithRefs.reposted, index, filter)
+					return !articleWithRefs.article.markedAsRead && keepArticleGeneric(articleWithRefs.reposted, index, filter);
 			}
 		case 'notHidden':
 			switch (articleWithRefs.type) {
 				case 'normal':
-					return !articleWithRefs.article.hidden
+					return !articleWithRefs.article.hidden;
 				case 'repost':
-					return !articleWithRefs.article.hidden && keepArticleGeneric(articleWithRefs.reposted, index, filter)
+					return !articleWithRefs.article.hidden && keepArticleGeneric(articleWithRefs.reposted, index, filter);
 			}
 		case 'liked':
 			return getActualArticle(articleWithRefs).getLiked();
 		case 'reposted':
 			return getActualArticle(articleWithRefs).getReposted();
 		case 'noRef':
-			return articleWithRefs.type === 'normal'
+			return articleWithRefs.type === 'normal';
 		case 'repost':
 			if (articleWithRefs.type === 'repost') {
 				if (filter.byUsername) {
-					return articleWithRefs.article.author?.username === filter.byUsername
+					return articleWithRefs.article.author?.username === filter.byUsername;
 				}else
-					return true
+					return true;
 			}
 
-			return false
+			return false;
 		case 'quote':
 			if (articleWithRefs.type === 'quote') {
 				if (filter.byUsername)
-					return articleWithRefs.article.author?.username === filter.byUsername
+					return articleWithRefs.article.author?.username === filter.byUsername;
 				else
-					return true
+					return true;
 			}
 
-			return false
+			return false;
 		case 'selfRepost':
 			if (articleWithRefs.type === 'repost')
-				return articleWithRefs.article.author?.username === articleWithRefs.reposted.article.author?.username
+				return articleWithRefs.article.author?.username === articleWithRefs.reposted.article.author?.username;
 
-			return false
+			return false;
 		case 'selfQuote':
 			if (articleWithRefs.type === 'quote')
-				return articleWithRefs.article.author?.username === articleWithRefs.quoted.article.author?.username
+				return articleWithRefs.article.author?.username === articleWithRefs.quoted.article.author?.username;
 
-			return false
+			return false;
 		case 'interval':
 			if (index < filter.offset)
-				return filter.includeOffset
+				return filter.includeOffset;
 			else
-				return (index - filter.offset) % filter.interval === filter.interval - 1
+				return (index - filter.offset) % filter.interval === filter.interval - 1;
 	}
 }
 
@@ -222,5 +222,5 @@ function isAnimated(media: ArticleMedia): boolean {
 }
 
 export function useFilters(articlesWithRefs: ArticleWithRefs[], filters: FilterInstance[]): ArticleWithRefs[] {
-	return articlesWithRefs.filter((articleWithRefs, i) => filters.every(f => !f.enabled || (keepArticle(articleWithRefs, i, f.filter) !== f.inverted)))
+	return articlesWithRefs.filter((articleWithRefs, i) => filters.every(f => !f.enabled || (keepArticle(articleWithRefs, i, f.filter) !== f.inverted)));
 }

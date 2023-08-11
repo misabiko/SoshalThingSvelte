@@ -1,31 +1,31 @@
-import type {TimelineData} from '../timelines'
-import {getWritable} from '../services/service'
-import type {Readable} from 'svelte/store'
-import {derived, get, readable} from 'svelte/store'
-import type {ArticleMedia} from './media'
+import type {TimelineData} from '../timelines';
+import {getWritable} from '../services/service';
+import type {Readable} from 'svelte/store';
+import {derived, get, readable} from 'svelte/store';
+import type {ArticleMedia} from './media';
 
 export default abstract class Article {
-	static readonly service: string
+	static readonly service: string;
 
-	readonly idPair: ArticleIdPair
-	readonly idPairStr: string
+	readonly idPair: ArticleIdPair;
+	readonly idPairStr: string;
 	abstract numberId: number | bigint
 
-	readonly text?: string
-	readonly textHtml?: string
-	readonly author?: ArticleAuthor
-	readonly creationTime?: Date
-	readonly url: string
-	readonly medias: ArticleMedia[]
+	readonly text?: string;
+	readonly textHtml?: string;
+	readonly author?: ArticleAuthor;
+	readonly creationTime?: Date;
+	readonly url: string;
+	readonly medias: ArticleMedia[];
 
-	markedAsRead: boolean
-	hidden: boolean
+	markedAsRead: boolean;
+	hidden: boolean;
 
-	readonly actualArticleRef?: ArticleRefIdPair
+	readonly actualArticleRef?: ArticleRefIdPair;
 	//readonly replyRef?: ArticleIdPair
 
-	fetched: boolean
-	rawSource: any
+	fetched: boolean;
+	rawSource: any;
 
 	protected constructor(params: {
 		id: ArticleId,
@@ -42,43 +42,43 @@ export default abstract class Article {
 		fetched?: boolean,
 		rawSource?: any,
 	}) {
-		this.text = params.text
-		this.textHtml = params.textHtml
-		this.url = params.url
-		this.medias = params.medias || []
-		this.markedAsRead = params.markedAsRead || params.markedAsReadStorage.includes(params.id.toString())
-		this.hidden = params.hidden || params.hiddenStorage.includes(params.id.toString())
-		this.actualArticleRef = params.actualArticleRef
+		this.text = params.text;
+		this.textHtml = params.textHtml;
+		this.url = params.url;
+		this.medias = params.medias || [];
+		this.markedAsRead = params.markedAsRead || params.markedAsReadStorage.includes(params.id.toString());
+		this.hidden = params.hidden || params.hiddenStorage.includes(params.id.toString());
+		this.actualArticleRef = params.actualArticleRef;
 		//this.replyRef = params.replyRef
-		this.fetched = params.fetched || false
-		this.rawSource = params.rawSource
+		this.fetched = params.fetched || false;
+		this.rawSource = params.rawSource;
 
 		this.idPair = {
 			service: (this.constructor as typeof Article).service,
 			id: params.id,
-		}
-		this.idPairStr = `${this.idPair.service}/${params.id}`
+		};
+		this.idPairStr = `${this.idPair.service}/${params.id}`;
 	}
 
 	update(newArticle: this) {
 		if (newArticle.creationTime !== undefined)
-			(this.creationTime as Date) = newArticle.creationTime
+			(this.creationTime as Date) = newArticle.creationTime;
 	}
 
 	//TODO Replace with dynamic action buttons
 	//Currently only used to sort by likes
 	getLikeCount() {
-		return 0
+		return 0;
 	}
 	getLiked() {
-		return false
+		return false;
 	}
 
 	getRepostCount() {
-		return 0
+		return 0;
 	}
 	getReposted() {
-		return false
+		return false;
 	}
 }
 
@@ -138,7 +138,7 @@ export interface ArticleIdPair {
 }
 
 export function idPairEqual(a: ArticleIdPair, b: ArticleIdPair) {
-	return a.service === b.service && a.id === b.id
+	return a.service === b.service && a.id === b.id;
 }
 
 export type ArticleRefIdPair =
@@ -154,22 +154,22 @@ export type ArticleRefIdPair =
 export function getRefed(ref: ArticleRefIdPair): ArticleIdPair[] {
 	switch (ref.type) {
 		case 'repost':
-			return [ref.reposted]
+			return [ref.reposted];
 		case 'quote':
-			return [ref.quoted]
+			return [ref.quoted];
 	}
 }
 
 export function articleWithRefToArray(articleWithRefs: ArticleWithRefs | ArticleProps): Article[] {
 	switch (articleWithRefs.type) {
 		case 'normal':
-			return [articleWithRefs.article]
+			return [articleWithRefs.article];
 		case 'repost':
-			return [articleWithRefs.article, ...articleWithRefToArray(articleWithRefs.reposted)]
+			return [articleWithRefs.article, ...articleWithRefToArray(articleWithRefs.reposted)];
 		case 'reposts':
-			return [...articleWithRefs.reposts, ...articleWithRefToArray(articleWithRefs.reposted)]
+			return [...articleWithRefs.reposts, ...articleWithRefToArray(articleWithRefs.reposted)];
 		case 'quote':
-			return [articleWithRefs.article, ...articleWithRefToArray(articleWithRefs.quoted)]
+			return [articleWithRefs.article, ...articleWithRefToArray(articleWithRefs.quoted)];
 	}
 }
 
@@ -185,9 +185,9 @@ export function getActualArticleIdPair(article: Article): Readonly<ArticleIdPair
 export function getRootArticle(articleWithRefs: ArticleWithRefs | ArticleProps) : Readonly<Article> {
 	switch (articleWithRefs.type) {
 		case 'reposts':
-			return articleWithRefs.reposts[0]
+			return articleWithRefs.reposts[0];
 		default:
-			return articleWithRefs.article
+			return articleWithRefs.article;
 	}
 }
 
@@ -195,10 +195,10 @@ export function getActualArticle(articleWithRefs: ArticleWithRefs | ArticleProps
 	switch (articleWithRefs.type) {
 		case 'normal':
 		case 'quote':
-			return articleWithRefs.article
+			return articleWithRefs.article;
 		case 'repost':
 		case 'reposts':
-			return getActualArticle(articleWithRefs.reposted)
+			return getActualArticle(articleWithRefs.reposted);
 	}
 }
 
@@ -208,7 +208,7 @@ export function deriveArticleRefs(article: Article): Readable<DerivedArticleWith
 			return readable({
 				type: 'normal',
 				article,
-			})
+			});
 		case 'repost':
 			return derived(getWritable(article.actualArticleRef.reposted), repostedArticle =>
 				({
@@ -216,7 +216,7 @@ export function deriveArticleRefs(article: Article): Readable<DerivedArticleWith
 					article,
 					reposted: deriveArticleRefs(repostedArticle),
 				} as DerivedArticleWithRefs)
-			)
+			);
 		case 'quote':
 			return derived(getWritable(article.actualArticleRef.quoted), quotedArticle =>
 				({
@@ -224,24 +224,24 @@ export function deriveArticleRefs(article: Article): Readable<DerivedArticleWith
 					article,
 					quoted: deriveArticleRefs(quotedArticle),
 				} as DerivedArticleWithRefs)
-			)
+			);
 	}
 }
 
 export function getDerivedArticleWithRefs(a: DerivedArticleWithRefs): ArticleWithRefs {
 	switch (a.type) {
 		case 'normal':
-			return a
+			return a;
 		case 'repost':
 			return {
 				...a,
 				reposted: getDerivedArticleWithRefs(get(a.reposted)) as ArticleWithRefs & Readonly<{type: 'normal' | 'quote'}>
-			}
+			};
 		case 'quote':
 			return {
 				...a,
 				quoted: getDerivedArticleWithRefs(get(a.quoted)) as ArticleWithRefs & Readonly<{type: 'normal' | 'quote'}>
-			}
+			};
 	}
 }
 
@@ -255,21 +255,21 @@ export type TimelineArticleProps = {
 	setModalTimeline: (data: TimelineData, width?: number) => void;
 }
 
-const MONTH_ABBREVS: string[] = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+const MONTH_ABBREVS: string[] = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 export function shortTimestamp(date: Date) {
-	const timeSince = Date.now() - date.getTime()
+	const timeSince = Date.now() - date.getTime();
 
 	if (timeSince < 1000)
-		return 'just now'
+		return 'just now';
 	else if (timeSince < 60_000)
-		return `${Math.floor(timeSince / 1000)}s`
+		return `${Math.floor(timeSince / 1000)}s`;
 	else if (timeSince < 3_600_000)
-		return `${Math.floor(timeSince / 60_000)}m`
+		return `${Math.floor(timeSince / 60_000)}m`;
 	else if (timeSince < 86_400_000)
-		return `${Math.floor(timeSince / 3_600_000)}h`
+		return `${Math.floor(timeSince / 3_600_000)}h`;
 	else if (timeSince < 604_800_000)
-		return `${Math.floor(timeSince / 86_400_000)}d`
+		return `${Math.floor(timeSince / 86_400_000)}d`;
 	else
-		return `${MONTH_ABBREVS[date.getMonth()]} ${date.getDate()} ${date.getFullYear()}`
+		return `${MONTH_ABBREVS[date.getMonth()]} ${date.getDate()} ${date.getFullYear()}`;
 }

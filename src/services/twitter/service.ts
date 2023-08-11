@@ -1,10 +1,10 @@
-import TwitterArticle from './article'
-import type {Service} from '../service'
-import {newService, registerService} from '../service'
-import {retweet, toggleFavorite} from './apiV1'
-import {STANDARD_ACTIONS} from '../actions'
-import Article, {type ArticleWithRefs, getRootArticle} from '../../articles'
-import type {Filter} from '../../filters'
+import TwitterArticle from './article';
+import type {Service} from '../service';
+import {newService, registerService} from '../service';
+import {retweet, toggleFavorite} from './apiV1';
+import {STANDARD_ACTIONS} from '../actions';
+import Article, {type ArticleWithRefs, getRootArticle} from '../../articles';
+import type {Filter} from '../../filters';
 
 //TODO Add service initialization point?
 export const TwitterService: Service<TwitterArticle> = {
@@ -13,31 +13,31 @@ export const TwitterService: Service<TwitterArticle> = {
 		[STANDARD_ACTIONS.like.key]: {
 			...STANDARD_ACTIONS.like,
 			action: toggleFavorite,
-			actionned(article) { return article.liked },
-			disabled(article) { return article.deleted },
-			count(article) { return article.likeCount },
+			actionned(article) { return article.liked; },
+			disabled(article) { return article.deleted; },
+			count(article) { return article.likeCount; },
 		},
 		[STANDARD_ACTIONS.repost.key]: {
 			...STANDARD_ACTIONS.repost,
 			togglable: false,
 			action: retweet,
-			actionned(article) { return article.retweeted },
-			disabled(article) { return article.deleted },
-			count(article) { return article.retweetCount },
+			actionned(article) { return article.retweeted; },
+			disabled(article) { return article.deleted; },
+			count(article) { return article.retweetCount; },
 		},
 	},
 	keepArticle(articleWithRefs: ArticleWithRefs, index: number, filter: Filter): boolean {
 		if ((getRootArticle(articleWithRefs).constructor as typeof Article).service !== 'Twitter')
-			return true
+			return true;
 
 		switch (filter.type) {
 			case 'notDeleted':
-				return !(getRootArticle(articleWithRefs) as TwitterArticle).deleted
+				return !(getRootArticle(articleWithRefs) as TwitterArticle).deleted;
 			default:
-				return true
+				return true;
 		}
 	}
-}
-TwitterArticle.service = TwitterService.name
+};
+TwitterArticle.service = TwitterService.name;
 
-registerService(TwitterService)
+registerService(TwitterService);

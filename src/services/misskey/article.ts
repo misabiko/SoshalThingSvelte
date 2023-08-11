@@ -34,12 +34,12 @@ export default class MisskeyArticle extends Article {
 			markedAsReadStorage,
 			hiddenStorage,
 			rawSource,
-		})
+		});
 	}
 
 	get numberId() {
 		//TODO Make id sorting per service and dissolve numberId
-		return 0
+		return 0;
 	}
 }
 
@@ -71,7 +71,7 @@ export function fromAPI(
 				mediaType = MediaType.Image;
 				break;
 			default:
-				console.warn('unrecognized type ' + f.type)
+				console.warn('unrecognized type ' + f.type);
 				mediaType = MediaType.Image;
 				break;
 		}
@@ -82,7 +82,7 @@ export function fromAPI(
 			queueLoadInfo: MediaLoadType.DirectLoad,
 			mediaType,
 			loaded: undefined,
-		}
+		};
 	});
 
 	const author = {
@@ -108,44 +108,44 @@ export function fromAPI(
 		);
 
 	if (note.renote !== undefined) {
-		const renoted = fromAPI(note.renote, markedAsReadStorage, hiddenStorage, true)
+		const renoted = fromAPI(note.renote, markedAsReadStorage, hiddenStorage, true);
 
 		if (note.text !== null) {
 			actualArticleRefIdPair = {
 				type: 'quote',
 				quoted: getRootArticle(renoted).idPair,
-			}
+			};
 
 			return {
 				type: 'quote',
 				article: makeArticle(),
 				quoted: renoted as ArticleWithRefs & {type: 'normal' | 'quote'},
-			}
+			};
 		}else {
 			if (renoted.type === 'quote') {
 				actualArticleRefIdPair = {
 					type: 'quote',
 					quoted: renoted.quoted.article.idPair,
-				}
+				};
 			}else {
 				actualArticleRefIdPair = {
 					type: 'repost',
 					reposted: getRootArticle(renoted).idPair,
-				}
+				};
 			}
 
 			return {
 				type: 'repost',
 				article: makeArticle(),
 				reposted: renoted as ArticleWithRefs & {type: 'normal' | 'quote'}
-			}
+			};
 		}
 	}
 
 	return {
 		type: 'normal',
 		article: makeArticle()
-	}
+	};
 }
 
 function parseText(rawText: string | null): string {
@@ -163,11 +163,11 @@ function mfmToHtml(node: MfmNode): string {
 		case 'unicodeEmoji':
 			return node.props.emoji;
 		case 'emojiCode':
-			const emoji = MisskeyService.emojis?.find(e => e.name === node.props.name || e.aliases.includes(node.props.name))
+			const emoji = MisskeyService.emojis?.find(e => e.name === node.props.name || e.aliases.includes(node.props.name));
 			if (emoji !== undefined)
 				return `<img class="emoji" src="${emoji.url}" alt="${node.props.name}"/>`;
 			else {
-				console.warn(`Unrecognized emoji :${node.props.name}:`)
+				console.warn(`Unrecognized emoji :${node.props.name}:`);
 				return `:${node.props.name}:`;
 			}
 		case 'inlineCode':

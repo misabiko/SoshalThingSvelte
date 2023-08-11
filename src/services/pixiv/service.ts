@@ -1,24 +1,24 @@
-import PixivArticle from './article'
-import type {FetchingService, Service} from '../service'
-import {getWritable, newFetchingService, newService, registerService} from '../service'
-import type {Writable} from 'svelte/store'
-import {get} from 'svelte/store'
-import type {ArticleIdPair} from '../../articles'
-import {STANDARD_ACTIONS} from '../actions'
-import {getServiceStorage} from '../../storages'
-import {getRatio, MediaLoadType, MediaType} from '../../articles/media'
-import {faFaceSmile} from '@fortawesome/free-solid-svg-icons'
+import PixivArticle from './article';
+import type {FetchingService, Service} from '../service';
+import {getWritable, newFetchingService, newService, registerService} from '../service';
+import type {Writable} from 'svelte/store';
+import {get} from 'svelte/store';
+import type {ArticleIdPair} from '../../articles';
+import {STANDARD_ACTIONS} from '../actions';
+import {getServiceStorage} from '../../storages';
+import {getRatio, MediaLoadType, MediaType} from '../../articles/media';
+import {faFaceSmile} from '@fortawesome/free-solid-svg-icons';
 
 export const PixivService: PixivServiceType = {
 	...newService('Pixiv'),
 	...newFetchingService(),
 	async fetchArticle(store: Writable<PixivArticle>) {
-		const article = get(store)
-		const json: PagesResponse = await fetch(`https://www.pixiv.net/ajax/illust/${article.id}/pages`).then(r => r.json())
+		const article = get(store);
+		const json: PagesResponse = await fetch(`https://www.pixiv.net/ajax/illust/${article.id}/pages`).then(r => r.json());
 
 		store.update(a => {
 			for (let i = 0; i < a.medias.length; ++i) {
-				const page = json.body[i]
+				const page = json.body[i];
 				a.medias[i] = {
 					src: page.urls.original,
 					ratio: getRatio(page.width, page.height),
@@ -28,14 +28,14 @@ export const PixivService: PixivServiceType = {
 						src: a.medias[i].src
 					}: undefined,
 					loaded: false
-				}
+				};
 			}
 
-			a.fetched = true
-			PixivService.fetchedArticles.delete(article.idPair.id)
+			a.fetched = true;
+			PixivService.fetchedArticles.delete(article.idPair.id);
 
-			return a
-		})
+			return a;
+		});
 	},
 	articleActions: {
 		[STANDARD_ACTIONS.like.key]: {
@@ -45,9 +45,9 @@ export const PixivService: PixivServiceType = {
 			color: undefined,
 			togglable: false,
 			async action(idPair: ArticleIdPair) {
-				const csrfToken = getServiceStorage(PixivService.name)['csrfToken'] as string | undefined
+				const csrfToken = getServiceStorage(PixivService.name)['csrfToken'] as string | undefined;
 				if (!csrfToken)
-				 	return
+				 	return;
 
 				const response : LikeResponse = await fetch('https://www.pixiv.net/ajax/illusts/like', {
 					method: "POST",
@@ -60,24 +60,24 @@ export const PixivService: PixivServiceType = {
 						'X-CSRF-TOKEN': csrfToken,
 					},
 					body: JSON.stringify({illust_id: idPair.id}),
-				}).then(r => r.json())
+				}).then(r => r.json());
 
 				if (response.error) {
-					console.error("Error during like: ", response)
-					return
+					console.error("Error during like: ", response);
+					return;
 				}
 
 				if (response.body.is_liked)
-					console.debug(idPair.id + ' was already liked.')
+					console.debug(idPair.id + ' was already liked.');
 				else
-					console.debug('Liked ' + idPair.id)
+					console.debug('Liked ' + idPair.id);
 
 				getWritable<PixivArticle>(idPair).update(a => {
-					a.liked = true
-					return a
-				})
+					a.liked = true;
+					return a;
+				});
 			},
-			actionned(article) { return article.liked },
+			actionned(article) { return article.liked; },
 		},
 		bookmark: {
 			name: 'Bookmark',
@@ -87,12 +87,12 @@ export const PixivService: PixivServiceType = {
 			togglable: false,
 			index: 1,
 			async action(idPair) {
-				const storage = getServiceStorage(PixivService.name)
-				const csrfToken = storage['csrfToken'] as string | undefined
+				const storage = getServiceStorage(PixivService.name);
+				const csrfToken = storage['csrfToken'] as string | undefined;
 				if (!csrfToken)
-					return
+					return;
 
-				const privateBookmark = (storage['privateBookmark'] as boolean | undefined) ?? false
+				const privateBookmark = (storage['privateBookmark'] as boolean | undefined) ?? false;
 
 				const response : BookmarkResponse = await fetch('https://www.pixiv.net/ajax/illusts/bookmarks/add', {
 					method: "POST",
@@ -110,27 +110,27 @@ export const PixivService: PixivServiceType = {
 						comment: "",
 						tags: [],
 					}),
-				}).then(r => r.json())
+				}).then(r => r.json());
 
 				if (response.error) {
-					console.error("Error during bookmark: ", response)
-					return
+					console.error("Error during bookmark: ", response);
+					return;
 				}
 
-				console.debug('Bookmarked ' + idPair.id)
+				console.debug('Bookmarked ' + idPair.id);
 
 				getWritable<PixivArticle>(idPair).update(a => {
-					a.bookmarked = true
-					return a
-				})
+					a.bookmarked = true;
+					return a;
+				});
 			},
-			actionned(article) { return article.bookmarked === true },
+			actionned(article) { return article.bookmarked === true; },
 		}
 	}
-}
-PixivArticle.service = PixivService.name
+};
+PixivArticle.service = PixivService.name;
 
-registerService(PixivService)
+registerService(PixivService);
 
 interface PixivServiceType extends Service<PixivArticle>, FetchingService<PixivArticle> {}
 

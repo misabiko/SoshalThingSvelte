@@ -28,15 +28,15 @@ type ValidRatio = number;
 
 export function getRatio(width: number, height: number): ValidRatio {
 	if (isNaN(width))
-		throw 'Width is NaN'
+		throw 'Width is NaN';
 	if (isNaN(height))
-		throw 'Height is NaN'
+		throw 'Height is NaN';
 	if (width <= 0)
-		throw "Width isn't positive"
+		throw "Width isn't positive";
 	if (height <= 0)
-		throw "Height isn't positive"
+		throw "Height isn't positive";
 
-	return height / width
+	return height / width;
 }
 
 export enum MediaType {

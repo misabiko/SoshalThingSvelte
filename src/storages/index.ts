@@ -1,42 +1,42 @@
-import type {FullscreenInfo, TimelineCollection, TimelineEndpoint, TimelineView} from '../timelines'
-import type {SvelteComponent} from 'svelte'
-import ColumnContainer from '../containers/ColumnContainer.svelte'
-import RowContainer from '../containers/RowContainer.svelte'
-import MasonryContainer from '../containers/MasonryContainer.svelte'
-import SocialArticleView from '../articles/social/SocialArticleView.svelte'
-import GalleryArticleView from '../articles/gallery/GalleryArticleView.svelte'
-import {getServices} from '../services/service'
-import type {FilterInstance} from '../filters'
-import type {SortInfo} from '../sorting'
-import {SortMethod} from '../sorting'
-import {defaultTimeline} from '../timelines'
-import {defaultFilterInstances} from '../filters'
+import type {FullscreenInfo, TimelineCollection, TimelineEndpoint, TimelineView} from '../timelines';
+import type {SvelteComponent} from 'svelte';
+import ColumnContainer from '../containers/ColumnContainer.svelte';
+import RowContainer from '../containers/RowContainer.svelte';
+import MasonryContainer from '../containers/MasonryContainer.svelte';
+import SocialArticleView from '../articles/social/SocialArticleView.svelte';
+import GalleryArticleView from '../articles/gallery/GalleryArticleView.svelte';
+import {getServices} from '../services/service';
+import type {FilterInstance} from '../filters';
+import type {SortInfo} from '../sorting';
+import {SortMethod} from '../sorting';
+import {defaultTimeline} from '../timelines';
+import {defaultFilterInstances} from '../filters';
 import {
 	addEndpoint,
 	Endpoint,
 	endpoints,
 	RefreshType,
 	startAutoRefresh,
-} from '../services/endpoints'
-import type {EndpointConstructorParams} from '../services/endpoints'
-import {derived, get} from 'svelte/store'
+} from '../services/endpoints';
+import type {EndpointConstructorParams} from '../services/endpoints';
+import {derived, get} from 'svelte/store';
 
-export const MAIN_STORAGE_KEY = 'SoshalThingSvelte'
-export const TIMELINE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Timelines'
+export const MAIN_STORAGE_KEY = 'SoshalThingSvelte';
+export const TIMELINE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Timelines';
 
 export function loadMainStorage() {
-	const item = localStorage.getItem(MAIN_STORAGE_KEY)
-	const mainStorage: MainStorage = item ? JSON.parse(item) : {}
+	const item = localStorage.getItem(MAIN_STORAGE_KEY);
+	const mainStorage: MainStorage = item ? JSON.parse(item) : {};
 
 	mainStorage.timelineIds ??= null;
 
 	(mainStorage as MainStorageParsed).fullscreen = parseFullscreenInfo(mainStorage.fullscreen);
 
 	if (!mainStorage.maximized)
-		mainStorage.maximized = false
+		mainStorage.maximized = false;
 
 	if (!mainStorage.timelineViews)
-		mainStorage.timelineViews = {}
+		mainStorage.timelineViews = {};
 	else
 		for (const view in mainStorage.timelineViews)
 			if (mainStorage.timelineViews.hasOwnProperty(view))
@@ -44,34 +44,34 @@ export function loadMainStorage() {
 
 	(mainStorage as MainStorageParsed).defaultTimelineView = mainStorage.defaultTimelineView ?? null;
 
-	return mainStorage as MainStorageParsed
+	return mainStorage as MainStorageParsed;
 }
 
 export function getServiceStorage(service: string): { [key: string]: any } {
-	const storageKey = `${MAIN_STORAGE_KEY} ${service}`
-	const item = localStorage.getItem(storageKey)
-	return item ? JSON.parse(item) : {}
+	const storageKey = `${MAIN_STORAGE_KEY} ${service}`;
+	const item = localStorage.getItem(storageKey);
+	return item ? JSON.parse(item) : {};
 }
 
 export function updateServiceStorage(service: string, key: string, value: any) {
-	const storageKey = `${MAIN_STORAGE_KEY} ${service}`
-	const item = localStorage.getItem(storageKey)
-	const storage = item ? JSON.parse(item) : {}
-	storage[key] = value
+	const storageKey = `${MAIN_STORAGE_KEY} ${service}`;
+	const item = localStorage.getItem(storageKey);
+	const storage = item ? JSON.parse(item) : {};
+	storage[key] = value;
 
-	localStorage.setItem(storageKey, JSON.stringify(storage))
+	localStorage.setItem(storageKey, JSON.stringify(storage));
 }
 
 export function updateMainStorage(key: string, value: any) {
-	const item = localStorage.getItem(MAIN_STORAGE_KEY)
-	const storage = item ? JSON.parse(item) : {}
-	storage[key] = value
+	const item = localStorage.getItem(MAIN_STORAGE_KEY);
+	const storage = item ? JSON.parse(item) : {};
+	storage[key] = value;
 
-	localStorage.setItem(MAIN_STORAGE_KEY, JSON.stringify(storage))
+	localStorage.setItem(MAIN_STORAGE_KEY, JSON.stringify(storage));
 }
 
 export function updateMaximized(maximized: boolean) {
-	updateMainStorage('maximized', maximized)
+	updateMainStorage('maximized', maximized);
 }
 
 export function updateFullscreenStorage(fullscreen: FullscreenInfo) {
@@ -79,12 +79,12 @@ export function updateFullscreenStorage(fullscreen: FullscreenInfo) {
 	if (stringified.container)
 		stringified.container = stringified.container.name;
 
-	updateMainStorage('fullscreen', stringified)
+	updateMainStorage('fullscreen', stringified);
 }
 
 export function loadTimelines(): TimelineCollection {
-	const item = localStorage.getItem(TIMELINE_STORAGE_KEY)
-	let storage: {[id: string]: Partial<TimelineStorage>} = item ? JSON.parse(item) : []
+	const item = localStorage.getItem(TIMELINE_STORAGE_KEY);
+	let storage: {[id: string]: Partial<TimelineStorage>} = item ? JSON.parse(item) : [];
 	if (storage instanceof Array) {
 		console.warn("SoshalThingSvelte Timelines should be an object {[id: string]: TimelineStorage}");
 		storage = Object.assign({}, storage);
@@ -94,16 +94,16 @@ export function loadTimelines(): TimelineCollection {
 		const defaulted: TimelineStorage = {
 			...DEFAULT_TIMELINE_STORAGE,
 			...t,
-		}
+		};
 
-		const endpoints: TimelineEndpoint[] = []
+		const endpoints: TimelineEndpoint[] = [];
 		for (const endpointStorage of defaulted.endpoints) {
-			const endpoint = parseAndLoadEndpoint(endpointStorage)
+			const endpoint = parseAndLoadEndpoint(endpointStorage);
 			if (endpoint !== undefined && !endpoints.find(e => e.name === endpoint.name))
-				endpoints.push(endpoint)
+				endpoints.push(endpoint);
 		}
 
-		parseFilters(defaulted.filters)
+		parseFilters(defaulted.filters);
 
 		return [id, {
 			...defaultTimeline(),
@@ -119,22 +119,22 @@ export function loadTimelines(): TimelineCollection {
 				useSection: false,
 				count: 100
 			}
-		}]
-	}))
+		}];
+	}));
 }
 
 function parseContainer(container: string | undefined): typeof SvelteComponent {
 	switch(container) {
 		case 'Row':
 		case 'RowContainer':
-			return RowContainer
+			return RowContainer;
 		case 'Masonry':
 		case 'MasonryContainer':
-			return MasonryContainer
+			return MasonryContainer;
 		case 'Column':
 		case 'ColumnContainer':
 		default:
-			return ColumnContainer
+			return ColumnContainer;
 	}
 }
 
@@ -143,99 +143,99 @@ function parseArticleView(articleView: string | undefined): typeof SvelteCompone
 		case 'Gallery':
 		case 'GalleryArticle':
 		case 'GalleryArticleView':
-			return GalleryArticleView
+			return GalleryArticleView;
 		case 'Social':
 		case 'SocialArticle':
 		case 'SocialArticleView':
 		default:
-			return SocialArticleView
+			return SocialArticleView;
 	}
 }
 
 function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | undefined {
-	const services = getServices()
-	const endpointsValue = get(derived(Object.values(endpoints), e => e))
+	const services = getServices();
+	const endpointsValue = get(derived(Object.values(endpoints), e => e));
 	if (!services.hasOwnProperty(storage.service)) {
-		console.error(`"${storage.service}" isn't a registered service`)
-		return undefined
+		console.error(`"${storage.service}" isn't a registered service`);
+		return undefined;
 	}else if (services[storage.service].endpointConstructors.length <= storage.endpointType) {
-		console.error(`"${storage.service}" doesn't have endpointType "${storage.endpointType}"`)
-		return undefined
+		console.error(`"${storage.service}" doesn't have endpointType "${storage.endpointType}"`);
+		return undefined;
 	}
 
-	const constructorInfo = services[storage.service].endpointConstructors[storage.endpointType]
+	const constructorInfo = services[storage.service].endpointConstructors[storage.endpointType];
 
 	let endpoint = endpointsValue.find(endpoint =>
 		constructorInfo.name === (endpoint.constructor as typeof Endpoint).constructorInfo.name &&
 		endpoint.matchParams(storage.params)
-	)
+	);
 
 	if (endpoint === undefined) {
 		if (storage.params === undefined)
-			storage.params = {}
+			storage.params = {};
 
 		for (const [param, defaultValue] of constructorInfo.paramTemplate)
 			if (!storage.params.hasOwnProperty(param))
-				storage.params[param] = defaultValue
+				storage.params[param] = defaultValue;
 
-		endpoint = constructorInfo.constructor(storage.params)
-		addEndpoint(endpoint)
+		endpoint = constructorInfo.constructor(storage.params);
+		addEndpoint(endpoint);
 	}
 
-	const refreshTypes = new Set<RefreshType>()
+	const refreshTypes = new Set<RefreshType>();
 	if (storage.onStart === undefined ? true : storage.onStart)
-		refreshTypes.add(RefreshType.RefreshStart)
+		refreshTypes.add(RefreshType.RefreshStart);
 	if (storage.onRefresh === undefined ? true : storage.onRefresh)
-		refreshTypes.add(RefreshType.Refresh)
+		refreshTypes.add(RefreshType.Refresh);
 	if (storage.loadTop === undefined ? true : storage.loadTop)
-		refreshTypes.add(RefreshType.LoadTop)
+		refreshTypes.add(RefreshType.LoadTop);
 	if (storage.loadBottom === undefined ? true : storage.loadBottom)
-		refreshTypes.add(RefreshType.LoadBottom)
+		refreshTypes.add(RefreshType.LoadBottom);
 
 	if (storage.autoRefresh)
-		startAutoRefresh(endpoint.name)
+		startAutoRefresh(endpoint.name);
 
-	parseFilters(storage.filters)
+	parseFilters(storage.filters);
 
 	return {
 		name: endpoint.name,
 		refreshTypes,
 		filters: storage.filters || [],
-	}
+	};
 }
 
 function parseSortInfo({method, reversed}: TimelineStorage['sortInfo']): SortInfo {
-	let sortMethod: SortMethod | null = null
+	let sortMethod: SortMethod | null = null;
 	switch (method?.toLowerCase()) {
 		case 'id':
-			sortMethod = SortMethod.Id
+			sortMethod = SortMethod.Id;
 			break;
 		case 'date':
-			sortMethod = SortMethod.Date
+			sortMethod = SortMethod.Date;
 			break;
 		case 'likes':
-			sortMethod = SortMethod.Likes
+			sortMethod = SortMethod.Likes;
 			break;
 		case 'reposts':
-			sortMethod = SortMethod.Reposts
+			sortMethod = SortMethod.Reposts;
 			break;
 	}
 	return {
 		method: sortMethod,
 		customMethod: null,
 		reversed: reversed || false
-	}
+	};
 }
 
 function parseFilters(filters: FilterInstance[] | undefined) {
 	if (filters === undefined)
-		return
+		return;
 
 	for (const instance of filters) {
 		instance.filter.service ??= null;
 
 		if (instance.filter.service !== null && !Object.hasOwn(getServices(), instance.filter.service))
-			console.error(`Service ${instance.filter.service} isn't registered.`, instance)
+			console.error(`Service ${instance.filter.service} isn't registered.`, instance);
 	}
 }
 
@@ -245,25 +245,25 @@ function parseFullscreenInfo(fullscreen?: boolean | number | FullscreenInfoStora
 			index: null,
 			columnCount: null,
 			container: null
-		}
+		};
 	else if (fullscreen === true)
 		fullscreen = {
 			index: 0,
 			columnCount: null,
 			container: null
-		}
+		};
 	else if (typeof fullscreen === 'number')
 		fullscreen = {
 			index: fullscreen,
 			columnCount: null,
 			container: null,
-		}
+		};
 
-	const containerString = fullscreen?.container as string | undefined
+	const containerString = fullscreen?.container as string | undefined;
 	if (containerString)
-		(fullscreen as FullscreenInfo).container = parseContainer(containerString)
+		(fullscreen as FullscreenInfo).container = parseContainer(containerString);
 
-	return fullscreen
+	return fullscreen;
 }
 
 type MainStorage = Partial<MainStorageParsed> & {
@@ -323,7 +323,7 @@ const DEFAULT_TIMELINE_STORAGE: TimelineStorage = {
 		method: null,
 		reversed: false,
 	}
-}
+};
 
 type EndpointStorage = {
 	service: string

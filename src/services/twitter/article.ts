@@ -1,10 +1,10 @@
-import type {ArticleAuthor, ArticleRefIdPair} from '../../articles'
-import Article from '../../articles'
-import type {ArticleMedia} from '../../articles/media'
+import type {ArticleAuthor, ArticleRefIdPair} from '../../articles';
+import Article from '../../articles';
+import type {ArticleMedia} from '../../articles/media';
 
 export default class TwitterArticle extends Article {
 	static service: string;
-	deleted = false
+	deleted = false;
 
 	constructor(
 		readonly id: bigint,
@@ -40,27 +40,27 @@ export default class TwitterArticle extends Article {
 	}
 
 	get numberId() {
-		return BigInt(this.id)
+		return BigInt(this.id);
 	}
 
 	update(newArticle: this) {
-		super.update(newArticle)
+		super.update(newArticle);
 
-		this.deleted ||= newArticle.deleted
+		this.deleted ||= newArticle.deleted;
 	}
 
 	getLikeCount(): number {
-		return this.likeCount
+		return this.likeCount;
 	}
 	getLiked(): boolean {
-		return this.liked
+		return this.liked;
 	}
 
 	getRepostCount(): number {
-		return this.retweetCount
+		return this.retweetCount;
 	}
 	getReposted(): boolean {
-		return this.retweeted
+		return this.retweeted;
 	}
 }
 

@@ -1,72 +1,72 @@
-import {type EndpointConstructorInfo, LoadableEndpoint, PageEndpoint, RefreshType} from '../../endpoints'
-import type {ArticleWithRefs} from '../../../articles'
-import {PixivService} from '../service'
-import {getHiddenStorage, getMarkedAsReadStorage} from '../../../storages/serviceCache'
-import type {PixivUser} from '../article'
-import PixivArticle from '../article'
-import {getCurrentPage, getEachPageURL, getUserUrl, parseThumbnail} from './index'
-import {MediaLoadType, MediaType} from '../../../articles/media'
+import {type EndpointConstructorInfo, LoadableEndpoint, PageEndpoint, RefreshType} from '../../endpoints';
+import type {ArticleWithRefs} from '../../../articles';
+import {PixivService} from '../service';
+import {getHiddenStorage, getMarkedAsReadStorage} from '../../../storages/serviceCache';
+import type {PixivUser} from '../article';
+import PixivArticle from '../article';
+import {getCurrentPage, getEachPageURL, getUserUrl, parseThumbnail} from './index';
+import {MediaLoadType, MediaType} from '../../../articles/media';
 import {avatarHighRes} from "./bookmarks";
 
 export class FollowPageEndpoint extends PageEndpoint {
-	readonly name = 'Follow Endpoint'
-	readonly service = PixivService.name
-	readonly hostPage: number
+	readonly name = 'Follow Endpoint';
+	readonly service = PixivService.name;
+	readonly hostPage: number;
 
 	constructor() {
-		super()
+		super();
 
-		this.hostPage = getCurrentPage()
+		this.hostPage = getCurrentPage();
 	}
 
 	matchParams(_params: any): boolean {
-		return true
+		return true;
 	}
 
 	parsePage(document: HTMLElement): ArticleWithRefs[] {
-		const thumbnails = document.querySelector('section ul')?.children
+		const thumbnails = document.querySelector('section ul')?.children;
 		if (!thumbnails)
-			throw "Couldn't find thumbnails"
-		const markedAsReadStorage = getMarkedAsReadStorage(PixivService)
-		const hiddenStorage = getHiddenStorage(PixivService)
+			throw "Couldn't find thumbnails";
+		const markedAsReadStorage = getMarkedAsReadStorage(PixivService);
+		const hiddenStorage = getHiddenStorage(PixivService);
 
-		return [...thumbnails].map(t => this.parseThumbnail(t, markedAsReadStorage, hiddenStorage)).filter(a => a !== null) as ArticleWithRefs[]
+		return [...thumbnails].map(t => this.parseThumbnail(t, markedAsReadStorage, hiddenStorage)).filter(a => a !== null) as ArticleWithRefs[];
 	}
 
 	parseThumbnail(element: Element, markedAsReadStorage: string[], hiddenStorage: string[]): ArticleWithRefs | null {
-		const userAnchor = element.querySelector('section li > div > div:nth-last-child(1) > div > a') as HTMLAnchorElement
-		const userId = parseInt(userAnchor.getAttribute('data-gtm-value') as string)
-		const name = userAnchor.textContent as string
+		const userAnchor = element.querySelector('section li > div > div:nth-last-child(1) > div > a') as HTMLAnchorElement;
+		const userId = parseInt(userAnchor.getAttribute('data-gtm-value') as string);
+		const name = userAnchor.textContent as string;
 		const user: PixivUser = {
 			name,
 			username: name,
 			id: userId,
 			url: getUserUrl(userId)
-		}
+		};
 
-		return parseThumbnail(element, markedAsReadStorage, hiddenStorage, user)
+		return parseThumbnail(element, markedAsReadStorage, hiddenStorage, user);
 	}
 }
 
 export class FollowAPIEndpoint extends LoadableEndpoint {
-	readonly name = 'Pixiv Follow API Endpoint'
-	readonly service = PixivService.name
+	readonly name = 'Pixiv Follow API Endpoint';
+	readonly service = PixivService.name;
 
 	constructor(public currentPage = 0, readonly r18 = false) {
-		super()
+		super();
 
 		if (this.currentPage > 0)
-			this.refreshTypes.add(RefreshType.LoadTop)
+			this.refreshTypes.add(RefreshType.LoadTop);
 	}
 
 	async _refresh(_refreshType: RefreshType): Promise<ArticleWithRefs[]> {
-		const url = new URL('https://www.pixiv.net/ajax/follow_latest/illust')
-		url.searchParams.set('p', (this.currentPage + 1).toString())
-		url.searchParams.set('mode', this.r18 ? 'r18' : 'all')
-		const response: FollowAPIResponse = await fetch(url.toString()).then(r => r.json())
+		const url = new URL('https://www.pixiv.net/ajax/follow_latest/illust');
+		url.searchParams.set('p', (this.currentPage + 1).toString());
+		url.searchParams.set('mode', this.r18 ? 'r18' : 'all');
+		const response: FollowAPIResponse = await fetch(url.toString()).then(r => r.json());
 
-		const markedAsReadStorage = getMarkedAsReadStorage(PixivService)
-		const hiddenStorage = getHiddenStorage(PixivService)
+		const markedAsReadStorage = getMarkedAsReadStorage(PixivService);
+		const hiddenStorage = getHiddenStorage(PixivService);
 
 		//For now, I'm only parsing illusts, not novels
 		return response.body.thumbnails.illust.map(illust => {
@@ -94,12 +94,12 @@ export class FollowAPIEndpoint extends LoadableEndpoint {
 					illust,
 					null,
 				),
-			}
-		})
+			};
+		});
 	}
 
 	matchParams(params: any): boolean {
-		return this.r18 === params.r18
+		return this.r18 === params.r18;
 	}
 
 	static readonly constructorInfo: EndpointConstructorInfo = {
@@ -109,7 +109,7 @@ export class FollowAPIEndpoint extends LoadableEndpoint {
 			['r18', false],
 		],
 		constructor: params => new FollowAPIEndpoint(params.page as number, params.r18 as boolean)
-	}
+	};
 }
 
 type FollowAPIResponse = {

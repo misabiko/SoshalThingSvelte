@@ -1,9 +1,9 @@
-import type {ArticleIdPair} from '../articles'
-import {getServices, toggleHide, toggleMarkAsRead} from './service'
-import type {IconDefinition} from '@fortawesome/free-solid-svg-icons'
-import {faHeart as faHeartReg} from '@fortawesome/free-regular-svg-icons'
-import {faEye, faEyeSlash, faHeart, faRetweet} from '@fortawesome/free-solid-svg-icons'
-import type Article from '../articles'
+import type {ArticleIdPair} from '../articles';
+import {getServices, toggleHide, toggleMarkAsRead} from './service';
+import type {IconDefinition} from '@fortawesome/free-solid-svg-icons';
+import {faHeart as faHeartReg} from '@fortawesome/free-regular-svg-icons';
+import {faEye, faEyeSlash, faHeart, faRetweet} from '@fortawesome/free-solid-svg-icons';
+import type Article from '../articles';
 
 export type ArticleAction<A extends Article = Article> = {
 	action: (idPair: ArticleIdPair) => void
@@ -60,24 +60,24 @@ export const STANDARD_ACTIONS: { [key: string]: StandardAction } = {
 		togglable: true,
 		index: 4,
 	},
-}
+};
 
 export function articleAction(action: string, idPair: ArticleIdPair) {
 	switch (action) {
 		case STANDARD_ACTIONS.markAsRead.key:
-			toggleMarkAsRead(idPair)
-			break
+			toggleMarkAsRead(idPair);
+			break;
 		case STANDARD_ACTIONS.hide.key:
-			toggleHide(idPair)
-			break
+			toggleHide(idPair);
+			break;
 		default:
 			if (getServices()[idPair.service].articleActions.hasOwnProperty(action))
-				getServices()[idPair.service].articleActions[action].action(idPair)
+				getServices()[idPair.service].articleActions[action].action(idPair);
 			else
-				console.warn(`${idPair.service} doesn't have action ${action}.`)
+				console.warn(`${idPair.service} doesn't have action ${action}.`);
 	}
 }
 
 export function getArticleAction(action: string, service: string) {
-	return getServices()[service].articleActions[action]
+	return getServices()[service].articleActions[action];
 }

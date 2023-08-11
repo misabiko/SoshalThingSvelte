@@ -1,4 +1,4 @@
-import Article from '../../articles'
+import Article from '../../articles';
 
 export default class DummyArticle extends Article {
 	static service: string;
@@ -19,24 +19,24 @@ export default class DummyArticle extends Article {
 			hidden: false,
 			markedAsReadStorage,
 			hiddenStorage,
-		})
+		});
 	}
 
 	get numberId() {
-		return this.id
+		return this.id;
 	}
 
 	getLikeCount(): number {
-		return this.liked ? 1 : 0
+		return this.liked ? 1 : 0;
 	}
 	getLiked(): boolean {
-		return this.liked
+		return this.liked;
 	}
 
 	getRepostCount(): number {
-		return this.reposted ? 1 : 0
+		return this.reposted ? 1 : 0;
 	}
 	getReposted(): boolean {
-		return this.reposted
+		return this.reposted;
 	}
 }

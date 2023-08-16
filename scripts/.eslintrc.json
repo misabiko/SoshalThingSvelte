@@ -1,0 +1,7 @@
+{
+    "env": {
+		"browser": false,
+		"webextensions": false,
+		"node": true
+    }
+}

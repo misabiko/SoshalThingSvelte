@@ -1,6 +1,6 @@
 import fs from 'fs';
 import esbuild from 'esbuild';
-import {buildOptions, errorHandler} from "./buildscript.js";
+import {buildOptions, errorHandler} from './buildscript.js';
 import glob from 'resolve-glob';
 
 const outdir = './dist-test';

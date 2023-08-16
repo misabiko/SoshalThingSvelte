@@ -1,6 +1,6 @@
-import esbuild from "esbuild";
-import {buildOptions, errorHandler} from "./buildscript.js";
-import fs from "fs";
+import esbuild from 'esbuild';
+import {buildOptions, errorHandler} from './buildscript.js';
+import fs from 'fs';
 
 const outdir = './chrome extension/dist';
 
@@ -13,7 +13,7 @@ const extensionBuildOptions = {
 	],
 	outdir,
 	splitting: false,
-	format: `iife`,
+	format: 'iife',
 };
 
 if (!fs.existsSync(outdir))

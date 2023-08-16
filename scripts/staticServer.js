@@ -1,5 +1,3 @@
-//TODO Move to scripts folder, and set eslint mode to node
-
 import express from 'express';
 
 const app = express();

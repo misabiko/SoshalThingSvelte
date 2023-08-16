@@ -23,10 +23,10 @@ const DedupSvelteInternalPlugin = {
 const outdir = './dist';
 
 
-let entryPoint = './src/entry.ts'
-const entryIndex = process.argv.findIndex(s => s === '--entry')
+let entryPoint = './src/entry.ts';
+const entryIndex = process.argv.findIndex(s => s === '--entry');
 if (entryIndex > -1 && process.argv.length >= entryIndex)
-	entryPoint = path.join(dirname(fileURLToPath(import.meta.url)), process.argv[entryIndex + 1])
+	entryPoint = path.join(dirname(fileURLToPath(import.meta.url)), process.argv[entryIndex + 1]);
 
 export const buildOptions = {
 	entryPoints: [entryPoint],
@@ -38,8 +38,8 @@ export const buildOptions = {
 	sourcemap: 'inline',
 	splitting: true,
 	write: true,
-	format: `esm`,
-	watch: process.argv.includes(`--watch`),
+	format: 'esm',
+	watch: process.argv.includes('--watch'),
 	plugins: [
 		esbuildSvelte({
 			compilerOptions: {dev: true},
@@ -60,7 +60,7 @@ export const buildOptions = {
 };
 
 export const errorHandler = (error, location) => {
-	console.warn(`Errors: `, error, location);
+	console.warn('Errors: ', error, location);
 	process.exit(1);
 };
 
@@ -68,10 +68,10 @@ export const errorHandler = (error, location) => {
 if (!fs.existsSync(outdir))
 	fs.mkdirSync(outdir);
 
-let port = 8080
-const portIndex = process.argv.findIndex(s => s === '--port')
+let port = 8080;
+const portIndex = process.argv.findIndex(s => s === '--port');
 if (portIndex > -1 && process.argv.length >= portIndex)
-	port = parseInt(process.argv[portIndex + 1])
+	port = parseInt(process.argv[portIndex + 1]);
 
 if (process.argv.includes('--serve'))
 	esbuild
@@ -80,10 +80,10 @@ if (process.argv.includes('--serve'))
 			servedir: outdir,
 		}, {
 			...buildOptions,
-			logLevel: `debug`,
+			logLevel: 'debug',
 		})
 		.then(({host, port}) => {
-			console.log(`Serving at ${host}:${port}...`)
+			console.log(`Serving at ${host}:${port}...`);
 		})
 		.catch(errorHandler);
 else
@@ -102,7 +102,7 @@ for (const file of [
 	'site.webmanifest',
 	'CNAME'
 ])
-	fs.copyFileSync('./static/' + file, './dist/' + file)
+	fs.copyFileSync('./static/' + file, './dist/' + file);
 
 // maybe incorporate svelte-check or tsc too?
 // https://github.com/EMH333/esbuild-svelte/blob/main/build.js

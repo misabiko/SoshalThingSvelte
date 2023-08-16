@@ -12,7 +12,7 @@ type TimelineEndpoints = {
 	endpoints: TimelineEndpoint[],
 	addArticles: (idPairs: ArticleIdPair[]) => void
 }
-export let timelineEndpoints = writable<TimelineEndpoints[]>([]);
+export const timelineEndpoints = writable<TimelineEndpoints[]>([]);
 let timelineEndpointsValue: TimelineEndpoints[];
 timelineEndpoints.subscribe(value => timelineEndpointsValue = value);
 
@@ -156,7 +156,7 @@ export type RateLimitInfo = {
 }
 
 export function addEndpoint(endpoint: Endpoint) {
-	if (endpoints.hasOwnProperty(endpoint.name))
+	if (Object.hasOwn(endpoints, endpoint.name))
 		console.warn(`Endpoint ${endpoint.name} already exists`);
 	else
 		endpoints[endpoint.name] = writable(endpoint);

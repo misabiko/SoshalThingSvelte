@@ -52,7 +52,7 @@ export function fromAPI(
 	note: Note,
 	markedAsReadStorage: string[],
 	hiddenStorage: string[],
-	isRef = false,
+	_isRef = false,
 ): ArticleWithRefs {
 	let textHtml = note.text || '';
 	try {
@@ -162,7 +162,7 @@ function mfmToHtml(node: MfmNode): string {
 			return node.props.text;
 		case 'unicodeEmoji':
 			return node.props.emoji;
-		case 'emojiCode':
+		case 'emojiCode': {
 			const emoji = MisskeyService.emojis?.find(e => e.name === node.props.name || e.aliases.includes(node.props.name));
 			if (emoji !== undefined)
 				return `<img class="emoji" src="${emoji.url}" alt="${node.props.name}"/>`;
@@ -170,6 +170,7 @@ function mfmToHtml(node: MfmNode): string {
 				console.warn(`Unrecognized emoji :${node.props.name}:`);
 				return `:${node.props.name}:`;
 			}
+		}
 		case 'inlineCode':
 			return node.props.code;
 		case 'mathInline':

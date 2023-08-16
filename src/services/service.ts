@@ -40,7 +40,7 @@ export function addArticles(service: Service<any>, ignoreRefs: boolean, ...artic
 		: articlesWithRefs.flatMap(articleWithRefToArray);
 
 	for (const article of articles) {
-		if (service.articles.hasOwnProperty(article.idPair.id as string)) {
+		if (Object.hasOwn(service.articles, article.idPair.id as string)) {
 			service.articles[article.idPair.id as string].update(a => {
 				a.update(article);
 				return a;
@@ -65,7 +65,7 @@ export function getServices(): Readonly<{ [name: string]: Service }> {
 export function toggleMarkAsRead(idPair: ArticleIdPair) {
 	const store = getWritable(idPair);
 	store.update(a => {
-		let oldValue = a.markedAsRead;
+		const oldValue = a.markedAsRead;
 		a.markedAsRead = !a.markedAsRead;
 
 		undoables.addCommand({
@@ -94,7 +94,7 @@ export function toggleMarkAsRead(idPair: ArticleIdPair) {
 export function toggleHide(idPair: ArticleIdPair) {
 	const store = getWritable(idPair);
 	store.update(a => {
-		let oldValue = a.hidden;
+		const oldValue = a.hidden;
 		a.hidden = !a.hidden;
 
 		undoables.addCommand({

@@ -68,7 +68,7 @@ function parseTimelineView(timelineViews: {[name: string]: TimelineView}, search
 
 	if (!param?.length)
 		return undefined;
-	else if (!timelineViews.hasOwnProperty(param)) {
+	else if (!Object.hasOwn(timelineViews, param)) {
 		console.error(`Couldn't find timeline view "${param}"\nAvailable views: `, timelineViews);
 		return undefined;
 	}else

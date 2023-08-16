@@ -43,7 +43,7 @@ export function updateMarkAsReadStorage() {
 				articlesMarkedAsRead.delete(article.idPair.id.toString());
 		}
 
-		if (storage.services.hasOwnProperty(service.name))
+		if (Object.hasOwn(storage.services, service.name))
 			storage.services[service.name].articlesMarkedAsRead = [...articlesMarkedAsRead];
 		else
 			storage.services[service.name] = {
@@ -72,7 +72,7 @@ export function updateHiddenStorage() {
 				hiddenArticles.delete(article.idPair.id.toString());
 		}
 
-		if (storage.services.hasOwnProperty(service.name))
+		if (Object.hasOwn(storage.services, service.name))
 			storage.services[service.name].hiddenArticles = [...hiddenArticles];
 		else
 			storage.services[service.name] = {
@@ -96,7 +96,7 @@ export function updateCachedArticlesStorage() {
 		if (getCachedArticles !== undefined) {
 			const cachedArticles = getCachedArticles();
 
-			if (storage.services.hasOwnProperty(service.name))
+			if (Object.hasOwn(storage.services, service.name))
 				storage.services[service.name].cachedArticles = {
 					...storage.services[service.name].cachedArticles,
 					...cachedArticles

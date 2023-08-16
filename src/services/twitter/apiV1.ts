@@ -218,7 +218,7 @@ export function parseText(rawText: string, entities: Entities, extendedEntities?
 	}
 
 	let finalText = trimmedText;
-	let htmlParts: [Indices, string][] = [];
+	const htmlParts: [Indices, string][] = [];
 
 	for (const {display_url, expanded_url, indices, url} of entities.urls) {
 		finalText = finalText.replace(url, display_url);
@@ -237,9 +237,9 @@ export function parseText(rawText: string, entities: Entities, extendedEntities?
 		htmlParts.sort(([[a]], [[b]]) => a - b);
 
 		let i = 0;
-		let length = trimmedText.length;
+		const length = trimmedText.length;
 		let newHtmlParts = '';
-		let lastIndex = (htmlParts.at(-1) as [Indices, string])[0][1];
+		const lastIndex = (htmlParts.at(-1) as [Indices, string])[0][1];
 
 		for (const [[first, last], html] of htmlParts) {
 			if (i < first)

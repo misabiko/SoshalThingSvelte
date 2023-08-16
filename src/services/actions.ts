@@ -71,7 +71,7 @@ export function articleAction(action: string, idPair: ArticleIdPair) {
 			toggleHide(idPair);
 			break;
 		default:
-			if (getServices()[idPair.service].articleActions.hasOwnProperty(action))
+			if (Object.hasOwn(getServices()[idPair.service].articleActions, action))
 				getServices()[idPair.service].articleActions[action].action(idPair);
 			else
 				console.warn(`${idPair.service} doesn't have action ${action}.`);

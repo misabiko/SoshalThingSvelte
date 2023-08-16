@@ -161,6 +161,7 @@ function keepArticleGeneric(articleWithRefs: ArticleWithRefs, index: number, fil
 				case 'repost':
 					return !articleWithRefs.article.markedAsRead && keepArticleGeneric(articleWithRefs.reposted, index, filter);
 			}
+			throw new Error('Invalid article type');
 		case 'notHidden':
 			switch (articleWithRefs.type) {
 				case 'normal':
@@ -168,6 +169,7 @@ function keepArticleGeneric(articleWithRefs: ArticleWithRefs, index: number, fil
 				case 'repost':
 					return !articleWithRefs.article.hidden && keepArticleGeneric(articleWithRefs.reposted, index, filter);
 			}
+			throw new Error('Invalid article type');
 		case 'liked':
 			return getActualArticle(articleWithRefs).getLiked();
 		case 'reposted':

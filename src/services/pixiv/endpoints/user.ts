@@ -68,7 +68,7 @@ export class UserAPIEndpoint extends LoadableEndpoint {
 		let url = new URL(`https://www.pixiv.net/ajax/user/${this.userId}/profile/all`);
 		url.searchParams.set('p', (this.currentPage + 1).toString());
 		url.searchParams.set('lang', 'en`');
-		let listResponse: UserListAjaxResponse = await fetch(url.toString()).then(r => r.json());
+		const listResponse: UserListAjaxResponse = await fetch(url.toString()).then(r => r.json());
 		const illustIds = Object.keys(listResponse.body.illusts);
 		//Decreasing order sort
 		illustIds.sort((a, b) => parseInt(b) - parseInt(a));

@@ -39,7 +39,7 @@ export function loadMainStorage() {
 		mainStorage.timelineViews = {};
 	else
 		for (const view in mainStorage.timelineViews)
-			if (mainStorage.timelineViews.hasOwnProperty(view))
+			if (Object.hasOwn(mainStorage.timelineViews, view))
 				(mainStorage as MainStorageParsed).timelineViews[view].fullscreen = parseFullscreenInfo(mainStorage.timelineViews[view].fullscreen);
 
 	(mainStorage as MainStorageParsed).defaultTimelineView = mainStorage.defaultTimelineView ?? null;
@@ -155,7 +155,7 @@ function parseArticleView(articleView: string | undefined): typeof SvelteCompone
 function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | undefined {
 	const services = getServices();
 	const endpointsValue = get(derived(Object.values(endpoints), e => e));
-	if (!services.hasOwnProperty(storage.service)) {
+	if (!Object.hasOwn(services, storage.service)) {
 		console.error(`"${storage.service}" isn't a registered service`);
 		return undefined;
 	}else if (services[storage.service].endpointConstructors.length <= storage.endpointType) {
@@ -175,7 +175,7 @@ function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | unde
 			storage.params = {};
 
 		for (const [param, defaultValue] of constructorInfo.paramTemplate)
-			if (!storage.params.hasOwnProperty(param))
+			if (!Object.hasOwn(storage.params, param))
 				storage.params[param] = defaultValue;
 
 		endpoint = constructorInfo.constructor(storage.params);

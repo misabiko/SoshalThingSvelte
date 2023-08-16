@@ -20,7 +20,7 @@ Rust version: https://github.com/misabiko/SoshalThingYew
 ## Usage
 
 ### Dev
-Build with `npm run build`  
+Build with `npm run build`
 Serve the app  on `localhost:8080` with `npm run serve`
 You can pass `--port <port>` to serve over a specific port
 
@@ -28,3 +28,8 @@ Build the extension with `npm run build:extension`
 Needs a `credentials.json` in the working directory with `twitter.consumer_key` and `twitter.consumer_secret` for a Twitter app.
 
 Test with `npm test`, it uses the port 8089 by default
+
+---
+
+TODO Try npm run check and remove if unused
+TODO Add full project lint npm script

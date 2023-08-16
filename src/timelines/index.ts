@@ -15,7 +15,9 @@ import { getServices } from '../services/service';
 export type TimelineData = {
 	title: string;
 	endpoints: TimelineEndpoint[];
+	//TODO Document why addedIdPairs is needed
 	addedIdPairs: Writable<ArticleIdPair[]>;
+	//TODO Give timelines a list of article lists
 	articles: Writable<ArticleIdPair[]>;
 	section: { useSection: boolean; count: number };
 	container: typeof SvelteComponent;

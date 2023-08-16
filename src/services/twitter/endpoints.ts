@@ -5,6 +5,7 @@ import {articleFromV1, fetchExtensionV1, getV1APIURL, parseRateLimitInfo} from '
 import {Endpoint, RefreshType} from '../endpoints';
 import type {EndpointConstructorInfo} from '../endpoints';
 
+//TODO Move to V1 directory, split into separate files
 abstract class V1Endpoint extends Endpoint {
 	readonly service = TwitterService.name;
 
@@ -238,6 +239,31 @@ export class SearchEndpoint extends V1Endpoint {
 		name: 'SearchEndpoint',
 		paramTemplate: [['query', '']],
 		constructor: params => new SearchEndpoint(params.query as string)
+	};
+}
+
+export class UserTweetsEndpoint extends Endpoint {
+	readonly service = TwitterService.name;
+	readonly name;
+
+	constructor(readonly username: string) {
+		super();
+
+		this.name = `User Tweets ${this.username}`;
+	}
+
+	async refresh(_refreshType: RefreshType) {
+		return [];
+	}
+
+	matchParams(params: any): boolean {
+		return params.username === this.username;
+	}
+
+	static readonly constructorInfo: EndpointConstructorInfo = {
+		name: 'UserTweetsEndpoint',
+		paramTemplate: [['username', '']/* , ['includeRetweets', true] */],
+		constructor: params => new UserTweetsEndpoint(params.username as string/* , params.includeRetweets as boolean */)
 	};
 }
 

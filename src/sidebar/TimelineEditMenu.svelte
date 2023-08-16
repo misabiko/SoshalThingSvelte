@@ -2,7 +2,7 @@
 	import {Field, Input, Button, Select} from 'svelma'
 	import {defaultTimeline, newUserTimeline} from '../timelines'
 	import type {TimelineData} from '../timelines'
-	import Timeline from '../timelines/Timeline.svelte'
+	import type Timeline from '../timelines/Timeline.svelte'
 	import {TwitterService} from '../services/twitter/service'
 	import {MisskeyService} from "../services/misskey/service";
 	import {RefreshType} from "../services/endpoints";
@@ -20,7 +20,10 @@
 	$: {
 		switch (timelineAddType) {
 			case TimelineAddTypes.TwitterUser:
-				addDisabled = !username.length
+				addDisabled = !username.length;
+				break;
+			default:
+				addDisabled = false;
 				break;
 		}
 	}

@@ -264,7 +264,7 @@ export function parseText(rawText: string, entities: Entities, extendedEntities?
 	}
 }
 
-function parseMedia(extendedEntities?: ExtendedEntities): ArticleMedia[] {
+export function parseMedia(extendedEntities?: ExtendedEntities): ArticleMedia[] {
 	return extendedEntities?.media.map(media => {
 		switch (media.type) {
 			case 'photo':
@@ -446,7 +446,7 @@ type Entities = {
 		source_user_id_str: string
 	}[];
 }
-type ExtendedEntities = {
+export type ExtendedEntities = {
 	media: ExtendedMedia[];
 }
 type ExtendedMedia = {

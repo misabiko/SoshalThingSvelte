@@ -1,5 +1,4 @@
 <script lang='ts'>
-	import {Input, Switch} from 'svelma'
 	import type {Filter, FilterInstance} from './index'
 	import Dropdown from "../Dropdown.svelte";
 	import {filterTypes, getFilterName} from "./index.js"

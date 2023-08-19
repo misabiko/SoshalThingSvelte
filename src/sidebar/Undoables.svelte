@@ -1,5 +1,4 @@
 <script lang='ts'>
-	import {Button} from 'svelma'
 	import {undoables} from "../undo";
 	import {defaultTimeline, type TimelineData} from '../timelines'
 	import {get} from 'svelte/store'
@@ -16,15 +15,15 @@
 </script>
 
 <div class='box'>
-	<Button on:click={modalTimeline}>
+	<!--<Button on:click={modalTimeline}>
 		Open Timeline
-	</Button>
+	</Button>-->
 	<!--TODO Add undoable ids-->
 	{#each [...$undoables] as undoable, index (`${undoable.text}/${index}`)}
 			<p>{undoable.text}</p>
-			<Button on:click={() => undoables.toggleDo(index)}>
+			<!--<Button on:click={() => undoables.toggleDo(index)}>
 				{undoable.undid ? 'Redo' : 'Undo'}
-			</Button>
+			</Button>-->
 	{:else}
 		Nothing to undo
 	{/each}

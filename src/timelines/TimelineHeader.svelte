@@ -31,40 +31,40 @@
 	export let refresh: (refreshType: RefreshType) => void
 </script>
 
-<style lang='sass'>
-	@use '../styles/variables' as *
+<style>
+	.timelineHeader {
+		height: 50px;
+		line-height: 50px;
+		padding-left: 25px;
+		/* TODO background-color: $dark; */
+		display: flex;
+		justify-content: space-between;
+	}
+	.timelineHeader strong {
+		vertical-align: middle;
+	}
 
-	.timelineHeader
-		height: 50px
-		line-height: 50px
-		padding-left: 25px
-		background-color: $dark
-		display: flex
-		justify-content: space-between
+	.timelineLeftHeader {
+		display: flex;
+		flex-shrink: 8;
+	}
 
-		strong
-			vertical-align: middle
+	.timelineButtons {
+		display: flex;
+		flex-wrap: nowrap;
+		/* noinspection CssInvalidPropertyValue */
+		overflow-x: overlay;
+		overflow-y: clip;
+	}
 
-		//TODO &.timelineInvalid
-		//	background-color: $dark-error
+	.timelineRightHeader.timelineButtons {
+		flex-direction: row-reverse;
+	}
 
-	.timelineLeftHeader
-		display: flex
-		flex-shrink: 8
-
-	.timelineButtons
-		display: flex
-		flex-wrap: nowrap
-		//noinspection CssInvalidPropertyValue
-		overflow-x: overlay
-		overflow-y: clip
-
-	.timelineRightHeader.timelineButtons
-		flex-direction: row-reverse
-
-	.timelineButtons > button
-		height: 100%
-		padding: 0 1rem
+	.timelineButtons > button {
+		height: 100%;
+		padding: 0 1rem;
+	}
 </style>
 
 <div class='timelineHeader'>

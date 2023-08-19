@@ -2,7 +2,6 @@
 	import type {TimelineCollection, TimelineData, TimelineView} from './index'
 	import Timeline from './Timeline.svelte'
 	import {afterUpdate, getContext, onMount} from 'svelte'
-	import {Modal} from 'svelma'
 	import {timelineEndpoints} from '../services/endpoints'
 	import {updateMainStorage} from '../storages'
 
@@ -90,24 +89,26 @@
 	})
 </script>
 
-<style lang='sass'>
-	#timelineContainer
-		height: 100%
-		overflow-x: auto
-		display: flex
-		flex-grow: 1
+<style>
+	#timelineContainer {
+		height: 100%;
+		overflow-x: auto;
+		display: flex;
+		flex-grow: 1;
+	}
 </style>
+
 <!--TODO id → class, to have multiple favviewer per page-->
 <div id='timelineContainer'>
 	{#if modalTimeline !== null}
 		<!--TODO Replace onBody with mountElement-->
-		<Modal bind:active={modalTimelineActive} onBody={!isInjected}>
+		<!--<Modal bind:active={modalTimelineActive} onBody={!isInjected}>
 			<Timeline
 				data={modalTimeline}
 				{setModalTimeline}
 				removeTimeline={() => modalTimeline = null}
 			/>
-		</Modal>
+		</Modal>-->
 	{/if}
 	{#if timelineView.fullscreen.index !== null}
 		{#key `${timelineView.timelineIds[timelineView.fullscreen.index]}/${timelineView.fullscreen.index}`}

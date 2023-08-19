@@ -2,8 +2,6 @@ import fs from 'fs';
 import esbuild from 'esbuild';
 import esbuildSvelte from 'esbuild-svelte';
 import sveltePreprocess from 'svelte-preprocess';
-import {sassPlugin} from 'esbuild-sass-plugin';
-import postcss from 'esbuild-postcss';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -54,8 +52,6 @@ export const buildOptions = {
 			}
 		}),
 		DedupSvelteInternalPlugin,
-		sassPlugin(),
-		postcss(),
 	],
 };
 

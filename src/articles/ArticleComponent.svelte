@@ -4,7 +4,6 @@
 	import Article, {getActualArticle} from '../articles'
 	import type {ArticleProps, TimelineArticleProps} from './index'
 	import type {SvelteComponent} from 'svelte'
-	import {Modal} from 'svelma'
 	import {getContext} from 'svelte'
 	import {getRootArticle} from './index'
 
@@ -56,20 +55,21 @@
 	}
 </script>
 
-<style lang='sass'>
-	@use '../styles/variables' as *
+<style>
+	/* article {
+		TODO background-color: $scheme-main-bis;
+	} */
 
-	article
-		background-color: $scheme-main-bis
+	article.transparent {
+		opacity: 20%;
+	}
 
-	article.transparent
-		opacity: 20%
-
-	:global(.modal .modal-content)
-		width: 75%
+	:global(.modal .modal-content) {
+		width: 75%;
+	}
 </style>
 
-{#if modal}
+<!--{#if modal}
 	<Modal bind:active={modal} onBody={!isInjected}>
 		<article class:transparent={articleProps.filteredOut}>
 			<svelte:component
@@ -86,7 +86,7 @@
 			/>
 		</article>
 	</Modal>
-{/if}
+{/if}-->
 
 <article class={articleProps.filteredOut ? 'transparent' : ''} {style}>
 	<svelte:component

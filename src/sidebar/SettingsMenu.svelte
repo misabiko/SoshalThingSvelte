@@ -1,5 +1,4 @@
 <script lang='ts'>
-	import {Field, Input, Button, Switch} from 'svelma'
 	import {extensionCheck, extensionContextStore, fetchExtension} from "../services/extension.js"
 	import {TwitterService} from '../services/twitter/service'
 	import {PixivService} from "../services/pixiv/service.js";
@@ -27,17 +26,17 @@
 	const mainStorage = loadMainStorage()
 </script>
 
-<Field label='Extension Id' addons={false}>
+<!-- <Field label='Extension Id' addons={false}>
 	<Input type='text' bind:value={$extensionContextStore.id} placeholder='Extension Id'/>
 	<Button on:click={extensionCheck}>Check Extension</Button>
 </Field>
-<Field label={`Available: ${$extensionContextStore.available}`}></Field>
+<Field label={`Available: ${$extensionContextStore.available}`}></Field> -->
 
-<Field label='Mark as read in local storage' addons={false}>
+<!-- <Field label='Mark as read in local storage' addons={false}>
 	<Switch checked={mainStorage.markAsReadLocal ?? false} on:input={e => updateMainStorage('markAsReadLocal', e.target.checked)}/>
-</Field>
+</Field> -->
 
-{#if $extensionContextStore.hasAccessToken}
+<!-- {#if $extensionContextStore.hasAccessToken}
 	<Field label='Twitter logged in'></Field>
 {:else}
 	<Field label='Twitter' addons={false}>
@@ -52,11 +51,11 @@
 			<Button on:click={twitterAccessToken}>Get Access Token</Button>
 		{/if}
 	</Field>
-{/if}
+{/if} -->
 
-<Field label='Pixiv token' addons={false}>
+<!-- <Field label='Pixiv token' addons={false}>
 	<Input value={pixivStorage.csrfToken} on:change={e => updateServiceStorage(PixivService.name, 'csrfToken', e.target.value)}/>
 </Field>
 <Field label='Pixiv bookmark as private' addons={false}>
 	<Switch checked={pixivStorage.privateBookmark ?? false} on:input={e => updateServiceStorage(PixivService.name, 'privateBookmark', e.target.checked)}/>
-</Field>
+</Field> -->

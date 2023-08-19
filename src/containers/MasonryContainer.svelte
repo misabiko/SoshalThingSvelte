@@ -94,22 +94,22 @@
 	}
 </script>
 
-<style lang='sass'>
-	.masonryContainer
-		display: flex
-		flex-wrap: nowrap
-		align-items: flex-start
-		align-content: flex-start
-		position: relative
+<style>
+	.masonryContainer {
+		display: flex;
+		flex-wrap: nowrap;
+		align-items: flex-start;
+		align-content: flex-start;
+		position: relative;
+	}
 
-	.masonryColumn
-		flex: 1 1 0
+	.masonryColumn {
+		flex: 1 1 0;
+	}
 
-	//.masonryColumn .socialMedia img
-	//	width: 100%
-
-	:global(.fullscreenTimeline .masonryColumn)
-		width: unset
+	:global(.fullscreenTimeline .masonryColumn) {
+		width: unset;
+	}
 </style>
 
 <div class='articlesContainer masonryContainer' bind:this={containerRef} style:flex-direction={props.rtl ? 'row-reverse' : null}>

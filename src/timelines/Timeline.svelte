@@ -287,42 +287,44 @@
 	}
 </script>
 
-<style lang='sass'>
-	@use '../styles/variables' as *
+<style>
+	.timeline {
+		/* TODO color: $text */
+		height: 100%;
+		padding: 0 5px;
+		box-sizing: border-box;
+		display: flex;
+		flex-flow: column;
+		width: 500px;
+		flex-shrink: 0;
+	}
+	.timeline:first-child {
+		padding: 0;
+	}
+	.timeline.fullscreenTimeline {
+		flex-grow: 2;
+		width: unset;
+		max-width: 100%;
+	}
 
-	.timeline
-		color: $text
-		height: 100%
-		padding: 0 5px
-		box-sizing: border-box
-		display: flex
-		flex-flow: column
-		width: 500px
-		flex-shrink: 0
 
-		&:first-child
-			padding: 0
+	:global(.modal .timeline) {
+		width: unset;
+	}
 
-	.timeline.fullscreenTimeline
-		flex-grow: 2
-		width: unset
-		max-width: 100%
+	:global(.articlesContainer) {
+		overflow-y: auto;
+		overflow-x: hidden;
+		flex-grow: 1;
+		height: 20%;
+		/* TODO background-color: $background; */
+	}
 
-
-	:global(.modal .timeline)
-		width: unset
-
-	:global(.articlesContainer)
-		overflow-y: auto
-		overflow-x: hidden
-		flex-grow: 1
-		height: 20%
-		background-color: $background
-
-	.noArticleText
-		text-align: center
-		margin: 25px 0
-		font-size: xx-large
+	.noArticleText {
+		text-align: center;
+		margin: 25px 0;
+		font-size: xx-large;
+	}
 </style>
 
 <div class='timeline' class:fullscreenTimeline={fullscreen !== undefined} style='{data.width > 1 ? `width: ${data.width * 500}px` : ""}'>

@@ -33,98 +33,105 @@
 	}
 </script>
 
-<style lang='sass'>
-	@use '../../styles/variables' as *
+<style>
+	.socialArticle {
+		padding: 1rem;
+		margin-bottom: 2px;
+	}
+	.socialArticle :global(.dropdown-trigger .articleButton){
+		width: 24px;
+		height: unset;
+	}
 
-	.socialArticle
-		padding: 1rem
-		margin-bottom: 2px
+	/* .socialArticle :global(i), :global(svg) {
+		TODO color: $white-ter;
+	} */
 
-		:global(.dropdown-trigger .articleButton)
-			width: 24px
-			height: unset
+	figure {
+		overflow: hidden;
+		border-radius: 4px;
+	}
+	figure.sharedAvatar {
+		position: relative;
+	}
+	figure.sharedAvatar img:first-child {
+		position: absolute;
+		width: 85%;
+	}
+	figure.sharedAvatar img:last-child {
+		position: absolute;
+		width: 40%;
+		bottom: 0;
+		right: 0;
+	}
 
-		:global(i), :global(svg)
-			color: $white-ter
+	.articleHeader * {
+		vertical-align: middle;
+	}
+	/*.articleHeader * small {
+		TODO color: $light
+	} */
 
-	figure
-		overflow: hidden
-		border-radius: 4px
+	.names {
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		overflow: hidden;
+		display: inline-block;
+		max-width: 300px;
+	}
+	.names strong {
+		margin-right: 0.5rem;
+		/* TODO color: $white-ter; */
+	}
+	.names:hover > * {
+		text-decoration: underline;
+	}
 
-		&.sharedAvatar
-			position: relative
+	p.articleParagraph {
+		white-space: pre-line;
+		overflow-wrap: anywhere;
+	}
 
-			img:first-child
-				position: absolute
-				width: 85%
+	/* , .replyLabel */
+	.repostLabel {
+		margin-left: 64px;
+		/*TODO color: $light; */
+		font-size: smaller;
+	}
+	.repostLabel a {
+		margin-left: 1rem;
+		/*TODO color: $light; */
+	}
 
-			img:last-child
-				position: absolute
-				width: 40%
-				bottom: 0
-				right: 0
+	.repostLabel a:hover {
+		text-decoration: underline;
+	}
 
-	.articleHeader *
-		vertical-align: middle
-
-		small
-			color: $light
-
-	.names
-		text-overflow: ellipsis
-		white-space: nowrap
-		overflow: hidden
-		display: inline-block
-		max-width: 300px
-
-		strong
-			margin-right: 0.5rem
-			color: $white-ter
-
-		&:hover > *
-			text-decoration: underline
-
-	p.articleParagraph
-		white-space: pre-line
-		overflow-wrap: anywhere
-
-	//, .replyLabel
-	.repostLabel
-		margin-left: 64px
-		color: $light
-		font-size: smaller
-
-		a
-			margin-left: 1rem
-			color: $light
-
-			&:hover
-				text-decoration: underline
-
-	.quotedPost
-		border: 2px solid $scheme-main-ter
-		border-radius: 6px
-		padding: 16px
-
-		.names
-			text-overflow: ellipsis
-			white-space: nowrap
-			overflow: hidden
-			display: inline-block
-			max-width: 300px
-
-			strong
-				margin-right: 0.5rem
-				color: $white-ter
-
-			&:hover > *
-				text-decoration: underline
-
-		span *
-			vertical-align: middle
-
-		p
-			white-space: pre-line
+	.quotedPost {
+		/* TODO border: 2px solid $scheme-main-ter; */
+		border-radius: 6px;
+		padding: 16px;
+	}
+	.quotedPost .names {
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		overflow: hidden;
+		display: inline-block;
+		max-width: 300px;
+	}
+	.quotedPost .names strong {
+		margin-right: 0.5rem;
+		/* TODO color: $white-ter; */
+	}
+	.quotedPost .names:hover > * {
+		text-decoration: underline;
+	}
+	.quotedPost span * {
+		vertical-align: middle;
+	}
+	.quotedPost p {
+		white-space: pre-line;
+	}
 </style>
 
 <div class='socialArticle'>

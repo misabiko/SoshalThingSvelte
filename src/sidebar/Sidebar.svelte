@@ -51,47 +51,50 @@
 	]
 </script>
 
-<style lang='sass'>
-	@use '../styles/variables' as *
+<style>
+	#sidebar {
+		/* TODO background-color: $dark; */
+		z-index: 1;
+		display: flex;
+	}
 
-	#sidebar
-		background-color: $dark
-		z-index: 1
-		display: flex
+	#sidebarButtons {
+		width: 60px;
+		padding: 1rem 0;
+		text-align: center;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+	}
 
-	//.collapse-content
-	//	height: 100%
+	#sidebarButtons > div {
+		display: flex;
+		flex-direction: column;
+	}
 
-	#sidebarButtons
-		width: 60px
-		padding: 1rem 0
-		text-align: center
-		display: flex
-		flex-direction: column
-		justify-content: space-between
+	#sidebarButtons button {
+		height: 45px;
+	}
 
-		& > div
-			display: flex
-			flex-direction: column
+	#sidebarButtons button:not(:last-child) {
+		margin-bottom: 1rem;
+	}
 
-		button
-			height: 45px
+	/* #sidebarButtons button span {
+		vertical-align: middle;
+	} */
 
-			&:not(:last-child)
-				margin-bottom: 1rem
+	.sidebarMenu {
+		/*TODO width: $sidebar-menu-width; */
+		height: 100%;
+		padding: 1rem;
+		/*TODO background-color: $scheme-main-ter; */
+		overflow-y: auto;
+	}
 
-			//span
-			//	vertical-align: middle
-
-	.sidebarMenu
-		width: $sidebar-menu-width
-		height: 100%
-		padding: 1rem
-		background-color: $scheme-main-ter
-		overflow-y: auto
-
-		&::-webkit-scrollbar-thumb
-			background-color: $dark
+	/* .sidebarMenu::-webkit-scrollbar-thumb {
+		TODO background-color: $dark;
+	} */
 </style>
 
 <nav id='sidebar'>

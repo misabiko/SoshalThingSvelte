@@ -1,5 +1,4 @@
 <script lang='ts'>
-	import {Button, Field, Select, Switch} from 'svelma'
 	import FiltersOptions from "../filters/FiltersOptions.svelte"
 	import {type FilterInstance, useFilters} from '../filters'
 	import {getWritable} from '../services/service'
@@ -42,7 +41,7 @@
 	}
 </script>
 
-<Field label='Timeline'>
+<!-- <Field label='Timeline'>
 	<Select bind:selected={timelineIndex} nativeSize={0}>
 		{#each timelines as t, index}
 			<option value={index}>{t.title}</option>
@@ -62,4 +61,4 @@
 		{/each}
 	</Select>
 </Field>
-<Button on:click={doAction}>Do Action</Button>
+<Button on:click={doAction}>Do Action</Button> -->

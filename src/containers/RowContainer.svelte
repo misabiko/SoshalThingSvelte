@@ -7,13 +7,12 @@
 	export let props: ContainerProps;
 </script>
 
-<style lang='sass'>
-	@use '../styles/variables' as *
-
-	.articlesContainer.rowContainer
-		display: flex
-		flex-wrap: wrap
-		align-items: flex-start
+<style>
+	.articlesContainer.rowContainer {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-start;
+	}
 </style>
 
 <div class='articlesContainer rowContainer' bind:this={containerRef} style:flex-direction={props.rtl ? 'row-reverse' : null}>

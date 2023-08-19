@@ -1,5 +1,4 @@
 <script lang='ts'>
-	import {Field, Button, Select, Switch} from 'svelma'
 	import ColumnContainer from "../containers/ColumnContainer.svelte"
 	import RowContainer from "../containers/RowContainer.svelte"
 	import MasonryContainer from "../containers/MasonryContainer.svelte"
@@ -38,43 +37,40 @@
 	}
 </script>
 
-<style lang='sass'>
-	@use '../styles/variables' as *
+<style>
+	.timelineOptions {
+		/* TODO background-color: $scheme-main-ter; */
+		padding: 1rem;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		overflow-x: hidden;
+		overflow-y: scroll;
+		min-height: 10%;
+		resize: vertical;
+	}
+	.timelineOptions > .box {
+		max-width: 100%;
+		width: 100%;
+	}
 
-	.timelineOptions
-		background-color: $scheme-main-ter
-		padding: 1rem
-		display: flex
-		flex-direction: column
-		align-items: flex-start
-		overflow-x: hidden
-		overflow-y: scroll
-		min-height: 10%
-		resize: vertical
-
-		//TODO & input[type="number"]
-		//	width: 200px
-
-		& > .box
-			max-width: 100%
-			width: 100%
-
-	:global(#timelineContainer .timelineOptions::-webkit-scrollbar-thumb)
-		background-color: $dark
+	/* :global(#timelineContainer .timelineOptions::-webkit-scrollbar-thumb) {
+		TODO background-color: $dark
+	} */
 </style>
 
 <div class='timelineOptions'>
 	<div class='box'>
 		<p>{articleCountLabel}</p>
-		<Field label='Show article count on header'>
+		<!--TODO <Field label='Show article count on header'>
 			<Switch bind:checked={data.showArticleCount}/>
 		</Field>
 		<Button type='is-danger' on:click={removeTimeline}>
 			Remove timeline
-		</Button>
+		</Button> -->
 	</div>
 	<div class='box'>
-		<Field label={`${fullscreen?.container !== null ? 'Timeline ' : ''}Container`}>
+		<!-- <Field label={`${fullscreen?.container !== null ? 'Timeline ' : ''}Container`}>
 			<Select bind:selected={data.container} nativeSize={0}>
 				<option value={ColumnContainer}>Column</option>
 				<option value={RowContainer}>Row</option>
@@ -96,10 +92,9 @@
 					</Select>
 				{/if}
 			</Field>
-		{/if}
+		{/if} -->
 		{#if (fullscreen?.container ?? data.container) !== ColumnContainer}
-			<Field label={`${fullscreen?.columnCount !== null ? 'Timeline ' : ''}Column Count`}>
-<!--				TODO Make <Input type='number' bind:value/> work in svelma-->
+			<!-- <Field label={`${fullscreen?.columnCount !== null ? 'Timeline ' : ''}Column Count`}>
 				<input class='input' type='number' bind:value={data.columnCount} min={1}/>
 				<Button on:click={() => data.columnCount++}>
 					+
@@ -107,8 +102,8 @@
 				<Button on:click={() => {if (data.columnCount > 1) data.columnCount--}}>
 					-
 				</Button>
-			</Field>
-			{#if fullscreen !== undefined}
+			</Field> -->
+			<!-- {#if fullscreen !== undefined}
 				<Field label={'Fullscreen Column Count'}>
 					<Switch checked={fullscreen.columnCount !== null} on:input={e => setFullscreenColumnCount(e.target.checked)}/>
 					{#if fullscreen.columnCount !== null}
@@ -131,24 +126,24 @@
 			{/if}
 			<Field label='Right to left'>
 				<Switch bind:checked={data.rtl}/>
-			</Field>
+			</Field> -->
 		{/if}
-		{#if fullscreen === undefined}
+		<!-- {#if fullscreen === undefined}
 			<Field label='Timeline Width'>
 				<input class='input' type='number' bind:value={data.width} min={1}/>
 			</Field>
 		{/if}
 		<Field label='AutoScroll Speed'>
 			<input class='input' type='number' bind:value={data.scrollSpeed} min={0}/>
-		</Field>
+		</Field> -->
 <!--		TODO Update on confirm-->
-		<Field label='Section' addons={false}>
+		<!-- <Field label='Section' addons={false}>
 			<Switch bind:checked={data.section.useSection}>Section articles</Switch>
 			<input class='input' type='number' bind:value={data.section.count} min={0}/>
-		</Field>
+		</Field> -->
 	</div>
 	<div class='box'>
-		<Field label='Article View'>
+		<!-- <Field label='Article View'>
 			<Select bind:selected={data.articleView} nativeSize={0}>
 				<option value={SocialArticleView}>Social</option>
 				<option value={GalleryArticleView}>Gallery</option>
@@ -173,29 +168,29 @@
 		{/if}
 		<Field label='Max media count'>
 			<input class='input' type='number' bind:value={data.maxMediaCount} min={1}/>
-		</Field>
+		</Field> -->
 	</div>
 	<div class='box'>
-		<Field label='Endpoints'>
+		<!-- <Field label='Endpoints'>
 			<ul>
 				{#each data.endpoints as endpoint (endpoint)}
 					<li>{endpoint.name || endpoint.endpoint.name}</li>
 				{/each}
 			</ul>
-		</Field>
+		</Field> -->
 	</div>
 	<div class='box'>
 		<FiltersOptions bind:instances={data.filters}/>
 		<div class='control'>
-			<Button on:click={removeFiltered}>Remove filtered articles</Button>
+<!--			<Button on:click={removeFiltered}>Remove filtered articles</Button>-->
 		</div>
 	</div>
 	<div class='box'>
 		<SortOptions bind:sortInfo={data.sortInfo} {sortOnce}/>
 	</div>
 	<div class='box'>
-		<Button on:click={() => console.log(data)}>
+		<!-- <Button on:click={() => console.log(data)}>
 			Log Timeline Data
-		</Button>
+		</Button> -->
 	</div>
 </div>

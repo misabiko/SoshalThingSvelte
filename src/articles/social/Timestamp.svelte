@@ -4,9 +4,10 @@
 	export let date: Date
 </script>
 
-<style lang='sass'>
-	.timestamp
-		float: right
+<style>
+	.timestamp {
+		float: right;
+	}
 </style>
 
 <span class='timestamp'>

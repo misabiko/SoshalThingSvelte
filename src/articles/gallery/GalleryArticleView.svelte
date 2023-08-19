@@ -73,64 +73,76 @@
 		.sort((a, b) => a.index - b.index)
 </script>
 
-<style lang='sass'>
-	@use '../../styles/variables' as *
+<style>
+	.galleryArticle {
+		padding: 0;
+		margin-bottom: 0;
+	}
 
-	.galleryArticle
-		padding: 0
-		margin-bottom: 0
+	.galleryArticle > div {
+		position: relative;
+	}
 
-		& > div
-			position: relative
+	.galleryArticle:hover .holderBox {
+		display: flex;
+	}
 
-		&:hover .holderBox
-			display: flex
+	video {
+		width: 100%;
+	}
 
-	video
-		width: 100%
+	.holderBox {
+		justify-content: space-between;
+		flex-wrap: nowrap;
+		position: absolute;
+		height: 56px;
+		width: 100%;
+		opacity: 0.5;
+		display: none;
+		direction: ltr;
+		pointer-events: none;
+	}
 
-	.holderBox
-		justify-content: space-between
-		flex-wrap: nowrap
-		position: absolute
-		height: 56px
-		width: 100%
-		opacity: 0.5
-		display: none
-		direction: ltr
-		pointer-events: none
+	.holderBox > * {
+		height: inherit;
+		padding-top: unset;
+		padding-bottom: unset;
+	}
 
-		& > *
-			height: inherit
-			padding-top: unset
-			padding-bottom: unset
+	.holderBox :global(.dropdown-trigger > button) {
+		height: 100%;
+	}
 
-		:global(.dropdown-trigger > button)
-			height: 100%
+	.holderBox :global(*) {
+		pointer-events: auto;
+	}
 
-		:global(*)
-			pointer-events: auto
+	/* TODO Hack */
+	.holderBox :global(.dropdown-content) {
+		overflow-x: hidden;
+	}
 
-		//TODO Hack
-		:global(.dropdown-content)
-			overflow-x: hidden
+	.holderBoxTop {
+		top: 0;
+	}
 
-	.holderBoxTop
-		top: 0
+	.holderBoxBottom {
+		bottom: 0;
+		justify-content: space-around;
+	}
 
-	.holderBoxBottom
-		bottom: 0
-		justify-content: space-around
+	/* ul.articleTags {
+		list-style-type: none
+	} */
 
-	//ul.articleTags
-	//	list-style-type: none
-
-	.moreMedia
-		display: flex
-	.moreMedia > button
-		margin-left: auto
-		margin-right: auto
-		padding-top: 5px
+	.moreMedia {
+		display: flex;
+	}
+	.moreMedia > button {
+		margin-left: auto;
+		margin-right: auto;
+		padding-top: 5px;
+	}
 </style>
 
 <div class='galleryArticle' bind:this={divRef}>

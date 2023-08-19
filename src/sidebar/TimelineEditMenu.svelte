@@ -1,5 +1,4 @@
 <script lang='ts'>
-	import {Field, Input, Button, Select} from 'svelma'
 	import {defaultTimeline, newUserTimeline} from '../timelines'
 	import type {TimelineData} from '../timelines'
 	import type Timeline from '../timelines/Timeline.svelte'
@@ -49,6 +48,7 @@
 	}
 </script>
 
+<!--
 <Field label='Username' addons={false}>
 	<Select bind:selected={timelineAddType} nativeSize={0}>
 		<option value={TimelineAddTypes.Empty}>Empty</option>
@@ -71,4 +71,4 @@
 	>
 		Add Timeline
 	</Button>
-</Field>
+</Field>-->

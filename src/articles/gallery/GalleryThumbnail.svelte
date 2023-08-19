@@ -12,19 +12,23 @@
 	const hasThumbnail = !!media.thumbnail;
 </script>
 
-<style lang="sass">
-	img
-		width: 100%
+<style>
+	img {
+		width: 100%;
+	}
 
-	.articleThumb
-		z-index: -1
+	.articleThumb {
+		z-index: -1;
+	}
 
-	.articleMediaCrop
-		overflow-y: hidden
+	.articleMediaCrop {
+		overflow-y: hidden;
+	}
 
-	.imgPlaceHolder
-		width: 100%
-		background-color: grey
+	.imgPlaceHolder {
+		width: 100%;
+		background-color: grey;
+	}
 </style>
 
 {#if hasThumbnail}

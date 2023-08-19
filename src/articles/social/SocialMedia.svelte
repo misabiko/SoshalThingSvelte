@@ -31,71 +31,45 @@
 	})
 </script>
 
-<style lang='sass'>
-	.socialMedia
-		margin-top: 1rem
+<style>
+	.socialMedia {
+		margin-top: 1rem;
+	}
 
-	.socialMedia video
-		width: 100%
-		border-radius: 8px
+	.socialMedia video {
+		 width: 100%;
+		 border-radius: 8px;
+	 }
 
-	//TODO .socialMediaCompact
-	//	display: flex
-	//	flex-wrap: wrap
+	.imagesHolder {
+		overflow: hidden;
+		display: flex;
+		justify-content: center;
+		border-radius: 8px;
+	}
 
-	.imagesHolder
-		overflow: hidden
-		display: flex
-		justify-content: center
-		border-radius: 8px
+	.imagesHolder:not(:last-child) {
+		margin-bottom: 2px;
+	}
 
-		&:not(:last-child)
-			margin-bottom: 2px
+	.imagesHolder img {
+		align-self: center;
+		width: 100%;
+	}
 
-		img
-			align-self: center
-			width: 100%
+	.imgPlaceHolder {
+	  width: 100%;
+	  background-color: grey;
+  }
 
-	//&.imagesHolderCompact
-	//	max-height: 16vh
-	//	width: 100%
-	//
-	//	&:not(:only-child)
-	//		margin: 2px
-	//		max-width: 49%
-	//
-	//		&.landscape img
-	//			width: unset
-	//			height: 110%
-	//
-	//		&.portrait img
-	//			width: 110%
-	//			height: unset
-	//
-	//	img
-	//		object-fit: cover
-	//
-	//	&.thirdImage
-	//		max-width: unset
-	//
-	//		&.landscape img
-	//			width: unset
-	//			height: 175%
-	//
-	//		&.portrait img
-	//			width: 175%
-	//			height: unset
-
-	.imgPlaceHolder
-		width: 100%
-		background-color: grey
-
-	.moreMedia
-		display: flex
-	.moreMedia > button
-		margin-left: auto
-		margin-right: auto
-		padding-top: 5px
+	.moreMedia {
+		display: flex;
+	}
+	.moreMedia > button {
+		margin-left: auto;
+		margin-right: auto;
+		padding-top: 5px;
+	}
 </style>
 
 <div class='socialMedia' bind:this={divRef}>

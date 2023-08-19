@@ -91,28 +91,32 @@
 	}
 </script>
 
-<style lang='sass'>
-	.soshalthing
-		display: flex
-		width: 100%
+<style>
+	.soshalthing {
+		display: flex;
+		width: 100%;
+	}
 
-		//.injected
-		//	height: 100%
-		//	display: flex
+	/* .soshalthing .injected {
+		height: 100%;
+		display:flex;
+	} */
 
-		//#favviewer
-		//	width: 100vw
-		//	height: 90vh
-		//	display: flex
-		//	-webkit-font-smoothing: antialiased
-		//	-moz-osx-font-smoothing: grayscale
+	/* .soshalthing #favviewer {
+		width: 100vw;
+		height: 90vh;
+		display: flex;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	} */
 
-	#soshalNotifications
-		position: absolute
-		right: 0
-		bottom: 0
-		padding: 15px
-		z-index: 1
+	#soshalNotifications {
+		position: absolute;
+		right: 0;
+		bottom: 0;
+		padding: 15px;
+		z-index: 1;
+	}
 </style>
 
 <div class='soshalthing' class:injected={isInjected}>

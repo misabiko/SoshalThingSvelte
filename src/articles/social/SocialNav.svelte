@@ -35,71 +35,25 @@
 	let status: string | null = null
 </script>
 
-<style lang='sass'>
-	@use '../../styles/variables' as *
+<style>
+	.articleButton {
+		/* TODO color: $light; */
+		font-size: unset;
+	}
+	.articleButton:focus {
+		outline: none;
+	}
+	/* .articleButton:hover span {
+		TODO color: $primary;
+	} */
 
-	.articleButton
-		color: $light
-		font-size: unset
+	/* :global(button.articleButton.borderless-button.actionned > span > svg) {
+		TODO color: $primary
+	} */
 
-		&:focus
-			outline: none
-
-		&:hover span
-			color: $primary
-
-	:global(button.articleButton.borderless-button.actionned > span > svg)
-		color: $primary
-
-	//&:hover.commentButton span
-	//	color: $comment-color
-
-	button:disabled
-		cursor: unset
-
-	//.fade-enter-active, .fade-leave-active
-	//	transition: opacity .5s
-	//
-	//.fade-enter, .fade-leave-to
-	//	opacity: 0
-
-	//@keyframes heart
-	//	0%, 17.5%
-	//		width: 0
-	//
-	//.heart-enter-active
-	//	will-change: width
-	//	animation: heart .5s cubic-bezier(.17, .89, .32, 1.49)
-	//
-	//.heart-enter
-	//	width: 0
-	//
-	//$bubble-d: 2em
-	//$bubble-r: .5 * $bubble-d
-	//
-	//.icon > svg
-	//	position: relative
-	//
-	//	&:before, &:after
-	//		position: absolute
-	//		z-index: -1
-	//		top: 50%
-	//		left: 50%
-	//		border-radius: 50%
-	//		content: ''
-	//
-	//	&::before
-	//		margin: -$bubble-r
-	//		width: $bubble-d
-	//		height: $bubble-d
-	//		background: gold
-
-	//:global(article.socialArticle .icon > svg)
-	//	will-change: transform
-	//	transition: transform .5s ease-in-out
-
-	//:global(.repostedPostButton .icon > svg)
-	//	transform: rotate(360deg)
+	button:disabled {
+		cursor: unset;
+	}
 </style>
 
 <nav class='level is-mobile'>

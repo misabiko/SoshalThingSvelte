@@ -15,17 +15,20 @@
 	const cropped = !!(media.offsetX || media.offsetY);
 </script>
 
-<style lang="sass">
-	img
-		width: 100%
+<style>
+	img {
+		width: 100%;
+	}
 
-	img.articleMediaLoading
-		position: absolute
-		left: 0
-		top: 0
+	img.articleMediaLoading {
+		position: absolute;
+		left: 0;
+		top: 0;
+	}
 
-	.articleMediaCrop
-		overflow-y: hidden
+	.articleMediaCrop {
+		overflow-y: hidden;
+	}
 </style>
 
 {#if cropped}

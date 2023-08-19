@@ -1,6 +1,5 @@
 <script lang="ts">
     import type {TimelineView} from "../timelines";
-    import {Button, Field, Input, Select} from "svelma";
     import {updateMainStorage} from "../storages";
     import type {TimelineCollection} from "../timelines";
     import Dropdown from "../Dropdown.svelte";
@@ -68,7 +67,7 @@
 	}
 </script>
 
-{#each Object.entries(timelineViews) as [viewName, timelineView]}
+<!--{#each Object.entries(timelineViews) as [viewName, timelineView]}
 	<Field label={viewName} addons={false}>
 		<Button on:click={() => setView(viewName)}>Set View</Button>
 		<Button on:click={() => removeView(viewName)}>Remove View</Button>
@@ -98,8 +97,8 @@
 			</Dropdown>
 		{/if}
 	</Field>
-{/each}
-<Field addons={true}>
+{/each}-->
+<!--<Field addons={true}>
 	<Input bind:value={newViewName}></Input>
 	<Button on:click={addView}>Add</Button>
-</Field>
+</Field>-->

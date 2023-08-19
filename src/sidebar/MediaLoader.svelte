@@ -1,10 +1,9 @@
 <script lang='ts'>
 	import {loadingStore} from "../bufferedMediaLoading"
-	import {Button} from 'svelma'
 </script>
 
-<Button on:click={loadingStore.clearLoadings}>Clear loadings</Button>
-<Button on:click={loadingStore.clearQueue}>Clear queue</Button>
+<!--<Button on:click={loadingStore.clearLoadings}>Clear loadings</Button>-->
+<!--<Button on:click={loadingStore.clearQueue}>Clear queue</Button>-->
 <div class='box'>
 	{#if $loadingStore.loadings.length}
 		Currently loading:

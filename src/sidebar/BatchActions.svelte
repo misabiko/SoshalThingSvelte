@@ -1,4 +1,5 @@
 <script lang='ts'>
+	//TODO Fix opening BatchActions? (Cannot read properties of undefined (reading 'articles'))
 	import FiltersOptions from "../filters/FiltersOptions.svelte"
 	import {type FilterInstance, useFilters} from '../filters'
 	import {getWritable} from '../services/service'
@@ -41,24 +42,31 @@
 	}
 </script>
 
-<!-- <Field label='Timeline'>
-	<Select bind:selected={timelineIndex} nativeSize={0}>
+<label class='field'>
+	Timeline
+	<select bind:value={timelineIndex}>
 		{#each timelines as t, index}
 			<option value={index}>{t.title}</option>
 		{/each}
-	</Select>
-</Field>
+	</select>
+</label>
+
 <div class='block'>
 	<FiltersOptions bind:instances={filterInstances}/>
 </div>
-<Field label='Only shown articles'>
-	<Switch bind:checked={onlyListedArticles}/>
-</Field>
-<Field label='Action'>
-	<Select bind:selected={action} nativeSize={0}>
+
+<label class='field'>
+	Only shown articles
+	<input type='checkbox' bind:checked={onlyListedArticles}/>
+</label>
+
+<label class='field'>
+	Action
+	<select bind:value={action}>
 		{#each [...Object.keys(STANDARD_ACTIONS)] as action}
 			<option value={action}>{action}</option>
 		{/each}
-	</Select>
-</Field>
-<Button on:click={doAction}>Do Action</Button> -->
+	</select>
+</label>
+
+<button on:click={doAction}>Do Action</button>

@@ -62,50 +62,54 @@
 <div class='timelineOptions'>
 	<div class='box'>
 		<p>{articleCountLabel}</p>
-		<!--TODO <Field label='Show article count on header'>
-			<Switch bind:checked={data.showArticleCount}/>
-		</Field>
-		<Button type='is-danger' on:click={removeTimeline}>
+		<label class='field'>
+			Show article count on header
+			<input type='checkbox' bind:checked={data.showArticleCount}/>
+		</label>
+		<button type='is-danger' on:click={removeTimeline}>
 			Remove timeline
-		</Button> -->
+		</button>
 	</div>
 	<div class='box'>
-		<!-- <Field label={`${fullscreen?.container !== null ? 'Timeline ' : ''}Container`}>
-			<Select bind:selected={data.container} nativeSize={0}>
+		<label class='field'>
+			{`${fullscreen?.container !== null ? 'Timeline ' : ''}Container`}
+			<select bind:value={data.container}>
 				<option value={ColumnContainer}>Column</option>
 				<option value={RowContainer}>Row</option>
 				<option value={MasonryContainer}>Masonry</option>
-			</Select>
-		</Field>
+			</select>
+		</label>
 		{#if fullscreen !== undefined}
-			<Field label='Fullscreen Container'>
-				<Switch checked={!!fullscreen.container} on:input={e => setFullscreenContainer(e.target.checked)}/>
+			<label class='field'>
+				Fullscreen Container
+				<input type='checkbox' checked={!!fullscreen.container} on:input={e => setFullscreenContainer(e.target.checked)}/>
 				{#if fullscreen.container}
-					<Select
-						nativeSize={0}
-						bind:selected={fullscreen.container}
+					<select
+						bind:value={fullscreen.container}
 						on:input={() => updateFullscreenStorage(fullscreen)}
 					>
 						<option value={ColumnContainer}>Column</option>
 						<option value={RowContainer}>Row</option>
 						<option value={MasonryContainer}>Masonry</option>
-					</Select>
+					</select>
 				{/if}
-			</Field>
-		{/if} -->
+			</label>
+		{/if}
 		{#if (fullscreen?.container ?? data.container) !== ColumnContainer}
-			<!-- <Field label={`${fullscreen?.columnCount !== null ? 'Timeline ' : ''}Column Count`}>
+			<label class='field'>
+				{`${fullscreen?.columnCount !== null ? 'Timeline ' : ''}Column Count`}
 				<input class='input' type='number' bind:value={data.columnCount} min={1}/>
-				<Button on:click={() => data.columnCount++}>
+				<button on:click={() => data.columnCount++}>
 					+
-				</Button>
-				<Button on:click={() => {if (data.columnCount > 1) data.columnCount--}}>
+				</button>
+				<button on:click={() => {if (data.columnCount > 1) data.columnCount--}}>
 					-
-				</Button>
-			</Field> -->
-			<!-- {#if fullscreen !== undefined}
-				<Field label={'Fullscreen Column Count'}>
-					<Switch checked={fullscreen.columnCount !== null} on:input={e => setFullscreenColumnCount(e.target.checked)}/>
+				</button>
+			</label>
+			{#if fullscreen !== undefined}
+				<label class='field'>
+					Fullscreen Column Count
+					<input type='checkbox' checked={fullscreen.columnCount !== null} on:input={e => setFullscreenColumnCount(e.target.checked)}/>
 					{#if fullscreen.columnCount !== null}
 						<input
 							class='input'
@@ -115,82 +119,107 @@
 							on:change={e => {if (e.value) fullscreen.columnCount = parseInt(e.value)}}
 							on:change={() => updateFullscreenStorage(fullscreen)}
 						/>
-						<Button on:click={() => {fullscreen.columnCount++; updateFullscreenStorage(fullscreen)}}>
+						<button on:click={() => {fullscreen.columnCount++; updateFullscreenStorage(fullscreen)}}>
 							+
-						</Button>
-						<Button on:click={() => {if (fullscreen.columnCount > 1) fullscreen.columnCount--; updateFullscreenStorage(fullscreen)}}>
+						</button>
+						<button on:click={() => {if (fullscreen.columnCount > 1) fullscreen.columnCount--; updateFullscreenStorage(fullscreen)}}>
 							-
-						</Button>
+						</button>
 					{/if}
-				</Field>
+				</label>
 			{/if}
-			<Field label='Right to left'>
-				<Switch bind:checked={data.rtl}/>
-			</Field> -->
+			<label class='field'>
+				Right to left
+				<input type='checkbox' bind:checked={data.rtl}/>
+			</label>
 		{/if}
-		<!-- {#if fullscreen === undefined}
-			<Field label='Timeline Width'>
+		{#if fullscreen === undefined}
+			<label class='field'>
+				Timeline Width
 				<input class='input' type='number' bind:value={data.width} min={1}/>
-			</Field>
+			</label>
 		{/if}
-		<Field label='AutoScroll Speed'>
+		<label class='field'>
+			AutoScroll Speed
 			<input class='input' type='number' bind:value={data.scrollSpeed} min={0}/>
-		</Field> -->
+		</label>
 <!--		TODO Update on confirm-->
-		<!-- <Field label='Section' addons={false}>
-			<Switch bind:checked={data.section.useSection}>Section articles</Switch>
+		<label class='field'>
+			Section
+			<label>
+				Section articles
+				<input type='checkbox' bind:checked={data.section.useSection}/>
+			</label>
 			<input class='input' type='number' bind:value={data.section.count} min={0}/>
-		</Field> -->
+		</label>
 	</div>
 	<div class='box'>
-		<!-- <Field label='Article View'>
-			<Select bind:selected={data.articleView} nativeSize={0}>
+		<label class='field'>
+			Article View
+			<select bind:value={data.articleView}>
 				<option value={SocialArticleView}>Social</option>
 				<option value={GalleryArticleView}>Gallery</option>
-			</Select>
-		</Field>
+			</select>
+		</label>
 		<div class='field'>
-			<Switch bind:checked={data.animatedAsGifs}>Show all animated as gifs</Switch>
+			<label>
+				Show all animated as gifs
+				<input type='checkbox' bind:checked={data.animatedAsGifs}/>
+			</label>
 		</div>
 		<div class='field'>
-			<Switch bind:checked={data.hideFilteredOutArticles}>Hide filtered out articles</Switch>
+			<label>
+				Hide filtered out articles
+				<input type='checkbox' bind:checked={data.hideFilteredOutArticles}/>
+			</label>
 		</div>
 		<div class='field'>
-			<Switch bind:checked={data.mergeReposts}>Merge duplicate reposts</Switch>
+			<label>
+				Merge duplicate reposts
+				<input type='checkbox' bind:checked={data.mergeReposts}/>
+			</label>
 		</div>
 		{#if data.articleView === SocialArticleView}
 			<div class='field'>
-				<Switch bind:checked={data.compact}>Compact articles</Switch>
+				<label>
+					Compact articles
+					<input type='checkbox' bind:checked={data.compact}/>
+				</label>
 			</div>
 			<div class='field'>
-				<Switch bind:checked={data.hideText}>Hide text</Switch>
+				<label>
+					Hide text
+					<input type='checkbox' bind:checked={data.hideText}/>
+				</label>
 			</div>
 		{/if}
-		<Field label='Max media count'>
+		<label class='field'>
+			Max media count
 			<input class='input' type='number' bind:value={data.maxMediaCount} min={1}/>
-		</Field> -->
+		</label>
 	</div>
 	<div class='box'>
-		<!-- <Field label='Endpoints'>
+		<label class='field'>
+			Endpoints
 			<ul>
 				{#each data.endpoints as endpoint (endpoint)}
 					<li>{endpoint.name || endpoint.endpoint.name}</li>
 				{/each}
 			</ul>
-		</Field> -->
+		</label>
 	</div>
 	<div class='box'>
 		<FiltersOptions bind:instances={data.filters}/>
 		<div class='control'>
-<!--			<Button on:click={removeFiltered}>Remove filtered articles</Button>-->
+			<button on:click={removeFiltered}>Remove filtered articles</button>
 		</div>
 	</div>
 	<div class='box'>
 		<SortOptions bind:sortInfo={data.sortInfo} {sortOnce}/>
 	</div>
 	<div class='box'>
-		<!-- <Button on:click={() => console.log(data)}>
+		<button on:click={() => console.log(data)}>
 			Log Timeline Data
-		</Button> -->
+		</button>
 	</div>
 </div>

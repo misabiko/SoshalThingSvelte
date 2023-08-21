@@ -67,38 +67,40 @@
 	}
 </script>
 
-<!--{#each Object.entries(timelineViews) as [viewName, timelineView]}
-	<Field label={viewName} addons={false}>
-		<Button on:click={() => setView(viewName)}>Set View</Button>
-		<Button on:click={() => removeView(viewName)}>Remove View</Button>
-		{@const newTimelines = Object.keys(timelines).filter(t => !timelineView.timelineIds.includes(t))}
+{#each Object.entries(timelineViews) as [viewName, timelineView]}
+	{@const newTimelines = Object.keys(timelines).filter(t => !timelineView.timelineIds.includes(t))}
+	<label class='field'>
+		{viewName}
+		<button on:click={() => setView(viewName)}>Set View</button>
+		<button on:click={() => removeView(viewName)}>Remove View</button>
 		{#each timelineView.timelineIds as id, index (id)}
 			<div class='buttons has-addons'>
-				<Select selected={id} on:input={e => replaceTimeline(viewName, index, e.detail)} nativeSize={0}>
+				<select value={id} on:input={e => replaceTimeline(viewName, index, e.detail)}>
 					<option value={id}>{id}</option>
 					{#each newTimelines as newTimeline}
 						<option value={newTimeline}>{newTimeline}</option>
 					{/each}
-				</Select>
+				</select>
 				{#if timelineView.timelineIds.length > 1}
-					<Button on:click={() => moveTimeline(viewName, index, false)} disabled={index === timelineView.timelineIds.length - 1}>↓</Button>
-					<Button on:click={() => moveTimeline(viewName, index, true)} disabled={index === 0}>↑</Button>
+					<button on:click={() => moveTimeline(viewName, index, false)} disabled={index === timelineView.timelineIds.length - 1}>↓</button>
+					<button on:click={() => moveTimeline(viewName, index, true)} disabled={index === 0}>↑</button>
 				{/if}
-				<Button on:click={() => removeTimeline(viewName, index)}>Remove</Button>
+				<button on:click={() => removeTimeline(viewName, index)}>Remove</button>
 			</div>
 		{/each}
 		{#if newTimelines.length}
 			<Dropdown labelText='New timeline'>
 				{#each newTimelines as id}
 					<div class='control'>
-						<Button on:click={() => addTimeline(viewName, id)}>{id}</Button>
+						<button on:click={() => addTimeline(viewName, id)}>{id}</button>
 					</div>
 				{/each}
 			</Dropdown>
 		{/if}
-	</Field>
-{/each}-->
-<!--<Field addons={true}>
-	<Input bind:value={newViewName}></Input>
-	<Button on:click={addView}>Add</Button>
-</Field>-->
+	</label>
+{/each}
+<!-- TODO Addon? -->
+<div>
+	<input bind:value={newViewName}/>
+	<button on:click={addView}>Add</button>
+</div>

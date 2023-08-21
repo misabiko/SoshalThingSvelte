@@ -26,36 +26,50 @@
 	const mainStorage = loadMainStorage()
 </script>
 
-<!-- <Field label='Extension Id' addons={false}>
-	<Input type='text' bind:value={$extensionContextStore.id} placeholder='Extension Id'/>
-	<Button on:click={extensionCheck}>Check Extension</Button>
-</Field>
-<Field label={`Available: ${$extensionContextStore.available}`}></Field> -->
+<label class='field'>
+	Extension Id
+	<input type='text' bind:value={$extensionContextStore.id} placeholder='Extension Id'/>
+	<button on:click={extensionCheck}>Check Extension</button>
+</label>
 
-<!-- <Field label='Mark as read in local storage' addons={false}>
-	<Switch checked={mainStorage.markAsReadLocal ?? false} on:input={e => updateMainStorage('markAsReadLocal', e.target.checked)}/>
-</Field> -->
+<label class='field'>
+	Available: {$extensionContextStore.available}
+</label>
 
-<!-- {#if $extensionContextStore.hasAccessToken}
-	<Field label='Twitter logged in'></Field>
+<label class='field'>
+	Mark as read in local storage
+	<input
+		type='checkbox'
+		bind:checked={mainStorage.markAsReadLocal}
+		on:input={e => updateMainStorage('markAsReadLocal', e.target.checked)}
+	/>
+</label>
+
+{#if $extensionContextStore.hasAccessToken}
+	<label class='field'>
+		Twitter logged in
+	</label>
 {:else}
-	<Field label='Twitter' addons={false}>
-		<Button on:click={twitterRequestToken}>Request Token</Button>
+	<label class='field'>
+		Twitter
+		<button on:click={twitterRequestToken}>Request Token</button>
 		{#if oauthToken}
 			<a class='button' href={`https://api.twitter.com/oauth/authenticate?oauth_token=${oauthToken}`} target='_blank' rel='noreferrer'>
 				Authenticate
 			</a>
 		{/if}
-		<Input type='text' bind:value={oobPIN}/>
+		<input type='text' bind:value={oobPIN}/>
 		{#if oobPIN?.length}
-			<Button on:click={twitterAccessToken}>Get Access Token</Button>
+			<button on:click={twitterAccessToken}>Get Access Token</button>
 		{/if}
-	</Field>
-{/if} -->
+	</label>
+{/if}
 
-<!-- <Field label='Pixiv token' addons={false}>
-	<Input value={pixivStorage.csrfToken} on:change={e => updateServiceStorage(PixivService.name, 'csrfToken', e.target.value)}/>
-</Field>
-<Field label='Pixiv bookmark as private' addons={false}>
-	<Switch checked={pixivStorage.privateBookmark ?? false} on:input={e => updateServiceStorage(PixivService.name, 'privateBookmark', e.target.checked)}/>
-</Field> -->
+<label class='field'>
+	Pixiv token
+	<input value={pixivStorage.csrfToken} on:change={e => updateServiceStorage(PixivService.name, 'csrfToken', e.target.value)}/>
+</label>
+<label class='field'>
+	Pixiv bookmark as private
+	<input type='checkbox' checked={pixivStorage.privateBookmark ?? false} on:input={e => updateServiceStorage(PixivService.name, 'privateBookmark', e.target.checked)}/>
+</label>

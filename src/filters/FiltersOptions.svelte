@@ -112,7 +112,7 @@
 			</div>
 			<div class='field-body'>
 				<div class='control'>
-					<Switch bind:checked={instance.filter.includeOffset}/>
+					<input type='checkbox' bind:checked={instance.filter.includeOffset}/>
 				</div>
 			</div>
 		</div>

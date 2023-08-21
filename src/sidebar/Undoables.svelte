@@ -15,15 +15,15 @@
 </script>
 
 <div class='box'>
-	<!--<Button on:click={modalTimeline}>
+	<button on:click={modalTimeline}>
 		Open Timeline
-	</Button>-->
+	</button>
 	<!--TODO Add undoable ids-->
 	{#each [...$undoables] as undoable, index (`${undoable.text}/${index}`)}
 			<p>{undoable.text}</p>
-			<!--<Button on:click={() => undoables.toggleDo(index)}>
+			<button on:click={() => undoables.toggleDo(index)}>
 				{undoable.undid ? 'Redo' : 'Undo'}
-			</Button>-->
+			</button>
 	{:else}
 		Nothing to undo
 	{/each}

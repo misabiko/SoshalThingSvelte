@@ -2,8 +2,8 @@
 	import {loadingStore} from "../bufferedMediaLoading"
 </script>
 
-<!--<Button on:click={loadingStore.clearLoadings}>Clear loadings</Button>-->
-<!--<Button on:click={loadingStore.clearQueue}>Clear queue</Button>-->
+<button on:click={loadingStore.clearLoadings}>Clear loadings</button>
+<button on:click={loadingStore.clearQueue}>Clear queue</button>
 <div class='box'>
 	{#if $loadingStore.loadings.length}
 		Currently loading:

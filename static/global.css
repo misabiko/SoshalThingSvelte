@@ -1,0 +1,19 @@
+:root {
+	--main-background: #14151f
+}
+
+html {
+	overflow-y: auto;
+	/* height: -webkit-fill-available; */
+	background-color: var(--main-background);
+}
+
+/* TODO Fix 100% height on mobile, maybe using -webkit-fill-available */
+body {
+	margin: 0;
+	height: 100vh;
+	/* height: -webkit-fill-available; */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	display: flex;
+}

@@ -1,4 +1,5 @@
 <script lang='ts'>
+	import './partialGlobal.css';
 	import {setContext} from 'svelte'
 	import Sidebar from "./sidebar/Sidebar.svelte"
 	import type {TimelineCollection, TimelineData, TimelineView} from "./timelines"
@@ -97,25 +98,32 @@
 		width: 100%;
 	}
 
-	/* .soshalthing .injected {
-		height: 100%;
-		display:flex;
-	} */
-
-	/* .soshalthing #favviewer {
-		width: 100vw;
-		height: 90vh;
-		display: flex;
-		-webkit-font-smoothing: antialiased;
-		-moz-osx-font-smoothing: grayscale;
-	} */
-
 	#soshalNotifications {
 		position: absolute;
 		right: 0;
 		bottom: 0;
 		padding: 15px;
 		z-index: 1;
+	}
+
+	/* TODO Confirm that all variables are defined */
+	.soshalthing.injected {
+		/* Inheriting generics.sass's html */
+		background-color: var(--body-background-color);
+		-moz-osx-font-smoothing: grayscale;
+		-webkit-font-smoothing: antialiased;
+		min-width: var(--body-min-width);
+		overflow-x: var(--body-overflow-x);
+		text-rendering: var(--body-rendering);
+
+		/* Inheriting bulma's generics.sass's body */
+		color: var(--body-color);
+		font-size: var(--body-font-size);
+		font-weight: var(--body-weight);
+		line-height: var(--body-line-height);
+	}
+	:global(.soshalthing.injected button.delete) {
+		padding: 0;
 	}
 </style>
 

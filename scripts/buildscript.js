@@ -87,7 +87,7 @@ else
 		.build(buildOptions)
 		.catch(errorHandler);
 
-fs.copyFileSync('./src/index.html', './dist/index.html');
+//TODO Dynamically copy all files from static folder
 for (const file of [
 	'android-chrome-192x192.png',
 	'android-chrome-512x512.png',
@@ -96,7 +96,9 @@ for (const file of [
 	'favicon-16x16.png',
 	'favicon-32x32.png',
 	'site.webmanifest',
-	'CNAME'
+	'CNAME',
+	'index.html',
+	'global.css',
 ])
 	fs.copyFileSync('./static/' + file, './dist/' + file);
 

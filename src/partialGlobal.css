@@ -1,0 +1,146 @@
+:root {
+	/* from bulma */
+	--blue: hsl(229deg, 53%, 53%);
+	--link: var(--blue);
+	--black-bis: hsl(0, 0%, 7%);
+	--black-ter: hsl(0, 0%, 14%);
+	--grey-darker: hsl(0, 0%, 21%);
+	--grey-dark: hsl(0, 0%, 29%);
+	--grey: hsl(0deg, 0%, 48%);
+	--grey-light: hsl(0, 0%, 71%);
+	--white: white;
+	--white-ter: hsl(0deg, 0%, 96%);
+	--white-bis: hsl(0, 0%, 98%);
+
+	--sidebar-menu-width: 350px;
+	--like-color: #e0245e;
+	--repost-color: #17bf63;
+	--comment-color: #1da1f2;
+
+	/* Main background */
+	--scheme-main: #14151f;
+	/* Article background */
+	--scheme-main-bis: #1f202e;
+	/* Options background */
+	--scheme-main-ter: #282a3e;
+
+	--scheme-invert: var(--white);
+	--scheme-invert-bis: var(--white-bis);
+	--scheme-invert-ter: var(--white-ter);
+
+	--border-light: var(--scheme-main);
+
+	--background: var(--scheme-main);
+	--dark: #1e2039;
+	--dark-error: #391e33;
+	--primary: var(--blue);
+	--light: var(--grey-light);
+
+	--text: var(--white-bis);
+	--text-light: var(--white);
+	--text-strong: var(--white-ter);
+
+	--input-color: var(--grey-darker);
+	--input-background-color: var(--white);
+	--input-border-color: var(--grey-darker);
+
+
+	--box-background-color: var(--dark);
+
+	--card-background-color: var(--scheme-main-bis);
+	--card-content-background-color: var(--card-background-color);
+	--card-header-background-color: var(--card-background-color);
+	--card-footer-background-color: var(--card-background-color);
+
+	--button-color: var(--grey-darker);
+	--button-background-color: var(--white);
+
+	--progress-text-color: var(--dark);
+	--progress-value-background-color: var(--grey-dark);
+
+	--loading-background: var(--scheme-main-bis);
+
+	--dropdown-item-hover-color: var(--white);
+	--dropdown-item-hover-background-color: var(--primary);
+
+	--notification-background-color: var(--dark);
+
+	--modal-background-background-color: rgba(var(--scheme-main), 0.86);
+}
+
+.input.is-static {
+	color: var(--text);
+}
+
+.icon, svg.svelte-fa {
+	color: var(--white-ter);
+}
+
+.icon.darkIcon svg.svelte-fa {
+	color: var(--black-ter);
+}
+
+.dropdown-trigger .icon {
+	color: var(--button-color);
+}
+
+img.emoji {
+	height: 1em;
+	width: 1em;
+	margin: 0 .05em 0 .1em;
+	vertical-align: -0.1em;
+}
+
+::-webkit-scrollbar {
+	width: 12px;
+	height: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+	border-radius: 0;
+	background-color: var(--scheme-main-ter);
+}
+
+button.modal-close::before,
+button.modal-close::after,
+button.delete::before,
+button.delete::after {
+	background-color: hsl(0, 0%, 76%);
+}
+
+:global(button.modal-close) {
+	background-color: rgba(var(--scheme-invert), 0.2);
+}
+
+/* TODO Try borderless-button component */
+.borderless-button {
+	padding: 0;
+	border: none;
+	background: none;
+	outline: none;
+	cursor: pointer;
+}
+
+.borderless-button:hover:not(:disabled) svg {
+	color: var(--link);
+}
+
+.borderless-button:disabled svg {
+	color: var(--grey);
+}
+
+.borderless-button:not(:active) {
+	margin-bottom: 1px;
+}
+
+.borderless-button:active {
+	margin-top: 1px;
+}
+
+.modal {
+	overflow-x: auto;
+}
+
+.modal div.modal-content {
+	width: unset;
+}

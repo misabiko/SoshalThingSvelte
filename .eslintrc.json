@@ -35,5 +35,6 @@
 				"varsIgnorePattern": "^_"
 			}
 		]
-    }
+    },
+	"ignorePatterns": ["**/dist*/*", "**/node_modules/*"]
 }

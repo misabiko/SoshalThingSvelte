@@ -1,9 +1,9 @@
-import {expect, test} from '@playwright/test'
+import {expect, test} from '@playwright/test';
 
 test('Add Timeline', async ({page}) => {
-	await page.goto('/')
+	await page.goto('/');
 
-	await page.click('#sidebarButtons button[title = "Add new timeline"]')
+	await page.click('#sidebarButtons button[title = "Add new timeline"]');
 
-	await expect(page.locator('.sidebarMenu label')).toHaveText('Username')
-})
+	await expect(page.locator('.sidebarMenu label')).toHaveText('Username');
+});

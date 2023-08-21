@@ -1,5 +1,5 @@
 import test, {expect} from "@playwright/test"
-import {loadWithLocalStorage, TIMELINE_STORAGE_KEY} from './storages.spec.js'
+import {loadWithLocalStorage, TIMELINE_STORAGE_KEY} from '../storagesUtils';
 
 test.describe('masonry', () => {
 	test('independant columns', async ({page}) => {

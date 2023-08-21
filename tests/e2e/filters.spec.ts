@@ -1,5 +1,5 @@
 import {expect, test} from '@playwright/test'
-import {loadWithLocalStorage, TIMELINE_STORAGE_KEY} from './storages.spec.js'
+import {loadWithLocalStorage, TIMELINE_STORAGE_KEY} from '../storagesUtils';
 
 test.describe('mark as read/hide', () => {
 	test.beforeEach(async ({page}) => {

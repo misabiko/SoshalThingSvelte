@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import {loadWithLocalStorage, MAIN_STORAGE_KEY, TIMELINE_STORAGE_KEY} from './storages.spec.js'
+import {loadWithLocalStorage, MAIN_STORAGE_KEY, TIMELINE_STORAGE_KEY} from '../storagesUtils';
 
 test.describe('fullscreen timeline', () => {
 	test.describe('via search param', () => {

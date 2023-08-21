@@ -1,8 +1,5 @@
-import {expect, test, type Page} from '@playwright/test'
-
-//TODO import from ../src/storages.js
-export const MAIN_STORAGE_KEY = 'SoshalThingSvelte'
-export const TIMELINE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Timelines'
+import {expect, test, type Page} from '@playwright/test';
+import {MAIN_STORAGE_KEY, TIMELINE_STORAGE_KEY, loadWithLocalStorage, clearLocalStorages} from '../storagesUtils';
 
 test.describe('app options', () => {
 	test('fullscreen undefined', async ({page}) => {
@@ -259,21 +256,3 @@ test.describe('cache', () => {
 		await expect(articleLocator).toHaveCount(articleCount - 1);
 	})
 })
-
-export async function loadWithLocalStorage(page: Page, storages: {[key: string]: any}) {
-	await page.goto('/');
-	await page.mainFrame().evaluate((storages) => {
-		for (const [key, storage] of Object.entries(storages))
-			window.localStorage.setItem(key, JSON.stringify(storage));
-	}, storages);
-	await page.reload();
-}
-
-export async function clearLocalStorages(page: Page, keys: string[]) {
-	await page.goto('/');
-	await page.mainFrame().evaluate((keys) => {
-		for (const key of keys)
-			window.localStorage.removeItem(key);
-	}, keys);
-	await page.reload();
-}

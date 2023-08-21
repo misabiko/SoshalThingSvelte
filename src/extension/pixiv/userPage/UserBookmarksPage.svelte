@@ -1,5 +1,4 @@
 <script lang='ts'>
-	import '../../../styles/favviewerGlobal.sass'
 	import SoshalThing from "../../../SoshalThing.svelte"
 	import type {TimelineCollection, TimelineView} from '../../../timelines'
 	import {defaultTimeline} from '../../../timelines'

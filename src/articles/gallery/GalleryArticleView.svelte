@@ -131,10 +131,6 @@
 		justify-content: space-around;
 	}
 
-	/* ul.articleTags {
-		list-style-type: none
-	} */
-
 	.moreMedia {
 		display: flex;
 	}

@@ -48,27 +48,29 @@
 	}
 </script>
 
-<!--
-<Field label='Username' addons={false}>
-	<Select bind:selected={timelineAddType} nativeSize={0}>
+<label class='field'>
+	Username
+	<select bind:value={timelineAddType}>
 		<option value={TimelineAddTypes.Empty}>Empty</option>
 		<option value={TimelineAddTypes.TwitterUser}>Twitter User</option>
-	</Select>
+	</select>
+
 	{#if timelineAddType === TimelineAddTypes.Empty}
-		<Input bind:value={title}/>
+		<input bind:value={title}/>
 	{:else if timelineAddType === TimelineAddTypes.TwitterUser}
-		<Input bind:value={username}/>
+		<input bind:value={username}/>
 	{/if}
-	<Button
+	<button
 		on:click={() => {const data = getTimelineData(); if (data) setModalTimeline(data)}}
 		disabled={addDisabled}
 	>
 		Add Modal Timeline
-	</Button>
-	<Button
+	</button>
+	<button
 		on:click={() => {const data = getTimelineData(); if (data) addTimeline(data)}}
 		disabled={addDisabled}
 	>
 		Add Timeline
-	</Button>
-</Field>-->
+	</button>
+</label>
+

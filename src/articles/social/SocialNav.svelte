@@ -37,19 +37,19 @@
 
 <style>
 	.articleButton {
-		/* TODO color: $light; */
+		color: var(--light);
 		font-size: unset;
 	}
 	.articleButton:focus {
 		outline: none;
 	}
-	/* .articleButton:hover span {
-		TODO color: $primary;
-	} */
+	.articleButton:hover span {
+		color: var(--primary);
+	}
 
-	/* :global(button.articleButton.borderless-button.actionned > span > svg) {
-		TODO color: $primary
-	} */
+	:global(button.articleButton.borderless-button.actionned > span > svg) {
+		color: var(--primary);
+	}
 
 	button:disabled {
 		cursor: unset;

@@ -43,9 +43,9 @@
 		height: unset;
 	}
 
-	/* .socialArticle :global(i), :global(svg) {
-		TODO color: $white-ter;
-	} */
+	.socialArticle :global(i), :global(svg) {
+		color: var(--white-ter);
+	}
 
 	figure {
 		overflow: hidden;
@@ -68,9 +68,9 @@
 	.articleHeader * {
 		vertical-align: middle;
 	}
-	/*.articleHeader * small {
-		TODO color: $light
-	} */
+	.articleHeader * small {
+		color: var(--light);
+	}
 
 	.names {
 		text-overflow: ellipsis;
@@ -81,7 +81,7 @@
 	}
 	.names strong {
 		margin-right: 0.5rem;
-		/* TODO color: $white-ter; */
+		color: var(--white-ter);
 	}
 	.names:hover > * {
 		text-decoration: underline;
@@ -95,12 +95,12 @@
 	/* , .replyLabel */
 	.repostLabel {
 		margin-left: 64px;
-		/*TODO color: $light; */
+		color: var(--light);
 		font-size: smaller;
 	}
 	.repostLabel a {
 		margin-left: 1rem;
-		/*TODO color: $light; */
+		color: var(--light);
 	}
 
 	.repostLabel a:hover {
@@ -108,7 +108,7 @@
 	}
 
 	.quotedPost {
-		/* TODO border: 2px solid $scheme-main-ter; */
+		border: 2px solid var(--scheme-main-ter);
 		border-radius: 6px;
 		padding: 16px;
 	}
@@ -121,7 +121,7 @@
 	}
 	.quotedPost .names strong {
 		margin-right: 0.5rem;
-		/* TODO color: $white-ter; */
+		color: var(--white-ter);
 	}
 	.quotedPost .names:hover > * {
 		text-decoration: underline;

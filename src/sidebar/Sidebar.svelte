@@ -53,7 +53,7 @@
 
 <style>
 	#sidebar {
-		/* TODO background-color: $dark; */
+		background-color: var(--dark);
 		z-index: 1;
 		display: flex;
 	}
@@ -80,21 +80,17 @@
 		margin-bottom: 1rem;
 	}
 
-	/* #sidebarButtons button span {
-		vertical-align: middle;
-	} */
-
 	.sidebarMenu {
-		/*TODO width: $sidebar-menu-width; */
+		width: var(--sidebar-menu-width);
 		height: 100%;
 		padding: 1rem;
-		/*TODO background-color: $scheme-main-ter; */
+		background-color: var(--scheme-main-ter);
 		overflow-y: auto;
 	}
 
-	/* .sidebarMenu::-webkit-scrollbar-thumb {
-		TODO background-color: $dark;
-	} */
+	.sidebarMenu::-webkit-scrollbar-thumb {
+		background-color: var(--dark);
+	}
 </style>
 
 <nav id='sidebar'>

@@ -56,9 +56,9 @@
 </script>
 
 <style>
-	/* article {
-		TODO background-color: $scheme-main-bis;
-	} */
+	article {
+		background-color: var(--scheme-main-bis);
+	}
 
 	article.transparent {
 		opacity: 20%;

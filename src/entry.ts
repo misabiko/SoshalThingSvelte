@@ -1,4 +1,3 @@
-//TODO Include global styling
 //TODO Replace Field, Modal, Button from svelma
 
 //Add service endpoints here to include them

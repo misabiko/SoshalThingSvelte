@@ -36,7 +36,7 @@
 		height: 50px;
 		line-height: 50px;
 		padding-left: 25px;
-		/* TODO background-color: $dark; */
+		background-color: var(--dark);
 		display: flex;
 		justify-content: space-between;
 	}

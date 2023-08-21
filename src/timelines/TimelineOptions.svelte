@@ -39,7 +39,7 @@
 
 <style>
 	.timelineOptions {
-		/* TODO background-color: $scheme-main-ter; */
+		background-color: var(--scheme-main-ter);
 		padding: 1rem;
 		display: flex;
 		flex-direction: column;
@@ -54,9 +54,9 @@
 		width: 100%;
 	}
 
-	/* :global(#timelineContainer .timelineOptions::-webkit-scrollbar-thumb) {
-		TODO background-color: $dark
-	} */
+	:global(#timelineContainer .timelineOptions::-webkit-scrollbar-thumb) {
+		background-color: var(--dark);
+	}
 </style>
 
 <div class='timelineOptions'>

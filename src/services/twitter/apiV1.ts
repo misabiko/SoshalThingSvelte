@@ -3,7 +3,7 @@ import {getRootArticle} from '../../articles';
 import TwitterArticle from './article';
 import {getHiddenStorage, getMarkedAsReadStorage} from '../../storages/serviceCache';
 import {TwitterService} from './service';
-import {fetchExtension} from '../extension';
+import {fetchExtensionService} from '../extension';
 import type {ExtensionFetchResponse} from '../extension';
 import {get} from 'svelte/store';
 import {addArticles, getWritable} from '../service';
@@ -167,7 +167,7 @@ export async function retweet(idPair: ArticleIdPair) {
 }
 
 export async function fetchExtensionV1<T = TweetResponse>(url: string, method = 'GET', body?: any): Promise<ExtensionFetchResponse<T>> {
-	const response = await fetchExtension<T | V1ErrorResponse>(
+	const response = await fetchExtensionService<T | V1ErrorResponse>(
 		TwitterService.name,
 		'fetchV1',
 		url,

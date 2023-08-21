@@ -33,7 +33,37 @@ extensionContextStore.subscribe(value => {
 	extensionContext = value;
 });
 
-export async function fetchExtension<T>(service: string, request: string, url: string, method = 'GET', body?: any): Promise<ExtensionFetchResponse<T>> {
+export async function fetchExtension<T>(request: string, options: object): Promise<T> {
+	if (extensionContext.id === null)
+		throw new Error('No extension id');
+
+	try {
+		return await new Promise((resolve, reject) => {
+			const timeout = 5000;
+			const timeoutId = setTimeout(() => reject(new Error(`Extension didn't respond in ${timeout} ms.`)), timeout);
+
+			//TODO Cancel request on timeout
+			chrome.runtime.sendMessage(extensionContext.id as string, {
+				soshalthing: true,
+				request,
+				...options,
+			}, (response: {json: T, headers: string[][]}) => {
+				clearTimeout(timeoutId);
+
+				extensionContextStore.update(ctx => {
+					ctx.available = true;
+					return ctx;
+				});
+				resolve(response);
+			});
+		});
+	}catch (cause: any) {
+		throw new Error(`Failed to fetch from extension\n${JSON.stringify(cause, null, '\t')}`);
+	}
+}
+
+//TODO Probably remove or dissolve into Twitter's fetchExtensionV1
+export async function fetchExtensionService<T>(service: string, request: string, url: string, method = 'GET', body?: any): Promise<ExtensionFetchResponse<T>> {
 	if (extensionContext.id === null)
 		throw new Error('No extension id');
 

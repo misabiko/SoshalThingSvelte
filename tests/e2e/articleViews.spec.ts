@@ -1,4 +1,4 @@
-import test, {expect} from "@playwright/test"
+import test, {expect} from '@playwright/test';
 import {loadWithLocalStorage, TIMELINE_STORAGE_KEY} from '../storagesUtils';
 
 test.describe('SocialArticleView', () => {
@@ -12,7 +12,7 @@ test.describe('SocialArticleView', () => {
 					}
 				]
 			}]
-		})
+		});
 
 		await page.locator('article button[title = "Like"]').first().click();
 
@@ -22,7 +22,7 @@ test.describe('SocialArticleView', () => {
 	test('repost feedback', async ({page}) => {
 		await loadWithLocalStorage(page, {
 			[TIMELINE_STORAGE_KEY]: [{
-				title: "Timeline",
+				title: 'Timeline',
 				endpoints: [
 					{
 						service: 'Dummy',
@@ -30,10 +30,10 @@ test.describe('SocialArticleView', () => {
 					}
 				]
 			}]
-		})
+		});
 
 		await page.locator('article button[title = "Repost"]').first().click();
 
 		await expect(page.locator('article button[title = "Repost"]').first()).toHaveClass(/actionned/);
 	});
-})
+});

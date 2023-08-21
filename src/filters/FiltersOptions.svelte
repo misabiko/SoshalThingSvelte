@@ -63,7 +63,7 @@
 				</div>
 				<div class="field-body">
 					<div class="control">
-						<Input bind:value={instance.filter[prop]}/>
+						<input bind:value={instance.filter[prop]}/>
 					</div>
 				</div>
 			</div>
@@ -78,7 +78,7 @@
 			</div>
 			<div class="field-body">
 				<div class="control">
-					<Input bind:value={instance.filter.byUsername}/>
+					<input bind:value={instance.filter.byUsername}/>
 				</div>
 			</div>
 		</div>

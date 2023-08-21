@@ -1,4 +1,4 @@
-import {expect, test} from '@playwright/test'
+import {expect, test} from '@playwright/test';
 import {loadWithLocalStorage, TIMELINE_STORAGE_KEY} from '../storagesUtils';
 
 test.describe('mark as read/hide', () => {
@@ -13,42 +13,42 @@ test.describe('mark as read/hide', () => {
 				],
 				filters: [
 					{
-						filter: {type: "notMarkedAsRead", service: null},
+						filter: {type: 'notMarkedAsRead', service: null},
 						enabled: true,
 						inverted: false,
 					}, {
-						filter: {type: "notHidden", service: null},
+						filter: {type: 'notHidden', service: null},
 						enabled: true,
 						inverted: false,
 					},
 				]
 			}]
-		})
-	})
+		});
+	});
 
 	test('mark as read', async ({page}) => {
-		const articleLocator = page.locator('article')
-		const articleCount = await articleLocator.count()
-		expect(articleCount).toBeGreaterThan(0)
+		const articleLocator = page.locator('article');
+		const articleCount = await articleLocator.count();
+		expect(articleCount).toBeGreaterThan(0);
 
 		await page.locator('article button.articleButton[title = "Mark as read"]').first().click();
 
 		await expect(articleLocator).toHaveCount(articleCount - 1);
-	})
+	});
 
 	test('hidden', async ({page}) => {
-		const articleLocator = page.locator('article')
-		const articleCount = await articleLocator.count()
-		expect(articleCount).toBeGreaterThan(0)
+		const articleLocator = page.locator('article');
+		const articleCount = await articleLocator.count();
+		expect(articleCount).toBeGreaterThan(0);
 
 		await page.locator('article .dropdown-trigger button.articleButton').first().click();
 
 		await page.locator('article a.dropdown-item >> text=Hide').first().click();
 
 		await expect(articleLocator).toHaveCount(articleCount - 1);
-	})
-})
+	});
+});
 
-test.skip('repost by username', async () => {})
+test.skip('repost by username', async () => {});
 
-test.skip('quote by username', async () => {})
+test.skip('quote by username', async () => {});

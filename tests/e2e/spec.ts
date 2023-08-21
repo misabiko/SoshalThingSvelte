@@ -6,35 +6,35 @@ test.describe('fullscreen timeline', () => {
 		test('empty param', async ({page}) => {
 			await loadWithLocalStorage(page, {
 				[TIMELINE_STORAGE_KEY]: [{}, {}, {}]
-			})
+			});
 			await page.goto('/?fullscreen_timeline');
 
-			const timeline = page.locator('.timeline')
-			await expect(timeline).toHaveCount(1)
-			await expect(timeline).toHaveClass(/fullscreenTimeline/)
-		})
+			const timeline = page.locator('.timeline');
+			await expect(timeline).toHaveCount(1);
+			await expect(timeline).toHaveClass(/fullscreenTimeline/);
+		});
 
 		test('true', async ({page}) => {
 			await loadWithLocalStorage(page, {
 				[TIMELINE_STORAGE_KEY]: [{}, {}, {}]
-			})
+			});
 			await page.goto('/?fullscreen_timeline=true');
 
-			const timeline = page.locator('.timeline')
-			await expect(timeline).toHaveCount(1)
-			await expect(timeline).toHaveClass(/fullscreenTimeline/)
-		})
+			const timeline = page.locator('.timeline');
+			await expect(timeline).toHaveCount(1);
+			await expect(timeline).toHaveClass(/fullscreenTimeline/);
+		});
 
 		test('num', async ({page}) => {
 			await loadWithLocalStorage(page, {
 				[TIMELINE_STORAGE_KEY]: [{}, {}, {}]
-			})
+			});
 			await page.goto('/?fullscreen_timeline=1');
 
-			const timeline = page.locator('.timeline')
-			await expect(timeline).toHaveCount(1)
-			await expect(timeline).toHaveClass(/fullscreenTimeline/)
-		})
+			const timeline = page.locator('.timeline');
+			await expect(timeline).toHaveCount(1);
+			await expect(timeline).toHaveClass(/fullscreenTimeline/);
+		});
 	});
 
 	test('setting timeline fullscreen retains order', async ({page}) => {
@@ -44,7 +44,7 @@ test.describe('fullscreen timeline', () => {
 				{title: 'Timeline2'},
 				{title: 'Timeline3'},
 			]
-		})
+		});
 
 		await page.click('.timeline:nth-child(2) .timelineHeader button[title = "Make timeline fullscreen"]');
 
@@ -62,7 +62,7 @@ test.describe('fullscreen timeline', () => {
 				{title: 'Timeline2'},
 				{title: 'Timeline3'},
 			]
-		})
+		});
 
 		await page.click('.timeline:nth-child(2) .timelineHeader button[title = "Make timeline fullscreen"]');
 
@@ -92,15 +92,15 @@ test.describe('timeline views', () => {
 					}
 				}
 			}
-		})
+		});
 		await page.goto('/?view=myView');
 
-		const timeline = page.locator('.timeline')
-		await expect(timeline).toHaveCount(2)
+		const timeline = page.locator('.timeline');
+		await expect(timeline).toHaveCount(2);
 		await expect(timeline.nth(0).locator('.timelineLeftHeader strong')).toHaveText('Timeline 1');
 		await expect(timeline.nth(1).locator('.timelineLeftHeader strong')).toHaveText('Timeline 3');
-	})
-})
+	});
+});
 
 test.describe('autoscroll', () => {
 	test.beforeEach(async ({page}) => {
@@ -113,70 +113,70 @@ test.describe('autoscroll', () => {
 					}
 				]
 			}]
-		})
+		});
 
-		const container = page.locator('.articlesContainer').first()
+		const container = page.locator('.articlesContainer').first();
 
 		//Making sure we have room to scroll
-		expect((await container.evaluate(c => c.scrollHeight) - (await container.boundingBox()).height)).toBeGreaterThan(500)
-	})
+		expect((await container.evaluate(c => c.scrollHeight) - (await container.boundingBox()).height)).toBeGreaterThan(500);
+	});
 
 	test('scroll bounces from top', async ({page}) => {
-		const container = page.locator('.articlesContainer').first()
+		const container = page.locator('.articlesContainer').first();
 
-		const scrollTop = await container.evaluate(c => c.scrollTop = 10)
+		const scrollTop = await container.evaluate(c => c.scrollTop = 10);
 
-		await page.dblclick('button[title="Autoscroll"]')
+		await page.dblclick('button[title="Autoscroll"]');
 
-		await page.waitForTimeout(500)
+		await page.waitForTimeout(500);
 
-		expect(await container.evaluate(c => c.scrollTop)).toBeGreaterThan(scrollTop)
-	})
+		expect(await container.evaluate(c => c.scrollTop)).toBeGreaterThan(scrollTop);
+	});
 
 	test('scroll bounces from bottom', async ({page}) => {
-		const container = page.locator('.articlesContainer').first()
+		const container = page.locator('.articlesContainer').first();
 
-		const scrollTop = await container.evaluate(c => c.scrollTop = c.scrollHeight - 10)
+		const scrollTop = await container.evaluate(c => c.scrollTop = c.scrollHeight - 10);
 
-		await page.click('button[title="Autoscroll"]')
+		await page.click('button[title="Autoscroll"]');
 
-		await page.waitForTimeout(500)
+		await page.waitForTimeout(500);
 
-		expect(await container.evaluate(c => c.scrollTop)).toBeLessThan(scrollTop)
-	})
+		expect(await container.evaluate(c => c.scrollTop)).toBeLessThan(scrollTop);
+	});
 
 	test('scroll downward by default', async ({page}) => {
-		const container = page.locator('.articlesContainer').first()
+		const container = page.locator('.articlesContainer').first();
 
 		//Scrolling halfway, so it doesn't bounce from top on first frame
-		const scrollTop = await container.evaluate(c => c.scrollTop = (c.scrollHeight - c.clientHeight) / 2)
+		const scrollTop = await container.evaluate(c => c.scrollTop = (c.scrollHeight - c.clientHeight) / 2);
 
-		await page.click('button[title="Autoscroll"]')
+		await page.click('button[title="Autoscroll"]');
 
-		await page.waitForTimeout(500)
+		await page.waitForTimeout(500);
 
-		expect(await container.evaluate(c => c.scrollTop)).toBeGreaterThan(scrollTop)
-	})
+		expect(await container.evaluate(c => c.scrollTop)).toBeGreaterThan(scrollTop);
+	});
 
 	test('scroll flips every click', async ({page}) => {
-		const container = page.locator('.articlesContainer').first()
+		const container = page.locator('.articlesContainer').first();
 
 		//Scrolling halfway so, it doesn't bounce from top on first frame
-		const scrollTop = await container.evaluate(c => c.scrollTop = (c.scrollHeight - c.clientHeight) / 2)
+		const scrollTop = await container.evaluate(c => c.scrollTop = (c.scrollHeight - c.clientHeight) / 2);
 
-		await page.dblclick('button[title="Autoscroll"]')
+		await page.dblclick('button[title="Autoscroll"]');
 
-		await page.waitForTimeout(500)
+		await page.waitForTimeout(500);
 
-		expect(await container.evaluate(c => c.scrollTop)).toBeLessThan(scrollTop)
-	})
-})
+		expect(await container.evaluate(c => c.scrollTop)).toBeLessThan(scrollTop);
+	});
+});
 
 test.skip('modal timeline is full height', async ({page}) => {
 	//TODO Open modal timeline
 
-	const modalContent = page.locator('.modal-content')
-	await expect(modalContent.locator('.timeline')).toHaveCount(1)
+	const modalContent = page.locator('.modal-content');
+	await expect(modalContent.locator('.timeline')).toHaveCount(1);
 
-	expect(await modalContent.evaluate(e => e.scrollHeight - e.clientHeight)).toStrictEqual(0)
-})
+	expect(await modalContent.evaluate(e => e.scrollHeight - e.clientHeight)).toStrictEqual(0);
+});

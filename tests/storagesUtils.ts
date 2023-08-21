@@ -1,6 +1,8 @@
+import type {Page} from '@playwright/test';
+
 //TODO import from ../src/storages.js
-export const MAIN_STORAGE_KEY = 'SoshalThingSvelte'
-export const TIMELINE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Timelines'
+export const MAIN_STORAGE_KEY = 'SoshalThingSvelte';
+export const TIMELINE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Timelines';
 
 export async function loadWithLocalStorage(page: Page, storages: {[key: string]: any}) {
 	await page.goto('/');

@@ -37,12 +37,14 @@
 	let showSidebar = !isInjected && favviewerMaximized !== true
 
 	function addTimeline(data: TimelineData) {
-		let id = 0;
-		while (timelines.hasOwnProperty(`Timeline ${id}`))
-			id += 1;
+		let idNum = 0;
+		while (timelines.hasOwnProperty(`Timeline ${idNum}`))
+			idNum += 1;
 
-		timelines[`Timeline ${id}`] = data;
-		timelines = timelines
+		const id = `Timeline ${idNum}`;
+		timelines[id] = data;
+		timelines = timelines;
+		timelineView.timelineIds = [...timelineView.timelineIds, id];
 	}
 
 	function removeTimeline(id: string) {

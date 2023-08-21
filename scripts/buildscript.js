@@ -79,7 +79,9 @@ if (process.argv.includes('--serve'))
 			logLevel: 'debug',
 		})
 		.then(({host, port}) => {
-			console.log(`Serving at ${host}:${port}...`);
+			if (host === '0.0.0.0')
+				host = 'localhost';
+			console.log(`Serving at \`http://${host}:${port}\`...`);
 		})
 		.catch(errorHandler);
 else
@@ -101,6 +103,3 @@ for (const file of [
 	'global.css',
 ])
 	fs.copyFileSync('./static/' + file, './dist/' + file);
-
-// maybe incorporate svelte-check or tsc too?
-// https://github.com/EMH333/esbuild-svelte/blob/main/build.js

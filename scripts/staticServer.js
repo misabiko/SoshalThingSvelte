@@ -9,4 +9,4 @@ if (portIndex > -1 && process.argv.length >= portIndex)
 
 app.use(express.static('dist'));
 
-app.listen(port, () => console.log(`Listening on port ${port}`));
+app.listen(port, () => console.log(`Listening on http://localhost:${port}`));

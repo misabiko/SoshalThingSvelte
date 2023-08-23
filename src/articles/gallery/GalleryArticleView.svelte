@@ -74,6 +74,8 @@
 </script>
 
 <style>
+	/* TODO Fix bulma-less styling */
+
 	.galleryArticle {
 		padding: 0;
 		margin-bottom: 0;

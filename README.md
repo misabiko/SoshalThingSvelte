@@ -31,5 +31,4 @@ Test with `npm test`, it uses the port 8089 by default
 
 ---
 
-TODO Try npm run check and remove if unused
 TODO Add full project lint npm script

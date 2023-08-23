@@ -31,3 +31,6 @@ test('Add Timeline title', async ({page}) => {
 
 	await expect(page.locator('.timeline .timelineLeftHeader > strong')).toHaveText('test');
 });
+
+//TODO Test that added timeline is added to local storage
+//TODO Add TimelineEditMenu component tests in tests/components folder

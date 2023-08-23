@@ -49,6 +49,8 @@
 		{icon: faSpinner, menu: MediaLoader, title: 'Loading medias'},
 		{icon: faB, menu: SidebarMenu.BatchActions, title: 'Batch actions'},
 	]
+
+	//TODO Add article list menu
 </script>
 
 <style>

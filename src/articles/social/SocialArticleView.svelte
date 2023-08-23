@@ -34,6 +34,7 @@
 </script>
 
 <style>
+	/* TODO Fix bulma-less styling */
 	.socialArticle {
 		padding: 1rem;
 		margin-bottom: 2px;

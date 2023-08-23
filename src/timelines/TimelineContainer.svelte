@@ -16,9 +16,9 @@
 	export let removeTimeline: (id: string) => void
 	export let initialRefresh: (...refreshingTimelines: TimelineData[]) => void
 
-	export let favviewerHidden;
+	export let favviewerHidden: boolean;
 	export let favviewerMaximized: boolean | undefined = undefined;
-	export let showSidebar;
+	export let showSidebar: boolean;
 	export let modalTimelineActive: boolean
 
 	const isInjected = getContext('isInjected');

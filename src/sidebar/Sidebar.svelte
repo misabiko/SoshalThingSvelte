@@ -14,11 +14,11 @@
 	import MediaLoader from "./MediaLoader.svelte"
 	import Undoables from "./Undoables.svelte"
 	import Endpoints from "./Endpoints.svelte"
-	import {SvelteComponent} from 'svelte'
+	import type {SvelteComponent} from 'svelte'
 	import SettingsMenu from "./SettingsMenu.svelte"
 	import TimelineEditMenu from "./TimelineEditMenu.svelte";
 	import BatchActions from "./BatchActions.svelte";
-	import type {TimelineData, TimelineView} from '../timelines'
+	import type {TimelineCollection, TimelineData, TimelineView} from '../timelines'
 	import type {FilterInstance} from '../filters'
 	import {faTableColumns} from "@fortawesome/free-solid-svg-icons/faTableColumns";
 	import TimelineViewEdit from "./TimelineViewEdit.svelte";
@@ -33,7 +33,7 @@
 
 	export let setModalTimeline: (data: TimelineData, width?: number) => void
 	export let addTimeline: (data: TimelineData) => void
-	export let timelines: TimelineData[]
+	export let timelines: TimelineCollection
 	export let batchActionFilters: FilterInstance[]
 	export let timelineViews: {[name: string]: TimelineView}
 	export let timelineView: TimelineView

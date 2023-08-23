@@ -3,7 +3,7 @@
 	import FiltersOptions from "../filters/FiltersOptions.svelte"
 	import {type FilterInstance, useFilters} from '../filters'
 	import {getWritable} from '../services/service'
-	import {type TimelineData} from '../timelines'
+	import type {TimelineCollection} from '../timelines'
 	import {derived, type Readable, type Writable} from 'svelte/store'
 	import Article, {
 		type ArticleIdPair,
@@ -11,9 +11,10 @@
 	} from '../articles'
 	import {articleAction, STANDARD_ACTIONS} from '../services/actions'
 
-	export let timelines: TimelineData[]
+	export let timelines: TimelineCollection
 	export let filterInstances: FilterInstance[]
 
+	//TODO Use timeline ids instead of indices?
 	let timelineIndex: number = 0
 	let action = STANDARD_ACTIONS.markAsRead.key
 	let onlyListedArticles = true

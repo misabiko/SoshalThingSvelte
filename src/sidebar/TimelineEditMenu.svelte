@@ -7,7 +7,7 @@
 	import {RefreshType} from "../services/endpoints";
 
 	export let setModalTimeline: (data: TimelineData, width?: number) => void
-	export let addTimeline: (data: Timeline) => void
+	export let addTimeline: (data: TimelineData) => void
 
 	enum TimelineAddTypes {
 		Empty,

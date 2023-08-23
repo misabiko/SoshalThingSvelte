@@ -5,6 +5,7 @@ import sveltePreprocess from 'svelte-preprocess';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
+//TODO Replace with svelte plugin in esbuild docs
 //From https://github.com/evanw/esbuild/issues/2093#issuecomment-1062461380
 //To make sure Soshal library uses the same svelte runtime as this one
 const DedupSvelteInternalPlugin = {

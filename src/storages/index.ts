@@ -84,7 +84,7 @@ export function updateFullscreenStorage(fullscreen: FullscreenInfo) {
 
 export function loadTimelines(): TimelineCollection {
 	const item = localStorage.getItem(TIMELINE_STORAGE_KEY);
-	let storage: {[id: string]: Partial<TimelineStorage>} = item ? JSON.parse(item) : [];
+	let storage: {[id: string]: Partial<TimelineStorage>} = item ? JSON.parse(item) : {};
 	if (storage instanceof Array) {
 		console.warn('SoshalThingSvelte Timelines should be an object {[id: string]: TimelineStorage}');
 		storage = Object.assign({}, storage);
@@ -121,6 +121,32 @@ export function loadTimelines(): TimelineCollection {
 			}
 		}];
 	}));
+}
+
+export function updateTimelinesStorage(timelines: TimelineCollection) {
+	const storage = Object.fromEntries(Object.entries(timelines).map(([id, t]) => [id, {
+		title: t.title,
+		//TODO Serialize more timeline properties
+		// container?: string
+		// articleView?: string
+		// endpoints: EndpointStorage[]
+		// columnCount: number
+		// width: number
+		// filters: FilterInstance[],
+		// sortInfo: {
+		// 	method?: string | null
+		// 	reversed: boolean
+		// },
+		// compact: boolean
+		// animatedAsGifs: boolean
+		// hideText: boolean
+		// section?: {
+		// 	useSection: boolean
+		// 	count: number
+		// }
+	}]));
+
+	localStorage.setItem(TIMELINE_STORAGE_KEY, JSON.stringify(storage));
 }
 
 function parseContainer(container: string | undefined): typeof SvelteComponent {

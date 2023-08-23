@@ -9,6 +9,7 @@
 	import {Endpoint, refreshEndpoint, refreshEndpointName, RefreshType} from './services/endpoints'
 	import type {FilterInstance} from './filters'
 	import {getRootArticle} from './articles'
+	import {updateTimelinesStorage} from 'storages'
 
 	(BigInt.prototype as any).toJSON = function () {
 		return this.toString();
@@ -45,6 +46,8 @@
 		timelines[id] = data;
 		timelines = timelines;
 		timelineView.timelineIds = [...timelineView.timelineIds, id];
+
+		updateTimelinesStorage(timelines);
 	}
 
 	function removeTimeline(id: string) {
@@ -55,6 +58,8 @@
 
 		timelineView.timelineIds = timelineView.timelineIds.filter(viewId => viewId !== id);
 		timelineView = timelineView;
+
+		updateTimelinesStorage(timelines);
 	}
 
 	function setModalTimeline(data: TimelineData, width = 3) {

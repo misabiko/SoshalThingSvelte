@@ -49,16 +49,16 @@
 </script>
 
 <label class='field'>
-	Username
+	Add Timeline
 	<select bind:value={timelineAddType}>
 		<option value={TimelineAddTypes.Empty}>Empty</option>
 		<option value={TimelineAddTypes.TwitterUser}>Twitter User</option>
 	</select>
 
 	{#if timelineAddType === TimelineAddTypes.Empty}
-		<input bind:value={title}/>
+		<input bind:value={title} name='title'/>
 	{:else if timelineAddType === TimelineAddTypes.TwitterUser}
-		<input bind:value={username}/>
+		<input bind:value={username} name='username'/>
 	{/if}
 	<button
 		on:click={() => {const data = getTimelineData(); if (data) setModalTimeline(data)}}

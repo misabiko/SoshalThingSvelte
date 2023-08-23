@@ -1,5 +1,6 @@
-/** @type {import('@playwright/test').PlaywrightTestConfig} */
-const config = {
+import type { PlaywrightTestConfig } from '@playwright/test';
+
+const config: PlaywrightTestConfig = {
 	use: {
 		trace: process.env.CI ? 'on' : 'retain-on-failure',
 	},

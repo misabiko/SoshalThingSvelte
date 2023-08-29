@@ -4,6 +4,9 @@ import type {SearchResponse, TweetResponse} from './apiV1';
 import {articleFromV1, fetchExtensionV1, getV1APIURL, parseRateLimitInfo} from './apiV1';
 import {Endpoint, RefreshType} from '../endpoints';
 import type {EndpointConstructorInfo} from '../endpoints';
+import TwitterArticle from './article';
+import {MediaLoadType, MediaType} from '../../articles/media';
+import {fetchExtension} from '../extension';
 
 //TODO Move to V1 directory, split into separate files
 abstract class V1Endpoint extends Endpoint {
@@ -242,28 +245,78 @@ export class SearchEndpoint extends V1Endpoint {
 	};
 }
 
-export class UserTweetsEndpoint extends Endpoint {
+export class TwitterHomeEndpoint extends Endpoint {
 	readonly service = TwitterService.name;
-	readonly name;
+	readonly name = 'Home Page';
 
-	constructor(readonly username: string) {
-		super();
+	async refresh(_refreshType: RefreshType): Promise<ArticleWithRefs[]> {
+		const listTabsResponse = await fetchExtension<any>('listTabs', {query: {url: '*://twitter.com/*'}});
+		console.log(listTabsResponse);
 
-		this.name = `User Tweets ${this.username}`;
+		let tabId: number;
+		if (Array.isArray(listTabsResponse) && listTabsResponse.length > 0)
+			tabId = listTabsResponse[0].id;
+		else
+			throw new Error('No Twitter tab found');
+
+		const pageResponse = await fetchExtension<any>('twitterFetch', {tabId, message: {
+			soshalthing: true,
+			request: 'getPageHTML',
+		}});
+		const html = document.createElement('html');
+		html.innerHTML = pageResponse;
+		const articlesHTML = html.getElementsByTagName('article');
+		console.log(articlesHTML);
+
+		return [...articlesHTML].map(a => {
+			const anchors = a.getElementsByTagName('a');
+			const id = BigInt(anchors[3].href.split('/').pop()!);
+			const authorId = anchors[0].href.slice(1);
+			const authorAvatarUrl = anchors[0].getElementsByTagName('img')[0].src;
+			const medias = [...a.getElementsByTagName('img')].slice(1).map(img => {
+				return {
+					src: img.src,
+					ratio: null,
+					queueLoadInfo: MediaLoadType.DirectLoad,
+					mediaType: MediaType.Image,
+				};
+			});
+			return {
+				type: 'normal',
+				article: new TwitterArticle(
+					id,
+					'TODO',
+					'TODO',
+					{
+						username: authorId,
+						avatarUrl: authorAvatarUrl,
+						name: 'TODO',
+						url: `https://twitter.com/${authorId}`,
+						id: 'TODO',
+					},
+					new Date(),
+					[],
+					[],
+					undefined,
+					medias,
+					false,
+					0,
+					false,
+					0,
+					a,
+				),
+			};
+		});
 	}
 
-	async refresh(_refreshType: RefreshType) {
-		return [];
-	}
-
-	matchParams(params: any): boolean {
-		return params.username === this.username;
+	matchParams(_params: any): boolean {
+		return true;
 	}
 
 	static readonly constructorInfo: EndpointConstructorInfo = {
-		name: 'UserTweetsEndpoint',
-		paramTemplate: [['username', '']/* , ['includeRetweets', true] */],
-		constructor: params => new UserTweetsEndpoint(params.username as string/* , params.includeRetweets as boolean */)
+		name: 'TwitterHomeEndpoint',
+		paramTemplate: [],
+		constructor: _params => new TwitterHomeEndpoint()
 	};
 }
 
@@ -273,6 +326,7 @@ TwitterService.endpointConstructors.push(
 	ListEndpoint.constructorInfo,
 	LikesEndpoint.constructorInfo,
 	SearchEndpoint.constructorInfo,
+	TwitterHomeEndpoint.constructorInfo,
 );
 
 //Tried to use SearchEndpoint, but query `from:${user.username}` didn't give anything, plus we're limited to 7 days

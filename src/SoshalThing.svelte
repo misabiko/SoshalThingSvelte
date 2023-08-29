@@ -6,7 +6,7 @@
 	import TimelineContainer from "./timelines/TimelineContainer.svelte"
 	import {notifications} from './notifications/store'
 	import Notification from "./notifications/Notification.svelte";
-	import {Endpoint, refreshEndpoint, refreshEndpointName, RefreshType} from './services/endpoints'
+	import {Endpoint, refreshEndpoint, refreshEndpointName, RefreshType} from './services/endpoints';
 	import type {FilterInstance} from './filters'
 	import {getRootArticle} from './articles'
 	import {updateTimelinesStorage} from 'storages'

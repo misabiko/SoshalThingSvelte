@@ -206,6 +206,7 @@
 					<li>{endpoint.name || endpoint.endpoint.name}</li>
 				{/each}
 			</ul>
+			<!-- TODO Add dynamic endpoint menu -->
 		</label>
 	</div>
 	<div class='box'>

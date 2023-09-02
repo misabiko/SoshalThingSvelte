@@ -7,6 +7,7 @@ import type {EndpointConstructorInfo} from '../endpoints';
 import TwitterArticle from './article';
 import {MediaLoadType, MediaType} from '../../articles/media';
 import {fetchExtension} from '../extension';
+import { parseHTMLArticle } from './page';
 
 //TODO Move to V1 directory, split into separate files
 abstract class V1Endpoint extends Endpoint {
@@ -251,7 +252,6 @@ export class TwitterHomeEndpoint extends Endpoint {
 
 	async refresh(_refreshType: RefreshType): Promise<ArticleWithRefs[]> {
 		const listTabsResponse = await fetchExtension<any>('listTabs', {query: {url: '*://twitter.com/*'}});
-		console.log(listTabsResponse);
 
 		let tabId: number;
 		if (Array.isArray(listTabsResponse) && listTabsResponse.length > 0)
@@ -266,47 +266,19 @@ export class TwitterHomeEndpoint extends Endpoint {
 		const html = document.createElement('html');
 		html.innerHTML = pageResponse;
 		const articlesHTML = html.getElementsByTagName('article');
-		console.log(articlesHTML);
 
-		return [...articlesHTML].map(a => {
-			const anchors = a.getElementsByTagName('a');
-			const id = BigInt(anchors[3].href.split('/').pop()!);
-			const authorId = anchors[0].href.slice(1);
-			const authorAvatarUrl = anchors[0].getElementsByTagName('img')[0].src;
-			const medias = [...a.getElementsByTagName('img')].slice(1).map(img => {
-				return {
-					src: img.src,
-					ratio: null,
-					queueLoadInfo: MediaLoadType.DirectLoad,
-					mediaType: MediaType.Image,
-				};
-			});
-			return {
-				type: 'normal',
-				article: new TwitterArticle(
-					id,
-					'TODO',
-					'TODO',
-					{
-						username: authorId,
-						avatarUrl: authorAvatarUrl,
-						name: 'TODO',
-						url: `https://twitter.com/${authorId}`,
-						id: 'TODO',
-					},
-					new Date(),
-					[],
-					[],
-					undefined,
-					medias,
-					false,
-					0,
-					false,
-					0,
-					a,
-				),
-			};
-		});
+		const articles = [];
+		for (const articleHTML of articlesHTML) {
+			try {
+				const article = parseHTMLArticle(articleHTML);
+				if (article === null)
+					continue;
+				articles.push(article);
+			}catch (error) {
+				console.error('Error parsing article', error, articleHTML);
+			}
+		}
+		return articles;
 	}
 
 	matchParams(_params: any): boolean {

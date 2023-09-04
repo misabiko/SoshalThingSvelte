@@ -9,11 +9,25 @@ export function parseHTMLArticle(article: HTMLElement): ArticleWithRefs | null {
 	}
 
 	const anchors = article.getElementsByTagName('a');
-	const timestampAnchor = article.getElementsByTagName('time')[0].parentElement! as HTMLAnchorElement;
+	const timestamp = article.getElementsByTagName('time')[0];
+	const timestampAnchor = timestamp.parentElement! as HTMLAnchorElement;
 	const id = BigInt(timestampAnchor.href.split('/').pop()!);
-	const authorId = anchors[0].href.slice(1);
+
+	//TODO Parse emojis
+	const text = article.querySelector('div[data-testid="tweetText"]')!.textContent!;
+
+	const nameSpans = article.querySelectorAll('a[role="link"] span');
+	let nameIndex = 1;
+	if (nameSpans[0].textContent?.endsWith(' reposted'))
+		nameIndex = 4;
+	const authorName = nameSpans[nameIndex].textContent!;
+	const authorId = [...nameSpans].find(span => span.textContent?.startsWith('@'))!.textContent!.slice(1);
+
 	const avatar = article.querySelector('div[data-testid="Tweet-User-Avatar"] img') as HTMLImageElement;
 	const authorAvatarUrl = avatar.src;
+
+	const time = new Date(timestamp.dateTime);
+
 	const medias = [...article.querySelectorAll('div[data-testid="tweetPhoto"] img')].map((img: HTMLImageElement) => {
 		return {
 			src: img.src,
@@ -26,16 +40,17 @@ export function parseHTMLArticle(article: HTMLElement): ArticleWithRefs | null {
 		type: 'normal',
 		article: new TwitterArticle(
 			id,
-			'TODO',
-			'TODO',
+			text,
+			text,
 			{
 				username: authorId,
 				avatarUrl: authorAvatarUrl,
-				name: 'TODO',
+				name: authorName,
 				url: `https://twitter.com/${authorId}`,
+				//TODO Pass null for author id
 				id: 'TODO',
 			},
-			new Date(),
+			time,
 			[],
 			[],
 			undefined,

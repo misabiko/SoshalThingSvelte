@@ -36,6 +36,20 @@
 </script>
 
 <style>
+	nav {
+		display: flex;
+		justify-content: space-between;
+	}
+
+	nav > div {
+		display: flex;
+		gap: 0.5rem;
+	}
+
+	nav > div:not(:first-child) {
+		justify-content: flex-end;
+	}
+
 	.articleButton {
 		color: var(--light);
 		font-size: unset;
@@ -56,8 +70,8 @@
 	}
 </style>
 
-<nav class='level is-mobile'>
-	<div class='level-left'>
+<nav>
+	<div>
 		{#each actions as action (action.key)}
 			{@const count = action.count ? action.count(article) : 0}
 			{@const disabled = action.disabled ? action.disabled(article) : false}
@@ -65,7 +79,7 @@
 			{@const isHovered = hoveredActions.has(action.key)}
 			<!-- svelte-ignore a11y-mouse-events-have-key-events -->
 			<button
-				class='level-item articleButton borderless-button'
+				class='articleButton borderless-button'
 				class:actionned
 				title={action.name}
 				on:click={() => action.action(article.idPair)}
@@ -85,7 +99,7 @@
 			</button>
 		{/each}
 		<button
-			class='level-item articleButton borderless-button'
+			class='articleButton borderless-button'
 			title='Mark as read'
 			on:click={() => toggleMarkAsRead(article.idPair)}
 		>
@@ -95,7 +109,7 @@
 		</button>
 		{#if !isQuoted && !modal}
 			<button
-				class='level-item articleButton borderless-button'
+				class='articleButton borderless-button'
 				title='Expand article as modal'
 				on:click={() => modal = true}
 			>
@@ -106,7 +120,7 @@
 		{/if}
 		<Dropdown labelClasses='articleButton borderless-button'>
 						<span slot='triggerIcon' class='icon'>
-							<Fa icon={faEllipsisH} class='level-item'/>
+							<Fa icon={faEllipsisH}/>
 						</span>
 
 			<!-- svelte-ignore a11y-missing-attribute -->
@@ -146,7 +160,7 @@
 	</div>
 	{#if status !== null}
 		<div class='level-right'>
-			<button class='level-item' title={status}>
+			<button title={status}>
 				<span class='icon'>
 					<Fa icon={faSpinner}/>
 				</span>

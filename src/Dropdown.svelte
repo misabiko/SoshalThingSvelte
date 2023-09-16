@@ -24,6 +24,37 @@
 	onMount(() => () => document.removeEventListener('click', close))
 </script>
 
+<style>
+	.dropdown:not(.is-active) .dropdown-menu{
+		display: none;
+	}
+
+	.dropdown-menu {
+		position: relative;
+	}
+
+	.dropdown-content {
+		position: absolute;
+		display: flex;
+		flex-direction: column;
+		width: 250px;
+		background-color: var(--scheme-main-ter);
+	}
+
+	:global(.dropdown-item) {
+		display: block;
+		font-size: 0.875rem;
+		line-height: 1.5;
+		padding: 0.375rem 1rem;
+		position: relative;
+	}
+
+	:global(.dropdown-item:hover) {
+		color: var(--white);
+    	background-color: var(--primary);
+	}
+</style>
+
 <div
 	class='dropdown'
 	class:is-active={isActive}

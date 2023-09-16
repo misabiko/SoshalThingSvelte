@@ -48,6 +48,26 @@
 		color: var(--white-ter);
 	}
 
+	.media {
+		display: flex;
+		align-items: flex-start;
+	}
+
+	.media-content {
+		flex-grow: 1;
+	}
+
+	.avatar {
+		width: 64px;
+		height: 64px;
+		margin: 0 1rem 0 0;
+	}
+
+	.avatar img:first-child {
+		width: 100%;
+		height: auto;
+	}
+
 	figure {
 		overflow: hidden;
 		border-radius: 4px;
@@ -91,6 +111,7 @@
 	p.articleParagraph {
 		white-space: pre-line;
 		overflow-wrap: anywhere;
+		padding: 0.5rem 0;
 	}
 
 	/* , .replyLabel */
@@ -149,18 +170,16 @@
 	</div>
 	<!--{ self.view_reply_label(ctx) }-->
 	<div class='media'>
-		<div class='media-left'>
-			{#if actualArticle.author?.avatarUrl}
-				<figure class='image is-64x64' class:sharedAvatar={isArticleRepost}>
-					{#if isArticleRepost}
-						<img src={actualArticle.author.avatarUrl} alt={`${actualArticle.author.username}'s avatar`}/>
-						<img src={rootArticle.author.avatarUrl} alt={`${rootArticle.author.username}'s avatar`}/>
-					{:else}
-						<img src={actualArticle.author.avatarUrl} alt={`${actualArticle.author.username}'s avatar`}/>
-					{/if}
-				</figure>
-			{/if}
-		</div>
+		{#if actualArticle.author?.avatarUrl}
+			<figure class='avatar' class:sharedAvatar={isArticleRepost}>
+				{#if isArticleRepost}
+					<img src={actualArticle.author.avatarUrl} alt={`${actualArticle.author.username}'s avatar`}/>
+					<img src={rootArticle.author.avatarUrl} alt={`${rootArticle.author.username}'s avatar`}/>
+				{:else}
+					<img src={actualArticle.author.avatarUrl} alt={`${actualArticle.author.username}'s avatar`}/>
+				{/if}
+			</figure>
+		{/if}
 		<div class='media-content'>
 			<div class='content'>
 				<div class='articleHeader'>

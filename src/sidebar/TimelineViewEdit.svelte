@@ -91,9 +91,7 @@
 		{#if newTimelines.length}
 			<Dropdown labelText='New timeline'>
 				{#each newTimelines as id}
-					<div class='control'>
-						<button on:click={() => addTimeline(viewName, id)}>{id}</button>
-					</div>
+					<button on:click={() => addTimeline(viewName, id)}>{id}</button>
 				{/each}
 			</Dropdown>
 		{/if}

@@ -17,29 +17,17 @@
 	{/if}
 	<div class="field has-addons">
 		{#if $endpoint.autoRefreshId !== null}
-			<div class='control'>
-				<button class='button' on:click={() => stopAutoRefresh($endpoint.name)}>
-					Stop refreshing
-				</button>
-			</div>
-			<div class='control'>
-				<input class='input' type='number' value={$endpoint.autoRefreshInterval} disabled>
-			</div>
-			<div class='control'>
-				<button class='button is-static'>ms</button>
-			</div>
+			<button class='button' on:click={() => stopAutoRefresh($endpoint.name)}>
+				Stop refreshing
+			</button>
+			<input class='input' type='number' value={$endpoint.autoRefreshInterval} disabled>
+			<button class='button is-static'>ms</button>
 		{:else}
-			<div class='control'>
-				<button class='button' on:click={() => startAutoRefresh($endpoint.name)}>
-					Auto refresh
-				</button>
-			</div>
-			<div class='control'>
-				<input class='input' type='number' bind:value={$endpoint.autoRefreshInterval}/>
-			</div>
-			<div class='control'>
-				<button class='button is-static'>ms</button>
-			</div>
+			<button class='button' on:click={() => startAutoRefresh($endpoint.name)}>
+				Auto refresh
+			</button>
+			<input class='input' type='number' bind:value={$endpoint.autoRefreshInterval}/>
+			<button class='button is-static'>ms</button>
 		{/if}
 	</div>
 </div>

@@ -57,8 +57,8 @@
 </div>
 
 <label class='field'>
-	Only shown articles
 	<input type='checkbox' bind:checked={onlyListedArticles}/>
+	Only shown articles
 </label>
 
 <label class='field'>

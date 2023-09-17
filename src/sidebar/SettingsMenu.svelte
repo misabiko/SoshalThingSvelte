@@ -59,9 +59,9 @@
 	<button on:click={extensionCheck}>Check Extension</button>
 </label>
 
-<label class='field'>
+<div class='field'>
 	Available: {$extensionContextStore.available}
-</label>
+</div>
 
 <label class='field'>
 	Mark as read in local storage
@@ -73,9 +73,9 @@
 </label>
 
 {#if $extensionContextStore.hasAccessToken}
-	<label class='field'>
+	<div class='field'>
 		Twitter logged in
-	</label>
+	</div>
 {:else}
 	<label class='field'>
 		Twitter
@@ -103,6 +103,6 @@
 	<input value={pixivStorage.csrfToken} on:change={e => updateServiceStorage(PixivService.name, 'csrfToken', e.target.value)}/>
 </label>
 <label class='field'>
-	Pixiv bookmark as private
 	<input type='checkbox' checked={pixivStorage.privateBookmark ?? false} on:input={e => updateServiceStorage(PixivService.name, 'privateBookmark', e.target.checked)}/>
+	Pixiv bookmark as private
 </label>

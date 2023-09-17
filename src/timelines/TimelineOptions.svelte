@@ -63,8 +63,8 @@
 	<section>
 		<p>{articleCountLabel}</p>
 		<label class='field'>
-			<input type='checkbox' bind:checked={data.showArticleCount}/>
 			Show article count on header
+			<input type='checkbox' bind:checked={data.showArticleCount}/>
 		</label>
 		<button class='button red-button' on:click={removeTimeline}>
 			Remove timeline
@@ -81,8 +81,8 @@
 		</label>
 		{#if fullscreen !== undefined}
 			<label class='field'>
-				Fullscreen Container
 				<input type='checkbox' checked={!!fullscreen.container} on:input={e => setFullscreenContainer(e.target.checked)}/>
+				Fullscreen Container
 				{#if fullscreen.container}
 					<select
 						bind:value={fullscreen.container}
@@ -99,6 +99,7 @@
 			<label class='field'>
 				{`${fullscreen?.columnCount !== null ? 'Timeline ' : ''}Column Count`}
 				<input class='input' type='number' bind:value={data.columnCount} min={1}/>
+				<!-- Add PlusMinusNumber component -->
 				<button on:click={() => data.columnCount++}>
 					+
 				</button>
@@ -108,8 +109,8 @@
 			</label>
 			{#if fullscreen !== undefined}
 				<label class='field'>
-					Fullscreen Column Count
 					<input type='checkbox' checked={fullscreen.columnCount !== null} on:input={e => setFullscreenColumnCount(e.target.checked)}/>
+					Fullscreen Column Count
 					{#if fullscreen.columnCount !== null}
 						<input
 							class='input'
@@ -129,8 +130,8 @@
 				</label>
 			{/if}
 			<label class='field'>
-				Right to left
 				<input type='checkbox' bind:checked={data.rtl}/>
+				Right to left
 			</label>
 		{/if}
 		{#if fullscreen === undefined}
@@ -147,8 +148,8 @@
 		<label class='field'>
 			Section
 			<label>
-				Section articles
 				<input type='checkbox' bind:checked={data.section.useSection}/>
+				Section articles
 			</label>
 			<input class='input' type='number' bind:value={data.section.count} min={0}/>
 		</label>
@@ -163,33 +164,33 @@
 		</label>
 		<div class='field'>
 			<label>
-				Show all animated as gifs
 				<input type='checkbox' bind:checked={data.animatedAsGifs}/>
+				Show all animated as gifs
 			</label>
 		</div>
 		<div class='field'>
 			<label>
-				Hide filtered out articles
 				<input type='checkbox' bind:checked={data.hideFilteredOutArticles}/>
+				Hide filtered out articles
 			</label>
 		</div>
 		<div class='field'>
 			<label>
-				Merge duplicate reposts
 				<input type='checkbox' bind:checked={data.mergeReposts}/>
+				Merge duplicate reposts
 			</label>
 		</div>
 		{#if data.articleView === SocialArticleView}
 			<div class='field'>
 				<label>
-					Compact articles
 					<input type='checkbox' bind:checked={data.compact}/>
+					Compact articles
 				</label>
 			</div>
 			<div class='field'>
 				<label>
-					Hide text
 					<input type='checkbox' bind:checked={data.hideText}/>
+					Hide text
 				</label>
 			</div>
 		{/if}
@@ -199,7 +200,7 @@
 		</label>
 	</section>
 	<section>
-		<label class='field'>
+		<div class='field'>
 			Endpoints
 			<ul>
 				{#each data.endpoints as endpoint (endpoint)}
@@ -207,13 +208,11 @@
 				{/each}
 			</ul>
 			<!-- TODO Add dynamic endpoint menu -->
-		</label>
+		</div>
 	</section>
 	<section>
 		<FiltersOptions bind:instances={data.filters}/>
-		<div class='control'>
-			<button on:click={removeFiltered}>Remove filtered articles</button>
-		</div>
+		<button on:click={removeFiltered}>Remove filtered articles</button>
 	</section>
 	<section>
 		<SortOptions bind:sortInfo={data.sortInfo} {sortOnce}/>

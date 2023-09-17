@@ -26,95 +26,62 @@
 </script>
 
 {#each instances as instance, index (`${JSON.stringify(instance)}/${index}`)}
+	<!-- TODO Add has-addons' merged buttons -->
 	<div class="field has-addons">
-		<div class="field-label is-normal">
-			<!-- svelte-ignore a11y-label-has-associated-control -->
-			<label class="label">{
+		<label>
+			{
 				instance.filter.service === null ?
 					getFilterName(instance.filter.type, instance.inverted) :
 					getServices()[instance.filter.service].filterTypes[instance.filter.type].name(instance.inverted)
-			}</label>
-		</div>
-		<div class="field-body">
-			<div class="control">
-				<button class='button' class:is-success={instance.enabled} on:click={() => instance.enabled = !instance.enabled}>
-					{instance.enabled ? 'Enabled' : 'Disabled'}
-				</button>
-			</div>
-			<div class="control">
-				<button class='button' class:is-info={instance.inverted} on:click={() => instance.inverted = !instance.inverted}>
-					{instance.inverted ? 'Inverted' : 'Normal'}
-				</button>
-			</div>
-			<div class="control">
-				<button class='button' on:click={() => removeFilter(index)}>
-					Remove
-				</button>
-			</div>
-		</div>
+			}
+			<button class='button' class:is-success={instance.enabled} on:click={() => instance.enabled = !instance.enabled}>
+				{instance.enabled ? 'Enabled' : 'Disabled'}
+			</button>
+			<button class='button' class:is-info={instance.inverted} on:click={() => instance.inverted = !instance.inverted}>
+				{instance.inverted ? 'Inverted' : 'Normal'}
+			</button>
+			<button class='button' on:click={() => removeFilter(index)}>
+				Remove
+			</button>
+		</label>
 	</div>
 
 	{#if instance.filter.service !== null}
 		{#each getServices()[instance.filter.service].filterTypes[instance.filter.type].props as prop}
 			<div class="field has-addons">
-				<div class="field-label is-small">
-					<!-- svelte-ignore a11y-label-has-associated-control -->
-					<label class="label">{prop}</label>
-				</div>
-				<div class="field-body">
-					<div class="control">
-						<input bind:value={instance.filter[prop]}/>
-					</div>
-				</div>
+				<label>
+					{prop}
+					<input bind:value={instance.filter[prop]}/>
+				</label>
 			</div>
 		{/each}
 	{/if}
 
 	{#if instance.filter.type === 'repost' || instance.filter.type === 'quote'}
 		<div class="field has-addons">
-			<div class="field-label is-small">
-				<!-- svelte-ignore a11y-label-has-associated-control -->
-				<label class="label">Username</label>
-			</div>
-			<div class="field-body">
-				<div class="control">
-					<input bind:value={instance.filter.byUsername}/>
-				</div>
-			</div>
+			<label>
+				Username
+				<input bind:value={instance.filter.byUsername}/>
+			</label>
 		</div>
 	{:else if instance.filter.type === 'interval'}
 		<div class='field has-addons'>
-			<div class='field-label is-small'>
-				<!-- svelte-ignore a11y-label-has-associated-control -->
-				<label class='label'>Interval</label>
-			</div>
-			<div class='field-body'>
-				<div class='control'>
-					<input type='number' class='input' bind:value={instance.filter.interval} min={1}/>
-				</div>
-			</div>
+			<label>
+				Interval
+				<input type='number' class='input' bind:value={instance.filter.interval} min={1}/>
+			</label>
 		</div>
 		<div class='field has-addons'>
-			<div class='field-label is-small'>
-				<!-- svelte-ignore a11y-label-has-associated-control -->
-				<label class='label'>Offset</label>
-			</div>
-			<div class='field-body'>
-				<div class='control'>
-					<input type='number' class='input' bind:value={instance.filter.offset} min={0}/>
-				</div>
-			</div>
+			<label>
+				Offset
+				<input type='number' class='input' bind:value={instance.filter.offset} min={0}/>
+			</label>
 		</div>
 		<div class='field has-addons'>
-			<div class='field-label is-small'>
-				<!-- svelte-ignore a11y-label-has-associated-control -->
-				<label class='label'>Include Offset</label>
-			</div>
-			<div class='field-body'>
-				<div class='control'>
-					<input type='checkbox' bind:checked={instance.filter.includeOffset}/>
-				</div>
-			</div>
+			<label>
+				<input type='checkbox' bind:checked={instance.filter.includeOffset}/>
+				Include Offset
+			</label>
 		</div>
 	{/if}
 {/each}

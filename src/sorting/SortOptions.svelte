@@ -27,68 +27,57 @@
 </script>
 
 <div class='block field has-addons'>
-	<div class='field-label is-normal'>
-		<!-- svelte-ignore a11y-label-has-associated-control -->
-		<label class='label'>
-			Sort Method
-		</label>
-	</div>
-	<div class='field-body'>
-		<div class='control'>
-			<Dropdown labelText={currentMethodName}>
-				{#each genericSortMethods as method}
-					{#each [false, true] as reversed}
-						<!-- svelte-ignore a11y-missing-attribute -->
-						<a class='dropdown-item' on:click={() => {sortInfo.method = method; sortInfo.customMethod = null; sortInfo.reversed = reversed}}>
-							{ `${methodName(method)} - ${directionLabel(method, reversed)}` }
-						</a>
-					{/each}
+	<label class='label'>
+		Sort Method
+		<Dropdown labelText={currentMethodName}>
+			{#each genericSortMethods as method}
+				{#each [false, true] as reversed}
+					<!-- svelte-ignore a11y-missing-attribute -->
+					<a class='dropdown-item' on:click={() => {sortInfo.method = method; sortInfo.customMethod = null; sortInfo.reversed = reversed}}>
+						{ `${methodName(method)} - ${directionLabel(method, reversed)}` }
+					</a>
 				{/each}
-				{#each serviceSortMethods as method}
-					{#each [false, true] as reversed}
-						<!-- svelte-ignore a11y-missing-attribute -->
-						<a class='dropdown-item' on:click={() => {
-							sortInfo.method = SortMethod.Custom;
-							sortInfo.customMethod = {
-								method: method[1],
-								service: method[0]
-							};
-							sortInfo.reversed = reversed;
-						}}>
-							{ `${method[2].name} - ${method[2].directionLabel(reversed)}` }
-						</a>
-					{/each}
+			{/each}
+			{#each serviceSortMethods as method}
+				{#each [false, true] as reversed}
+					<!-- svelte-ignore a11y-missing-attribute -->
+					<a class='dropdown-item' on:click={() => {
+						sortInfo.method = SortMethod.Custom;
+						sortInfo.customMethod = {
+							method: method[1],
+							service: method[0]
+						};
+						sortInfo.reversed = reversed;
+					}}>
+						{ `${method[2].name} - ${method[2].directionLabel(reversed)}` }
+					</a>
 				{/each}
-				<!-- svelte-ignore a11y-missing-attribute -->
-				<a class='dropdown-item' on:click={() => sortInfo.method = undefined}>
-					Unsorted
-				</a>
-			</Dropdown>
-		</div>
-		<div class='control'>
-			<button class='button' on:click={() => sortInfo.reversed = !sortInfo.reversed}>
-				{#if sortInfo.method !== undefined}
-					{directionLabel(sortInfo.method, sortInfo.reversed)}
-				{:else}
-					{sortInfo.reversed ? 'Reversed' : 'Normal'}
-				{/if}
-			</button>
-		</div>
+			{/each}
+			<!-- svelte-ignore a11y-missing-attribute -->
+			<a class='dropdown-item' on:click={() => sortInfo.method = undefined}>
+				Unsorted
+			</a>
+		</Dropdown>
+		<button class='button' on:click={() => sortInfo.reversed = !sortInfo.reversed}>
+			{#if sortInfo.method !== undefined}
+				{directionLabel(sortInfo.method, sortInfo.reversed)}
+			{:else}
+				{sortInfo.reversed ? 'Reversed' : 'Normal'}
+			{/if}
+		</button>
 		{#if sortInfo.method === undefined}
-			<div class='control'>
-				<Dropdown labelText='Sort once'>
-					{#each genericSortMethods as method}
-						<!-- svelte-ignore a11y-missing-attribute -->
-						<a class='dropdown-item' on:click={() => sortOnce(method, false)}>
-							{ `${methodName(method)} - ${directionLabel(method, false)}` }
-						</a>
-						<!-- svelte-ignore a11y-missing-attribute -->
-						<a class='dropdown-item' on:click={() => sortOnce(method, true)}>
-							{ `${methodName(method)} - ${directionLabel(method, true)}` }
-						</a>
-					{/each}
-				</Dropdown>
-			</div>
+			<Dropdown labelText='Sort once'>
+				{#each genericSortMethods as method}
+					<!-- svelte-ignore a11y-missing-attribute -->
+					<a class='dropdown-item' on:click={() => sortOnce(method, false)}>
+						{ `${methodName(method)} - ${directionLabel(method, false)}` }
+					</a>
+					<!-- svelte-ignore a11y-missing-attribute -->
+					<a class='dropdown-item' on:click={() => sortOnce(method, true)}>
+						{ `${methodName(method)} - ${directionLabel(method, true)}` }
+					</a>
+				{/each}
+			</Dropdown>
 		{/if}
-	</div>
+	</label>
 </div>

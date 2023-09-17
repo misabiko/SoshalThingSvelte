@@ -9,11 +9,8 @@ export const MisskeyService: MisskeyServiceType = {
 	endpointConstructors: [
 		TimelineEndpoint.constructorInfo
 	],
-	emojis: null,
+	emojis: null, //TODO Fetch from localStorage
 };
-import('./emojis.json').then(({default: emojis}) => {
-	MisskeyService.emojis = emojis as unknown as Emoji[];
-});
 MisskeyArticle.service = MisskeyService.name;
 
 registerService(MisskeyService);

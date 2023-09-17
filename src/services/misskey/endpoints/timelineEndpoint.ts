@@ -1,7 +1,7 @@
 import type {EndpointConstructorInfo} from '../../endpoints';
 import {Endpoint, RefreshType} from '../../endpoints';
 import type {ArticleWithRefs} from '../../../articles';
-import * as Misskey from 'misskey-js';
+import type * as Misskey from 'misskey-js';
 import {fromAPI} from '../article';
 import {getHiddenStorage, getMarkedAsReadStorage} from '../../../storages/serviceCache';
 import {MisskeyService} from '../service';
@@ -14,14 +14,14 @@ export class TimelineEndpoint extends Endpoint {
 	constructor() {
 		super(new Set([RefreshType.Refresh]));
 
-		//TODO Test dynamic import, probably pass credentials as constructor params
-		import('../../../../credentials.json')
-			.then(({misskey}) => {
-				this.cli = new Misskey.api.APIClient({
-					origin: misskey.origin,
-					credential: misskey.access,
-				});
-			});
+		//TODO Fetch from localStorage
+		// import('../../../../credentials.json')
+		// 	.then(({misskey}) => {
+		// 		this.cli = new Misskey.api.APIClient({
+		// 			origin: misskey.origin,
+		// 			credential: misskey.access,
+		// 		});
+		// 	});
 	}
 
 

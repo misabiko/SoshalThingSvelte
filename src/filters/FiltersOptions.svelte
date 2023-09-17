@@ -89,13 +89,13 @@
 <Dropdown labelText='New Filter'>
 	{#each filterTypes as filterType}
 		<!-- svelte-ignore a11y-missing-attribute -->
-		<a class='dropdown-item' on:click={() => addFilter(filterType, false)}>
+		<a class='dropdown-item' on:click={() => addFilter(filterType, false)} role='menuitem' tabindex=0>
 			{ getFilterName(filterType, false) }
 		</a>
 	{/each}
 	{#each serviceFilterTypes as filterType}
 		<!-- svelte-ignore a11y-missing-attribute -->
-		<a class='dropdown-item' on:click={() => addFilter(filterType[1], false, filterType[0])}>
+		<a class='dropdown-item' on:click={() => addFilter(filterType[1], false, filterType[0])} role='menuitem' tabindex=0>
 			{ filterType[2].name(false) }
 		</a>
 	{/each}
@@ -103,13 +103,13 @@
 <Dropdown labelText='New Inverted Filter'>
 	{#each filterTypes as filterType}
 		<!-- svelte-ignore a11y-missing-attribute -->
-		<a class="dropdown-item" on:click={() => addFilter(filterType, true)}>
+		<a class="dropdown-item" on:click={() => addFilter(filterType, true)} role='menuitem' tabindex=0>
 			{ getFilterName(filterType, true) }
 		</a>
 	{/each}
 	{#each serviceFilterTypes as filterType}
 		<!-- svelte-ignore a11y-missing-attribute -->
-		<a class="dropdown-item" on:click={() => addFilter(filterType[1], true, filterType[0])}>
+		<a class="dropdown-item" on:click={() => addFilter(filterType[1], true, filterType[0])} role='menuitem' tabindex=0>
 			{ filterType[2].name(true) }
 		</a>
 	{/each}

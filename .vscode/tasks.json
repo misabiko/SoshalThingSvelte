@@ -8,9 +8,9 @@
 				"kind": "build",
 				"isDefault": true
 			},
-			"problemMatcher": [],
 			"label": "npm: build",
-			"detail": "node scripts/buildscript.js"
+			"detail": "node scripts/buildscript.js",
+			"problemMatcher": "$esbuild"
 		}
 	]
 }

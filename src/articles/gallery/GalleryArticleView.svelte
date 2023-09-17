@@ -205,8 +205,8 @@
 				</span>
 			</a>
 			{#if !modal}
-				<button class='button'>
-					<span class='icon darkIcon' on:click={() => modal = !modal}>
+				<button class='button' on:click={() => modal = !modal}>
+					<span class='icon darkIcon'>
 						<Fa icon={faExpandArrowsAlt} class='is-small'/>
 					</span>
 				</button>
@@ -218,16 +218,21 @@
 					<Fa icon={faEllipsisH} class='level-item'/>
 				</span>
 				<!-- svelte-ignore a11y-missing-attribute -->
-				<a class='dropdown-item' on:click={() => toggleMarkAsRead(actualArticle.idPair)}>
+				<a class='dropdown-item' on:click={() => toggleMarkAsRead(actualArticle.idPair)} role='button' tabindex=0>
 					Mark as read
 				</a>
 				<!-- svelte-ignore a11y-missing-attribute -->
-				<a class='dropdown-item' on:click={() => toggleHide(actualArticle.idPair)}>
+				<a class='dropdown-item' on:click={() => toggleHide(actualArticle.idPair)} role='button' tabindex=0>
 					Hide
 				</a>
 				{#if actualArticle.medias.some(m => !m.loaded) }
 					<!-- svelte-ignore a11y-missing-attribute -->
-					<a class='dropdown-item' on:click={() => {for (let i = 0; i < actualArticle.medias.length; ++i) loadingStore.forceLoading(actualArticle, i)}}>
+					<a
+						class='dropdown-item'
+						on:click={() => {for (let i = 0; i < actualArticle.medias.length; ++i) loadingStore.forceLoading(actualArticle, i)}}
+						role='button'
+						tabindex=0
+					>
 						Load Media
 					</a>
 				{/if}
@@ -238,16 +243,16 @@
 					External Link
 				</a>
 				<!-- svelte-ignore a11y-missing-attribute -->
-				<a class='dropdown-item' on:click={onLogData}>
+				<a class='dropdown-item' on:click={onLogData} role='button' tabindex=0>
 					Log Data
 				</a>
 				<!-- svelte-ignore a11y-missing-attribute -->
-				<a class='dropdown-item' on:click={onLogJSON}>
+				<a class='dropdown-item' on:click={onLogJSON} role='button' tabindex=0>
 					Log JSON Data
 				</a>
 				{#if !actualArticle.fetched }
 					<!-- svelte-ignore a11y-missing-attribute -->
-					<a class='dropdown-item' on:click={() => fetchArticle(actualArticle.idPair)}>
+					<a class='dropdown-item' on:click={() => fetchArticle(actualArticle.idPair)} role='button' tabindex=0>
 						Fetch Article
 					</a>
 				{/if}

@@ -33,7 +33,12 @@
 			{#each genericSortMethods as method}
 				{#each [false, true] as reversed}
 					<!-- svelte-ignore a11y-missing-attribute -->
-					<a class='dropdown-item' on:click={() => {sortInfo.method = method; sortInfo.customMethod = null; sortInfo.reversed = reversed}}>
+					<a
+						class='dropdown-item'
+						on:click={() => {sortInfo.method = method; sortInfo.customMethod = null; sortInfo.reversed = reversed}}
+						role='menuitem'
+						tabindex=0
+					>
 						{ `${methodName(method)} - ${directionLabel(method, reversed)}` }
 					</a>
 				{/each}
@@ -41,20 +46,25 @@
 			{#each serviceSortMethods as method}
 				{#each [false, true] as reversed}
 					<!-- svelte-ignore a11y-missing-attribute -->
-					<a class='dropdown-item' on:click={() => {
-						sortInfo.method = SortMethod.Custom;
-						sortInfo.customMethod = {
-							method: method[1],
-							service: method[0]
-						};
-						sortInfo.reversed = reversed;
-					}}>
+					<a
+						class='dropdown-item'
+						on:click={() => {
+							sortInfo.method = SortMethod.Custom;
+							sortInfo.customMethod = {
+								method: method[1],
+								service: method[0]
+							};
+							sortInfo.reversed = reversed;
+						}}
+						role='menuitem'
+						tabindex=0
+					>
 						{ `${method[2].name} - ${method[2].directionLabel(reversed)}` }
 					</a>
 				{/each}
 			{/each}
 			<!-- svelte-ignore a11y-missing-attribute -->
-			<a class='dropdown-item' on:click={() => sortInfo.method = undefined}>
+			<a class='dropdown-item' on:click={() => sortInfo.method = undefined} role='menuitem' tabindex=0>
 				Unsorted
 			</a>
 		</Dropdown>
@@ -69,11 +79,11 @@
 			<Dropdown labelText='Sort once'>
 				{#each genericSortMethods as method}
 					<!-- svelte-ignore a11y-missing-attribute -->
-					<a class='dropdown-item' on:click={() => sortOnce(method, false)}>
+					<a class='dropdown-item' on:click={() => sortOnce(method, false)} role='menuitem' tabindex=0>
 						{ `${methodName(method)} - ${directionLabel(method, false)}` }
 					</a>
 					<!-- svelte-ignore a11y-missing-attribute -->
-					<a class='dropdown-item' on:click={() => sortOnce(method, true)}>
+					<a class='dropdown-item' on:click={() => sortOnce(method, true)} role='menuitem' tabindex=0>
 						{ `${methodName(method)} - ${directionLabel(method, true)}` }
 					</a>
 				{/each}

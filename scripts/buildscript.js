@@ -1,22 +1,57 @@
 import fs from 'fs';
 import esbuild from 'esbuild';
-import esbuildSvelte from 'esbuild-svelte';
+import * as svelte from 'svelte/compiler';
 import sveltePreprocess from 'svelte-preprocess';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
-//TODO Replace with svelte plugin in esbuild docs
-//From https://github.com/evanw/esbuild/issues/2093#issuecomment-1062461380
-//To make sure Soshal library uses the same svelte runtime as this one
-const DedupSvelteInternalPlugin = {
-	name: 'dedup-svelte',
-	async setup({ onResolve }) {
-		const svelteInternal = path.join(process.cwd(), '/node_modules/svelte/internal/index.mjs');
-		const svelte = path.join(process.cwd(), '/node_modules/svelte/index.mjs');
+//https://esbuild.github.io/plugins/#svelte-plugin
+const sveltePlugin = {
+	name: 'svelte',
+	setup(build) {
+		build.onLoad({ filter: /\.svelte$/ }, async (args) => {
+			// This converts a message in Svelte's format to esbuild's format
+			const convertMessage = ({ message, start, end, code }) => {
+				let location;
+				if (start && end) {
+					const lineText = source.split(/\r\n|\r|\n/g)[start.line - 1];
+					const lineEnd = start.line === end.line ? end.column : lineText.length;
+					location = {
+						file: filename,
+						line: start.line,
+						column: start.column,
+						length: lineEnd - start.column,
+						lineText,
+					};
+				}
+				return { text: `${message} (${code})`, location };
+			};
 
-		onResolve({ filter: /^svelte\/internal$/ }, () => ({ path: svelteInternal }));
-		onResolve({ filter: /^svelte$/ }, () => ({ path: svelte }));
-	},
+			// Load the file from the file system
+			const source = await fs.promises.readFile(args.path, 'utf8');
+			const filename = path.relative(process.cwd(), args.path);
+
+			// Convert Svelte syntax to JavaScript
+			try {
+				const {code: preprocessed} = await svelte.preprocess(source, sveltePreprocess(), { filename });
+				let { js, warnings } = svelte.compile(preprocessed, { filename });
+				const contents = js.code + '//# sourceMappingURL=' + js.map.toUrl();
+
+				warnings = warnings
+					.filter(w =>
+						//TODO Handle a11y-click-events-have-key-events
+						w.code !== 'a11y-click-events-have-key-events' &&
+						//TODO Handle a11y-no-noninteractive-element-interactions
+						w.code !== 'a11y-no-noninteractive-element-interactions'
+					)
+					.map(convertMessage);
+
+				return { contents, warnings };
+			} catch (e) {
+				return { errors: [convertMessage(e)] };
+			}
+		});
+	}
 };
 
 const outdir = './dist';
@@ -40,19 +75,7 @@ export const buildOptions = {
 	format: 'esm',
 	watch: process.argv.includes('--watch'),
 	plugins: [
-		esbuildSvelte({
-			compilerOptions: {dev: true},
-			preprocess: sveltePreprocess(),
-			filterWarnings: warning => {
-				switch (warning.code) {
-					case 'a11y-click-events-have-key-events':
-						return false;
-					default:
-						return true;
-				}
-			}
-		}),
-		DedupSvelteInternalPlugin,
+		sveltePlugin,
 	],
 };
 
@@ -79,7 +102,7 @@ if (process.argv.includes('--serve'))
 			...buildOptions,
 			logLevel: 'debug',
 		})
-		.then(({host, port}) => {
+		.then(({ host, port }) => {
 			if (host === '0.0.0.0')
 				host = 'localhost';
 			console.log(`Serving at \`http://${host}:${port}\`...`);

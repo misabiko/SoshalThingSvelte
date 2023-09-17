@@ -7,7 +7,7 @@
 	import type {TimelineData} from './index'
 	import FiltersOptions from "../filters/FiltersOptions.svelte"
 	import SortOptions from "../sorting/SortOptions.svelte"
-	import {SortMethod} from '../sorting'
+	import type { SortMethod } from '../sorting';
 	import type {FullscreenInfo} from './index'
 	import {updateFullscreenStorage} from '../storages'
 

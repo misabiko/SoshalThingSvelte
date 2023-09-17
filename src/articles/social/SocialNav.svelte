@@ -119,20 +119,20 @@
 			</button>
 		{/if}
 		<Dropdown labelClasses='articleButton borderless-button'>
-						<span slot='triggerIcon' class='icon'>
-							<Fa icon={faEllipsisH}/>
-						</span>
+			<span slot='triggerIcon' class='icon'>
+				<Fa icon={faEllipsisH}/>
+			</span>
 
 			<!-- svelte-ignore a11y-missing-attribute -->
-			<a class='dropdown-item' on:click={() => toggleMarkAsRead(article.idPair)}>
+			<a class='dropdown-item' on:click={() => toggleMarkAsRead(article.idPair)} role='button' tabindex=0>
 				Mark as read
 			</a>
 			<!-- svelte-ignore a11y-missing-attribute -->
-			<a class='dropdown-item' on:click={() => toggleHide(article.idPair)}>
+			<a class='dropdown-item' on:click={() => toggleHide(article.idPair)} role='button' tabindex=0>
 				Hide
 			</a>
 			<!-- svelte-ignore a11y-missing-attribute -->
-			<a class='dropdown-item' on:click={() => timelineProps.compact = !timelineProps.compact}>
+			<a class='dropdown-item' on:click={() => timelineProps.compact = !timelineProps.compact} role='button' tabindex=0>
 				{ timelineProps.compact ? 'Show expanded' : 'Show compact' }
 			</a>
 			<a class='dropdown-item' href={ article.url } target='_blank' rel='noreferrer'>
@@ -145,11 +145,11 @@
 			{/if}
 			{#if !isQuoted}
 				<!-- svelte-ignore a11y-missing-attribute -->
-				<a class='dropdown-item' on:click={onLogData}>
+				<a class='dropdown-item' on:click={onLogData} role='button' tabindex=0>
 					Log Data
 				</a>
 				<!-- svelte-ignore a11y-missing-attribute -->
-				<a class='dropdown-item' on:click={onLogJSON}>
+				<a class='dropdown-item' on:click={onLogJSON} role='button' tabindex=0>
 					Log Json Data
 				</a>
 				<!--	<a class='dropdown-item'>-->

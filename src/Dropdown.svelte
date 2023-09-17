@@ -25,6 +25,16 @@
 </script>
 
 <style>
+	.dropdown-trigger .button {
+		background: white;
+		font-weight: 400;
+		font-size: normal;
+	}
+
+	.dropdown-trigger .button, .dropdown-trigger .svelte-fa {
+		color: var(--grey-darker);
+	}
+
 	.dropdown:not(.is-active) .dropdown-menu{
 		display: none;
 	}
@@ -52,10 +62,6 @@
 	:global(.dropdown-item:hover) {
 		color: var(--white);
     	background-color: var(--primary);
-	}
-
-	.dropdown-trigger .button {
-		background: white;
 	}
 </style>
 

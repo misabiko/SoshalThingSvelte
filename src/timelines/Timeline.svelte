@@ -289,7 +289,6 @@
 
 <style>
 	.timeline {
-		color: var(--text);
 		height: 100%;
 		padding: 0 5px;
 		box-sizing: border-box;

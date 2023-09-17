@@ -124,7 +124,7 @@
 		text-rendering: var(--body-rendering);
 
 		/* Inheriting bulma's generics.sass's body */
-		color: var(--body-color);
+		color: var(--text);
 		font-size: var(--body-font-size);
 		font-weight: var(--body-weight);
 		line-height: var(--body-line-height);

@@ -49,7 +49,7 @@
 		min-height: 10%;
 		resize: vertical;
 	}
-	.timelineOptions > .box {
+	.timelineOptions > section {
 		max-width: 100%;
 		width: 100%;
 	}
@@ -60,17 +60,17 @@
 </style>
 
 <div class='timelineOptions'>
-	<div class='box'>
+	<section>
 		<p>{articleCountLabel}</p>
 		<label class='field'>
-			Show article count on header
 			<input type='checkbox' bind:checked={data.showArticleCount}/>
+			Show article count on header
 		</label>
-		<button type='is-danger' on:click={removeTimeline}>
+		<button class='button red-button' on:click={removeTimeline}>
 			Remove timeline
 		</button>
-	</div>
-	<div class='box'>
+	</section>
+	<section>
 		<label class='field'>
 			{`${fullscreen?.container !== null ? 'Timeline ' : ''}Container`}
 			<select bind:value={data.container}>
@@ -152,8 +152,8 @@
 			</label>
 			<input class='input' type='number' bind:value={data.section.count} min={0}/>
 		</label>
-	</div>
-	<div class='box'>
+	</section>
+	<section>
 		<label class='field'>
 			Article View
 			<select bind:value={data.articleView}>
@@ -197,8 +197,8 @@
 			Max media count
 			<input class='input' type='number' bind:value={data.maxMediaCount} min={1}/>
 		</label>
-	</div>
-	<div class='box'>
+	</section>
+	<section>
 		<label class='field'>
 			Endpoints
 			<ul>
@@ -208,19 +208,19 @@
 			</ul>
 			<!-- TODO Add dynamic endpoint menu -->
 		</label>
-	</div>
-	<div class='box'>
+	</section>
+	<section>
 		<FiltersOptions bind:instances={data.filters}/>
 		<div class='control'>
 			<button on:click={removeFiltered}>Remove filtered articles</button>
 		</div>
-	</div>
-	<div class='box'>
+	</section>
+	<section>
 		<SortOptions bind:sortInfo={data.sortInfo} {sortOnce}/>
-	</div>
-	<div class='box'>
+	</section>
+	<section>
 		<button on:click={() => console.log(data)}>
 			Log Timeline Data
 		</button>
-	</div>
+	</section>
 </div>

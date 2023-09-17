@@ -3,10 +3,10 @@
 	import EndpointOptions from "./EndpointOptions.svelte"
 </script>
 
-<div class='box'>
+<section>
 	{#each Object.entries(endpoints) as [name, endpoint] (name)}
 		<EndpointOptions {endpoint}/>
 	{:else}
 		No endpoints currently
 	{/each}
-</div>
+</section>

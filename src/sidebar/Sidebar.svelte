@@ -99,26 +99,26 @@
 	{#if menu !== null}
 		<div class='sidebarMenu'>
 			{#if menu === SidebarMenu.TimelineEdit}
-				<div class='box'>
+				<section>
 					<TimelineEditMenu
 						{setModalTimeline}
 						{addTimeline}
 					/>
-				</div>
-				<div class='box'>
+				</section>
+				<section>
 					<TimelineViewEdit
 						bind:timelineViews
 						bind:timelineView
 						bind:timelines
 					/>
-				</div>
+				</section>
 			{:else if menu === SidebarMenu.BatchActions}
-				<div class='box'>
+				<section>
 					<BatchActions
 						bind:filterInstances={batchActionFilters}
 						{timelines}
 					/>
-				</div>
+				</section>
 			{:else if menu === SidebarMenu.Undoables}
 				<Undoables
 					{setModalTimeline}

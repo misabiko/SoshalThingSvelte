@@ -126,7 +126,7 @@ test.describe('timelines', () => {
 
 			await page.click('.timeline .timelineButtons button[title = "Expand options"]');
 
-			const endpointOptionGroup = page.locator('.timelineOptions .box', {hasText: 'Endpoints'});
+			const endpointOptionGroup = page.locator('.timelineOptions section', {hasText: 'Endpoints'});
 
 			await expect(endpointOptionGroup.locator('ul > *')).toHaveCount(0);
 
@@ -156,7 +156,7 @@ test.describe('timelines', () => {
 
 			await page.click('.timeline .timelineButtons button[title = "Expand options"]');
 
-			const endpointOptionGroup = page.locator('.timelineOptions .box', {hasText: 'Endpoints'});
+			const endpointOptionGroup = page.locator('.timelineOptions section', {hasText: 'Endpoints'});
 
 			const endpointList = endpointOptionGroup.locator('ul > *');
 			await expect(endpointList).toHaveCount(2);
@@ -197,7 +197,7 @@ test.describe('timelines', () => {
 			for (const i of [1, 2]) {
 				await page.click(`.timeline:nth-child(${i}) .timelineButtons button[title = "Expand options"]`);
 
-				const endpointOptionGroup = page.locator('.timelineOptions .box', {hasText: 'Endpoints'});
+				const endpointOptionGroup = page.locator('.timelineOptions section', {hasText: 'Endpoints'});
 
 				const endpointList = endpointOptionGroup.locator('ul > *');
 				await expect(endpointList).toHaveCount(1);

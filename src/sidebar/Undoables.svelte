@@ -14,7 +14,7 @@
 	}
 </script>
 
-<div class='box'>
+<section>
 	<button on:click={modalTimeline}>
 		Open Timeline
 	</button>
@@ -27,4 +27,4 @@
 	{:else}
 		Nothing to undo
 	{/each}
-</div>
+</section>

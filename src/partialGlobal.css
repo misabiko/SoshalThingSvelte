@@ -40,6 +40,18 @@
 	--text-light: var(--white);
 	--text-strong: var(--white-ter);
 
+	--body-background-color: var(--scheme-main);
+	/* TODO Define these variables
+
+		--body-min-width;
+		--body-overflow-x;
+		--body-rendering;
+		--body-color;
+		--body-font-size;
+		--body-weight;
+		--body-line-height;
+	 */
+
 	--input-color: var(--grey-darker);
 	--input-background-color: var(--white);
 	--input-border-color: var(--grey-darker);

@@ -2,7 +2,6 @@ import type {EndpointConstructorInfo} from '../../endpoints';
 import {Endpoint, RefreshType} from '../../endpoints';
 import type {ArticleWithRefs} from '../../../articles';
 import * as Misskey from 'misskey-js';
-import {misskey} from '../../../../credentials.json';
 import {fromAPI} from '../article';
 import {getHiddenStorage, getMarkedAsReadStorage} from '../../../storages/serviceCache';
 import {MisskeyService} from '../service';
@@ -10,15 +9,19 @@ import {MisskeyService} from '../service';
 export class TimelineEndpoint extends Endpoint {
 	readonly name = 'Timeline Endpoint';
 	readonly service = 'Misskey';
-	readonly cli;
+	public cli: Misskey.api.APIClient | null = null;
 
 	constructor() {
 		super(new Set([RefreshType.Refresh]));
 
-		this.cli = new Misskey.api.APIClient({
-			origin: misskey.origin,
-			credential: misskey.access,
-		});
+		//TODO Test dynamic import, probably pass credentials as constructor params
+		import('../../../../credentials.json')
+			.then(({misskey}) => {
+				this.cli = new Misskey.api.APIClient({
+					origin: misskey.origin,
+					credential: misskey.access,
+				});
+			});
 	}
 
 
@@ -27,6 +30,9 @@ export class TimelineEndpoint extends Endpoint {
 	}
 
 	async refresh(refreshType: RefreshType): Promise<ArticleWithRefs[]> {
+		if (this.cli === null)
+			throw new Error('Misskey API client is not initialized');
+
 		const limit = refreshType === RefreshType.RefreshStart ? undefined : 50;
 		const notes = await this.cli.request('notes/timeline', {
 			limit,

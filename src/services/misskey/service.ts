@@ -2,7 +2,6 @@ import MisskeyArticle from './article';
 import type {Service} from '../service';
 import {newService, registerService} from '../service';
 import {TimelineEndpoint} from './endpoints/timelineEndpoint';
-import {emojis} from './emojis.json';
 import type {APIClient} from 'misskey-js/built/api';
 
 export const MisskeyService: MisskeyServiceType = {
@@ -10,15 +9,18 @@ export const MisskeyService: MisskeyServiceType = {
 	endpointConstructors: [
 		TimelineEndpoint.constructorInfo
 	],
-	emojis,
+	emojis: null,
 };
+import('./emojis.json').then(({default: emojis}) => {
+	MisskeyService.emojis = emojis as unknown as Emoji[];
+});
 MisskeyArticle.service = MisskeyService.name;
 
 registerService(MisskeyService);
 
 interface MisskeyServiceType extends Service<MisskeyArticle> {
 	cli?: APIClient;
-	emojis?: Emoji[]
+	emojis?: Emoji[] | null;
 }
 
 type Emoji = {

@@ -54,19 +54,6 @@ const SveltePlugin = {
 	}
 };
 
-//From https://github.com/evanw/esbuild/issues/2093#issuecomment-1062461380
-//To make sure Soshal library uses the same svelte runtime as this one
-const DedupSvelteInternalPlugin = {
-	name: 'dedup-svelte',
-	async setup({ onResolve }) {
-		const svelteInternal = path.join(process.cwd(), '/node_modules/svelte/internal/index.mjs');
-		const svelte = path.join(process.cwd(), '/node_modules/svelte/index.mjs');
-
-		onResolve({ filter: /^svelte\/internal$/ }, () => ({ path: svelteInternal }));
-		onResolve({ filter: /^svelte$/ }, () => ({ path: svelte }));
-	},
-};
-
 const outdir = './dist';
 
 
@@ -87,10 +74,7 @@ export const buildOptions = {
 	write: true,
 	format: 'esm',
 	watch: process.argv.includes('--watch'),
-	plugins: [
-		SveltePlugin,
-		DedupSvelteInternalPlugin,
-	],
+	plugins: [SveltePlugin],
 };
 
 export const errorHandler = (error, location) => {

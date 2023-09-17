@@ -123,38 +123,33 @@
 				<Fa icon={faEllipsisH}/>
 			</span>
 
-			<!-- svelte-ignore a11y-missing-attribute -->
-			<a class='dropdown-item' on:click={() => toggleMarkAsRead(article.idPair)} role='button' tabindex=0>
+			<button class='dropdown-item' on:click={() => toggleMarkAsRead(article.idPair)}>
 				Mark as read
-			</a>
-			<!-- svelte-ignore a11y-missing-attribute -->
-			<a class='dropdown-item' on:click={() => toggleHide(article.idPair)} role='button' tabindex=0>
+			</button>
+			<button class='dropdown-item' on:click={() => toggleHide(article.idPair)}>
 				Hide
-			</a>
-			<!-- svelte-ignore a11y-missing-attribute -->
-			<a class='dropdown-item' on:click={() => timelineProps.compact = !timelineProps.compact} role='button' tabindex=0>
+			</button>
+			<button class='dropdown-item' on:click={() => timelineProps.compact = !timelineProps.compact}>
 				{ timelineProps.compact ? 'Show expanded' : 'Show compact' }
-			</a>
-			<a class='dropdown-item' href={ article.url } target='_blank' rel='noreferrer'>
+			</button>
+			<button class='dropdown-item' href={ article.url } target='_blank' rel='noreferrer'>
 				External Link
-			</a>
+			</button>
 			{#if repost}
 				<a class='dropdown-item' href={ repost.url } target='_blank' rel='noreferrer'>
 					Repost's external Link
 				</a>
 			{/if}
 			{#if !isQuoted}
-				<!-- svelte-ignore a11y-missing-attribute -->
-				<a class='dropdown-item' on:click={onLogData} role='button' tabindex=0>
+				<button class='dropdown-item' on:click={onLogData}>
 					Log Data
-				</a>
-				<!-- svelte-ignore a11y-missing-attribute -->
-				<a class='dropdown-item' on:click={onLogJSON} role='button' tabindex=0>
+				</button>
+				<button class='dropdown-item' on:click={onLogJSON}>
 					Log Json Data
-				</a>
-				<!--	<a class='dropdown-item'>-->
+				</button>
+				<!--	<button class='dropdown-item'>-->
 				<!--		Fetch Data-->
-				<!--	</a>-->
+				<!--	</button>-->
 			{/if}
 		</Dropdown>
 	</div>

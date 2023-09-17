@@ -32,21 +32,17 @@
 		<Dropdown labelText={currentMethodName}>
 			{#each genericSortMethods as method}
 				{#each [false, true] as reversed}
-					<!-- svelte-ignore a11y-missing-attribute -->
-					<a
+					<button
 						class='dropdown-item'
 						on:click={() => {sortInfo.method = method; sortInfo.customMethod = null; sortInfo.reversed = reversed}}
-						role='menuitem'
-						tabindex=0
 					>
 						{ `${methodName(method)} - ${directionLabel(method, reversed)}` }
-					</a>
+					</button>
 				{/each}
 			{/each}
 			{#each serviceSortMethods as method}
 				{#each [false, true] as reversed}
-					<!-- svelte-ignore a11y-missing-attribute -->
-					<a
+					<button
 						class='dropdown-item'
 						on:click={() => {
 							sortInfo.method = SortMethod.Custom;
@@ -56,17 +52,14 @@
 							};
 							sortInfo.reversed = reversed;
 						}}
-						role='menuitem'
-						tabindex=0
 					>
 						{ `${method[2].name} - ${method[2].directionLabel(reversed)}` }
-					</a>
+					</button>
 				{/each}
 			{/each}
-			<!-- svelte-ignore a11y-missing-attribute -->
-			<a class='dropdown-item' on:click={() => sortInfo.method = undefined} role='menuitem' tabindex=0>
+			<button class='dropdown-item' on:click={() => sortInfo.method = undefined}>
 				Unsorted
-			</a>
+			</button>
 		</Dropdown>
 		<button class='button' on:click={() => sortInfo.reversed = !sortInfo.reversed}>
 			{#if sortInfo.method !== undefined}
@@ -78,14 +71,12 @@
 		{#if sortInfo.method === undefined}
 			<Dropdown labelText='Sort once'>
 				{#each genericSortMethods as method}
-					<!-- svelte-ignore a11y-missing-attribute -->
-					<a class='dropdown-item' on:click={() => sortOnce(method, false)} role='menuitem' tabindex=0>
+					<button class='dropdown-item' on:click={() => sortOnce(method, false)}>
 						{ `${methodName(method)} - ${directionLabel(method, false)}` }
-					</a>
-					<!-- svelte-ignore a11y-missing-attribute -->
-					<a class='dropdown-item' on:click={() => sortOnce(method, true)} role='menuitem' tabindex=0>
+					</button>
+					<button class='dropdown-item' on:click={() => sortOnce(method, true)}>
 						{ `${methodName(method)} - ${directionLabel(method, true)}` }
-					</a>
+					</button>
 				{/each}
 			</Dropdown>
 		{/if}

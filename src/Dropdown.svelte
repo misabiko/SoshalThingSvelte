@@ -30,7 +30,6 @@
 		font-weight: 400;
 		font-size: normal;
 	}
-
 	.dropdown-trigger .button, .dropdown-trigger .svelte-fa {
 		color: var(--grey-darker);
 	}
@@ -62,6 +61,12 @@
 	:global(.dropdown-item:hover) {
 		color: var(--white);
     	background-color: var(--primary);
+	}
+
+	:global(button.dropdown-item) {
+		color: var(--text);
+		border: 0;
+		background: none;
 	}
 </style>
 

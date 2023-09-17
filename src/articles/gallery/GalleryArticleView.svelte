@@ -217,24 +217,19 @@
 				<span slot='triggerIcon' class='icon darkIcon'>
 					<Fa icon={faEllipsisH} class='level-item'/>
 				</span>
-				<!-- svelte-ignore a11y-missing-attribute -->
-				<a class='dropdown-item' on:click={() => toggleMarkAsRead(actualArticle.idPair)} role='button' tabindex=0>
+				<button class='dropdown-item' on:click={() => toggleMarkAsRead(actualArticle.idPair)}>
 					Mark as read
-				</a>
-				<!-- svelte-ignore a11y-missing-attribute -->
-				<a class='dropdown-item' on:click={() => toggleHide(actualArticle.idPair)} role='button' tabindex=0>
+				</button>
+				<button class='dropdown-item' on:click={() => toggleHide(actualArticle.idPair)}>
 					Hide
-				</a>
+				</button>
 				{#if actualArticle.medias.some(m => !m.loaded) }
-					<!-- svelte-ignore a11y-missing-attribute -->
-					<a
+					<button
 						class='dropdown-item'
 						on:click={() => {for (let i = 0; i < actualArticle.medias.length; ++i) loadingStore.forceLoading(actualArticle, i)}}
-						role='button'
-						tabindex=0
 					>
 						Load Media
-					</a>
+					</button>
 				{/if}
 				<a
 					class='dropdown-item'
@@ -242,19 +237,16 @@
 				>
 					External Link
 				</a>
-				<!-- svelte-ignore a11y-missing-attribute -->
-				<a class='dropdown-item' on:click={onLogData} role='button' tabindex=0>
+				<button class='dropdown-item' on:click={onLogData}>
 					Log Data
-				</a>
-				<!-- svelte-ignore a11y-missing-attribute -->
-				<a class='dropdown-item' on:click={onLogJSON} role='button' tabindex=0>
+				</button>
+				<button class='dropdown-item' on:click={onLogJSON}>
 					Log JSON Data
-				</a>
+				</button>
 				{#if !actualArticle.fetched }
-					<!-- svelte-ignore a11y-missing-attribute -->
-					<a class='dropdown-item' on:click={() => fetchArticle(actualArticle.idPair)} role='button' tabindex=0>
+					<button class='dropdown-item' on:click={() => fetchArticle(actualArticle.idPair)}>
 						Fetch Article
-					</a>
+					</button>
 				{/if}
 			</Dropdown>
 		</div>
@@ -263,7 +255,6 @@
 				{@const actionned = action.actionned(rootArticle)}
 				{@const disabled = action.disabled ? action.disabled(rootArticle) : false}
 				{#if !actionned || action.togglable}
-					<!-- svelte-ignore a11y-mouse-events-have-key-events -->
 					<button
 						class='button'
 						class:actionned

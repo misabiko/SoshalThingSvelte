@@ -2,8 +2,6 @@ import {expect, test} from '@playwright/test';
 import {parseText} from '../../src/services/twitter/apiV1';
 import {generateId, notifications} from '../../src/notifications/store';
 
-console.log('blaaaah');
-
 test('twitter V1 parseText', () => {
 	//1549147268195966979
 	const raw: any = {

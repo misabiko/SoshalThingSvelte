@@ -247,7 +247,7 @@ test.describe('cache', () => {
 
 		await page.locator('article .dropdown-trigger button.articleButton').first().click();
 
-		await page.locator('article a.dropdown-item >> text=Hide').first().click();
+		await page.locator('article button.dropdown-item >> text=Hide').first().click();
 
 		await expect(articleLocator).toHaveCount(articleCount - 1);
 

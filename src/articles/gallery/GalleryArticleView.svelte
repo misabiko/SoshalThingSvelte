@@ -111,7 +111,7 @@
 		padding-bottom: unset;
 	}
 
-	.holderBox :global(.dropdown-trigger > button) {
+	.holderBox :global(.dropdown-trigger), .holderBox :global(.dropdown-trigger > button) {
 		height: 100%;
 	}
 

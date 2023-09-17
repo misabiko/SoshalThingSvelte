@@ -80,6 +80,46 @@ label {
 	font-weight: 700;
 }
 
+.button {
+	background-color: hsl(0, 0%, 100%);
+	border-color: hsl(0, 0%, 86%);
+	border-width: 1px;
+	color: hsl(0, 0%, 21%);
+	cursor: pointer;
+	justify-content: center;
+	padding-bottom: calc(0.5em - 1px);
+	padding-left: 1em;
+	padding-right: 1em;
+	padding-top: calc(0.5em - 1px);
+	text-align: center;
+	white-space: nowrap;
+	border-radius: 4px;
+}
+
+/*probably not the best way to center an icon vertically*/
+a.button {
+	display: flex;
+	flex-direction: column;
+}
+
+.icon {
+	align-items: center;
+	display: inline-flex;
+	justify-content: center;
+	height: 1.5rem;
+	width: 1.5rem;
+}
+
+.button .icon {
+	height: 1.5em;
+	width: 1.5em;
+}
+
+.button .icon:first-child:last-child {
+	margin-left: calc(-0.5em - 1px);
+	margin-right: calc(-0.5em - 1px);
+}
+
 .field * {
 	display: block;
 }

@@ -53,6 +53,10 @@
 		color: var(--white);
     	background-color: var(--primary);
 	}
+
+	.dropdown-trigger .button {
+		background: white;
+	}
 </style>
 
 <div

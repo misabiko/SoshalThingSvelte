@@ -76,7 +76,7 @@
 	{#each article.medias.slice(0, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined) as media, index (index)}
 		{#if media.mediaType === MediaType.Image || media.mediaType === MediaType.Gif}
 			<div class='imagesHolder'>
-				<div class='is-hidden imgPlaceHolder' style:aspect-ratio={1 / media.ratio}></div>
+				<div class='imgPlaceHolder' style:aspect-ratio={1 / media.ratio} style:display='none'></div>
 				<img class='articleMedia' alt={`${article.id}/${index}`} src={media.src} on:click={() => onMediaClick(index)}/>
 			</div>
 		{:else if !timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}

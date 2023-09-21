@@ -22,7 +22,16 @@ export function parseResponse(response: UserTweetsResponse): ArticleWithRefs[] {
 	return entries
 		.filter(e => e.content.entryType === 'TimelineTimelineItem')
 		.map(e => e.content.itemContent.tweet_results.result.legacy)
-		.map(articleFromLegacy);
+		.filter(legacy => legacy !== undefined)
+		.map(legacy => {
+			try {
+				return articleFromLegacy(legacy);
+			} catch (e) {
+				console.error('Error parsing legacy tweet', legacy, e);
+				return null;
+			}
+		})
+		.filter((a): a is ArticleWithRefs => a !== null);
 }
 
 function articleFromLegacy(legacy: Legacy): ArticleWithRefs {

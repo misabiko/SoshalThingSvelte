@@ -8,6 +8,7 @@ import TwitterArticle from './article';
 import {MediaLoadType, MediaType} from '../../articles/media';
 import {fetchExtension} from '../extension';
 import { parseHTMLArticle } from './page';
+import UserTweetsEndpointMenu from './UserTweetsEndpointMenu.svelte';
 
 //TODO Move to V1 directory, split into separate files
 abstract class V1Endpoint extends Endpoint {
@@ -292,6 +293,29 @@ export class TwitterHomeEndpoint extends Endpoint {
 	};
 }
 
+//TODO Move endpoint to separate file
+export class TwitterUserTweetsAPIEndpoint extends Endpoint {
+	readonly service = TwitterService.name;
+	readonly name = 'UserTweetsAPI';
+	menuComponent = UserTweetsEndpointMenu;
+
+	async refresh(_refreshType: RefreshType): Promise<ArticleWithRefs[]> {
+		console.log('refresh');
+
+		return [];
+	}
+
+	matchParams(_params: any): boolean {
+		return true;
+	}
+
+	static readonly constructorInfo: EndpointConstructorInfo = {
+		name: 'TwitterUserTweetsAPIEndpoint',
+		paramTemplate: [],
+		constructor: _params => new TwitterUserTweetsAPIEndpoint()
+	};
+}
+
 TwitterService.endpointConstructors.push(
 	HomeTimelineEndpoint.constructorInfo,
 	UserTimelineEndpoint.constructorInfo,
@@ -299,6 +323,7 @@ TwitterService.endpointConstructors.push(
 	LikesEndpoint.constructorInfo,
 	SearchEndpoint.constructorInfo,
 	TwitterHomeEndpoint.constructorInfo,
+	TwitterUserTweetsAPIEndpoint.constructorInfo,
 );
 
 //Tried to use SearchEndpoint, but query `from:${user.username}` didn't give anything, plus we're limited to 7 days

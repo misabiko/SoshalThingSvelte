@@ -10,6 +10,8 @@
 	import type { SortMethod } from '../sorting';
 	import type {FullscreenInfo} from './index'
 	import {updateFullscreenStorage} from '../storages'
+	import {endpoints} from '../services/endpoints'
+    import { get } from "svelte/store";
 
 	export let data: TimelineData
 	export let fullscreen: FullscreenInfo | undefined = undefined
@@ -200,14 +202,19 @@
 		</label>
 	</section>
 	<section>
+		<!-- TODO Move endpoint section to external component -->
 		<div class='field'>
 			Endpoints
 			<ul>
-				{#each data.endpoints as endpoint (endpoint)}
-					<li>{endpoint.name || endpoint.endpoint.name}</li>
+				{#each data.endpoints.map(te => te.endpoint || get(endpoints[te.name])) as endpoint (endpoint)}
+					<li>
+						{endpoint.name}
+						{#if endpoint.menuComponent}
+							<svelte:component this={endpoint.menuComponent} {endpoint} timeline={data}/>
+						{/if}
+					</li>
 				{/each}
 			</ul>
-			<!-- TODO Add dynamic endpoint menu -->
 		</div>
 	</section>
 	<section>

@@ -5,6 +5,7 @@ import {useFilters} from '../filters';
 import {addArticles, getServices} from './service';
 import {get, writable} from 'svelte/store';
 import type {Writable} from 'svelte/store';
+import type { SvelteComponent } from 'svelte';
 
 export const endpoints: { [name: string]: Writable<Endpoint> } = {};
 
@@ -23,6 +24,8 @@ export abstract class Endpoint {
 	rateLimitInfo: RateLimitInfo | null = null;
 	autoRefreshId: number | null;
 	autoRefreshInterval = 90_000;
+	//TODO Find component type
+	menuComponent: any | null = null;
 
 	constructor(
 		public refreshTypes = new Set<RefreshType>([

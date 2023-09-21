@@ -104,6 +104,7 @@
 		display: flex;
 		width: 100%;
 		font-family: BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+		color: var(--text);
 	}
 
 	#soshalNotifications {
@@ -125,7 +126,6 @@
 		text-rendering: var(--body-rendering);
 
 		/* Inheriting bulma's generics.sass's body */
-		color: var(--text);
 		font-size: var(--body-font-size);
 		font-weight: var(--body-weight);
 		line-height: var(--body-line-height);

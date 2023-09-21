@@ -25,7 +25,7 @@
 </script>
 
 <style>
-	.dropdown-trigger .button {
+	.dropdown-trigger .button:not(.borderless-button) {
 		background: white;
 		font-weight: 400;
 		font-size: normal;
@@ -67,6 +67,12 @@
 		color: var(--text);
 		border: 0;
 		background: none;
+	}
+
+	:global(a.dropdown-item) {
+		text-decoration: none;
+		color: var(--text);
+		text-align: center;
 	}
 </style>
 

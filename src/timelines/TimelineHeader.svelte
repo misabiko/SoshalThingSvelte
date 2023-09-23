@@ -25,7 +25,7 @@
 	export let containerRebalance: boolean
 	export let showSidebar: boolean
 	export let showOptions: boolean
-	export let toggleFullscreen: () => void | undefined = undefined
+	export let toggleFullscreen: (() => void) | undefined = undefined
 	export let shuffle: () => void
 	export let autoscroll: () => void
 	export let refresh: (refreshType: RefreshType) => void

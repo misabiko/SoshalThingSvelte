@@ -31,4 +31,11 @@ Test with `npm test`, it uses the port 8089 by default
 
 ---
 
-TODO Add full project lint npm script
+TODO Be able to add endpoints from ui
+TODO Add "one time endpoints" to timeline options
+TODO Fix modals
+TODO Add extension popup to inject soshal
+TODO Make eslint work for svelte files scripts
+TODO Rename favviewer to injected
+TODO Print vscode's problems
+TODO Go through project's TODOs

@@ -9,7 +9,11 @@
 	export let modalTimeline: TimelineData | null;
 	export let timelineView: TimelineView = {
 		timelineIds: [],
-		fullscreen: null,
+		fullscreen: {
+			index: null,
+			columnCount: null,
+			container: null,
+		},
 	}
 
 	export let setModalTimeline: (data: TimelineData, width?: number) => void
@@ -138,7 +142,7 @@
 		{#each timelineView.timelineIds as id, i (`${id}/${i}`)}
 			{#if isInjected && i === 0}
 				<Timeline
-					favviewerButtons=true
+					favviewerButtons={true}
 					bind:favviewerHidden
 					bind:favviewerMaximized
 					bind:showSidebar

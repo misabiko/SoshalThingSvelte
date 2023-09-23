@@ -21,7 +21,7 @@
 	export let data: TimelineData
 	//Would like to make this immutable https://github.com/sveltejs/svelte/issues/5572
 	export let fullscreen: FullscreenInfo | undefined = undefined
-	export let toggleFullscreen: () => void | undefined = undefined
+	export let toggleFullscreen: (() => void) | undefined = undefined
 	export let removeTimeline: () => void
 	export let setModalTimeline: (data: TimelineData, width?: number) => void
 
@@ -117,6 +117,8 @@
 					filteredOut,
 					quoted: addProps(articleWithRefs.quoted, index)
 				} as ArticleProps
+			default:
+				throw new Error('Unknown article type: ' + articleWithRefs.type)
 		}
 	}
 

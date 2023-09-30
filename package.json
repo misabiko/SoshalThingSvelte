@@ -39,6 +39,7 @@
 		"mfm-js": "^0.23.3",
 		"misskey-js": "^0.0.15",
 		"oauth-1.0a": "^2.2.6",
+		"puppeteer": "^21.3.6",
 		"resolve-glob": "^1.0.0",
 		"svelte-fa": "^3.0.2"
 	}

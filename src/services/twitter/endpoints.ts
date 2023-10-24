@@ -1,14 +1,17 @@
-import type {ArticleWithRefs} from '../../articles';
+import { getRootArticle, type ArticleWithRefs } from "articles";
 import {TwitterService} from './service';
 import type {SearchResponse, TweetResponse} from './apiV1';
 import {articleFromV1, fetchExtensionV1, getV1APIURL, parseRateLimitInfo} from './apiV1';
-import {Endpoint, RefreshType} from '../endpoints';
+import {Endpoint, RefreshType, endpoints, timelineEndpoints} from '../endpoints';
 import type {EndpointConstructorInfo} from '../endpoints';
 import TwitterArticle from './article';
 import {MediaLoadType, MediaType} from '../../articles/media';
 import {fetchExtension} from '../extension';
 import { parseHTMLArticle } from './page';
 import UserTweetsEndpointMenu from './UserTweetsEndpointMenu.svelte';
+import { addArticles, getServices } from "services/service";
+import { parseResponse } from "./usertweets";
+import { get } from 'svelte/store';
 
 //TODO Move to V1 directory, split into separate files
 abstract class V1Endpoint extends Endpoint {
@@ -298,6 +301,25 @@ export class TwitterUserTweetsAPIEndpoint extends Endpoint {
 	readonly service = TwitterService.name;
 	readonly name = 'UserTweetsAPI';
 	menuComponent = UserTweetsEndpointMenu;
+	//TODO Move to websocket/streaming endpoint class
+	ws = new WebSocket('ws://localhost:443');
+
+	constructor() {
+		super();
+
+		this.ws.addEventListener('error', console.error);
+
+		// ws.addEventListener("open", function open() {
+		// 	ws.send("something");
+		// });
+
+		this.ws.addEventListener('message', (data: MessageEvent) => {
+			console.log('received: ', data);
+			const json = JSON.parse(data.data);
+			console.log('json: ', json);
+			this.parseAPI(json);
+		});
+	}
 
 	async refresh(_refreshType: RefreshType): Promise<ArticleWithRefs[]> {
 		console.log('refresh');
@@ -314,6 +336,42 @@ export class TwitterUserTweetsAPIEndpoint extends Endpoint {
 		paramTemplate: [],
 		constructor: _params => new TwitterUserTweetsAPIEndpoint()
 	};
+
+	//TODO Move to twitter scraping file
+	async parseAPI(data: any) {
+		const articles: ArticleWithRefs[] = parseResponse(data);
+
+		this.articleIdPairs.push(...articles
+			.map(a => getRootArticle(a).idPair)
+			.filter(idPair => !this.articleIdPairs
+				.some(pair =>
+					pair.service === idPair.service &&
+					pair.id === idPair.id,
+				)
+			)
+		);
+
+		addArticles(getServices()[this.service], false, ...articles);
+
+		if (endpoints[this.name] !== undefined)
+			endpoints[this.name].set(this);
+
+		if (articles.length) {
+			const newAddedIdPairs = articles.map(a => getRootArticle(a).idPair);
+			//TODO Give timelines access to endpoint articles instead
+			for (const timelineEndpoint of get(timelineEndpoints)) {
+				timelineEndpoint.addArticles(newAddedIdPairs);
+				// timeline.addedIdPairs.update(idPairs => {
+				// 	idPairs.push(...newAddedIdPairs);
+				// 	return idPairs;
+				// });
+				// timeline.articles.update(idPairs => {
+				// 	idPairs.push(...newAddedIdPairs);
+				// 	return idPairs;
+				// });
+			}
+		}
+	}
 }
 
 TwitterService.endpointConstructors.push(

@@ -12,14 +12,28 @@ const wss = new WebSocketServer({ port: 443 });
 	const session = await page.target().createCDPSession();
 	await session.send('Network.enable');
 	session.on('Network.responseReceived', async ({ requestId, response }) => {
-		if (!response.url.includes('/UserTweets'))
+		let idUrlPair;
+		if (response.url.includes('/UserTweets'))
+			idUrlPair = ['TwitterUserTweetsAPIEndpoint', 'UserTweets'];
+		else if (response.url.includes('/HomeTimeline'))
+			idUrlPair = ['TwitterHomeTimelineAPIEndpoint', 'HomeTimeline'];
+		else if (response.url.includes('/HomeLatestTimeline'))
+			idUrlPair = ['TwitterHomeLatestTimelineAPIEndpoint', 'HomeLatestTimeline'];
+		else if (response.url.includes('/ListLatestTweetsTimeline'))
+			idUrlPair = ['TwitterListLatestTweetsTimelineAPIEndpoint', 'ListLatestTweetsTimeline'];
+		else
 			return;
 
+		console.log('Response received:',
+			'\n\tendpoint: ', idUrlPair[1],
+			'\n\tid: ', requestId,
+			'\n\tstatus: ', response.status
+		);
+
 		const { body } = await session.send('Network.getResponseBody', { requestId });
-		console.log('Response received');
 
 		for (const client of wss.clients)
-			if (client.readyState === WebSocket.OPEN)
+			if (client.clientId === idUrlPair[0] && client.readyState === WebSocket.OPEN)
 				client.send(body);
 	});
 
@@ -44,10 +58,18 @@ const wss = new WebSocketServer({ port: 443 });
 
 	await page.goto('https://twitter.com/' + process.env.TWITTER_USERNAME);
 
-	wss.on('connection', function connection(ws) {
-		ws.on('error', console.error);
+	wss.on('connection', (ws) => {
+		ws.on('websocket error', console.error);
 
-		console.log('New connection');
+		ws.on('message', (data) => {
+			console.log('websocket received: %s', JSON.parse(data));
+
+			const json = JSON.parse(data);
+			if (json.initEndpoint !== undefined)
+				ws.clientId = json.initEndpoint;
+		});
+
+		console.log('New websocket connection');
 	});
 })();
 

@@ -309,9 +309,10 @@ export class TwitterUserTweetsAPIEndpoint extends Endpoint {
 
 		this.ws.addEventListener('error', console.error);
 
-		// ws.addEventListener("open", function open() {
-		// 	ws.send("something");
-		// });
+		this.ws.addEventListener('open', () => {
+			console.log('Connected TwitterUserTweetsAPIEndpoint to websocket');
+			this.ws.send(JSON.stringify({initEndpoint: 'TwitterUserTweetsAPIEndpoint'}));
+		});
 
 		this.ws.addEventListener('message', (data: MessageEvent) => {
 			console.log('received: ', data);

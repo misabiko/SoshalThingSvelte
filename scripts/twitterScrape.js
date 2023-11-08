@@ -1,6 +1,6 @@
 import puppeteer from 'puppeteer';
-import clipboardy from 'clipboardy';
 import WebSocket, { WebSocketServer } from 'ws';
+import fs from 'fs/promises';
 
 const wss = new WebSocketServer({ port: 443 });
 
@@ -14,15 +14,35 @@ const wss = new WebSocketServer({ port: 443 });
 	session.on('Network.responseReceived', async ({ requestId, response }) => {
 		if (!response.url.includes('/UserTweets'))
 			return;
-		const { body, base64Encoded } = await session.send('Network.getResponseBody', { requestId });
-		console.log('Response received:', base64Encoded/* , body */);
-		//clipboardy.writeSync(body);
+
+		const { body } = await session.send('Network.getResponseBody', { requestId });
+		console.log('Response received');
+
 		for (const client of wss.clients)
 			if (client.readyState === WebSocket.OPEN)
 				client.send(body);
 	});
 
-	openUserPage(page);
+	const cookiesPath = process.argv[2];
+
+	if (cookiesPath === undefined) {
+		console.log('No cookies path provided, logging in');
+		await login(page, cookiesPath);
+	} else {
+		await page.setCookie(...JSON.parse(await fs.readFile(cookiesPath)));
+		console.log('Cookies loaded');
+
+		await page.goto('https://twitter.com/');
+
+		await page.waitForSelector('*[aria-label="Profile"]');
+		const profileHref = await page.$eval('*[aria-label="Profile"]', el => el.href);
+		if (profileHref == 'https://twitter.com/' + process.env.TWITTER_USERNAME)
+			console.log('Already logged in');
+		else
+			await login(page, cookiesPath);
+	}
+
+	await page.goto('https://twitter.com/' + process.env.TWITTER_USERNAME);
 
 	wss.on('connection', function connection(ws) {
 		ws.on('error', console.error);
@@ -31,7 +51,11 @@ const wss = new WebSocketServer({ port: 443 });
 	});
 })();
 
-async function openUserPage(page) {
+/**
+ * @param {import('puppeteer').Page} page
+ * @param {string | undefined} cookiesPath
+ */
+async function login(page, cookiesPath) {
 	await page.goto('https://twitter.com/i/flow/login');
 	console.log('Waiting for login page');
 	await page.waitForSelector('input[autocomplete="username"]');
@@ -48,5 +72,10 @@ async function openUserPage(page) {
 	console.log('(Hopefully) logged in');
 
 	await page.waitForFunction("window.location.pathname == '/home'");
-	await page.goto('https://twitter.com/' + process.env.TWITTER_USERNAME);
+
+	if (cookiesPath !== undefined) {
+		const cookies = await page.cookies();
+		await fs.writeFile(cookiesPath, JSON.stringify(cookies));
+		console.log('Cookies saved to ' + cookiesPath);
+	}
 }

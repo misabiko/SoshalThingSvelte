@@ -311,7 +311,16 @@ export class TwitterUserTweetsAPIEndpoint extends Endpoint {
 
 		this.ws.addEventListener('open', () => {
 			console.log('Connected TwitterUserTweetsAPIEndpoint to websocket');
-			this.ws.send(JSON.stringify({initEndpoint: 'TwitterUserTweetsAPIEndpoint'}));
+			this.ws.send(JSON.stringify({
+				initEndpoint: 'TwitterUserTweetsAPIEndpoint',
+				responseIncludes: '/UserTweets',
+				//gotoURL: 'https://twitter.com/' + process.env.TWITTER_USERNAME
+			}));
+
+			//['TwitterUserTweetsAPIEndpoint', 'UserTweets'];
+			//['TwitterHomeTimelineAPIEndpoint', 'HomeTimeline'];
+			//['TwitterHomeLatestTimelineAPIEndpoint', 'HomeLatestTimeline'];
+			//['TwitterListLatestTweetsTimelineAPIEndpoint', 'ListLatestTweetsTimeline'];
 		});
 
 		this.ws.addEventListener('message', (data: MessageEvent) => {

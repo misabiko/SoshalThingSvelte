@@ -92,26 +92,30 @@ export interface ArticleAuthor {
 }
 
 export type ArticleWithRefs<ExtraParams = {}> = Readonly<
-	({
-		type: 'normal'
-		article: Article
-	} |
-	{
-		type: 'repost'
-		article: Article
-		reposted: ArticleWithRefs<ExtraParams> & Readonly<{type: 'normal' | 'quote'}>
-	} |
-	{
-		type: 'reposts'
-		reposts: Article[]
-		reposted: ArticleWithRefs<ExtraParams> & Readonly<{type: 'normal' | 'quote'}>
-	} |
-	{
-		type: 'quote'
-		article: Article
-		quoted: ArticleWithRefs<ExtraParams> & Readonly<{type: 'normal' | 'quote'}>
-	}) & ExtraParams
+	(
+		| {
+			type: 'normal'
+			article: Article
+		}
+		| {
+			type: 'repost'
+			article: Article
+			reposted: NonRepostArticleWithRefs<ExtraParams>
+		}
+		| {
+			type: 'reposts'
+			reposts: Article[]
+			reposted: NonRepostArticleWithRefs<ExtraParams>
+		}
+		| {
+			type: 'quote'
+			article: Article
+			quoted: NonRepostArticleWithRefs<ExtraParams>
+		}
+	) & ExtraParams
 >
+
+export type NonRepostArticleWithRefs<ExtraParams = {}> = Exclude<ArticleWithRefs<ExtraParams>, {type: 'repost' | 'reposts'}>
 
 export type DerivedArticleWithRefs = Readonly<
 	{
@@ -130,6 +134,7 @@ export type DerivedArticleWithRefs = Readonly<
 	}
 	>
 
+//TODO Try ArticleWithRefs & {filteredOut: boolean}
 export type ArticleProps = ArticleWithRefs<{filteredOut: boolean}>
 
 export interface ArticleIdPair {

@@ -69,6 +69,9 @@ function articleFromResult(result: Result): ArticleWithRefs {
 		};
 	else  */if (result.legacy.retweeted_status_result !== undefined) {
 		const reposted = articleFromResult(result.legacy.retweeted_status_result.result);
+		if (reposted.type === 'repost' || reposted.type === 'reposts')
+			throw new Error('Retweeted article is a retweet itself: ' + JSON.stringify(reposted));
+
 		return {
 			type: 'repost',
 			article: article({

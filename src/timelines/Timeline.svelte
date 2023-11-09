@@ -36,7 +36,7 @@
 
 	let articleIdPairs: Writable<ArticleIdPair[]> = data.articles
 
-	let articles: Readable<Article[]>
+	let articles: Readable<Article[]>;
 	$: articles = derived($articleIdPairs.map(getWritable), a => a)
 
 	let articlesWithRefs: Readable<ArticleWithRefs[]>
@@ -266,7 +266,7 @@
 		data.articles.set(sorted.map(a => getRootArticle(a).idPair))
 	}
 
-	onMount(async () => {
+	onMount(() => {
 		if (!data.endpoints.length)
 			return
 

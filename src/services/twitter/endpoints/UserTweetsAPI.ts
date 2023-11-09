@@ -72,6 +72,7 @@ export default class TwitterUserTweetsAPIEndpoint extends Endpoint {
 
 		if (articles.length) {
 			const newAddedIdPairs = articles.map(a => getRootArticle(a).idPair);
+
 			//TODO Give timelines access to endpoint articles instead
 			for (const timelineEndpoint of get(timelineEndpoints)) {
 				timelineEndpoint.addArticles(newAddedIdPairs);

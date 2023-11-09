@@ -5,6 +5,8 @@ import sveltePreprocess from 'svelte-preprocess';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
+process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+
 //https://esbuild.github.io/plugins/#svelte-plugin
 const SveltePlugin = {
 	name: 'svelte',
@@ -34,7 +36,7 @@ const SveltePlugin = {
 			// Convert Svelte syntax to JavaScript
 			try {
 				const {code: preprocessed} = await svelte.preprocess(source, sveltePreprocess(), { filename });
-				let { js, warnings } = svelte.compile(preprocessed, { filename });
+				let { js, warnings } = svelte.compile(preprocessed, { filename, dev: process.env.NODE_ENV === 'development' });
 				const contents = js.code + '//# sourceMappingURL=' + js.map.toUrl();
 
 				warnings = warnings

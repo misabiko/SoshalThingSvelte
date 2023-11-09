@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import Article from '../../articles'
+	import type Article from '../../articles'
 	import type {ArticleIdPair} from '../index'
 	import type {ArticleProps, TimelineArticleProps} from '../index'
 	import {shortTimestamp} from "../index";
@@ -34,7 +34,6 @@
 </script>
 
 <style>
-	/* TODO Fix bulma-less styling */
 	.socialArticle {
 		padding: 1rem;
 		margin-bottom: 2px;

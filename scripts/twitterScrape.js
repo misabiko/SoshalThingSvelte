@@ -110,7 +110,7 @@ async function setupEndpoint(page, endpoint, responseIncludes, gotoURL) {
 				if (client.clientId === endpoint && client.readyState === WebSocket.OPEN)
 					client.send(body);
 		}catch (e) {
-			if (e.class.name === 'ProtocolError')
+			if (e.constructor.name === 'ProtocolError')
 				console.error('Protocol error for response:', response, e);
 			else
 				throw e;

@@ -1,6 +1,7 @@
 import puppeteer from 'puppeteer';
 import WebSocket, { WebSocketServer } from 'ws';
 import fs from 'fs/promises';
+import { existsSync } from 'fs';
 
 const wss = new WebSocketServer({ port: 443 });
 
@@ -12,8 +13,8 @@ const wss = new WebSocketServer({ port: 443 });
 	//TODO Move cookie stuff to login()
 	const cookiesPath = process.argv[2];
 
-	if (cookiesPath === undefined) {
-		console.log('No cookies path provided, logging in');
+	if (cookiesPath === undefined || !existsSync(cookiesPath)) {
+		console.log('No cookies, logging in');
 		await login(page, cookiesPath);
 	} else {
 		await page.setCookie(...JSON.parse(await fs.readFile(cookiesPath)));
@@ -102,11 +103,18 @@ async function setupEndpoint(page, endpoint, responseIncludes, gotoURL) {
 			'\n\tstatus: ', response.status
 		);
 
-		const { body } = await session.send('Network.getResponseBody', { requestId });
+		try {
+			const { body } = await session.send('Network.getResponseBody', { requestId });
 
-		for (const client of wss.clients)
-			if (client.clientId === endpoint && client.readyState === WebSocket.OPEN)
-				client.send(body);
+			for (const client of wss.clients)
+				if (client.clientId === endpoint && client.readyState === WebSocket.OPEN)
+					client.send(body);
+		}catch (e) {
+			if (e.class.name === 'ProtocolError')
+				console.error('Protocol error for response:', response, e);
+			else
+				throw e;
+		}
 	});
 
 	await page.goto(gotoURL);

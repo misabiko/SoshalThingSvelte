@@ -410,7 +410,7 @@ export type SearchResponse = {
 	}
 	statuses: TweetResponse[]
 }
-type Entities = {
+export type Entities = {
 	hashtags: [];
 	symbols: [];
 	user_mentions: {

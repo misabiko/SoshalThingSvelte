@@ -4,6 +4,7 @@ import puppeteer from 'puppeteer';
 import WebSocket, { WebSocketServer } from 'ws';
 import fs from 'fs/promises';
 import { existsSync } from 'fs';
+//TODO Get bearer and csrfToken from intercepting request
 import credentials from '../credentials.json' assert { type: 'json' };
 
 const wss = new WebSocketServer({ port: 443 });
@@ -145,35 +146,8 @@ async function setupEndpoint(page, endpoint, responseIncludes, gotoURL) {
  * @param {string} tweetId
  */
 async function likeTweet(page, tweetId) {
-	// return await page.evaluate(twitterCommand('lI07N6Otwv1PhnEgXILM7A', 'FavoriteTweet', tweetId, credentials.twitter.bearer, credentials.twitter.csrfToken));
-	const response = await page.evaluate(async (bearer, csrfToken, tweet_id) => {
-		try {
-			const response = await fetch('https://twitter.com/i/api/graphql/lI07N6Otwv1PhnEgXILM7A/FavoriteTweet', {
-				method: 'POST',
+	const response = await page.evaluate(twitterCommand, 'lI07N6Otwv1PhnEgXILM7A', 'FavoriteTweet', credentials.twitter.bearer, credentials.twitter.csrfToken, tweetId);
 
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': 'Bearer ' + bearer,
-					'X-Csrf-Token': csrfToken,
-				},
-
-				body: JSON.stringify({
-					queryId: 'lI07N6Otwv1PhnEgXILM7A',
-					variables: {
-						tweet_id,
-					}
-				})
-			});
-			const responseText = await response.text();
-
-			console.log('Like response:', responseText);
-			return responseText;
-		}catch (e) {
-			console.error('Like error:', e);
-			return e;
-		}
-	}, credentials.twitter.bearer, credentials.twitter.csrfToken, tweetId);
-	console.log('Like response:', response);
 	return {
 		respondingTo: 'likeTweet',
 		response: JSON.parse(response),
@@ -185,7 +159,12 @@ async function likeTweet(page, tweetId) {
  * @param {string} tweetId
  */
 async function unlikeTweet(page, tweetId) {
-	return await page.evaluate(twitterCommand('ZYKSe-w7KEslx3JhSIk5LA', 'UnfavoriteTweet', tweetId, credentials.twitter.bearer, credentials.twitter.csrfToken));
+	const response = await page.evaluate(twitterCommand, 'ZYKSe-w7KEslx3JhSIk5LA', 'UnfavoriteTweet', credentials.twitter.bearer, credentials.twitter.csrfToken, tweetId);
+
+	return {
+		respondingTo: 'unlikeTweet',
+		response: JSON.parse(response),
+	};
 }
 
 /**
@@ -193,31 +172,45 @@ async function unlikeTweet(page, tweetId) {
  * @param {string} tweetId
  */
 async function retweetTweet(page, tweetId) {
-	return await page.evaluate(twitterCommand('ojPdsZsimiJrUGLR1sjUtA', 'CreateRetweet', tweetId, credentials.twitter.bearer, credentials.twitter.csrfToken));
+	const response = await page.evaluate(twitterCommand, 'ojPdsZsimiJrUGLR1sjUtA', 'CreateRetweet', credentials.twitter.bearer, credentials.twitter.csrfToken, tweetId);
+
+	return {
+		respondingTo: 'retweetTweet',
+		response: JSON.parse(response),
+	};
 }
 
-//Can't pass function reference to page.evaluate, so we return the promise itself
 /**
  * @param {string} queryId
  * @param {string} endpoint
- * @param {string} tweetId
+ * @param {string} bearer
+ * @param {string} csrfToken
+ * @param {string} tweet_id
  */
-function twitterCommand(queryId, endpoint, tweetId, bearer, csrfToken) {
-	return fetch(`https://twitter.com/i/api/graphql/${queryId}/${endpoint}`, {
-		method: 'POST',
+async function twitterCommand(queryId, endpoint, bearer, csrfToken, tweetId) {
+	try {
+		const response = await fetch(`https://twitter.com/i/api/graphql/${queryId}/${endpoint}`, {
+			method: 'POST',
 
-		headers: {
-			'Content-Type': 'application/json',
-			'Authorization': 'Bearer ' + bearer,
-			'X-Csrf-Token': csrfToken,
-		},
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': 'Bearer ' + bearer,
+				'X-Csrf-Token': csrfToken,
+			},
 
-		body: JSON.stringify({
-			queryId,
-			variables: {
-				tweet_id: tweetId,
-			}
-		})
-	})
-	.then(response => response.json());
+			body: JSON.stringify({
+				queryId,
+				variables: {
+					tweet_id: tweetId,
+				}
+			})
+		});
+		const responseText = await response.text();
+
+		// console.log(endpoint + ' response: ', responseText);
+		return responseText;
+	}catch (e) {
+		console.error(endpoint + ' error:', e);
+		return e;
+	}
 }

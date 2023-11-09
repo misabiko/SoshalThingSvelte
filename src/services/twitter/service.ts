@@ -1,11 +1,10 @@
 import TwitterArticle from './article';
 import type {Service} from '../service';
 import {newService, registerService} from '../service';
-import {retweet, toggleFavorite} from './apiV1';
 import {STANDARD_ACTIONS} from '../actions';
 import Article, {type ArticleWithRefs, getRootArticle} from '../../articles';
 import type {Filter} from '../../filters';
-import { toggleLike } from './pageAPI';
+import { retweet, toggleLike } from './pageAPI';
 
 //TODO Add service initialization point?
 export const TwitterService: Service<TwitterArticle> = {

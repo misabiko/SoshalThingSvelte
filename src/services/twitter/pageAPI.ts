@@ -3,7 +3,7 @@ import type { TwitterUser } from './article';
 import TwitterArticle from './article';
 import { getHiddenStorage, getMarkedAsReadStorage } from '../../storages/serviceCache';
 import { parseMedia, parseText } from './apiV1';
-import type { ExtendedEntities } from './apiV1';
+import type { Entities, ExtendedEntities } from './apiV1';
 import { TwitterService } from './service';
 import { getWritable } from 'services/service';
 import { get } from 'svelte/store';
@@ -23,7 +23,7 @@ export function parseResponse(instructions: Instruction[]): ArticleWithRefs[] {
 	return entries
 		.filter(e => e.content.entryType === 'TimelineTimelineItem')
 		.map(e => e.content.itemContent.tweet_results.result)
-		.filter(result => result !== undefined)
+		.filter(result => result?.legacy !== undefined)
 		.map(result => {
 			try {
 				return articleFromResult(result);
@@ -157,6 +157,7 @@ type Legacy = {
 	user_id_str: string;
 	full_text: string;
 	created_at: string;
+	entities: Entities;
 	extended_entities: ExtendedEntities;
 	favorited: boolean;
 	favorite_count: number;
@@ -183,10 +184,10 @@ export async function toggleLike(idPair: ArticleIdPair) {
 			});
 		else
 			throw response;
-	}catch (cause: FavoriteResponseError | any) {
+	}catch (cause: ResponseError | any) {
 		let shouldThrow = true;
 		if (cause.errors !== undefined) {
-			for (const err of (cause as FavoriteResponseError).errors)
+			for (const err of (cause as ResponseError).errors)
 				switch (err.code) {
 					case 139:
 						console.warn(cause);
@@ -215,6 +216,39 @@ export async function toggleLike(idPair: ArticleIdPair) {
 	}
 }
 
+export async function retweet(idPair: ArticleIdPair) {
+	const writable = TwitterService.articles[idPair.id as string];
+	if (get(writable).retweeted)
+		return;
+
+	try {
+		const response = await sendRequest<RetweetResponse>('retweetTweet', idPair.id.toString());
+
+		if (response.errors !== undefined)
+			throw response;
+		if (response.data.create_retweet !== undefined)
+			writable.update(a => {
+				a.retweeted = true;
+				return a;
+			});
+		else
+			throw response;
+	}catch (err: ResponseError | any) {
+		if (err.errors !== undefined) {
+			if ((err as ResponseError).errors.some(e => e.code === 144)) {
+				writable.update(a => {
+					a.deleted = true;
+					return a;
+				});
+				if (err.errors.length === 1)
+					return;
+			}
+		}
+
+		throw new Error(err);
+	}
+}
+
 type FavoriteResponse = {
 	data: {
 		favorite_tweet: 'Done';
@@ -227,9 +261,25 @@ type FavoriteResponse = {
 		unfavorite_tweet: 'Done';
 	};
 	errors: undefined;
-} | FavoriteResponseError;
+} | ResponseError;
 
-type FavoriteResponseError = {
+type RetweetResponse = {
+    data: {
+        create_retweet: {
+            retweet_results: {
+                result: {
+                    rest_id: string;
+                    legacy: {
+                        full_text: string;
+                    };
+                };
+            };
+        };
+    };
+	errors: undefined;
+} | ResponseError;
+
+type ResponseError = {
 	errors: ({
 		message: string;
 		locations: {
@@ -237,12 +287,12 @@ type FavoriteResponseError = {
 			column: number;
 		}[];
 		path: string[];
-		extensions: FavoriteError;
-	} & FavoriteError)[];
+		extensions: ResponseSingleError;
+	} & ResponseSingleError)[];
 	data: object;
 };
 
-type FavoriteError = {
+type ResponseSingleError = {
 	name: string;
 	source: string;
 	code: number;

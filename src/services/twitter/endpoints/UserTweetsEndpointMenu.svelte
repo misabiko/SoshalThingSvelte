@@ -3,7 +3,7 @@
     import { endpoints, type Endpoint } from "services/endpoints";
     import { addArticles, getServices } from "services/service";
     import type { TimelineData } from "timelines";
-    import { parseResponse } from "../usertweets";
+    import { parseResponse } from "../pageAPI";
 
 	export let timeline: TimelineData;
 	export let endpoint: Endpoint;

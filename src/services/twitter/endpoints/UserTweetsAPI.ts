@@ -4,7 +4,7 @@ import UserTweetsEndpointMenu from './UserTweetsEndpointMenu.svelte';
 import { type ArticleWithRefs, getRootArticle } from 'articles';
 import { addArticles, getServices } from 'services/service';
 import { get } from 'svelte/store';
-import { parseResponse } from '../usertweets';
+import { parseResponse } from '../pageAPI';
 
 export default class TwitterUserTweetsAPIEndpoint extends Endpoint {
 	readonly service = TwitterService.name;

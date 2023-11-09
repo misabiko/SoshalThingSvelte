@@ -3,7 +3,7 @@ import { TwitterService } from '../service';
 import { type ArticleWithRefs, getRootArticle } from 'articles';
 import { addArticles, getServices } from 'services/service';
 import { get } from 'svelte/store';
-import { parseResponse, type Instruction } from '../usertweets';
+import { parseResponse, type Instruction } from '../pageAPI';
 
 export default class TwitterForYouTimelineAPIEndpoint extends Endpoint {
 	readonly service = TwitterService.name;

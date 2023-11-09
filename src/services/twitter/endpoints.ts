@@ -1,17 +1,13 @@
-import { getRootArticle, type ArticleWithRefs } from "articles";
 import {TwitterService} from './service';
 import type {SearchResponse, TweetResponse} from './apiV1';
 import {articleFromV1, fetchExtensionV1, getV1APIURL, parseRateLimitInfo} from './apiV1';
-import {Endpoint, RefreshType, endpoints, timelineEndpoints} from '../endpoints';
+import {Endpoint, RefreshType} from '../endpoints';
 import type {EndpointConstructorInfo} from '../endpoints';
-import TwitterArticle from './article';
-import {MediaLoadType, MediaType} from '../../articles/media';
 import {fetchExtension} from '../extension';
 import { parseHTMLArticle } from './page';
-import UserTweetsEndpointMenu from './UserTweetsEndpointMenu.svelte';
-import { addArticles, getServices } from "services/service";
-import { parseResponse } from "./usertweets";
-import { get } from 'svelte/store';
+import type { ArticleWithRefs } from 'articles';
+import TwitterUserTweetsAPIEndpoint from './endpoints/UserTweetsAPI';
+import TwitterForYouTimelineAPIEndpoint from './endpoints/ForYouTimelineAPI';
 
 //TODO Move to V1 directory, split into separate files
 abstract class V1Endpoint extends Endpoint {
@@ -297,92 +293,7 @@ export class TwitterHomeEndpoint extends Endpoint {
 }
 
 //TODO Move endpoint to separate file
-export class TwitterUserTweetsAPIEndpoint extends Endpoint {
-	readonly service = TwitterService.name;
-	readonly name = 'UserTweetsAPI';
-	menuComponent = UserTweetsEndpointMenu;
-	//TODO Move to websocket/streaming endpoint class
-	ws = new WebSocket('ws://localhost:443');
 
-	constructor() {
-		super();
-
-		this.ws.addEventListener('error', console.error);
-
-		this.ws.addEventListener('open', () => {
-			console.log('Connected TwitterUserTweetsAPIEndpoint to websocket');
-			this.ws.send(JSON.stringify({
-				initEndpoint: 'TwitterUserTweetsAPIEndpoint',
-				responseIncludes: '/UserTweets',
-				//gotoURL: 'https://twitter.com/' + process.env.TWITTER_USERNAME
-			}));
-
-			//['TwitterUserTweetsAPIEndpoint', 'UserTweets'];
-			//['TwitterHomeTimelineAPIEndpoint', 'HomeTimeline'];
-			//['TwitterHomeLatestTimelineAPIEndpoint', 'HomeLatestTimeline'];
-			//['TwitterListLatestTweetsTimelineAPIEndpoint', 'ListLatestTweetsTimeline'];
-		});
-
-		this.ws.addEventListener('message', (data: MessageEvent) => {
-			console.log('received: ', data);
-			const json = JSON.parse(data.data);
-			console.log('json: ', json);
-			this.parseAPI(json);
-		});
-	}
-
-	async refresh(_refreshType: RefreshType): Promise<ArticleWithRefs[]> {
-		console.log('refresh');
-
-		return [];
-	}
-
-	matchParams(_params: any): boolean {
-		return true;
-	}
-
-	static readonly constructorInfo: EndpointConstructorInfo = {
-		name: 'TwitterUserTweetsAPIEndpoint',
-		paramTemplate: [],
-		constructor: _params => new TwitterUserTweetsAPIEndpoint()
-	};
-
-	//TODO Move to twitter scraping file
-	async parseAPI(data: any) {
-		const articles: ArticleWithRefs[] = parseResponse(data);
-
-		this.articleIdPairs.push(...articles
-			.map(a => getRootArticle(a).idPair)
-			.filter(idPair => !this.articleIdPairs
-				.some(pair =>
-					pair.service === idPair.service &&
-					pair.id === idPair.id,
-				)
-			)
-		);
-
-		addArticles(getServices()[this.service], false, ...articles);
-
-		if (endpoints[this.name] !== undefined)
-			endpoints[this.name].set(this);
-
-		if (articles.length) {
-			const newAddedIdPairs = articles.map(a => getRootArticle(a).idPair);
-			//TODO Give timelines access to endpoint articles instead
-			for (const timelineEndpoint of get(timelineEndpoints)) {
-				timelineEndpoint.addArticles(newAddedIdPairs);
-				// timeline.addedIdPairs.update(idPairs => {
-				// 	idPairs.push(...newAddedIdPairs);
-				// 	return idPairs;
-				// });
-				// timeline.articles.update(idPairs => {
-				// 	idPairs.push(...newAddedIdPairs);
-				// 	return idPairs;
-				// });
-			}
-		}
-	}
-}
 
 TwitterService.endpointConstructors.push(
 	HomeTimelineEndpoint.constructorInfo,
@@ -392,6 +303,7 @@ TwitterService.endpointConstructors.push(
 	SearchEndpoint.constructorInfo,
 	TwitterHomeEndpoint.constructorInfo,
 	TwitterUserTweetsAPIEndpoint.constructorInfo,
+	TwitterForYouTimelineAPIEndpoint.constructorInfo,
 );
 
 //Tried to use SearchEndpoint, but query `from:${user.username}` didn't give anything, plus we're limited to 7 days

@@ -6,9 +6,7 @@ import {parseMedia} from './apiV1';
 import type {ExtendedEntities} from './apiV1';
 import {TwitterService} from './service';
 
-export function parseResponse(response: UserTweetsResponse): ArticleWithRefs[] {
-	const instructions = response.data.user.result.timeline_v2.timeline.instructions;
-
+export function parseResponse(instructions: Instruction[]): ArticleWithRefs[] {
 	//TODO Temporary assert
 	if (instructions.filter(i => i.type === 'TimelineAddEntries').length !== 1)
 		console.warn('Unhandled multiple AddEntries instructions', instructions);
@@ -72,7 +70,7 @@ type UserTweetsResponse = {
 	}
 }
 
-type Instruction = AddEntriesInstruction | {type: string};
+export type Instruction = AddEntriesInstruction | {type: string};
 type AddEntriesInstruction = {
 	type: 'TimelineAddEntries';
 	entries: Entry[];

@@ -5,6 +5,7 @@ import {retweet, toggleFavorite} from './apiV1';
 import {STANDARD_ACTIONS} from '../actions';
 import Article, {type ArticleWithRefs, getRootArticle} from '../../articles';
 import type {Filter} from '../../filters';
+import { toggleLike } from './pageAPI';
 
 //TODO Add service initialization point?
 export const TwitterService: Service<TwitterArticle> = {
@@ -12,7 +13,7 @@ export const TwitterService: Service<TwitterArticle> = {
 	articleActions: {
 		[STANDARD_ACTIONS.like.key]: {
 			...STANDARD_ACTIONS.like,
-			action: toggleFavorite,
+			action: toggleLike,
 			actionned(article) { return article.liked; },
 			disabled(article) { return article.deleted; },
 			count(article) { return article.likeCount; },

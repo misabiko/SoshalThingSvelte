@@ -1,10 +1,13 @@
-import type { ArticleRefIdPair, ArticleWithRefs } from '../../articles';
+import type { ArticleIdPair, ArticleRefIdPair, ArticleWithRefs } from '../../articles';
 import type { TwitterUser } from './article';
 import TwitterArticle from './article';
 import { getHiddenStorage, getMarkedAsReadStorage } from '../../storages/serviceCache';
-import { parseMedia } from './apiV1';
+import { parseMedia, parseText } from './apiV1';
 import type { ExtendedEntities } from './apiV1';
 import { TwitterService } from './service';
+import { getWritable } from 'services/service';
+import { get } from 'svelte/store';
+import { sendRequest } from 'services/remotePage';
 
 export function parseResponse(instructions: Instruction[]): ArticleWithRefs[] {
 	//TODO Temporary assert
@@ -33,10 +36,12 @@ export function parseResponse(instructions: Instruction[]): ArticleWithRefs[] {
 }
 
 function articleFromResult(result: Result): ArticleWithRefs {
+	const { textHtml } = parseText(result.legacy.full_text, result.legacy.entities, result.legacy.extended_entities);
+
 	const article = (actualArticleRef?: ArticleRefIdPair) => new TwitterArticle(
 		BigInt(result.legacy.id_str),
 		result.legacy.full_text,
-		result.legacy.full_text,
+		textHtml,
 		{
 			username: result.core.user_results.result.legacy.screen_name,
 			name: result.core.user_results.result.legacy.name,
@@ -160,3 +165,89 @@ type Legacy = {
 	retweeted_status_result?: { result: Result };
 	is_quote_status: boolean;
 }
+
+export async function toggleLike(idPair: ArticleIdPair) {
+	const writable = getWritable<TwitterArticle>(idPair);
+	const liked = get(writable).liked;
+	const request = liked ? 'unlikeTweet' : 'likeTweet';
+
+	try {
+		const response = await sendRequest<FavoriteResponse>(request, idPair.id.toString());
+
+		if (response.errors !== undefined)
+			throw response;
+		if ((liked ? response.data.unfavorite_tweet : response.data.favorite_tweet) === 'Done')
+			writable.update(a => {
+				a.liked = !liked;
+				return a;
+			});
+		else
+			throw response;
+	}catch (cause: FavoriteResponseError | any) {
+		let shouldThrow = true;
+		if (cause.errors !== undefined) {
+			for (const err of (cause as FavoriteResponseError).errors)
+				switch (err.code) {
+					case 139:
+						console.warn(cause);
+						writable.update(a => {
+							a.liked = true;
+							return a;
+						});
+
+						if (cause.errors.length === 1)
+							shouldThrow = false;
+						break;
+					case 144:
+						writable.update(a => {
+							a.deleted = true;
+							return a;
+						});
+
+						if (cause.errors.length === 1)
+							shouldThrow = false;
+						break;
+				}
+		}
+
+		if (shouldThrow)
+			throw cause;
+	}
+}
+
+type FavoriteResponse = {
+	data: {
+		favorite_tweet: 'Done';
+		unfavorite_tweet: undefined;
+	};
+	errors: undefined;
+} | {
+	data: {
+		favorite_tweet: undefined;
+		unfavorite_tweet: 'Done';
+	};
+	errors: undefined;
+} | FavoriteResponseError;
+
+type FavoriteResponseError = {
+	errors: ({
+		message: string;
+		locations: {
+			line: number;
+			column: number;
+		}[];
+		path: string[];
+		extensions: FavoriteError;
+	} & FavoriteError)[];
+	data: object;
+};
+
+type FavoriteError = {
+	name: string;
+	source: string;
+	code: number;
+	kind: string;
+	tracing: {
+		trace_id: string;
+	}
+};

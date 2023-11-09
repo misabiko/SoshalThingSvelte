@@ -1,7 +1,10 @@
+//TODO Port to typescript
+
 import puppeteer from 'puppeteer';
 import WebSocket, { WebSocketServer } from 'ws';
 import fs from 'fs/promises';
 import { existsSync } from 'fs';
+import credentials from '../credentials.json' assert { type: 'json' };
 
 const wss = new WebSocketServer({ port: 443 });
 
@@ -33,11 +36,27 @@ const wss = new WebSocketServer({ port: 443 });
 	wss.on('connection', (ws) => {
 		ws.on('websocket error', console.error);
 
+		//TODO If we keep using multiple clients, remove this listener init
 		ws.on('message', (data) => {
 			console.log('websocket received: %s', JSON.parse(data));
 
 			const json = JSON.parse(data);
-			if (json.initEndpoint !== undefined) {
+			if (json.initService === true) {
+				ws.on('message', async (data) => {
+					const json = JSON.parse(data);
+					switch (json.request) {
+						case 'likeTweet':
+							ws.send(JSON.stringify(await likeTweet(page, json.body)));
+							break;
+						case 'unlikeTweet':
+							ws.send(JSON.stringify(await unlikeTweet(page, json.body)));
+							break;
+						case 'retweetTweet':
+							ws.send(JSON.stringify(await retweetTweet(page, json.body)));
+							break;
+					}
+				});
+			}else if (json.initEndpoint !== undefined) {
 				//TODO Reuse client if already exists
 				ws.clientId = json.initEndpoint;
 				browser.newPage()
@@ -91,6 +110,7 @@ async function login(page, cookiesPath) {
  * @param {string} gotoURL
  */
 async function setupEndpoint(page, endpoint, responseIncludes, gotoURL) {
+	//TODO try setting target on browser
 	const session = await page.target().createCDPSession();
 	await session.send('Network.enable');
 	session.on('Network.responseReceived', async ({ requestId, response }) => {
@@ -118,4 +138,86 @@ async function setupEndpoint(page, endpoint, responseIncludes, gotoURL) {
 	});
 
 	await page.goto(gotoURL);
+}
+
+/**
+ * @param {import('puppeteer').Page} page
+ * @param {string} tweetId
+ */
+async function likeTweet(page, tweetId) {
+	// return await page.evaluate(twitterCommand('lI07N6Otwv1PhnEgXILM7A', 'FavoriteTweet', tweetId, credentials.twitter.bearer, credentials.twitter.csrfToken));
+	const response = await page.evaluate(async (bearer, csrfToken, tweet_id) => {
+		try {
+			const response = await fetch('https://twitter.com/i/api/graphql/lI07N6Otwv1PhnEgXILM7A/FavoriteTweet', {
+				method: 'POST',
+
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': 'Bearer ' + bearer,
+					'X-Csrf-Token': csrfToken,
+				},
+
+				body: JSON.stringify({
+					queryId: 'lI07N6Otwv1PhnEgXILM7A',
+					variables: {
+						tweet_id,
+					}
+				})
+			});
+			const responseText = await response.text();
+
+			console.log('Like response:', responseText);
+			return responseText;
+		}catch (e) {
+			console.error('Like error:', e);
+			return e;
+		}
+	}, credentials.twitter.bearer, credentials.twitter.csrfToken, tweetId);
+	console.log('Like response:', response);
+	return {
+		respondingTo: 'likeTweet',
+		response: JSON.parse(response),
+	};
+}
+
+/**
+ * @param {import('puppeteer').Page} page
+ * @param {string} tweetId
+ */
+async function unlikeTweet(page, tweetId) {
+	return await page.evaluate(twitterCommand('ZYKSe-w7KEslx3JhSIk5LA', 'UnfavoriteTweet', tweetId, credentials.twitter.bearer, credentials.twitter.csrfToken));
+}
+
+/**
+ * @param {import('puppeteer').Page} page
+ * @param {string} tweetId
+ */
+async function retweetTweet(page, tweetId) {
+	return await page.evaluate(twitterCommand('ojPdsZsimiJrUGLR1sjUtA', 'CreateRetweet', tweetId, credentials.twitter.bearer, credentials.twitter.csrfToken));
+}
+
+//Can't pass function reference to page.evaluate, so we return the promise itself
+/**
+ * @param {string} queryId
+ * @param {string} endpoint
+ * @param {string} tweetId
+ */
+function twitterCommand(queryId, endpoint, tweetId, bearer, csrfToken) {
+	return fetch(`https://twitter.com/i/api/graphql/${queryId}/${endpoint}`, {
+		method: 'POST',
+
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': 'Bearer ' + bearer,
+			'X-Csrf-Token': csrfToken,
+		},
+
+		body: JSON.stringify({
+			queryId,
+			variables: {
+				tweet_id: tweetId,
+			}
+		})
+	})
+	.then(response => response.json());
 }

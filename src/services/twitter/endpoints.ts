@@ -8,6 +8,8 @@ import { parseHTMLArticle } from './page';
 import type { ArticleWithRefs } from 'articles';
 import TwitterUserTweetsAPIEndpoint from './endpoints/UserTweetsAPI';
 import TwitterForYouTimelineAPIEndpoint from './endpoints/ForYouTimelineAPI';
+import TwitterListAPIEndpoint from './endpoints/ListAPI';
+import TwitterFollowingTimelineAPIEndpoint from './endpoints/FollowingTimelineAPI';
 
 //TODO Move to V1 directory, split into separate files
 abstract class V1Endpoint extends Endpoint {
@@ -292,8 +294,6 @@ export class TwitterHomeEndpoint extends Endpoint {
 	};
 }
 
-//TODO Move endpoint to separate file
-
 
 TwitterService.endpointConstructors.push(
 	HomeTimelineEndpoint.constructorInfo,
@@ -304,6 +304,8 @@ TwitterService.endpointConstructors.push(
 	TwitterHomeEndpoint.constructorInfo,
 	TwitterUserTweetsAPIEndpoint.constructorInfo,
 	TwitterForYouTimelineAPIEndpoint.constructorInfo,
+	TwitterFollowingTimelineAPIEndpoint.constructorInfo,
+	TwitterListAPIEndpoint.constructorInfo,
 );
 
 //Tried to use SearchEndpoint, but query `from:${user.username}` didn't give anything, plus we're limited to 7 days

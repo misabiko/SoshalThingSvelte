@@ -1,29 +1,27 @@
 import { Endpoint, RefreshType, endpoints, timelineEndpoints, type EndpointConstructorInfo } from 'services/endpoints';
 import { TwitterService } from '../service';
-import UserTweetsEndpointMenu from './UserTweetsEndpointMenu.svelte';
 import { type ArticleWithRefs, getRootArticle } from 'articles';
 import { addArticles, getServices } from 'services/service';
 import { get } from 'svelte/store';
-import { parseResponse } from '../usertweets';
+import { parseResponse, type Instruction } from '../usertweets';
 
-export default class TwitterUserTweetsAPIEndpoint extends Endpoint {
+export default class TwitterListAPIEndpoint extends Endpoint {
 	readonly service = TwitterService.name;
-	readonly name = 'UserTweetsAPI';
-	menuComponent = UserTweetsEndpointMenu;
+	readonly name = 'ListAPI';
 	//TODO Move to websocket/streaming endpoint class
 	ws = new WebSocket('ws://localhost:443');
 
-	constructor(username: string) {
+	constructor(listId: string) {
 		super();
 
 		this.ws.addEventListener('error', console.error);
 
 		this.ws.addEventListener('open', () => {
-			console.log('Connected TwitterUserTweetsAPIEndpoint to websocket');
+			console.log('Connected TwitterListAPIEndpoint to websocket');
 			this.ws.send(JSON.stringify({
-				initEndpoint: 'TwitterUserTweetsAPIEndpoint',
-				responseIncludes: '/UserTweets',
-				gotoURL: 'https://twitter.com/' + username
+				initEndpoint: 'TwitterListAPIEndpoint',
+				responseIncludes: '/ListLatestTweetsTimeline',
+				gotoURL: 'https://twitter.com/i/lists/' + listId,
 			}));
 		});
 
@@ -46,14 +44,14 @@ export default class TwitterUserTweetsAPIEndpoint extends Endpoint {
 	}
 
 	static readonly constructorInfo: EndpointConstructorInfo = {
-		name: 'TwitterUserTweetsAPIEndpoint',
-		paramTemplate: ['username', ''],
-		constructor: ({username}) => new TwitterUserTweetsAPIEndpoint(username)
+		name: 'TwitterListAPIEndpoint',
+		paramTemplate: ['listId', ''],
+		constructor: ({listId}) => new TwitterListAPIEndpoint(listId)
 	};
 
 	//TODO Move to twitter scraping file
-	async parseAPI(data: any) {
-		const articles: ArticleWithRefs[] = parseResponse(data.data.user.result.timeline_v2.timeline.instructions);
+	async parseAPI(data: ListLatestTweetsTimelineResponse) {
+		const articles: ArticleWithRefs[] = parseResponse(data.data.list.tweets_timeline.timeline.instructions);
 
 		this.articleIdPairs.push(...articles
 			.map(a => getRootArticle(a).idPair)
@@ -87,3 +85,16 @@ export default class TwitterUserTweetsAPIEndpoint extends Endpoint {
 		}
 	}
 }
+
+type ListLatestTweetsTimelineResponse = {
+	data: {
+		list: {
+			tweets_timeline: {
+				timeline: {
+					instructions: Instruction[]
+					metadata: object
+				}
+			}
+		}
+	}
+};

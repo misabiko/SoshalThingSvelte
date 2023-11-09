@@ -1,29 +1,28 @@
 import { Endpoint, RefreshType, endpoints, timelineEndpoints, type EndpointConstructorInfo } from 'services/endpoints';
 import { TwitterService } from '../service';
-import UserTweetsEndpointMenu from './UserTweetsEndpointMenu.svelte';
 import { type ArticleWithRefs, getRootArticle } from 'articles';
 import { addArticles, getServices } from 'services/service';
 import { get } from 'svelte/store';
-import { parseResponse } from '../usertweets';
+import { parseResponse, type Instruction } from '../usertweets';
 
-export default class TwitterUserTweetsAPIEndpoint extends Endpoint {
+export default class TwitterFollowingTimelineAPIEndpoint extends Endpoint {
 	readonly service = TwitterService.name;
-	readonly name = 'UserTweetsAPI';
-	menuComponent = UserTweetsEndpointMenu;
+	readonly name = 'FollowingTimelineAPI';
 	//TODO Move to websocket/streaming endpoint class
 	ws = new WebSocket('ws://localhost:443');
 
-	constructor(username: string) {
+	constructor() {
 		super();
 
 		this.ws.addEventListener('error', console.error);
 
+		//TODO Send command to click on Following tab
 		this.ws.addEventListener('open', () => {
-			console.log('Connected TwitterUserTweetsAPIEndpoint to websocket');
+			console.log('Connected TwitterFollowingTimelineAPIEndpoint to websocket');
 			this.ws.send(JSON.stringify({
-				initEndpoint: 'TwitterUserTweetsAPIEndpoint',
-				responseIncludes: '/UserTweets',
-				gotoURL: 'https://twitter.com/' + username
+				initEndpoint: 'TwitterFollowingTimelineAPIEndpoint',
+				responseIncludes: '/HomeLatestTimeline',
+				gotoURL: 'https://twitter.com/home',
 			}));
 		});
 
@@ -46,14 +45,14 @@ export default class TwitterUserTweetsAPIEndpoint extends Endpoint {
 	}
 
 	static readonly constructorInfo: EndpointConstructorInfo = {
-		name: 'TwitterUserTweetsAPIEndpoint',
-		paramTemplate: ['username', ''],
-		constructor: ({username}) => new TwitterUserTweetsAPIEndpoint(username)
+		name: 'TwitterFollowingTimelineAPIEndpoint',
+		paramTemplate: [],
+		constructor: _params => new TwitterFollowingTimelineAPIEndpoint()
 	};
 
 	//TODO Move to twitter scraping file
-	async parseAPI(data: any) {
-		const articles: ArticleWithRefs[] = parseResponse(data.data.user.result.timeline_v2.timeline.instructions);
+	async parseAPI(data: HomeTimelineResponse) {
+		const articles: ArticleWithRefs[] = parseResponse(data.data.home.home_timeline_urt.instructions);
 
 		this.articleIdPairs.push(...articles
 			.map(a => getRootArticle(a).idPair)
@@ -87,3 +86,15 @@ export default class TwitterUserTweetsAPIEndpoint extends Endpoint {
 		}
 	}
 }
+
+type HomeTimelineResponse = {
+	data: {
+		home: {
+			home_timeline_urt: {
+				instructions: Instruction[]
+				responseObjects: object
+				metadata: object
+			}
+		}
+	}
+};

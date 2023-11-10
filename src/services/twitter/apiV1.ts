@@ -58,10 +58,12 @@ export function articleFromV1(json: TweetResponse, isRef = false): ArticleWithRe
 			};
 		}
 
+		if (retweeted.type === 'repost' || retweeted.type === 'reposts')
+			throw new Error('Retweeted article is a retweet itself: ' + JSON.stringify(retweeted));
 		return {
 			type: 'repost',
 			article: makeArticle(),
-			reposted: retweeted as ArticleWithRefs & {type: 'normal' | 'quote'}
+			reposted: retweeted,
 		};
 	}else if (json.is_quote_status) {
 		if (json.quoted_status) {
@@ -72,10 +74,12 @@ export function articleFromV1(json: TweetResponse, isRef = false): ArticleWithRe
 				quoted: getRootArticle(quoted).idPair,
 			};
 
+			if (quoted.type === 'repost' || quoted.type === 'reposts')
+				throw new Error('Quoted article is a repost itself: ' + JSON.stringify(quoted));
 			return {
 				type: 'quote',
 				article: makeArticle(),
-				quoted: quoted as ArticleWithRefs & {type: 'normal' | 'quote'},
+				quoted,
 			};
 		}else {
 			if (!isRef) {	//Twitter won't give quoted_status for quote of quote

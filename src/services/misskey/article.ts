@@ -116,10 +116,12 @@ export function fromAPI(
 				quoted: getRootArticle(renoted).idPair,
 			};
 
+			if (renoted.type === 'repost' || renoted.type === 'reposts')
+				throw new Error('Quoted article is a repost itself: ' + JSON.stringify(renoted));
 			return {
 				type: 'quote',
 				article: makeArticle(),
-				quoted: renoted as ArticleWithRefs & {type: 'normal' | 'quote'},
+				quoted: renoted,
 			};
 		}else {
 			if (renoted.type === 'quote') {
@@ -134,10 +136,12 @@ export function fromAPI(
 				};
 			}
 
+			if (renoted.type === 'repost' || renoted.type === 'reposts')
+				throw new Error('Quoted article is a repost itself: ' + JSON.stringify(renoted));
 			return {
 				type: 'repost',
 				article: makeArticle(),
-				reposted: renoted as ArticleWithRefs & {type: 'normal' | 'quote'}
+				reposted: renoted,
 			};
 		}
 	}

@@ -114,7 +114,7 @@ type Result = {
 				__typename: 'User'
 				id: string
 				rest_id: string
-				affiliates_highlighted_label: {}
+				affiliates_highlighted_label: object
 				has_graduated_access: boolean
 				is_blue_verified: boolean
 				profile_image_shape: string

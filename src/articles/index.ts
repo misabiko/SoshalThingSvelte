@@ -91,51 +91,48 @@ export interface ArticleAuthor {
 	avatarUrl?: string;
 }
 
-export type ArticleWithRefs<ExtraParams = {}> = Readonly<
-	(
-		| {
-			type: 'normal'
-			article: Article
-		}
-		| {
-			type: 'repost'
-			article: Article
-			reposted: NonRepostArticleWithRefs<ExtraParams>
-		}
-		| {
-			type: 'reposts'
-			reposts: Article[]
-			reposted: NonRepostArticleWithRefs<ExtraParams>
-		}
-		| {
-			type: 'quote'
-			article: Article
-			quoted: NonRepostArticleWithRefs<ExtraParams>
-		}
-	) & ExtraParams
->
-
-export type NonRepostArticleWithRefs<ExtraParams = {}> = Exclude<ArticleWithRefs<ExtraParams>, {type: 'repost' | 'reposts'}>
-
-export type DerivedArticleWithRefs = Readonly<
-	{
+export type ArticleWithRefs = Readonly<
+	| {
 		type: 'normal'
 		article: Article
-	} |
-	{
+	}
+	| {
 		type: 'repost'
 		article: Article
-		reposted: Readable<DerivedArticleWithRefs & {type: 'normal' | 'quote'}>
-	} |
-	{
+		reposted: NonRepostArticleWithRefs
+	}
+	| {
+		type: 'reposts'
+		reposts: Article[]
+		reposted: NonRepostArticleWithRefs
+	}
+	| {
 		type: 'quote'
 		article: Article
-		quoted: Readable<DerivedArticleWithRefs & {type: 'normal' | 'quote'}>
+		quoted: NonRepostArticleWithRefs
 	}
-	>
+>
+type NonRepostArticleWithRefs = Exclude<ArticleWithRefs, {type: 'repost' | 'reposts'}>
 
-//TODO Try ArticleWithRefs & {filteredOut: boolean}
-export type ArticleProps = ArticleWithRefs<{filteredOut: boolean}>
+export type DerivedArticleWithRefs = Readonly<
+	| {
+		type: 'normal'
+		article: Article
+	}
+	| {
+		type: 'repost'
+		article: Article
+		reposted: NonRepostDerivedArticleWithRefs
+	}
+	| {
+		type: 'quote'
+		article: Article
+		quoted: NonRepostDerivedArticleWithRefs
+	}
+>
+type NonRepostDerivedArticleWithRefs = Exclude<DerivedArticleWithRefs, {type: 'repost' | 'reposts'}>
+
+export type ArticleProps = ArticleWithRefs & Readonly<{filteredOut: boolean}>
 
 export interface ArticleIdPair {
 	service: string;
@@ -207,6 +204,7 @@ export function getActualArticle(articleWithRefs: ArticleWithRefs | ArticleProps
 	}
 }
 
+//To be fair I don't understand this anymore, probably should redo the whole thing once runes come in
 export function deriveArticleRefs(article: Article): Readable<DerivedArticleWithRefs> {
 	switch (article.actualArticleRef?.type) {
 		case undefined:
@@ -220,7 +218,7 @@ export function deriveArticleRefs(article: Article): Readable<DerivedArticleWith
 					type: 'repost',
 					article,
 					reposted: deriveArticleRefs(repostedArticle),
-				} as DerivedArticleWithRefs)
+				} as unknown as DerivedArticleWithRefs)
 			);
 		case 'quote':
 			return derived(getWritable(article.actualArticleRef.quoted), quotedArticle =>
@@ -228,11 +226,12 @@ export function deriveArticleRefs(article: Article): Readable<DerivedArticleWith
 					type: 'quote',
 					article,
 					quoted: deriveArticleRefs(quotedArticle),
-				} as DerivedArticleWithRefs)
+				} as unknown as DerivedArticleWithRefs)
 			);
 	}
 }
 
+//Probably postponing clean up to runes here too
 export function getDerivedArticleWithRefs(a: DerivedArticleWithRefs): ArticleWithRefs {
 	switch (a.type) {
 		case 'normal':
@@ -240,12 +239,12 @@ export function getDerivedArticleWithRefs(a: DerivedArticleWithRefs): ArticleWit
 		case 'repost':
 			return {
 				...a,
-				reposted: getDerivedArticleWithRefs(get(a.reposted)) as ArticleWithRefs & Readonly<{type: 'normal' | 'quote'}>
+				reposted: getDerivedArticleWithRefs(get(a.reposted as any)) as NonRepostArticleWithRefs
 			};
 		case 'quote':
 			return {
 				...a,
-				quoted: getDerivedArticleWithRefs(get(a.quoted)) as ArticleWithRefs & Readonly<{type: 'normal' | 'quote'}>
+				quoted: getDerivedArticleWithRefs(get(a.quoted as any)) as NonRepostArticleWithRefs
 			};
 	}
 }

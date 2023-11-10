@@ -66,7 +66,7 @@ const wss = new WebSocketServer({ port: 443 });
 					// TODO probably just pass the json
 					json.initEndpoint,
 					json.responseIncludes,
-					json.gotoURL ?? ('https://twitter.com/' + process.env.TWITTER_USERNAME)
+					json.gotoURL
 				));
 			}
 		});
@@ -139,6 +139,26 @@ async function setupEndpoint(page, endpoint, responseIncludes, gotoURL) {
 	});
 
 	await page.goto(gotoURL);
+
+	const timelineButton = ({
+		'/HomeTimeline': 'For you',
+		'/HomeLatestTimeline': 'Following',
+	})[responseIncludes];
+
+	if (timelineButton !== undefined) {
+		//If we click on the button too early, it won't change timeline
+		await page.waitForSelector('article');
+
+		for (const button of await page.$$('div[role="presentation"] > a[href="/home"]')) {
+			const span = (await button.$eval('span', el => el.textContent));
+
+			if (span === timelineButton) {
+				await button.evaluate(el => el.click());
+				//TODO Cache the button to use for refreshing
+				break;
+			}
+		}
+	}
 }
 
 /**

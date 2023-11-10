@@ -17,7 +17,6 @@ export function sendRequest<T>(request: string, body: any): Promise<T> {
 	return new Promise((resolve, reject) => {
 		const timeoutId = setTimeout(() => reject(new Error("Remote page didn't respond in 10 seconds.")), 10000);
 		const listener = (data: MessageEvent) => {
-			console.log('received: ', data);
 			const json = JSON.parse(data.data);
 			if (json.respondingTo !== request)
 				return;

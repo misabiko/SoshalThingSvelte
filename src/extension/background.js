@@ -1,3 +1,6 @@
+//TODO Remove and use metasoshal instead
+//TODO Cleanup everything about Twitter's API
+
 import {twitter} from '../../credentials.json';
 import OAuth from 'oauth-1.0a';
 import hmacSHA1 from 'crypto-js/hmac-sha1';

@@ -98,6 +98,7 @@
 		overflow: hidden;
 		display: inline-block;
 		max-width: 300px;
+		text-decoration: none;
 	}
 	.names strong {
 		margin-right: 0.5rem;
@@ -122,6 +123,7 @@
 	.repostLabel a {
 		margin-left: 1rem;
 		color: var(--light);
+		text-decoration: none;
 	}
 
 	.repostLabel a:hover {

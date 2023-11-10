@@ -73,6 +73,10 @@
 	--modal-background-background-color: rgba(var(--scheme-main), 0.86);
 }
 
+a:-webkit-any-link {
+	color: var(--link);
+}
+
 .soshalthing label {
 	display: block;
 	font-weight: unset;

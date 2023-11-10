@@ -31,7 +31,6 @@
 		"@fortawesome/free-brands-svg-icons": "^6.2.1",
 		"@fortawesome/free-regular-svg-icons": "^6.2.1",
 		"@fortawesome/free-solid-svg-icons": "^6.2.1",
-		"clipboardy": "^3.0.0",
 		"crypto-js": "^4.1.1",
 		"esbuild": "^0.16.4",
 		"esbuild-svelte": "^0.7.3",

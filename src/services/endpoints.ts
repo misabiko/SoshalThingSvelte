@@ -165,17 +165,11 @@ export function addEndpoint(endpoint: Endpoint) {
 		endpoints[endpoint.name] = writable(endpoint);
 }
 
-export async function refreshEndpointName(endpointName: string, refreshType: RefreshType, autoRefreshing = false) {
-	const endpoint = get(endpoints[endpointName]);
-	if (!endpoint.refreshTypes.has(refreshType))
-		return;
-
-	const articles = await refreshEndpoint(endpoint, refreshType, autoRefreshing);
-
+export async function addEndpointArticlesToTimeline(endpointName: string, articles: ArticleWithRefs[], refreshType?: RefreshType) {
 	const matchingTimelineEndpoints = timelineEndpointsValue
 		.map(te => ({
 			endpoint: te.endpoints
-				.find(es => (es.name ?? es.endpoint.name) === endpointName && es.refreshTypes.has(refreshType)),
+				.find(es => (es.name ?? es.endpoint.name) === endpointName && (refreshType === undefined || es.refreshTypes.has(refreshType))),
 			addArticles: te.addArticles
 		}))
 		.filter(te => te.endpoint !== undefined) as { endpoint: TimelineEndpoint, addArticles: (idPairs: ArticleIdPair[]) => void }[];
@@ -187,6 +181,16 @@ export async function refreshEndpointName(endpointName: string, refreshType: Ref
 				.map(a => getRootArticle(a).idPair)
 		);
 	}
+}
+
+export async function refreshEndpointName(endpointName: string, refreshType: RefreshType, autoRefreshing = false) {
+	const endpoint = get(endpoints[endpointName]);
+	if (!endpoint.refreshTypes.has(refreshType))
+		return;
+
+	const articles = await refreshEndpoint(endpoint, refreshType, autoRefreshing);
+
+	await addEndpointArticlesToTimeline(endpointName, articles, refreshType);
 }
 
 export async function refreshEndpoint(endpoint: Endpoint, refreshType: RefreshType, autoRefreshing = false): Promise<ArticleWithRefs[]> {

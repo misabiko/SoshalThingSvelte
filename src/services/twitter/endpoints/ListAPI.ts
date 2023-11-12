@@ -1,4 +1,4 @@
-import { Endpoint, RefreshType, endpoints, timelineEndpoints, type EndpointConstructorInfo } from 'services/endpoints';
+import { Endpoint, RefreshType, endpoints, timelineEndpoints, type EndpointConstructorInfo, addEndpointArticlesToTimeline } from 'services/endpoints';
 import { TwitterService } from '../service';
 import { type ArticleWithRefs, getRootArticle } from 'articles';
 import { addArticles, getServices } from 'services/service';
@@ -77,21 +77,7 @@ export default class TwitterListAPIEndpoint extends Endpoint {
 		if (endpoints[this.name] !== undefined)
 			endpoints[this.name].set(this);
 
-		if (articles.length) {
-			const newAddedIdPairs = articles.map(a => getRootArticle(a).idPair);
-			//TODO Give timelines access to endpoint articles instead
-			for (const timelineEndpoint of get(timelineEndpoints)) {
-				timelineEndpoint.addArticles(newAddedIdPairs);
-				// timeline.addedIdPairs.update(idPairs => {
-				// 	idPairs.push(...newAddedIdPairs);
-				// 	return idPairs;
-				// });
-				// timeline.articles.update(idPairs => {
-				// 	idPairs.push(...newAddedIdPairs);
-				// 	return idPairs;
-				// });
-			}
-		}
+		await addEndpointArticlesToTimeline(this.name, articles);
 	}
 }
 

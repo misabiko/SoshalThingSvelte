@@ -21,7 +21,8 @@ export function parseResponse(instructions: Instruction[]): ArticleWithRefs[] {
 		throw new Error('No entries found');
 
 	return entries
-		.filter(e => e.content.entryType === 'TimelineTimelineItem')
+		//TODO Support TimelineTimelineModule (replies)
+		.filter(e => e.content.entryType === 'TimelineTimelineItem' && e.entryId.startsWith('tweet-'))
 		.map(e => e.content.itemContent.tweet_results.result)
 		.filter(result => result?.legacy !== undefined)
 		.map(result => {

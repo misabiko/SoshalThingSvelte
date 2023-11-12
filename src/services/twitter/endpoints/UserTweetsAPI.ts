@@ -31,6 +31,7 @@ export default class TwitterUserTweetsAPIEndpoint extends Endpoint {
 		});
 
 		this.ws.addEventListener('message', (data: MessageEvent) => {
+			console.trace('TwitterUserTweetsAPIEndpoint received message: ', data);
 			const json = JSON.parse(data.data);
 			this.parseAPI(json);
 		});

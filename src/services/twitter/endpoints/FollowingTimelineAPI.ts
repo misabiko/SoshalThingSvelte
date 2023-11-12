@@ -30,6 +30,7 @@ export default class TwitterFollowingTimelineAPIEndpoint extends Endpoint {
 		});
 
 		this.ws.addEventListener('message', (data: MessageEvent) => {
+			console.trace('TwitterFollowingTimelineAPIEndpoint received message: ', data);
 			const json = JSON.parse(data.data);
 			this.parseAPI(json);
 		});

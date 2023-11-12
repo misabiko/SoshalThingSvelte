@@ -12,7 +12,10 @@ export default class TwitterFollowingTimelineAPIEndpoint extends Endpoint {
 	ws = new WebSocket('ws://localhost:443');
 
 	constructor() {
-		super();
+		super(new Set<RefreshType>([
+			RefreshType.Refresh,
+			RefreshType.LoadBottom,
+		]));
 
 		this.ws.addEventListener('error', console.error);
 
@@ -32,8 +35,16 @@ export default class TwitterFollowingTimelineAPIEndpoint extends Endpoint {
 		});
 	}
 
-	async refresh(_refreshType: RefreshType): Promise<ArticleWithRefs[]> {
+	async refresh(refreshType: RefreshType): Promise<ArticleWithRefs[]> {
 		console.log('refresh');
+		switch (refreshType) {
+			case RefreshType.Refresh:
+				this.ws.send(JSON.stringify({request: 'reload'}));
+				break;
+			case RefreshType.LoadBottom:
+				this.ws.send(JSON.stringify({request: 'scrollDown'}));
+				break;
+		}
 
 		return [];
 	}

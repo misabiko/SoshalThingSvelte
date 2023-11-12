@@ -81,13 +81,28 @@ let twitterCsrfToken = null;
 				//TODO Reuse client if already exists
 				ws.clientId = json.initEndpoint;
 				browser.newPage()
-				.then(page => setupEndpoint(
-					page,
-					// TODO probably just pass the json
-					json.initEndpoint,
-					json.responseIncludes,
-					json.gotoURL
-				));
+					.then(page => {
+						setupEndpoint(
+							page,
+							// TODO probably just pass the json
+							json.initEndpoint,
+							json.responseIncludes,
+							json.gotoURL
+						);
+
+						ws.on('message', async (data) => {
+							const json = JSON.parse(data);
+							switch (json.request) {
+								case 'reload':
+									await page.reload();
+									break;
+								case 'scrollDown':
+									// eslint-disable-next-line no-undef
+									await page.evaluate(function() {window.scrollTo(0, document.body.scrollHeight);});
+									break;
+							}
+						});
+					});
 			}
 		});
 

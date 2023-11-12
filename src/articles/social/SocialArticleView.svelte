@@ -112,6 +112,8 @@
 		white-space: pre-line;
 		overflow-wrap: anywhere;
 		padding: 0.5rem 0;
+		margin-block-start: 0;
+		margin-block-end: 0;
 	}
 
 	/* , .replyLabel */

@@ -4,15 +4,35 @@ import puppeteer from 'puppeteer';
 import WebSocket, { WebSocketServer } from 'ws';
 import fs from 'fs/promises';
 import { existsSync } from 'fs';
-//TODO Get bearer and csrfToken from intercepting request
-import credentials from '../credentials.json' assert { type: 'json' };
 
 const wss = new WebSocketServer({ port: 443 });
+
+let twitterBearer = null;
+let twitterCsrfToken = null;
 
 (async () => {
 	const browser = await puppeteer.launch({ headless: false });
 	// const browser = await puppeteer.connect({browserURL: 'http://127.0.0.1:9222'});
 	const page = await browser.newPage();
+	const session = await page.target().createCDPSession();
+	await session.send('Network.enable');
+	session.on('Network.requestWillBeSent', async ({ requestId, request }) => {
+		if (!request.url.includes('graphql'))
+			return;
+
+		console.log('Request received:',
+			'\n\tid: ', requestId,
+			'\n\turl: ', request.url,
+		);
+
+		if (twitterBearer === null || twitterCsrfToken === null) {
+			twitterBearer = request.headers['authorization'].split(' ')[1];
+			twitterCsrfToken = request.headers['x-csrf-token'];
+
+			await session.send('Network.disable');
+			await session.detach();
+		}
+	});
 
 	//TODO Move cookie stuff to login()
 	const cookiesPath = process.argv[2];
@@ -57,7 +77,7 @@ const wss = new WebSocketServer({ port: 443 });
 							break;
 					}
 				});
-			}else if (json.initEndpoint !== undefined) {
+			} else if (json.initEndpoint !== undefined) {
 				//TODO Reuse client if already exists
 				ws.clientId = json.initEndpoint;
 				browser.newPage()
@@ -130,7 +150,7 @@ async function setupEndpoint(page, endpoint, responseIncludes, gotoURL) {
 			for (const client of wss.clients)
 				if (client.clientId === endpoint && client.readyState === WebSocket.OPEN)
 					client.send(body);
-		}catch (e) {
+		} catch (e) {
 			if (e.constructor.name === 'ProtocolError')
 				console.error('Protocol error for response:', response, e);
 			else
@@ -166,7 +186,7 @@ async function setupEndpoint(page, endpoint, responseIncludes, gotoURL) {
  * @param {string} tweetId
  */
 async function likeTweet(page, tweetId) {
-	const response = await page.evaluate(twitterCommand, 'lI07N6Otwv1PhnEgXILM7A', 'FavoriteTweet', credentials.twitter.bearer, credentials.twitter.csrfToken, tweetId);
+	const response = await page.evaluate(twitterCommand, 'lI07N6Otwv1PhnEgXILM7A', 'FavoriteTweet', twitterBearer, twitterCsrfToken, tweetId);
 
 	return {
 		respondingTo: 'likeTweet',
@@ -179,7 +199,7 @@ async function likeTweet(page, tweetId) {
  * @param {string} tweetId
  */
 async function unlikeTweet(page, tweetId) {
-	const response = await page.evaluate(twitterCommand, 'ZYKSe-w7KEslx3JhSIk5LA', 'UnfavoriteTweet', credentials.twitter.bearer, credentials.twitter.csrfToken, tweetId);
+	const response = await page.evaluate(twitterCommand, 'ZYKSe-w7KEslx3JhSIk5LA', 'UnfavoriteTweet', twitterBearer, twitterCsrfToken, tweetId);
 
 	return {
 		respondingTo: 'unlikeTweet',
@@ -192,7 +212,7 @@ async function unlikeTweet(page, tweetId) {
  * @param {string} tweetId
  */
 async function retweetTweet(page, tweetId) {
-	const response = await page.evaluate(twitterCommand, 'ojPdsZsimiJrUGLR1sjUtA', 'CreateRetweet', credentials.twitter.bearer, credentials.twitter.csrfToken, tweetId);
+	const response = await page.evaluate(twitterCommand, 'ojPdsZsimiJrUGLR1sjUtA', 'CreateRetweet', twitterBearer, twitterCsrfToken, tweetId);
 
 	return {
 		respondingTo: 'retweetTweet',
@@ -229,7 +249,7 @@ async function twitterCommand(queryId, endpoint, bearer, csrfToken, tweetId) {
 
 		// console.log(endpoint + ' response: ', responseText);
 		return responseText;
-	}catch (e) {
+	} catch (e) {
 		console.error(endpoint + ' error:', e);
 		return e;
 	}

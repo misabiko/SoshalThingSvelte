@@ -10,6 +10,8 @@ const wss = new WebSocketServer({ port: 443 });
 let twitterBearer = null;
 let twitterCsrfToken = null;
 
+const pages = {};
+
 (async () => {
 	const browser = await puppeteer.launch({ headless: false });
 	// const browser = await puppeteer.connect({browserURL: 'http://127.0.0.1:9222'});
@@ -78,10 +80,13 @@ let twitterCsrfToken = null;
 					}
 				});
 			} else if (json.initEndpoint !== undefined) {
-				//TODO Reuse client if already exists
 				ws.clientId = json.initEndpoint;
-				browser.newPage()
+				const page = Object.hasOwn(pages, json.initEndpoint) ? Promise.resolve(pages[json.initEndpoint]) : browser.newPage();
+
+				page
 					.then(page => {
+						pages[json.initEndpoint] = page;
+
 						setupEndpoint(
 							page,
 							// TODO probably just pass the json

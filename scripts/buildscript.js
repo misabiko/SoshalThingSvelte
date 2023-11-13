@@ -1,5 +1,4 @@
 import fs from 'fs';
-import esbuild from 'esbuild';
 import * as svelte from 'svelte/compiler';
 import sveltePreprocess from 'svelte-preprocess';
 import path, { dirname } from 'path';
@@ -77,11 +76,11 @@ export const buildOptions = {
 	format: 'esm',
 	watch: process.argv.includes('--watch'),
 	plugins: [SveltePlugin],
-};
-
-export const errorHandler = (error, location) => {
-	console.warn('Errors: ', error, location);
-	process.exit(1);
+	naming: {
+		entry: '[dir]/[name].[ext]',
+		//because we import partialGlobal.css in index.html
+		asset: '[dir]/[name].[ext]',
+	},
 };
 
 //make sure the directoy exists before stuff gets put into it
@@ -93,7 +92,7 @@ const portIndex = process.argv.findIndex(s => s === '--port');
 if (portIndex > -1 && process.argv.length >= portIndex)
 	port = parseInt(process.argv[portIndex + 1]);
 
-if (process.argv.includes('--serve'))
+/* if (process.argv.includes('--serve'))
 	esbuild
 		.serve({
 			port,
@@ -108,10 +107,16 @@ if (process.argv.includes('--serve'))
 			console.log(`Serving at \`http://${host}:${port}\`...`);
 		})
 		.catch(errorHandler);
-else
-	esbuild
-		.build(buildOptions)
-		.catch(errorHandler);
+else */
+	const result = await Bun.build(buildOptions);
+
+	if (!result.success) {
+		console.error("Build failed");
+		for (const message of result.logs) {
+			// Bun will pretty print the message object
+			console.error(message);
+		}
+	}
 
 //TODO Dynamically copy all files from static folder
 for (const file of [

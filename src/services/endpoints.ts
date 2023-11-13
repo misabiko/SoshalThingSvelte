@@ -5,7 +5,6 @@ import {useFilters} from '../filters';
 import {addArticles, getServices} from './service';
 import {get, writable} from 'svelte/store';
 import type {Writable} from 'svelte/store';
-import type { SvelteComponent } from 'svelte';
 
 export const endpoints: { [name: string]: Writable<Endpoint> } = {};
 
@@ -127,6 +126,7 @@ export abstract class LoadableEndpoint extends Endpoint {
 	abstract _refresh(refreshType: RefreshType): Promise<ArticleWithRefs[]>;
 }
 
+//TODO Try passing the paramTemplate as a generic
 export interface EndpointConstructorInfo {
 	readonly name: string;
 	readonly paramTemplate: [string, ParamType][];

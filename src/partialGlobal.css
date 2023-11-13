@@ -69,8 +69,6 @@
 	--dropdown-item-hover-background-color: var(--primary);
 
 	--notification-background-color: var(--dark);
-
-	--modal-background-background-color: rgba(var(--scheme-main), 0.86);
 }
 
 a:-webkit-any-link {
@@ -162,17 +160,6 @@ img.emoji {
 	background-color: var(--scheme-main-ter);
 }
 
-button.modal-close::before,
-button.modal-close::after,
-button.delete::before,
-button.delete::after {
-	background-color: hsl(0, 0%, 76%);
-}
-
-button.modal-close {
-	background-color: rgba(var(--scheme-invert), 0.2);
-}
-
 /* TODO Try borderless-button component */
 .borderless-button {
 	padding: 0;
@@ -196,14 +183,6 @@ button.modal-close {
 
 .borderless-button:active {
 	margin-top: 1px;
-}
-
-.modal {
-	overflow-x: auto;
-}
-
-.modal div.modal-content {
-	width: unset;
 }
 
 .soshalthing section {

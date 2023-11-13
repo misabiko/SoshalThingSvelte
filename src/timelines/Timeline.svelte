@@ -298,6 +298,7 @@
 		flex-flow: column;
 		width: 500px;
 		flex-shrink: 0;
+		background-color: var(--main-background);
 	}
 	.timeline:first-child {
 		padding: 0;

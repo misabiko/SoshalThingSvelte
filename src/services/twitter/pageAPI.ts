@@ -10,7 +10,6 @@ import { get } from 'svelte/store';
 import { sendRequest } from 'services/remotePage';
 
 export function parseResponse(instructions: Instruction[]): ArticleWithRefs[] {
-	//TODO Temporary assert
 	if (instructions.filter(i => i.type === 'TimelineAddEntries').length !== 1)
 		console.warn('Unhandled multiple AddEntries instructions', instructions);
 

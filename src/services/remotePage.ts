@@ -1,4 +1,3 @@
-//TODO Try using this socket for the endpoints too
 const websocket = new WebSocket('ws://localhost:443');
 
 websocket.addEventListener('error', e => console.error('Service Websocket Error: ', e));

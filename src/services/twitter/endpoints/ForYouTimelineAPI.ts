@@ -39,7 +39,7 @@ export default class TwitterForYouTimelineAPIEndpoint extends Endpoint {
 		console.log('refresh');
 		switch (refreshType) {
 			case RefreshType.Refresh:
-				this.ws.send(JSON.stringify({request: 'reload'}));
+				this.ws.send(JSON.stringify({request: 'refresh'}));
 				break;
 			case RefreshType.LoadBottom:
 				this.ws.send(JSON.stringify({request: 'scrollDown'}));

@@ -87,13 +87,14 @@ const pages = {};
 					.then(page => {
 						pages[json.initEndpoint] = page;
 
-						setupEndpoint(
-							page,
-							// TODO probably just pass the json
-							json.initEndpoint,
-							json.responseIncludes,
-							json.gotoURL
-						);
+						setupEndpoint(page, json).catch(e => {
+							//If the endpoint is removed before setup is done, we can ignore the error
+							if (e.constructor.name == 'TargetCloseError') {
+								console.warn('Endpoint closed before setup:', json.initEndpoint);
+								return;
+							}else
+								throw e;
+						});
 
 						ws.on('message', async (data) => {
 							const json = JSON.parse(data);
@@ -108,6 +109,13 @@ const pages = {};
 							}
 						});
 					});
+				ws.on('close', async () => {
+					console.log(`Closing ${ws.clientId} connection`);
+					if ([...wss.clients].find(c => c.clientId === ws.clientId) === undefined) {
+						await pages[ws.clientId].close();
+						delete pages[ws.clientId];
+					}
+				});
 			}
 		});
 
@@ -150,7 +158,7 @@ async function login(page, cookiesPath) {
  * @param {string} responseIncludes
  * @param {string} gotoURL
  */
-async function setupEndpoint(page, endpoint, responseIncludes, gotoURL) {
+async function setupEndpoint(page, { initEndpoint: endpoint, responseIncludes, gotoURL }) {
 	//TODO try setting target on browser
 	const session = await page.target().createCDPSession();
 	await session.send('Network.enable');

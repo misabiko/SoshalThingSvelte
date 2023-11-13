@@ -5,13 +5,34 @@ import WebSocket, { WebSocketServer } from 'ws';
 import fs from 'fs/promises';
 import { existsSync } from 'fs';
 
-const wss = new WebSocketServer({ port: 443 });
+Bun.serve({
+	port: 443,
+	
+	fetch(req, server) {
+		const success = server.upgrade(req);
+		if (success)
+			return undefined;
+
+		return new Response("Hello world");
+	},
+	websocket: {
+		open(ws) {
+			console.log('New websocket connection');
+		},
+		message(ws, message) {
+			console.log('websocket received: %s', message);
+		},
+		close(ws) {
+			console.log('websocket closed');
+		},
+	},
+})
 
 let twitterBearer = null;
 let twitterCsrfToken = null;
 
 (async () => {
-	const browser = await puppeteer.launch({ headless: false });
+	const browser = await puppeteer.launch({ headless: 'new' });
 	// const browser = await puppeteer.connect({browserURL: 'http://127.0.0.1:9222'});
 	const page = await browser.newPage();
 	const session = await page.target().createCDPSession();
@@ -54,7 +75,7 @@ let twitterCsrfToken = null;
 			await login(page, cookiesPath);
 	}
 
-	wss.on('connection', (ws) => {
+	/* wss.on('connection', (ws) => {
 		ws.on('websocket error', console.error);
 
 		//TODO If we keep using multiple clients, remove this listener init
@@ -98,7 +119,7 @@ let twitterCsrfToken = null;
 									break;
 								case 'scrollDown':
 									// eslint-disable-next-line no-undef
-									await page.evaluate(function() {window.scrollTo(0, document.body.scrollHeight);});
+									await page.evaluate(function () { window.scrollTo(0, document.body.scrollHeight); });
 									break;
 							}
 						});
@@ -107,7 +128,7 @@ let twitterCsrfToken = null;
 		});
 
 		console.log('New websocket connection');
-	});
+	}); */
 })();
 
 /**
@@ -162,9 +183,9 @@ async function setupEndpoint(page, endpoint, responseIncludes, gotoURL) {
 		try {
 			const { body } = await session.send('Network.getResponseBody', { requestId });
 
-			for (const client of wss.clients)
-				if (client.clientId === endpoint && client.readyState === WebSocket.OPEN)
-					client.send(body);
+			// for (const client of wss.clients)
+			// 	if (client.clientId === endpoint && client.readyState === WebSocket.OPEN)
+			// 		client.send(body);
 		} catch (e) {
 			if (e.constructor.name === 'ProtocolError')
 				console.error('Protocol error for response:', response, e);

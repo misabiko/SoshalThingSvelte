@@ -10,6 +10,7 @@ import TwitterUserTweetsAPIEndpoint from './endpoints/UserTweetsAPI';
 import TwitterForYouTimelineAPIEndpoint from './endpoints/ForYouTimelineAPI';
 import TwitterListAPIEndpoint from './endpoints/ListAPI';
 import TwitterFollowingTimelineAPIEndpoint from './endpoints/FollowingTimelineAPI';
+import TwitterUserMediaAPIEndpoint from './endpoints/UserMediaAPI';
 
 //TODO Move to V1 directory, split into separate files
 abstract class V1Endpoint extends Endpoint {
@@ -306,7 +307,7 @@ TwitterService.endpointConstructors.push(
 	TwitterForYouTimelineAPIEndpoint.constructorInfo,
 	TwitterFollowingTimelineAPIEndpoint.constructorInfo,
 	TwitterListAPIEndpoint.constructorInfo,
+	TwitterUserMediaAPIEndpoint.constructorInfo,
 );
 
-//Tried to use SearchEndpoint, but query `from:${user.username}` didn't give anything, plus we're limited to 7 days
-TwitterService.userEndpoint = user => new UserTimelineEndpoint(user.username, false);
+TwitterService.userEndpoint = user => new TwitterUserMediaAPIEndpoint(user.username);

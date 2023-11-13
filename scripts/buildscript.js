@@ -75,7 +75,7 @@ export const buildOptions = {
 	splitting: true,
 	write: true,
 	format: 'esm',
-	watch: process.argv.includes('--watch'),
+	// watch: process.argv.includes('--watch'),
 	plugins: [SveltePlugin],
 };
 

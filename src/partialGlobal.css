@@ -71,7 +71,7 @@
 	--notification-background-color: var(--dark);
 }
 
-a:-webkit-any-link {
+.soshalthing a:-webkit-any-link {
 	color: var(--link);
 }
 

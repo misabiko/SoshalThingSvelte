@@ -8,8 +8,8 @@ import path from 'path';
 const DedupSvelteInternalPlugin = {
 	name: 'dedup-svelte',
 	async setup({ onResolve }) {
-		const svelteInternal = path.join(process.cwd(), '/node_modules/svelte/internal/index.mjs');
-		const svelte = path.join(process.cwd(), '/node_modules/svelte/index.mjs');
+		const svelteInternal = path.join(process.cwd(), '/node_modules/svelte/src/runtime/internal/index.js');
+		const svelte = path.join(process.cwd(), '/node_modules/svelte/src/runtime/index.js');
 
 		onResolve({ filter: /^svelte\/internal$/ }, () => ({ path: svelteInternal }));
 		onResolve({ filter: /^svelte$/ }, () => ({ path: svelte }));

@@ -1,20 +1,18 @@
 import type { EndpointConstructorInfo } from 'services/endpoints';
 import { TwitterService } from '../service';
-import UserTweetsEndpointMenu from './UserTweetsEndpointMenu.svelte';
 import { parseResponse, type Instruction } from '../pageAPI';
 import WebSocketPageEndpoint from './WebSocketPageEndpoint';
 
-export default class TwitterUserTweetsAPIEndpoint extends WebSocketPageEndpoint {
+export default class TwitterUserMediaAPIEndpoint extends WebSocketPageEndpoint {
 	readonly service = TwitterService.name;
 	readonly name: string;
-	menuComponent = UserTweetsEndpointMenu;
 
 	constructor(username: string) {
-		const name = `TwitterUserTweetsAPIEndpoint(${username})`;
+		const name = `TwitterUserMediaAPIEndpoint(${username})`;
 		super({
 			initEndpoint: name,
-			responseIncludes: '/UserTweets',
-			gotoURL: 'https://twitter.com/' + username
+			responseIncludes: '/UserMedia',
+			gotoURL: `https://twitter.com/${username}/media`,
 		});
 
 		this.name = name;
@@ -25,17 +23,17 @@ export default class TwitterUserTweetsAPIEndpoint extends WebSocketPageEndpoint 
 	}
 
 	static readonly constructorInfo: EndpointConstructorInfo = {
-		name: 'TwitterUserTweetsAPIEndpoint',
+		name: 'TwitterUserMediaAPIEndpoint',
 		paramTemplate: [['username', '']],
-		constructor: ({username}) => new TwitterUserTweetsAPIEndpoint(username as string)
+		constructor: ({username}) => new TwitterUserMediaAPIEndpoint(username as string)
 	};
 
-	async parseResponse(data: UserTweetsResponse) {
+	async parseResponse(data: UserMediaResponse) {
 		return parseResponse(data.data.user.result.timeline_v2.timeline.instructions);
 	}
 }
 
-type UserTweetsResponse = {
+type UserMediaResponse = {
 	data: {
 		user: {
 			result: {

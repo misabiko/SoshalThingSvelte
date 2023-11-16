@@ -31,6 +31,8 @@ Bun.serve({
 let twitterBearer = null;
 let twitterCsrfToken = null;
 
+const pages = {};
+
 (async () => {
 	const browser = await puppeteer.launch({ headless: 'new' });
 	// const browser = await puppeteer.connect({browserURL: 'http://127.0.0.1:9222'});
@@ -55,30 +57,11 @@ let twitterCsrfToken = null;
 		}
 	});
 
-	//TODO Move cookie stuff to login()
-	const cookiesPath = process.argv[2];
-
-	if (cookiesPath === undefined || !existsSync(cookiesPath)) {
-		console.log('No cookies, logging in');
-		await login(page, cookiesPath);
-	} else {
-		await page.setCookie(...JSON.parse(await fs.readFile(cookiesPath)));
-		console.log('Cookies loaded');
-
-		await page.goto('https://twitter.com/');
-
-		await page.waitForSelector('*[aria-label="Profile"]');
-		const profileHref = await page.$eval('*[aria-label="Profile"]', el => el.href);
-		if (profileHref == 'https://twitter.com/' + process.env.TWITTER_USERNAME)
-			console.log('Already logged in');
-		else
-			await login(page, cookiesPath);
-	}
+	await login(page);
 
 	/* wss.on('connection', (ws) => {
 		ws.on('websocket error', console.error);
 
-		//TODO If we keep using multiple clients, remove this listener init
 		ws.on('message', (data) => {
 			console.log('websocket received: %s', JSON.parse(data));
 
@@ -99,21 +82,32 @@ let twitterCsrfToken = null;
 					}
 				});
 			} else if (json.initEndpoint !== undefined) {
-				//TODO Reuse client if already exists
 				ws.clientId = json.initEndpoint;
-				browser.newPage()
-					.then(page => {
-						setupEndpoint(
-							page,
-							// TODO probably just pass the json
-							json.initEndpoint,
-							json.responseIncludes,
-							json.gotoURL
-						);
 
+				let endpointPage;
+				if (!Object.hasOwn(pages, json.initEndpoint)) {
+					endpointPage = browser.newPage();
+					endpointPage.then(page => {
+						setupEndpoint(page, json).catch(e => {
+							//If the endpoint is removed before setup is done, we can ignore the error
+							if (e.constructor.name == 'TargetCloseError') {
+								console.warn('Endpoint closed before setup:', json.initEndpoint);
+								return;
+							}else
+								throw e;
+						});
+					});
+				}else
+					endpointPage = Promise.resolve(pages[json.initEndpoint]);
+
+				endpointPage
+					.then(page => {
 						ws.on('message', async (data) => {
 							const json = JSON.parse(data);
 							switch (json.request) {
+								case 'refresh':
+									await page.click('a[soshal-id="timelineButton"]');
+									break;
 								case 'reload':
 									await page.reload();
 									break;
@@ -124,6 +118,14 @@ let twitterCsrfToken = null;
 							}
 						});
 					});
+
+				ws.on('close', async () => {
+					console.log(`Closing ${ws.clientId} connection`);
+					if ([...wss.clients].find(c => c.clientId === ws.clientId) === undefined) {
+						await pages[ws.clientId].close();
+						delete pages[ws.clientId];
+					}
+				});
 			}
 		});
 
@@ -135,10 +137,29 @@ let twitterCsrfToken = null;
  * @param {import('puppeteer').Page} page
  * @param {string | undefined} cookiesPath
  */
-async function login(page, cookiesPath) {
+async function login(page) {
+	const cookiesPath = process.argv[2];
+
+	if (cookiesPath === undefined || !existsSync(cookiesPath)) {
+		console.log('No cookies, logging in');
+	} else {
+		await page.setCookie(...JSON.parse(await fs.readFile(cookiesPath)));
+		console.log('Cookies loaded');
+
+		await page.goto('https://twitter.com/');
+
+		await page.waitForSelector('*[aria-label="Profile"]');
+		const profileHref = await page.$eval('*[aria-label="Profile"]', el => el.href);
+		if (profileHref == 'https://twitter.com/' + process.env.TWITTER_USERNAME) {
+			console.log('Already logged in');
+			return;
+		}
+	}
+
 	await page.goto('https://twitter.com/i/flow/login');
-	console.log('Waiting for login page');
 	await page.waitForSelector('input[autocomplete="username"]');
+	console.log('Waiting for login page');
+
 	await page.type('input[autocomplete="username"]', process.env.TWITTER_USERNAME);
 
 	const [nextHandler] = await page.$x("//span[contains(., 'Next')]");
@@ -166,8 +187,9 @@ async function login(page, cookiesPath) {
  * @param {string} responseIncludes
  * @param {string} gotoURL
  */
-async function setupEndpoint(page, endpoint, responseIncludes, gotoURL) {
-	//TODO try setting target on browser
+async function setupEndpoint(page, { initEndpoint: endpoint, responseIncludes, gotoURL }) {
+	pages[endpoint] = page;
+
 	const session = await page.target().createCDPSession();
 	await session.send('Network.enable');
 	session.on('Network.responseReceived', async ({ requestId, response }) => {
@@ -201,18 +223,29 @@ async function setupEndpoint(page, endpoint, responseIncludes, gotoURL) {
 		'/HomeLatestTimeline': 'Following',
 	})[responseIncludes];
 
-	if (timelineButton !== undefined) {
-		//If we click on the button too early, it won't change timeline
-		await page.waitForSelector('article');
+	if (timelineButton !== undefined)
+		await findTimelineButton(page, timelineButton);
+}
 
-		for (const button of await page.$$('div[role="presentation"] > a[href="/home"]')) {
-			const span = (await button.$eval('span', el => el.textContent));
+/**
+ * @param {import('puppeteer').Page} page
+ * @param {string} timelineButton
+ */
+async function findTimelineButton(page, timelineButton) {
+	//If we click on the button too early, it won't change timeline
+	await page.waitForSelector('article');
 
-			if (span === timelineButton) {
-				await button.evaluate(el => el.click());
-				//TODO Cache the button to use for refreshing
-				break;
-			}
+	for (const button of await page.$$('div[role="presentation"] > a[href="/home"]')) {
+		const span = (await button.$eval('span', el => el.textContent));
+
+		if (span === timelineButton) {
+			await button.evaluate(el => {
+				//avoiding id in case it messes up with the page
+				el.setAttribute('soshal-id', 'timelineButton');
+				el.click();
+			});
+
+			break;
 		}
 	}
 }

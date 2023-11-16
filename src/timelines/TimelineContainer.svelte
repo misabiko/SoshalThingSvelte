@@ -4,6 +4,7 @@
 	import {afterUpdate, getContext, onMount} from 'svelte'
 	import {timelineEndpoints} from '../services/endpoints'
 	import {updateMainStorage} from '../storages'
+    import Modal from 'Modal.svelte';
 
 	export let timelines: TimelineCollection = {}
 	export let modalTimeline: TimelineData | null;
@@ -105,20 +106,20 @@
 <!--TODO id → class, to have multiple favviewer per page-->
 <div id='timelineContainer'>
 	{#if modalTimeline !== null}
-		<!--TODO Replace onBody with mountElement-->
-		<!--<Modal bind:active={modalTimelineActive} onBody={!isInjected}>
+	<!-- TODO Find way to get specific parent soshalthing -->
+		<Modal bind:active={modalTimelineActive} mountElement={document.getElementsByClassName('soshalthing')[0]}>
 			<Timeline
 				data={modalTimeline}
 				{setModalTimeline}
 				removeTimeline={() => modalTimeline = null}
 			/>
-		</Modal>-->
+		</Modal>
 	{/if}
 	{#if timelineView.fullscreen.index !== null}
 		{#key `${timelineView.timelineIds[timelineView.fullscreen.index]}/${timelineView.fullscreen.index}`}
 			{#if isInjected}
 				<Timeline
-					favviewerButtons=true
+					favviewerButtons={true}
 					bind:favviewerHidden
 					bind:favviewerMaximized
 					bind:showSidebar

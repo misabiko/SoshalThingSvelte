@@ -1,10 +1,9 @@
-//TODO Try using this socket for the endpoints too
 const websocket = new WebSocket('ws://localhost:443');
 
 websocket.addEventListener('error', e => console.error('Service Websocket Error: ', e));
 
 websocket.addEventListener('open', () => {
-	console.log('Connected Twitter service to websocket');
+	console.debug('Connected Twitter service to websocket');
 	websocket.send(JSON.stringify({
 		// status: 'initService' would probably be cleaner
 		initService: true,

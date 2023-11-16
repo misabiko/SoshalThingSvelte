@@ -1,53 +1,18 @@
-import { Endpoint, RefreshType, endpoints, timelineEndpoints, type EndpointConstructorInfo, addEndpointArticlesToTimeline } from 'services/endpoints';
+import type { EndpointConstructorInfo } from 'services/endpoints';
 import { TwitterService } from '../service';
-import { type ArticleWithRefs, getRootArticle } from 'articles';
-import { addArticles, getServices } from 'services/service';
-import { get } from 'svelte/store';
 import { parseResponse, type Instruction } from '../pageAPI';
+import WebSocketPageEndpoint from './WebSocketPageEndpoint';
 
-export default class TwitterFollowingTimelineAPIEndpoint extends Endpoint {
+export default class TwitterFollowingTimelineAPIEndpoint extends WebSocketPageEndpoint {
 	readonly service = TwitterService.name;
 	readonly name = 'FollowingTimelineAPI';
-	//TODO Move to websocket/streaming endpoint class
-	ws = new WebSocket('ws://localhost:443');
 
 	constructor() {
-		super(new Set<RefreshType>([
-			RefreshType.Refresh,
-			RefreshType.LoadBottom,
-		]));
-
-		this.ws.addEventListener('error', console.error);
-
-		//TODO Send command to click on Following tab
-		this.ws.addEventListener('open', () => {
-			console.log('Connected TwitterFollowingTimelineAPIEndpoint to websocket');
-			this.ws.send(JSON.stringify({
-				initEndpoint: 'TwitterFollowingTimelineAPIEndpoint',
-				responseIncludes: '/HomeLatestTimeline',
-				gotoURL: 'https://twitter.com/home',
-			}));
+		super({
+			initEndpoint: 'TwitterFollowingTimelineAPIEndpoint',
+			responseIncludes: '/HomeLatestTimeline',
+			gotoURL: 'https://twitter.com/home',
 		});
-
-		this.ws.addEventListener('message', (data: MessageEvent) => {
-			console.trace('TwitterFollowingTimelineAPIEndpoint received message: ', data);
-			const json = JSON.parse(data.data);
-			this.parseAPI(json);
-		});
-	}
-
-	async refresh(refreshType: RefreshType): Promise<ArticleWithRefs[]> {
-		console.log('refresh');
-		switch (refreshType) {
-			case RefreshType.Refresh:
-				this.ws.send(JSON.stringify({request: 'reload'}));
-				break;
-			case RefreshType.LoadBottom:
-				this.ws.send(JSON.stringify({request: 'scrollDown'}));
-				break;
-		}
-
-		return [];
 	}
 
 	matchParams(_params: any): boolean {
@@ -60,26 +25,8 @@ export default class TwitterFollowingTimelineAPIEndpoint extends Endpoint {
 		constructor: _params => new TwitterFollowingTimelineAPIEndpoint()
 	};
 
-	//TODO Move to twitter scraping file
-	async parseAPI(data: HomeTimelineResponse) {
-		const articles: ArticleWithRefs[] = parseResponse(data.data.home.home_timeline_urt.instructions);
-
-		this.articleIdPairs.push(...articles
-			.map(a => getRootArticle(a).idPair)
-			.filter(idPair => !this.articleIdPairs
-				.some(pair =>
-					pair.service === idPair.service &&
-					pair.id === idPair.id,
-				)
-			)
-		);
-
-		addArticles(getServices()[this.service], false, ...articles);
-
-		if (endpoints[this.name] !== undefined)
-			endpoints[this.name].set(this);
-
-		await addEndpointArticlesToTimeline(this.name, articles);
+	async parseResponse(data: HomeTimelineResponse) {
+		return parseResponse(data.data.home.home_timeline_urt.instructions);
 	}
 }
 

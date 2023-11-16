@@ -1,5 +1,5 @@
 import esbuild from 'esbuild';
-import {buildOptions, errorHandler} from './buildscript.js';
+import {buildOptions, errorHandler} from './buildscript.ts';
 import fs from 'fs';
 import path from 'path';
 

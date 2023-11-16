@@ -1,13 +1,8 @@
-//TODO Port to typescript
-
 import puppeteer from 'puppeteer';
-import WebSocket, { WebSocketServer } from 'ws';
 import fs from 'fs/promises';
 import { existsSync } from 'fs';
 
 Bun.serve({
-	port: 443,
-	
 	fetch(req, server) {
 		const success = server.upgrade(req);
 		if (success)

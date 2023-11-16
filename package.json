@@ -3,7 +3,7 @@
 	"private": true,
 	"scripts": {
 		"build": "bun run scripts/buildscript.ts",
-		"serve:static": "bun run scripts/staticServer.ts",
+		"serve:static": "bun run scripts/staticServer.ts ./cookies.json",
 		"serve": "bun run scripts/buildscript.ts && bun --watch run serve:static",
 		"build:extension": "bun run scripts/extensionbuildscript.ts",
 		"build:unit": "bun run scripts/testbuildscript.ts",

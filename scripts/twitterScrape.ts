@@ -1,144 +1,109 @@
-import puppeteer from 'puppeteer';
-import fs from 'fs/promises';
-import { existsSync } from 'fs';
+import puppeteer, { Page } from 'puppeteer';
+import { ServerWebSocket } from 'bun';
 
-Bun.serve({
-	fetch(req, server) {
-		const success = server.upgrade(req);
-		if (success)
-			return undefined;
+let twitterBearer: string | null = null;
+let twitterCsrfToken: string | null = null;
 
-		return new Response("Hello world");
-	},
-	websocket: {
-		open(ws) {
-			console.log('New websocket connection');
-		},
-		message(ws, message) {
-			console.log('websocket received: %s', message);
-		},
-		close(ws) {
-			console.log('websocket closed');
-		},
-	},
-})
+const pages: {[endpoint: string]: Page} = {};
 
-let twitterBearer = null;
-let twitterCsrfToken = null;
+const browser = await puppeteer.launch({ headless: 'new' });
+// const browser = await puppeteer.connect({browserURL: 'http://127.0.0.1:9222'});
+const page = await browser.newPage();
+const session = await page.target().createCDPSession();
+await session.send('Network.enable');
+session.on('Network.requestWillBeSent', async ({ requestId, request }) => {
+	if (!request.url.includes('graphql'))
+		return;
 
-const pages = {};
+	console.log('Request received:',
+		'\n\tid: ', requestId,
+		'\n\turl: ', request.url,
+	);
 
-(async () => {
-	const browser = await puppeteer.launch({ headless: 'new' });
-	// const browser = await puppeteer.connect({browserURL: 'http://127.0.0.1:9222'});
-	const page = await browser.newPage();
-	const session = await page.target().createCDPSession();
-	await session.send('Network.enable');
-	session.on('Network.requestWillBeSent', async ({ requestId, request }) => {
-		if (!request.url.includes('graphql'))
-			return;
+	if (twitterBearer === null || twitterCsrfToken === null) {
+		twitterBearer = request.headers['authorization'].split(' ')[1];
+		twitterCsrfToken = request.headers['x-csrf-token'];
 
-		console.log('Request received:',
-			'\n\tid: ', requestId,
-			'\n\turl: ', request.url,
-		);
+		await session.send('Network.disable');
+		await session.detach();
+	}
+});
 
-		if (twitterBearer === null || twitterCsrfToken === null) {
-			twitterBearer = request.headers['authorization'].split(' ')[1];
-			twitterCsrfToken = request.headers['x-csrf-token'];
+await login(page);
 
-			await session.send('Network.disable');
-			await session.detach();
+export type ClientData = {
+	id: number,
+	clientId: string | undefined
+}
+
+export async function onMessage(ws: ServerWebSocket<ClientData>, message: string, clients: {[id: number]: ServerWebSocket<ClientData>}) {
+	console.log('websocket received: ', message);
+	console.log('websocket data: ', ws.data);
+
+	const json = JSON.parse(message);
+	if (json.initService === true) {
+		ws.data.clientId = 'TwitterService';
+	} else if (json.initEndpoint !== undefined) {
+		ws.data.clientId = json.initEndpoint;
+
+		if (!Object.hasOwn(pages, json.initEndpoint)) {
+			browser.newPage().then(page => {
+				setupEndpoint(clients, page, json).catch(e => {
+					//If the endpoint is removed before setup is done, we can ignore the error
+					if (e.constructor.name == 'TargetCloseError') {
+						console.warn('Endpoint closed before setup:', json.initEndpoint);
+						return;
+					}else
+						throw e;
+				});
+			});
 		}
-	});
+	} else if (ws.data.clientId === 'TwitterService') {
+		switch (json.request) {
+			case 'likeTweet':
+				ws.send(JSON.stringify(await likeTweet(page, json.body)));
+				break;
+			case 'unlikeTweet':
+				ws.send(JSON.stringify(await unlikeTweet(page, json.body)));
+				break;
+			case 'retweetTweet':
+				ws.send(JSON.stringify(await retweetTweet(page, json.body)));
+				break;
+		}
+	} else if (ws.data.clientId !== undefined) {
+		switch (json.request) {
+			case 'refresh':
+				await page.click('a[soshal-id="timelineButton"]');
+				break;
+			case 'reload':
+				await page.reload();
+				break;
+			case 'scrollDown':
+				//@ts-ignore
+				await page.evaluate(function () { window.scrollTo(0, document.body.scrollHeight); });
+				break;
+		}
+	}
+}
 
-	await login(page);
+export async function onClose(ws: ServerWebSocket<ClientData>, clients: {[id: number]: ServerWebSocket<ClientData>}) {
+	if (ws.data.clientId !== undefined && ws.data.clientId !== 'TwitterService') {
+		console.log(`Closing ${ws.data.clientId} connection`);
+		if ([...Object.values(clients)].find(c => c.data.clientId === ws.data.clientId) === undefined) {
+			await pages[ws.data.clientId].close();
+			delete pages[ws.data.clientId];
+		}
+	}
+}
 
-	/* wss.on('connection', (ws) => {
-		ws.on('websocket error', console.error);
-
-		ws.on('message', (data) => {
-			console.log('websocket received: %s', JSON.parse(data));
-
-			const json = JSON.parse(data);
-			if (json.initService === true) {
-				ws.on('message', async (data) => {
-					const json = JSON.parse(data);
-					switch (json.request) {
-						case 'likeTweet':
-							ws.send(JSON.stringify(await likeTweet(page, json.body)));
-							break;
-						case 'unlikeTweet':
-							ws.send(JSON.stringify(await unlikeTweet(page, json.body)));
-							break;
-						case 'retweetTweet':
-							ws.send(JSON.stringify(await retweetTweet(page, json.body)));
-							break;
-					}
-				});
-			} else if (json.initEndpoint !== undefined) {
-				ws.clientId = json.initEndpoint;
-
-				let endpointPage;
-				if (!Object.hasOwn(pages, json.initEndpoint)) {
-					endpointPage = browser.newPage();
-					endpointPage.then(page => {
-						setupEndpoint(page, json).catch(e => {
-							//If the endpoint is removed before setup is done, we can ignore the error
-							if (e.constructor.name == 'TargetCloseError') {
-								console.warn('Endpoint closed before setup:', json.initEndpoint);
-								return;
-							}else
-								throw e;
-						});
-					});
-				}else
-					endpointPage = Promise.resolve(pages[json.initEndpoint]);
-
-				endpointPage
-					.then(page => {
-						ws.on('message', async (data) => {
-							const json = JSON.parse(data);
-							switch (json.request) {
-								case 'refresh':
-									await page.click('a[soshal-id="timelineButton"]');
-									break;
-								case 'reload':
-									await page.reload();
-									break;
-								case 'scrollDown':
-									// eslint-disable-next-line no-undef
-									await page.evaluate(function () { window.scrollTo(0, document.body.scrollHeight); });
-									break;
-							}
-						});
-					});
-
-				ws.on('close', async () => {
-					console.log(`Closing ${ws.clientId} connection`);
-					if ([...wss.clients].find(c => c.clientId === ws.clientId) === undefined) {
-						await pages[ws.clientId].close();
-						delete pages[ws.clientId];
-					}
-				});
-			}
-		});
-
-		console.log('New websocket connection');
-	}); */
-})();
-
-/**
- * @param {import('puppeteer').Page} page
- * @param {string | undefined} cookiesPath
- */
-async function login(page) {
+async function login(page: Page) {
 	const cookiesPath = process.argv[2];
 
-	if (cookiesPath === undefined || !existsSync(cookiesPath)) {
+	if (cookiesPath === undefined || !Bun.file(cookiesPath).exists()) {
 		console.log('No cookies, logging in');
 	} else {
-		await page.setCookie(...JSON.parse(await fs.readFile(cookiesPath)));
+		const cookiesFile = Bun.file(cookiesPath);
+		await page.setCookie(...await cookiesFile.json());
 		console.log('Cookies loaded');
 
 		await page.goto('https://twitter.com/');
@@ -155,13 +120,13 @@ async function login(page) {
 	await page.waitForSelector('input[autocomplete="username"]');
 	console.log('Waiting for login page');
 
-	await page.type('input[autocomplete="username"]', process.env.TWITTER_USERNAME);
+	await page.type('input[autocomplete="username"]', process.env.TWITTER_USERNAME as string);
 
 	const [nextHandler] = await page.$x("//span[contains(., 'Next')]");
 	await nextHandler.click();
 
 	await page.waitForSelector('input:not(:disabled)');
-	await page.type('input:not(:disabled)', process.env.TWITTER_PASSWORD);
+	await page.type('input:not(:disabled)', process.env.TWITTER_PASSWORD as string);
 
 	const [loginHandler] = await page.$x("//span[contains(., 'Log in')]");
 	await loginHandler.click();
@@ -171,18 +136,12 @@ async function login(page) {
 
 	if (cookiesPath !== undefined) {
 		const cookies = await page.cookies();
-		await fs.writeFile(cookiesPath, JSON.stringify(cookies));
+		await Bun.write(cookiesPath, JSON.stringify(cookies));
 		console.log('Cookies saved to ' + cookiesPath);
 	}
 }
 
-/**
- * @param {import('puppeteer').Page} page
- * @param {string} endpoint
- * @param {string} responseIncludes
- * @param {string} gotoURL
- */
-async function setupEndpoint(page, { initEndpoint: endpoint, responseIncludes, gotoURL }) {
+async function setupEndpoint(clients: {[id: number]: ServerWebSocket<ClientData>}, page: Page, { initEndpoint: endpoint, responseIncludes, gotoURL }) {
 	pages[endpoint] = page;
 
 	const session = await page.target().createCDPSession();
@@ -200,9 +159,9 @@ async function setupEndpoint(page, { initEndpoint: endpoint, responseIncludes, g
 		try {
 			const { body } = await session.send('Network.getResponseBody', { requestId });
 
-			// for (const client of wss.clients)
-			// 	if (client.clientId === endpoint && client.readyState === WebSocket.OPEN)
-			// 		client.send(body);
+			for (const client of Object.values(clients))
+				if (client.data.clientId === endpoint && client.readyState === WebSocket.OPEN)
+					client.send(body);
 		} catch (e) {
 			if (e.constructor.name === 'ProtocolError')
 				console.error('Protocol error for response:', response, e);
@@ -222,11 +181,7 @@ async function setupEndpoint(page, { initEndpoint: endpoint, responseIncludes, g
 		await findTimelineButton(page, timelineButton);
 }
 
-/**
- * @param {import('puppeteer').Page} page
- * @param {string} timelineButton
- */
-async function findTimelineButton(page, timelineButton) {
+async function findTimelineButton(page: Page, timelineButton: string) {
 	//If we click on the button too early, it won't change timeline
 	await page.waitForSelector('article');
 
@@ -245,11 +200,9 @@ async function findTimelineButton(page, timelineButton) {
 	}
 }
 
-/**
- * @param {import('puppeteer').Page} page
- * @param {string} tweetId
- */
-async function likeTweet(page, tweetId) {
+async function likeTweet(page: Page, tweetId: string) {
+	if (twitterBearer === null || twitterCsrfToken === null)
+		throw new Error('Twitter bearer or csrf token not set');
 	const response = await page.evaluate(twitterCommand, 'lI07N6Otwv1PhnEgXILM7A', 'FavoriteTweet', twitterBearer, twitterCsrfToken, tweetId);
 
 	return {
@@ -258,11 +211,9 @@ async function likeTweet(page, tweetId) {
 	};
 }
 
-/**
- * @param {import('puppeteer').Page} page
- * @param {string} tweetId
- */
-async function unlikeTweet(page, tweetId) {
+async function unlikeTweet(page: Page, tweetId: string) {
+	if (twitterBearer === null || twitterCsrfToken === null)
+		throw new Error('Twitter bearer or csrf token not set');
 	const response = await page.evaluate(twitterCommand, 'ZYKSe-w7KEslx3JhSIk5LA', 'UnfavoriteTweet', twitterBearer, twitterCsrfToken, tweetId);
 
 	return {
@@ -271,11 +222,9 @@ async function unlikeTweet(page, tweetId) {
 	};
 }
 
-/**
- * @param {import('puppeteer').Page} page
- * @param {string} tweetId
- */
-async function retweetTweet(page, tweetId) {
+async function retweetTweet(page: Page, tweetId: string) {
+	if (twitterBearer === null || twitterCsrfToken === null)
+		throw new Error('Twitter bearer or csrf token not set');
 	const response = await page.evaluate(twitterCommand, 'ojPdsZsimiJrUGLR1sjUtA', 'CreateRetweet', twitterBearer, twitterCsrfToken, tweetId);
 
 	return {
@@ -284,14 +233,7 @@ async function retweetTweet(page, tweetId) {
 	};
 }
 
-/**
- * @param {string} queryId
- * @param {string} endpoint
- * @param {string} bearer
- * @param {string} csrfToken
- * @param {string} tweet_id
- */
-async function twitterCommand(queryId, endpoint, bearer, csrfToken, tweetId) {
+async function twitterCommand(queryId: string, endpoint: string, bearer: string, csrfToken: string, tweetId: string) {
 	try {
 		const response = await fetch(`https://twitter.com/i/api/graphql/${queryId}/${endpoint}`, {
 			method: 'POST',

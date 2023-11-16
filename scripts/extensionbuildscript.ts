@@ -1,5 +1,5 @@
-import esbuild from 'esbuild';
-import {buildOptions, errorHandler} from './buildscript.ts';
+import { BuildConfig } from 'bun';
+import {buildOptions} from './buildscript.ts';
 import fs from 'fs';
 import path from 'path';
 
@@ -18,22 +18,27 @@ const DedupSvelteInternalPlugin = {
 
 const outdir = './chrome extension/dist';
 
-const extensionBuildOptions = {
+const extensionBuildOptions: BuildConfig = {
 	...buildOptions,
-	entryPoints: [
+	entrypoints: [
 		'./src/extension/background.js',
 		'./src/extension/pixiv/userPage/entry.ts',
 		'./src/extension/pixiv/followIllusts/entry.ts',
 	],
 	outdir,
 	splitting: false,
-	format: 'iife',
-	plugins: [...buildOptions.plugins, DedupSvelteInternalPlugin],
+	// format: 'iife',
+	plugins: [...(buildOptions.plugins ?? []), DedupSvelteInternalPlugin],
 };
 
 if (!fs.existsSync(outdir))
 	fs.mkdirSync(outdir);
 
-esbuild
-	.build(extensionBuildOptions)
-	.catch(errorHandler);
+const result = await Bun.build(extensionBuildOptions);
+
+if (!result.success) {
+	console.error("Build failed");
+	for (const message of result.logs)
+		console.error(message);
+	process.exit(1);
+}

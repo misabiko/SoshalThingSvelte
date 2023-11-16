@@ -3,7 +3,7 @@ import { Endpoint, RefreshType, addEndpointArticlesToTimeline, endpoints } from 
 import { addArticles, getServices } from './service';
 
 export default abstract class WebSocketEndpoint extends Endpoint {
-	ws = new WebSocket('ws://localhost:443');
+	ws = new WebSocket('ws://localhost:8080');
 
 	constructor(refreshTypes: Set<RefreshType>, setupData: SetupData) {
 		super(refreshTypes);

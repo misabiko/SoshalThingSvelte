@@ -10,8 +10,11 @@ if (loadMainStorage().useWebSocket) {
 	websocket.addEventListener('error', e => console.error('Service Websocket Error: ', e));
 
 	websocket.addEventListener('open', () => {
+		if (websocket === null)
+			throw new Error('Websocket not initialized');
+
 		console.debug('Connected Twitter service to websocket');
-		websocket!.send(JSON.stringify({
+		websocket.send(JSON.stringify({
 			// status: 'initService' would probably be cleaner
 			initService: true,
 		}));
@@ -25,8 +28,14 @@ export function sendRequest<T>(request: string, body: any): Promise<T> {
 	websocket.send(JSON.stringify({request, body}));
 
 	return new Promise((resolve, reject) => {
+		if (websocket === null)
+			throw new Error('Websocket not initialized');
+
 		const timeoutId = setTimeout(() => reject(new Error("Remote page didn't respond in 10 seconds.")), 10000);
 		const listener = (data: MessageEvent) => {
+			if (websocket === null)
+				throw new Error('Websocket not initialized');
+
 			const json = JSON.parse(data.data);
 			if (json.respondingTo !== request)
 				return;

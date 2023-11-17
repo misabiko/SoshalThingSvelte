@@ -8,6 +8,7 @@ import { TwitterService } from './service';
 import { getWritable } from 'services/service';
 import { get } from 'svelte/store';
 import { sendRequest } from 'services/remotePage';
+import { getServiceStorage } from 'storages';
 
 export function parseResponse(instructions: Instruction[]): ArticleWithRefs[] {
 	if (instructions.filter(i => i.type === 'TimelineAddEntries').length !== 1)
@@ -170,7 +171,7 @@ type Legacy = {
 	is_quote_status: boolean;
 }
 
-export async function toggleLike(idPair: ArticleIdPair) {
+export async function toggleLikeWebSocket(idPair: ArticleIdPair) {
 	const writable = getWritable<TwitterArticle>(idPair);
 	const liked = get(writable).liked;
 	const request = liked ? 'unlikeTweet' : 'likeTweet';
@@ -187,7 +188,7 @@ export async function toggleLike(idPair: ArticleIdPair) {
 			});
 		else
 			throw response;
-	}catch (cause: ResponseError | any) {
+	} catch (cause: ResponseError | any) {
 		let shouldThrow = true;
 		if (cause.errors !== undefined) {
 			for (const err of (cause as ResponseError).errors)
@@ -219,7 +220,7 @@ export async function toggleLike(idPair: ArticleIdPair) {
 	}
 }
 
-export async function retweet(idPair: ArticleIdPair) {
+export async function retweetWebSocket(idPair: ArticleIdPair) {
 	const writable = TwitterService.articles[idPair.id as string];
 	if (get(writable).retweeted)
 		return;
@@ -236,7 +237,7 @@ export async function retweet(idPair: ArticleIdPair) {
 			});
 		else
 			throw response;
-	}catch (err: ResponseError | any) {
+	} catch (err: ResponseError | any) {
 		if (err.errors !== undefined) {
 			if ((err as ResponseError).errors.some(e => e.code === 144)) {
 				writable.update(a => {
@@ -250,6 +251,111 @@ export async function retweet(idPair: ArticleIdPair) {
 
 		throw new Error(err);
 	}
+}
+
+export async function toggleLikePage(idPair: ArticleIdPair) {
+	const writable = getWritable<TwitterArticle>(idPair);
+	const liked = get(writable).liked;
+	const [queryId, endpoint] = liked
+		? ['ZYKSe-w7KEslx3JhSIk5LA', 'UnfavoriteTweet']
+		: ['lI07N6Otwv1PhnEgXILM7A', 'FavoriteTweet'];
+
+	try {
+		const response = await pageRequest<FavoriteResponse>(queryId, endpoint, idPair.id.toString());
+
+		if (response.errors !== undefined)
+			throw response;
+		if ((liked ? response.data.unfavorite_tweet : response.data.favorite_tweet) === 'Done')
+			writable.update(a => {
+				a.liked = !liked;
+				return a;
+			});
+		else
+			throw response;
+	} catch (cause: ResponseError | any) {
+		let shouldThrow = true;
+		if (cause.errors !== undefined) {
+			for (const err of (cause as ResponseError).errors)
+				switch (err.code) {
+					case 139:
+						console.warn(cause);
+						writable.update(a => {
+							a.liked = true;
+							return a;
+						});
+
+						if (cause.errors.length === 1)
+							shouldThrow = false;
+						break;
+					case 144:
+						writable.update(a => {
+							a.deleted = true;
+							return a;
+						});
+
+						if (cause.errors.length === 1)
+							shouldThrow = false;
+						break;
+				}
+		}
+
+		if (shouldThrow)
+			throw cause;
+	}
+}
+
+export async function retweetPage(idPair: ArticleIdPair) {
+	const writable = TwitterService.articles[idPair.id as string];
+	if (get(writable).retweeted)
+		return;
+
+	try {
+		const response = await pageRequest<RetweetResponse>('ojPdsZsimiJrUGLR1sjUtA', 'CreateRetweet', idPair.id.toString());
+
+		if (response.errors !== undefined)
+			throw response;
+		if (response.data.create_retweet !== undefined)
+			writable.update(a => {
+				a.retweeted = true;
+				return a;
+			});
+		else
+			throw response;
+	} catch (err: ResponseError | any) {
+		if (err.errors !== undefined) {
+			if ((err as ResponseError).errors.some(e => e.code === 144)) {
+				writable.update(a => {
+					a.deleted = true;
+					return a;
+				});
+				if (err.errors.length === 1)
+					return;
+			}
+		}
+
+		throw new Error(err);
+	}
+}
+
+async function pageRequest<T>(queryId: string, endpoint: string, tweetId: string): Promise<T> {
+	const response = await fetch(`https://twitter.com/i/api/graphql/${queryId}/${endpoint}`, {
+		method: 'POST',
+
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': 'Bearer ' + getServiceStorage(TwitterService.name).bearerToken,
+			'X-Csrf-Token': (await cookieStore.get('ct0')).value,
+		},
+
+		body: JSON.stringify({
+			queryId,
+			variables: {
+				tweet_id: tweetId,
+			}
+		})
+	});
+
+	return await response.json();
 }
 
 type FavoriteResponse = {
@@ -267,18 +373,18 @@ type FavoriteResponse = {
 } | ResponseError;
 
 type RetweetResponse = {
-    data: {
-        create_retweet: {
-            retweet_results: {
-                result: {
-                    rest_id: string;
-                    legacy: {
-                        full_text: string;
-                    };
-                };
-            };
-        };
-    };
+	data: {
+		create_retweet: {
+			retweet_results: {
+				result: {
+					rest_id: string;
+					legacy: {
+						full_text: string;
+					};
+				};
+			};
+		};
+	};
 	errors: undefined;
 } | ResponseError;
 

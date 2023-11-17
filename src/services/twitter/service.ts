@@ -4,15 +4,17 @@ import {newService, registerService} from '../service';
 import {STANDARD_ACTIONS} from '../actions';
 import Article, {type ArticleWithRefs, getRootArticle} from '../../articles';
 import type {Filter} from '../../filters';
-import { retweet, toggleLike } from './pageAPI';
+import { retweetPage, retweetWebSocket, toggleLikePage, toggleLikeWebSocket } from './pageAPI';
 
-//TODO Add service initialization point?
+const isOnTwitter = window.location.hostname === 'twitter.com';
+
 export const TwitterService: Service<TwitterArticle> = {
 	...newService('Twitter'),
 	articleActions: {
 		[STANDARD_ACTIONS.like.key]: {
 			...STANDARD_ACTIONS.like,
-			action: toggleLike,
+			//TODO Disable actions when not on twitter and websocket is disabled, but also don't parse localstorage for every article
+			action: isOnTwitter ? toggleLikePage : toggleLikeWebSocket,
 			actionned(article) { return article.liked; },
 			disabled(article) { return article.deleted; },
 			count(article) { return article.likeCount; },
@@ -20,7 +22,7 @@ export const TwitterService: Service<TwitterArticle> = {
 		[STANDARD_ACTIONS.repost.key]: {
 			...STANDARD_ACTIONS.repost,
 			togglable: false,
-			action: retweet,
+			action: isOnTwitter ? retweetPage : retweetWebSocket,
 			actionned(article) { return article.retweeted; },
 			disabled(article) { return article.deleted; },
 			count(article) { return article.retweetCount; },

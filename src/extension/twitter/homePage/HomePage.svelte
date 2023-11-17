@@ -33,7 +33,7 @@
 			title: 'Home',
 			endpoints,
 			container: MasonryContainer,
-			columnCount: 4,
+			columnCount: 2,
 			animatedAsGifs: true,
 			sortInfo: {
 				method: null,

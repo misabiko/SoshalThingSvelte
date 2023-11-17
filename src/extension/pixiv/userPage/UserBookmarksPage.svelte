@@ -80,6 +80,7 @@
 	{/if}
 </svelte:head>
 
+<!-- svelte-ignore a11y-no-static-element-interactions -->
 <a
 	use:portal={activatorMount}
 	id='favvieweractivator'

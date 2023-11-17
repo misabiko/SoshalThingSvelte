@@ -4,28 +4,20 @@
 	import {defaultTimeline} from '../../../timelines'
 	import MasonryContainer from '../../../containers/MasonryContainer.svelte'
 	import {loadMainStorage} from '../../../storages'
-	import {everyRefreshType} from '../../../services/endpoints'
 	import portal from '../../../usePortal'
-	import {SortMethod} from '../../../sorting'
-	import {FollowAPIEndpoint} from '../../../services/pixiv/endpoints/follow'
-	import {getCurrentPage} from '../../../services/pixiv/endpoints'
 
 	const timelines: TimelineCollection = {
-		'Follows': {
+		'Home': {
 			...defaultTimeline(),
-			title: 'Follows',
-			endpoints: [{
-				endpoint: new FollowAPIEndpoint(getCurrentPage()),
-				refreshTypes: everyRefreshType,
-				filters: [],
-			}],
+			title: 'Home',
+			endpoints: [],
 			container: MasonryContainer,
-			columnCount: 3,
+			columnCount: 4,
 			animatedAsGifs: true,
 			sortInfo: {
-				method: SortMethod.Id,
+				method: null,
 				customMethod: null,
-				reversed: true,
+				reversed: false,
 			},
 		}
 	}
@@ -34,7 +26,7 @@
 
 	let favviewerHidden = false
 	let favviewerMaximized = mainStorage.maximized
-	let activatorMount = document.querySelector('nav')
+	let activatorMount = document.querySelector('nav[aria-label="Primary"]')
 
 	const timelineView: TimelineView = {
 		timelineIds: Object.keys(timelines),
@@ -63,19 +55,19 @@
 				bottom: 0;
 				overflow-y: auto;
 			}
-
-			#root {
-				overflow-y: hidden;
-				max-height: 100vh;
-			}
 		</style>
 	{:else}
 		<style>
-			#root section ul {
+			div[aria-label="Home timeline"] {
+				height: 100%;
+			}
+
+			div[aria-label="Home timeline"] > div:nth-child(6) {
 				display: none;
 			}
+
 			.soshalthing {
-				overflow-y: visible
+				flex-grow: 1;
 			}
 		</style>
 	{/if}

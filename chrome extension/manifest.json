@@ -44,6 +44,14 @@
 			],
 			"js": ["dist/pixiv/followIllusts/entry.js"],
 			"css": ["dist/pixiv/followIllusts/entry.css"]
+		},
+		{
+			"matches": [
+				"https://*.twitter.com/home",
+				"https://*.x.com/home"
+			],
+			"js": ["dist/twitter/homePage/entry.js"],
+			"css": ["dist/twitter/homePage/entry.css"]
 		}
 	]
 }

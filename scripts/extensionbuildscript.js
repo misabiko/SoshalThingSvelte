@@ -22,8 +22,10 @@ const extensionBuildOptions = {
 	...buildOptions,
 	entryPoints: [
 		'./src/extension/background.js',
+		//TODO Recursively look for "entry.ts" in src/extension
 		'./src/extension/pixiv/userPage/entry.ts',
 		'./src/extension/pixiv/followIllusts/entry.ts',
+		'./src/extension/twitter/homePage/entry.ts',
 	],
 	outdir,
 	splitting: false,

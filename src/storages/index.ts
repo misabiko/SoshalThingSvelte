@@ -44,9 +44,13 @@ export function loadMainStorage() {
 
 	(mainStorage as MainStorageParsed).defaultTimelineView = mainStorage.defaultTimelineView ?? null;
 
+	if (!mainStorage.useWebSocket)
+		mainStorage.useWebSocket = false;
+
 	return mainStorage as MainStorageParsed;
 }
 
+//TODO Type storage per storage
 export function getServiceStorage(service: string): { [key: string]: any } {
 	const storageKey = `${MAIN_STORAGE_KEY} ${service}`;
 	const item = localStorage.getItem(storageKey);
@@ -305,6 +309,8 @@ type MainStorageParsed = {
 	fullscreen: FullscreenInfo
 	maximized: boolean
 	markAsReadLocal: boolean
+	//TODO Add UI setting for websocket
+	useWebSocket: boolean
 }
 
 type FullscreenInfoStorage = FullscreenInfo & {

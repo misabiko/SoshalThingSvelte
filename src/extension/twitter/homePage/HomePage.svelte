@@ -5,12 +5,33 @@
 	import MasonryContainer from '../../../containers/MasonryContainer.svelte'
 	import {loadMainStorage} from '../../../storages'
 	import portal from '../../../usePortal'
+    import { TimelineAPI, TimelineType } from "services/twitter/endpoints/domainEndpoints/TimelineAPI";
+    import { everyRefreshType } from "services/endpoints";
+
+	let currentTimeline: TimelineType | null;
+	switch (document.querySelector('div[role="presentation"] > a[aria-selected="true"] span')!.textContent) {
+		case 'For you':
+			currentTimeline = TimelineType.ForYou;
+			break;
+		case 'Following':
+			currentTimeline = TimelineType.Following;
+			break;
+		default:
+			currentTimeline = null;
+			break;
+	}
+
+	const endpoints = currentTimeline === null ? [] : [{
+		endpoint: new TimelineAPI(currentTimeline),
+		refreshTypes: everyRefreshType,
+		filters: [],
+	}];
 
 	const timelines: TimelineCollection = {
 		'Home': {
 			...defaultTimeline(),
 			title: 'Home',
-			endpoints: [],
+			endpoints,
 			container: MasonryContainer,
 			columnCount: 4,
 			animatedAsGifs: true,
@@ -20,13 +41,13 @@
 				reversed: false,
 			},
 		}
-	}
+	};
 
-	const mainStorage = loadMainStorage()
+	const mainStorage = loadMainStorage();
 
-	let favviewerHidden = false
-	let favviewerMaximized = mainStorage.maximized
-	let activatorMount = document.querySelector('nav[aria-label="Primary"]')
+	let favviewerHidden = currentTimeline === null;
+	let favviewerMaximized = mainStorage.maximized;
+	let activatorMount = document.querySelector('nav[aria-label="Primary"]');
 
 	const timelineView: TimelineView = {
 		timelineIds: Object.keys(timelines),
@@ -34,7 +55,7 @@
 			...mainStorage.fullscreen,
 			index: 0
 		}
-	}
+	};
 </script>
 
 <svelte:head>
@@ -58,16 +79,18 @@
 		</style>
 	{:else}
 		<style>
-			div[aria-label="Home timeline"] {
+			/* div[aria-label="Home timeline"] {
 				height: 100%;
-			}
+			} */
 
-			div[aria-label="Home timeline"] > div:nth-child(6) {
+			/* I think making the timeline stop at viewport forces twitter to spam refresh */
+			/* div[aria-label="Home timeline"] > div:nth-child(6) {
 				display: none;
-			}
+			} */
 
 			.soshalthing {
-				flex-grow: 1;
+				/* flex-grow: 1; */
+				height: 80vh;
 			}
 		</style>
 	{/if}

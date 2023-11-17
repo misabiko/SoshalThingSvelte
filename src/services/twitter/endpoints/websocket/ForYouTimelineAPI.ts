@@ -1,17 +1,17 @@
 import type { EndpointConstructorInfo } from 'services/endpoints';
-import { TwitterService } from '../service';
-import { parseResponse, type Instruction } from '../pageAPI';
+import { TwitterService } from '../../service';
+import { parseResponse, type Instruction } from '../../pageAPI';
 import WebSocketPageEndpoint from './WebSocketPageEndpoint';
 
-export default class TwitterFollowingTimelineAPIEndpoint extends WebSocketPageEndpoint {
+export default class TwitterForYouTimelineAPIEndpoint extends WebSocketPageEndpoint {
 	readonly service = TwitterService.name;
-	readonly name = 'FollowingTimelineAPI';
+	readonly name = 'ForYouTimelineAPI';
 
 	constructor() {
 		super({
-			initEndpoint: 'TwitterFollowingTimelineAPIEndpoint',
-			responseIncludes: '/HomeLatestTimeline',
-			gotoURL: 'https://twitter.com/home',
+			initEndpoint: 'TwitterForYouTimelineAPIEndpoint',
+				responseIncludes: '/HomeTimeline',
+				gotoURL: 'https://twitter.com/home',
 		});
 	}
 
@@ -20,10 +20,11 @@ export default class TwitterFollowingTimelineAPIEndpoint extends WebSocketPageEn
 	}
 
 	static readonly constructorInfo: EndpointConstructorInfo = {
-		name: 'TwitterFollowingTimelineAPIEndpoint',
+		name: 'TwitterForYouTimelineAPIEndpoint',
 		paramTemplate: [],
-		constructor: _params => new TwitterFollowingTimelineAPIEndpoint()
+		constructor: _params => new TwitterForYouTimelineAPIEndpoint()
 	};
+
 
 	async parseResponse(data: HomeTimelineResponse) {
 		return parseResponse(data.data.home.home_timeline_urt.instructions);

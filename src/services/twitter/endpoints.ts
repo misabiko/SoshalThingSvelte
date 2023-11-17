@@ -6,11 +6,11 @@ import type {EndpointConstructorInfo} from '../endpoints';
 import {fetchExtension} from '../extension';
 import { parseHTMLArticle } from './page';
 import type { ArticleWithRefs } from 'articles';
-import TwitterUserTweetsAPIEndpoint from './endpoints/UserTweetsAPI';
-import TwitterForYouTimelineAPIEndpoint from './endpoints/ForYouTimelineAPI';
-import TwitterListAPIEndpoint from './endpoints/ListAPI';
-import TwitterFollowingTimelineAPIEndpoint from './endpoints/FollowingTimelineAPI';
-import TwitterUserMediaAPIEndpoint from './endpoints/UserMediaAPI';
+import TwitterUserTweetsAPIEndpoint from './endpoints/websocket/UserTweetsAPI';
+import TwitterForYouTimelineAPIEndpoint from './endpoints/websocket/ForYouTimelineAPI';
+import TwitterListAPIEndpoint from './endpoints/websocket/ListAPI';
+import TwitterFollowingTimelineAPIEndpoint from './endpoints/websocket/FollowingTimelineAPI';
+import TwitterUserMediaAPIEndpoint from './endpoints/websocket/UserMediaAPI';
 
 //TODO Move to V1 directory, split into separate files
 abstract class V1Endpoint extends Endpoint {

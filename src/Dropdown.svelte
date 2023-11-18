@@ -40,6 +40,8 @@
 
 	.dropdown-menu {
 		position: relative;
+		/* At 0, the menu is blocked by videos */
+		z-index: 1;
 	}
 
 	.dropdown-content {
@@ -69,7 +71,7 @@
 		background: none;
 	}
 
-	:global(a.dropdown-item) {
+	:global(a.dropdown-item), :global(a.dropdown-item:-webkit-any-link) {
 		text-decoration: none;
 		color: var(--text);
 		text-align: center;

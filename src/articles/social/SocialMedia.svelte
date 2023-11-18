@@ -3,7 +3,7 @@
 	import Article from "../index";
 	import {afterUpdate} from 'svelte'
 	import {getWritable} from '../../services/service'
-	import Fa from 'svelte-fa/src/fa.svelte'
+	import Fa from 'svelte-fa'
 	import {faImages} from "@fortawesome/free-solid-svg-icons";
 	import {MediaType} from '../media'
 

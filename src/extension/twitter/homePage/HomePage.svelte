@@ -28,13 +28,18 @@
 		filters: [],
 	}];
 
+	const mainStorage = loadMainStorage();
+
+	let favviewerHidden = currentTimeline === null;
+	let favviewerMaximized = mainStorage.maximized;
+
 	const timelines: TimelineCollection = {
 		'Home': {
 			...defaultTimeline(),
 			title: 'Home',
 			endpoints,
 			container: MasonryContainer,
-			columnCount: 2,
+			columnCount: favviewerMaximized ? 4 : 2,
 			animatedAsGifs: true,
 			sortInfo: {
 				method: SortMethod.Date,
@@ -43,11 +48,6 @@
 			},
 		}
 	};
-
-	const mainStorage = loadMainStorage();
-
-	let favviewerHidden = currentTimeline === null;
-	let favviewerMaximized = mainStorage.maximized;
 
 	const timelineView: TimelineView = {
 		timelineIds: Object.keys(timelines),
@@ -68,13 +68,21 @@
 	{:else if favviewerMaximized}
 		<style>
 			.soshalthing {
-				position: absolute;
+				position: fixed;
 				z-index: 3;
 				top: 0;
 				left: 0;
 				right: 0;
 				bottom: 0;
-				overflow-y: auto;
+				height: 100vh;
+			}
+
+			header[role="banner"] {
+				z-index: unset;
+			}
+
+			body {
+				overflow-y: hidden;
 			}
 		</style>
 	{:else}

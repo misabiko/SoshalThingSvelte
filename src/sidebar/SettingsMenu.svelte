@@ -6,24 +6,6 @@
 	import {getServiceStorage, loadMainStorage, updateServiceStorage} from "../storages"
 	import {updateMainStorage} from "../storages";
 
-	//TODO Remove twitter auth stuff
-	let oauthToken: string | undefined
-	let oobPIN: string
-
-	async function twitterRequestToken() {
-		const response = await fetchExtensionService<{oauth_token: string}>(TwitterService.name, 'oauth1.0aRequestToken', undefined)
-		oauthToken = response.json.oauth_token
-	}
-
-	async function twitterAccessToken() {
-		const response = await fetchExtensionService<{soshalthing: true}>(TwitterService.name, 'oauth1.0aAccessToken', undefined, 'GET', {oauthVerifier: oobPIN})
-		if (!response?.json.soshalthing)
-			throw new Error(JSON.stringify(response, null, '\t'))
-		oauthToken = undefined
-		//TODO Add service and request to extensionCheck
-		await extensionCheck()
-	}
-
 	let tabId: number | null = null;
 
 	async function listTabs() {
@@ -71,26 +53,6 @@
 		on:input={e => updateMainStorage('markAsReadLocal', e.target.checked)}
 	/>
 </label>
-
-{#if $extensionContextStore.hasAccessToken}
-	<div class='field'>
-		Twitter logged in
-	</div>
-{:else}
-	<label class='field'>
-		Twitter
-		<button on:click={twitterRequestToken}>Request Token</button>
-		{#if oauthToken}
-			<a class='button' href={`https://api.twitter.com/oauth/authenticate?oauth_token=${oauthToken}`} target='_blank' rel='noreferrer'>
-				Authenticate
-			</a>
-		{/if}
-		<input type='text' bind:value={oobPIN}/>
-		{#if oobPIN?.length}
-			<button on:click={twitterAccessToken}>Get Access Token</button>
-		{/if}
-	</label>
-{/if}
 
 <div>
 	<button on:click={listTabs}>List Tabs</button>

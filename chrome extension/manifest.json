@@ -2,10 +2,6 @@
 	"name": "SoshalThing Svelte",
 	"manifest_version": 3,
 	"version": "0.1",
-	"background": {
-		"service_worker": "dist/background.js",
-		"type": "module"
-	},
 	"declarative_net_request": {
 		"rule_resources": [
 			{

@@ -1,15 +1,9 @@
-//TODO Remove Twitter API stuff
-import type {ArticleWithRefs, ArticleIdPair, ArticleRefIdPair} from '../../articles';
-import {getRootArticle} from '../../articles';
+import type { ArticleWithRefs, ArticleRefIdPair } from '../../articles';
+import { getRootArticle } from '../../articles';
 import TwitterArticle from './article';
-import {getHiddenStorage, getMarkedAsReadStorage} from '../../storages/serviceCache';
-import {TwitterService} from './service';
-import {fetchExtensionService} from '../extension';
-import type {ExtensionFetchResponse} from '../extension';
-import {get} from 'svelte/store';
-import {addArticles, getWritable} from '../service';
-import type {RateLimitInfo} from '../endpoints';
-import {type ArticleMedia, getRatio, MediaLoadType, MediaType} from '../../articles/media';
+import { getHiddenStorage, getMarkedAsReadStorage } from '../../storages/serviceCache';
+import { TwitterService } from './service';
+import { type ArticleMedia, getRatio, MediaLoadType, MediaType } from '../../articles/media';
 
 export function getV1APIURL(resource: string): string {
 	return `https://api.twitter.com/1.1/${resource}.json`;
@@ -17,7 +11,7 @@ export function getV1APIURL(resource: string): string {
 
 export function articleFromV1(json: TweetResponse, isRef = false): ArticleWithRefs {
 	const rawText = json.full_text ?? json.text as string;
-	const {text, textHtml} = parseText(rawText, json.entities, json.extended_entities);
+	const { text, textHtml } = parseText(rawText, json.entities, json.extended_entities);
 
 	let actualArticleRefIdPair: ArticleRefIdPair | undefined;
 
@@ -52,7 +46,7 @@ export function articleFromV1(json: TweetResponse, isRef = false): ArticleWithRe
 				type: 'quote',
 				quoted: retweeted.quoted.article.idPair,
 			};
-		}else {
+		} else {
 			actualArticleRefIdPair = {
 				type: 'repost',
 				reposted: getRootArticle(retweeted).idPair,
@@ -66,7 +60,7 @@ export function articleFromV1(json: TweetResponse, isRef = false): ArticleWithRe
 			article: makeArticle(),
 			reposted: retweeted,
 		};
-	}else if (json.is_quote_status) {
+	} else if (json.is_quote_status) {
 		if (json.quoted_status) {
 			const quoted = articleFromV1(json.quoted_status, true);
 
@@ -82,7 +76,7 @@ export function articleFromV1(json: TweetResponse, isRef = false): ArticleWithRe
 				article: makeArticle(),
 				quoted,
 			};
-		}else {
+		} else {
 			if (!isRef) {	//Twitter won't give quoted_status for quote of quote
 				if (json.quoted_status_id_str)
 					console.warn("Quote tweet doesn't include quoted tweet, need to get the tweet from service", json);
@@ -98,122 +92,6 @@ export function articleFromV1(json: TweetResponse, isRef = false): ArticleWithRe
 	};
 }
 
-export async function toggleFavorite(idPair: ArticleIdPair) {
-	const writable = getWritable<TwitterArticle>(idPair);
-	const action = get(writable).liked ? 'destroy' : 'create';
-
-	try {
-		const response = await fetchExtensionV1(
-			`${getV1APIURL('favorites/' + action)}?id=${idPair.id}`,
-			'POST',
-		);
-
-		//TODO Add rate limit to actions
-		updateAPIResponse(response.json);
-	}catch (cause: ExtensionFetchResponse<V1ErrorResponse> | any) {
-		//TEST fetch errors
-		let shouldThrow = true;
-		if (cause.errors !== undefined) {
-			for (const err of cause.errors)
-				switch (err.code) {
-					case 139:
-						console.warn(cause);
-						writable.update(a => {
-							a.liked = true;
-							return a;
-						});
-
-						if (cause.errors.length === 1)
-							shouldThrow = false;
-						break;
-					case 144:
-						writable.update(a => {
-							a.deleted = true;
-							return a;
-						});
-
-						if (cause.errors.length === 1)
-							shouldThrow = false;
-						break;
-				}
-		}
-
-		if (shouldThrow)
-			throw new Error(JSON.stringify(cause, null, '\t'));
-	}
-}
-
-export async function retweet(idPair: ArticleIdPair) {
-	const writable = TwitterService.articles[idPair.id as string];
-	if (get(writable).retweeted)
-		return;
-
-	try {
-		const response = await fetchExtensionV1(
-			`${getV1APIURL('statuses/retweet')}?id=${idPair.id}`,
-			'POST',
-		);
-
-		updateAPIResponse(response.json);
-	}catch (err: V1ErrorResponse | any) {
-		if (err.errors !== undefined) {
-			if ((err as V1ErrorResponse).errors.some(e => e.code === 144)) {
-				writable.update(a => {
-					a.deleted = true;
-					return a;
-				});
-				if (err.errors.length === 1)
-					return;
-			}
-		}
-
-		throw new Error(err);
-	}
-}
-
-export async function fetchExtensionV1<T = TweetResponse>(url: string, method = 'GET', body?: any): Promise<ExtensionFetchResponse<T>> {
-	const response = await fetchExtensionService<T | V1ErrorResponse>(
-		TwitterService.name,
-		'fetchV1',
-		url,
-		method,
-		body,
-	);
-
-	if ((response.json as V1ErrorResponse).errors !== undefined)
-		return Promise.reject(response.json);
-
-	return response as ExtensionFetchResponse<T>;
-}
-
-function updateAPIResponse(response: TweetResponse) {
-	if (TwitterService.articles[response.id_str] === undefined)
-		addArticles(TwitterService, true, articleFromV1(response));
-
-	const writable = getWritable<TwitterArticle>({service: TwitterService.name, id: BigInt(response.id_str)});
-
-	writable.update(a => {
-		a.liked = response.favorited;
-		a.likeCount = response.favorite_count;
-		a.retweeted = response.retweeted;
-		a.retweetCount = response.retweet_count;
-		return a;
-	});
-
-	if (response.retweeted_status) {
-		if (TwitterService.articles[response.retweeted_status.id_str])
-			updateAPIResponse(response.retweeted_status as TweetResponse);
-		else
-			addArticles(TwitterService, false, articleFromV1(response.retweeted_status));
-	}
-
-	if (response.quoted_status)
-		if (TwitterService.articles[response.quoted_status.id_str])
-			updateAPIResponse(response.quoted_status as TweetResponse);
-		else
-			addArticles(TwitterService, false, articleFromV1(response.quoted_status));
-}
-
 export function parseText(rawText: string, entities: Entities, extendedEntities?: ExtendedEntities): { text: string, textHtml: string } {
 	let trimmedText = rawText;
 	const mediaUrls = extendedEntities?.media.map(media => media.url) || [];
@@ -225,14 +103,14 @@ export function parseText(rawText: string, entities: Entities, extendedEntities?
 	let finalText = trimmedText;
 	const htmlParts: [Indices, string][] = [];
 
-	for (const {display_url, expanded_url, indices, url} of entities.urls) {
+	for (const { display_url, expanded_url, indices, url } of entities.urls) {
 		finalText = finalText.replace(url, display_url);
 		htmlParts.push([indices, `<a href='${expanded_url}'>${display_url}</a>`]);
 	}
-	for (const {indices, text} of entities.hashtags) {
+	for (const { indices, text } of entities.hashtags) {
 		htmlParts.push([indices, `<a href='https://twitter.com/hashtag/${text}'>#${text}</a>`]);
 	}
-	for (const {indices, screen_name} of entities.user_mentions) {
+	for (const { indices, screen_name } of entities.user_mentions) {
 		htmlParts.push([indices, `<a href='https://twitter.com/${screen_name}'>@${screen_name}</a>`]);
 	}
 
@@ -261,7 +139,7 @@ export function parseText(rawText: string, entities: Entities, extendedEntities?
 			text: finalText,
 			textHtml: newHtmlParts,
 		};
-	}else {
+	} else {
 		return {
 			text: finalText,
 			textHtml: finalText,
@@ -297,24 +175,6 @@ function getMP4(videoInfo: VideoInfo, mediaType: MediaType): ArticleMedia {
 		src: variant.url,
 		ratio: getRatio(videoInfo.aspect_ratio[0], videoInfo.aspect_ratio[1]),
 		queueLoadInfo: MediaLoadType.DirectLoad,
-	};
-}
-
-export function parseRateLimitInfo(headers: Headers): RateLimitInfo {
-	const limit = headers.get('x-rate-limit-limit');
-	if (limit === null)
-		throw new Error('Missing x-rate-limit-limit header.\n' + JSON.stringify(Object.fromEntries(headers.entries()), null, '\t'));
-	const remaining = headers.get('x-rate-limit-remaining');
-	if (remaining === null)
-		throw new Error('Missing x-rate-limit-remaining header.\n' + JSON.stringify(Object.fromEntries(headers.entries()), null, '\t'));
-	const reset = headers.get('x-rate-limit-reset');
-	if (reset === null)
-		throw new Error('Missing x-rate-limit-reset header.\n' + JSON.stringify(Object.fromEntries(headers.entries()), null, '\t'));
-
-	return {
-		limit: parseInt(limit),
-		remaining: parseInt(remaining),
-		reset: parseInt(reset),
 	};
 }
 
@@ -395,26 +255,7 @@ export type TweetResponse = {
 	possibly_sensitive_appealable: boolean;
 	lang: string
 }
-type V1ErrorResponse = {
-	errors: {
-		code: number,
-		message: string,
-	}[]
-}
-export type SearchResponse = {
-	search_metadata: {
-		completed_in: number
-		max_id: number
-		max_id_str: string
-		next_results: string
-		query: string
-		refresh_url: string
-		count: number
-		since_id: number
-		since_id_str: string
-	}
-	statuses: TweetResponse[]
-}
+
 export type Entities = {
 	hashtags: [];
 	symbols: [];
@@ -451,9 +292,11 @@ export type Entities = {
 		source_user_id_str: string
 	}[];
 }
+
 export type ExtendedEntities = {
 	media: ExtendedMedia[];
 }
+
 type ExtendedMedia = {
 	id: number;
 	id_str: string;
@@ -487,16 +330,19 @@ type ExtendedMedia = {
 	source_user_id_str: string;
 	video_info: VideoInfo
 }
+
 type VideoInfo = {
 	aspect_ratio: [number, number];
 	duration_millis: number;
 	variants: VideoVariant[]
 }
+
 type VideoVariant = {
 	bitrate: number;
 	content_type: string;	//enum?
 	url: string
 }
+
 type UserEntities = {
 	url: {
 		urls: {
@@ -510,15 +356,18 @@ type UserEntities = {
 		urls: []
 	}
 }
+
 type MediaSizes = {
 	thumb: MediaSize;
 	large: MediaSize;
 	medium: MediaSize;
 	small: MediaSize;
 }
+
 type MediaSize = {
 	w: number;
 	h: number;
 	resize: 'fit' | 'crop';
 }
+
 type Indices = [number, number]

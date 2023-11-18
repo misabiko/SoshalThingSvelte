@@ -6,7 +6,7 @@ import Article, {type ArticleWithRefs, getRootArticle} from '../../articles';
 import type {Filter} from '../../filters';
 import { retweetPage, retweetWebSocket, toggleLikePage, toggleLikeWebSocket } from './pageAPI';
 
-const isOnTwitter = window.location.hostname === 'twitter.com';
+export const isOnTwitter = window.location.hostname === 'twitter.com';
 
 export const TwitterService: Service<TwitterArticle> = {
 	...newService('Twitter'),

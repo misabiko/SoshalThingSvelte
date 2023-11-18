@@ -1,4 +1,4 @@
-import {TwitterService} from './service';
+import {TwitterService, isOnTwitter} from './service';
 import {Endpoint, RefreshType} from '../endpoints';
 import type {EndpointConstructorInfo} from '../endpoints';
 import {fetchExtension} from '../extension';
@@ -9,6 +9,8 @@ import TwitterForYouTimelineAPIEndpoint from './endpoints/websocket/ForYouTimeli
 import TwitterListAPIEndpoint from './endpoints/websocket/ListAPI';
 import TwitterFollowingTimelineAPIEndpoint from './endpoints/websocket/FollowingTimelineAPI';
 import TwitterUserMediaAPIEndpoint from './endpoints/websocket/UserMediaAPI';
+import UserTweetsAPI, { TimelineType } from './endpoints/domainEndpoints/UserTweetsAPI';
+import type { TwitterUser } from './article';
 
 export class TwitterHomeEndpoint extends Endpoint {
 	readonly service = TwitterService.name;
@@ -66,4 +68,6 @@ TwitterService.endpointConstructors.push(
 	TwitterUserMediaAPIEndpoint.constructorInfo,
 );
 
-TwitterService.userEndpoint = user => new TwitterUserMediaAPIEndpoint(user.username);
+TwitterService.userEndpoint = isOnTwitter
+	? user => new UserTweetsAPI(TimelineType.Media, user.username, (user as TwitterUser).id)
+	: user => new TwitterUserMediaAPIEndpoint(user.username);

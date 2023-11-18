@@ -153,7 +153,7 @@ export function updateTimelinesStorage(timelines: TimelineCollection) {
 	localStorage.setItem(TIMELINE_STORAGE_KEY, JSON.stringify(storage));
 }
 
-function parseContainer(container: string | undefined): typeof SvelteComponent {
+function parseContainer(container: string | undefined): new (...args: any[]) => SvelteComponent {
 	switch(container) {
 		case 'Row':
 		case 'RowContainer':
@@ -168,7 +168,7 @@ function parseContainer(container: string | undefined): typeof SvelteComponent {
 	}
 }
 
-function parseArticleView(articleView: string | undefined): typeof SvelteComponent {
+function parseArticleView(articleView: string | undefined): new (...args: any[]) => SvelteComponent {
 	switch (articleView) {
 		case 'Gallery':
 		case 'GalleryArticle':

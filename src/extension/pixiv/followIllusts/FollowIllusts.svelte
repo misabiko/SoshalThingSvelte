@@ -81,7 +81,7 @@
 	{/if}
 </svelte:head>
 
-<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
 <a
 	use:portal={activatorMount}
 	id='favvieweractivator'

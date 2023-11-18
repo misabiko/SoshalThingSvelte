@@ -1,12 +1,12 @@
 //TODO Merge with pixiv's tryInject
-export async function tryInject(elementQuery: () => Element | null | undefined, delayMs = 500): Promise<Element> {
+export async function tryInject(elementQuery: () => Element | null, delayMs = 500): Promise<Element> {
 	let attempts = 0;
 	let element: Element | null = null;
 	return new Promise((resolve, reject) => {
 		const intervalId = setInterval(() => {
 			console.log('Check if we can inject...');
 			element = elementQuery();
-			if (element !== null && element !== undefined) {
+			if (element !== null) {
 				clearInterval(intervalId);
 				console.log('Injecting soshalthing...');
 				resolve(element);

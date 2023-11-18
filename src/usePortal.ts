@@ -1,4 +1,4 @@
-export default function portal(node: HTMLElement, target: HTMLElement) {
+export default function portal(node: Element, target: Element) {
 	target.appendChild(node);
 
 	return {

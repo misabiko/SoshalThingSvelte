@@ -10,7 +10,7 @@
 
 	export let articleProps: ArticleProps
 	export let timelineProps: TimelineArticleProps
-	export let view: typeof SvelteComponent
+	export let view: new (...args: any[]) => SvelteComponent;
 	export let style = ''; style;
 	let modal = false
 	let showAllMedia = false

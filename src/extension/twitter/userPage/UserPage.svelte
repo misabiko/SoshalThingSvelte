@@ -59,7 +59,9 @@
 
 	let favviewerHidden = currentTimeline === null || userId === null;
 	let favviewerMaximized = mainStorage.maximized;
-	let activatorMount = document.querySelector('nav[aria-label="Primary"]');
+	const activatorMount = document.querySelector('nav[aria-label="Primary"]');
+	if (activatorMount === null)
+		 throw new Error('Could not find activator mount');
 
 	const timelineView: TimelineView = {
 		timelineIds: Object.keys(timelines),
@@ -98,7 +100,7 @@
 	{/if}
 </svelte:head>
 
-<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
 <a
 	use:portal={activatorMount}
 	id='favvieweractivator'

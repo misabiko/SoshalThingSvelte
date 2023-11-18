@@ -4,11 +4,11 @@
 	import {defaultTimeline} from '../../../timelines'
 	import MasonryContainer from '../../../containers/MasonryContainer.svelte'
 	import {loadMainStorage} from '../../../storages'
-	import portal from '../../../usePortal'
     import { everyRefreshType } from "services/endpoints";
     import UserTweetsAPI, { TimelineType } from "services/twitter/endpoints/domainEndpoints/UserTweetsAPI";
     import ColumnContainer from "containers/ColumnContainer.svelte";
     import { SortMethod } from "sorting";
+    import SidebarActivator from "../SidebarActivator.svelte";
 
 	const split = location.pathname.split('/');
 	const username = split[1];
@@ -59,9 +59,6 @@
 
 	let favviewerHidden = currentTimeline === null || userId === null;
 	let favviewerMaximized = mainStorage.maximized;
-	const activatorMount = document.querySelector('nav[aria-label="Primary"]');
-	if (activatorMount === null)
-		 throw new Error('Could not find activator mount');
 
 	const timelineView: TimelineView = {
 		timelineIds: Object.keys(timelines),
@@ -100,15 +97,7 @@
 	{/if}
 </svelte:head>
 
-<!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
-<a
-	use:portal={activatorMount}
-	id='favvieweractivator'
-	class={activatorMount.children[0].className}
-	on:click={() => favviewerHidden = !favviewerHidden}
->
-	SoshalThing
-</a>
+<SidebarActivator bind:favviewerHidden/>
 
 <SoshalThing
 	bind:favviewerHidden

@@ -9,6 +9,9 @@ export default class UserTweetsAPI extends Endpoint {
 	readonly name: string;
 	readonly endpointPath: string;
 
+	topCursor: string | null = null;
+	bottomCursor: string | null = null;
+
 	constructor(readonly timelineType: TimelineType, readonly username: string, readonly userId: string) {
 		super(new Set([RefreshType.RefreshStart, RefreshType.Refresh]));
 
@@ -26,7 +29,7 @@ export default class UserTweetsAPI extends Endpoint {
 		}
 	}
 
-	async refresh(_refreshType: RefreshType): Promise<ArticleWithRefs[]> {
+	async refresh(refreshType: RefreshType): Promise<ArticleWithRefs[]> {
 		const bearerToken = getServiceStorage(TwitterService.name).bearerToken;
 		if (!bearerToken)
 			throw new Error('Bearer token not found');
@@ -34,7 +37,19 @@ export default class UserTweetsAPI extends Endpoint {
 		if (csrfToken === null)
 			throw new Error('Csrf token not found');
 
-		const response = await fetch(`https://twitter.com/i/api/graphql/${this.endpointPath}${fetchParams(this.userId)}`, {
+		let cursor: string | undefined = undefined;
+		switch (refreshType) {
+			case RefreshType.LoadTop:
+				if (this.topCursor)
+					cursor = this.topCursor;
+				break;
+			case RefreshType.LoadBottom:
+				if (this.bottomCursor)
+					cursor = this.bottomCursor;
+				break;
+		}
+
+		const response = await fetch(`https://twitter.com/i/api/graphql/${this.endpointPath}${fetchParams(cursor, this.userId)}`, {
 			headers: {
 				'Authorization': 'Bearer ' + bearerToken,
 				'X-Csrf-Token': csrfToken,
@@ -45,7 +60,37 @@ export default class UserTweetsAPI extends Endpoint {
 		if ('errors' in data)
 			throw new Error('Error fetching tweets: ' + data.errors.map(e => e.message).join('\n'));
 
-		return parseResponse(data.data.user.result.timeline_v2.timeline.instructions);
+		const instructions = data.data.user.result.timeline_v2.timeline.instructions;
+
+		//TODO Merge this and TimelineAPI's
+		const addEntries = instructions.find(i => i.type === 'TimelineAddEntries')?.entries;
+		if (addEntries) {
+			let foundTopCursor = false;
+			let foundBottomCursor = false;
+			for (const entry of addEntries) {
+				if (entry.entryId.startsWith('cursor-top')) {
+					this.topCursor = entry.content.value;
+					//TODO Make this reactive
+					this.refreshTypes.add(RefreshType.LoadTop);
+					foundTopCursor = true;
+				}else if (entry.entryId.startsWith('cursor-bottom')) {
+					this.bottomCursor = entry.content.value;
+					this.refreshTypes.add(RefreshType.LoadBottom);
+					foundBottomCursor = true;
+				}
+			}
+
+			if (!foundTopCursor) {
+				this.topCursor = null;
+				this.refreshTypes.delete(RefreshType.LoadTop);
+			}
+			if (!foundBottomCursor) {
+				this.bottomCursor = null;
+				this.refreshTypes.delete(RefreshType.LoadBottom);
+			}
+		}
+
+		return parseResponse(instructions);
 	}
 
 	matchParams(_params: any): boolean {
@@ -60,11 +105,11 @@ export enum TimelineType {
 	//Likes,
 }
 
-const fetchParams = (userId: string) => '?variables='
+const fetchParams = (cursor: string | undefined, userId: string) => '?variables='
 	+ encodeURIComponent(JSON.stringify({
 		userId,
 		// count: number,
-		// cursor: string,
+		cursor,
 		includePromotedContent: true,
 		// withQuickPromoteEligibilityTweetFields: true,
 		withVoice: false,

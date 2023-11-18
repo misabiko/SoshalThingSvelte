@@ -2,12 +2,15 @@ import type { ArticleWithRefs } from 'articles';
 import { Endpoint, RefreshType } from 'services/endpoints';
 import { parseResponse, type Instruction } from 'services/twitter/pageAPI';
 import { TwitterService } from 'services/twitter/service';
-import { getServiceStorage } from 'storages';
+import { getCookie, getServiceStorage } from 'storages';
 
 export default class TimelineAPI extends Endpoint {
 	readonly service = TwitterService.name;
 	readonly name: string;
 	readonly endpointPath: string;
+
+	topCursor: string | null = null;
+	bottomCursor: string | null = null;
 
 	constructor(readonly timelineType: TimelineType) {
 		super(new Set([RefreshType.RefreshStart, RefreshType.Refresh]));
@@ -26,17 +29,66 @@ export default class TimelineAPI extends Endpoint {
 		}
 	}
 
-	async refresh(_refreshType: RefreshType): Promise<ArticleWithRefs[]> {
-		const response = await fetch(`https://twitter.com/i/api/graphql/${this.endpointPath}${fetchParams}`, {
+	async refresh(refreshType: RefreshType): Promise<ArticleWithRefs[]> {
+		const bearerToken = getServiceStorage(TwitterService.name).bearerToken;
+		if (!bearerToken)
+			throw new Error('Bearer token not found');
+		const csrfToken = getCookie('ct0');
+		if (csrfToken === null)
+			throw new Error('Csrf token not found');
+
+		let cursor: string | undefined = undefined;
+		switch (refreshType) {
+			case RefreshType.LoadTop:
+				if (this.topCursor)
+					cursor = this.topCursor;
+				break;
+			case RefreshType.LoadBottom:
+				if (this.bottomCursor)
+					cursor = this.bottomCursor;
+				break;
+		}
+
+		const response = await fetch(`https://twitter.com/i/api/graphql/${this.endpointPath}${fetchParams(cursor)}`, {
 			headers: {
-				'Authorization': 'Bearer ' + getServiceStorage(TwitterService.name).bearerToken,
-				//TODO Redo typescript friendly cookie thing
-				'X-Csrf-Token': (await cookieStore.get('ct0')).value,
+				'Authorization': 'Bearer ' + bearerToken,
+				'X-Csrf-Token': csrfToken,
 			}
 		});
 		const data: HomeTimelineResponse = await response.json();
 
-		return parseResponse(data.data.home.home_timeline_urt.instructions);
+		if ('errors' in data)
+			throw new Error('Error fetching tweets: ' + data.errors.map(e => e.message).join('\n'));
+
+		const instructions = data.data.home.home_timeline_urt.instructions;
+
+		const addEntries = instructions.find(i => i.type === 'TimelineAddEntries')?.entries;
+		if (addEntries) {
+			let foundTopCursor = false;
+			let foundBottomCursor = false;
+			for (const entry of addEntries) {
+				if (entry.entryId.startsWith('cursor-top')) {
+					this.topCursor = entry.content.value;
+					this.refreshTypes.add(RefreshType.LoadTop);
+					foundTopCursor = true;
+				}else if (entry.entryId.startsWith('cursor-bottom')) {
+					this.bottomCursor = entry.content.value;
+					this.refreshTypes.add(RefreshType.LoadBottom);
+					foundBottomCursor = true;
+				}
+			}
+
+			if (!foundTopCursor) {
+				this.topCursor = null;
+				this.refreshTypes.delete(RefreshType.LoadTop);
+			}
+			if (!foundBottomCursor) {
+				this.bottomCursor = null;
+				this.refreshTypes.delete(RefreshType.LoadBottom);
+			}
+		}
+
+		return parseResponse(instructions);
 	}
 
 	matchParams(_params: any): boolean {
@@ -49,9 +101,10 @@ export enum TimelineType {
 	Following,
 }
 
-const fetchParams = '?variables='
+const fetchParams = (cursor: string | undefined) => '?variables='
 	+ encodeURIComponent(JSON.stringify({
-		includePromotedContent: true
+		includePromotedContent: true,
+		cursor,
 	}))
 	+ '&features='
 	+ encodeURIComponent(JSON.stringify({

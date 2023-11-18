@@ -2,7 +2,7 @@ import type { ArticleWithRefs } from 'articles';
 import { Endpoint, RefreshType } from 'services/endpoints';
 import { parseResponse, type Instruction, type ResponseError } from 'services/twitter/pageAPI';
 import { TwitterService } from 'services/twitter/service';
-import { getServiceStorage } from 'storages';
+import { getCookie, getServiceStorage } from 'storages';
 
 export default class UserTweetsAPI extends Endpoint {
 	readonly service = TwitterService.name;
@@ -27,11 +27,17 @@ export default class UserTweetsAPI extends Endpoint {
 	}
 
 	async refresh(_refreshType: RefreshType): Promise<ArticleWithRefs[]> {
+		const bearerToken = getServiceStorage(TwitterService.name).bearerToken;
+		if (!bearerToken)
+			throw new Error('Bearer token not found');
+		const csrfToken = getCookie('ct0');
+		if (csrfToken === null)
+			throw new Error('Csrf token not found');
+
 		const response = await fetch(`https://twitter.com/i/api/graphql/${this.endpointPath}${fetchParams(this.userId)}`, {
 			headers: {
-				'Authorization': 'Bearer ' + getServiceStorage(TwitterService.name).bearerToken,
-				//TODO Redo typescript friendly cookie thing
-				'X-Csrf-Token': (await cookieStore.get('ct0')).value,
+				'Authorization': 'Bearer ' + bearerToken,
+				'X-Csrf-Token': csrfToken,
 			}
 		});
 		const data: UserTweetsResponse = await response.json();

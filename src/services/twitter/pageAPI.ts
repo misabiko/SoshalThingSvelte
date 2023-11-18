@@ -8,7 +8,7 @@ import { TwitterService } from './service';
 import { getWritable } from 'services/service';
 import { get } from 'svelte/store';
 import { sendRequest } from 'services/remotePage';
-import { getServiceStorage } from 'storages';
+import { getCookie, getServiceStorage } from 'storages';
 
 export function parseResponse(instructions: Instruction[]): ArticleWithRefs[] {
 	if (instructions.filter(i => i.type === 'TimelineAddEntries').length !== 1)
@@ -338,13 +338,20 @@ export async function retweetPage(idPair: ArticleIdPair) {
 }
 
 async function pageRequest<T>(queryId: string, endpoint: string, tweetId: string): Promise<T> {
+	const bearerToken = getServiceStorage(TwitterService.name).bearerToken;
+	if (!bearerToken)
+		throw new Error('Bearer token not found');
+	const csrfToken = getCookie('ct0');
+	if (csrfToken === null)
+		throw new Error('Csrf token not found');
+
 	const response = await fetch(`https://twitter.com/i/api/graphql/${queryId}/${endpoint}`, {
 		method: 'POST',
 
 		headers: {
 			'Content-Type': 'application/json',
-			'Authorization': 'Bearer ' + getServiceStorage(TwitterService.name).bearerToken,
-			'X-Csrf-Token': (await cookieStore.get('ct0')).value,
+			'Authorization': 'Bearer ' + bearerToken,
+			'X-Csrf-Token': csrfToken,
 		},
 
 		body: JSON.stringify({

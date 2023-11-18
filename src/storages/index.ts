@@ -1,16 +1,16 @@
-import type {FullscreenInfo, TimelineCollection, TimelineEndpoint, TimelineView} from '../timelines';
-import type {SvelteComponent} from 'svelte';
+import type { FullscreenInfo, TimelineCollection, TimelineEndpoint, TimelineView } from '../timelines';
+import type { SvelteComponent } from 'svelte';
 import ColumnContainer from '../containers/ColumnContainer.svelte';
 import RowContainer from '../containers/RowContainer.svelte';
 import MasonryContainer from '../containers/MasonryContainer.svelte';
 import SocialArticleView from '../articles/social/SocialArticleView.svelte';
 import GalleryArticleView from '../articles/gallery/GalleryArticleView.svelte';
-import {getServices} from '../services/service';
-import type {FilterInstance} from '../filters';
-import type {SortInfo} from '../sorting';
-import {SortMethod} from '../sorting';
-import {defaultTimeline} from '../timelines';
-import {defaultFilterInstances} from '../filters';
+import { getServices } from '../services/service';
+import type { FilterInstance } from '../filters';
+import type { SortInfo } from '../sorting';
+import { SortMethod } from '../sorting';
+import { defaultTimeline } from '../timelines';
+import { defaultFilterInstances } from '../filters';
 import {
 	addEndpoint,
 	Endpoint,
@@ -18,8 +18,8 @@ import {
 	RefreshType,
 	startAutoRefresh,
 } from '../services/endpoints';
-import type {EndpointConstructorParams} from '../services/endpoints';
-import {derived, get} from 'svelte/store';
+import type { EndpointConstructorParams } from '../services/endpoints';
+import { derived, get } from 'svelte/store';
 
 export const MAIN_STORAGE_KEY = 'SoshalThingSvelte';
 export const TIMELINE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Timelines';
@@ -79,7 +79,7 @@ export function updateMaximized(maximized: boolean) {
 }
 
 export function updateFullscreenStorage(fullscreen: FullscreenInfo) {
-	const stringified: any = {...fullscreen};
+	const stringified: any = { ...fullscreen };
 	if (stringified.container)
 		stringified.container = stringified.container.name;
 
@@ -88,7 +88,7 @@ export function updateFullscreenStorage(fullscreen: FullscreenInfo) {
 
 export function loadTimelines(): TimelineCollection {
 	const item = localStorage.getItem(TIMELINE_STORAGE_KEY);
-	let storage: {[id: string]: Partial<TimelineStorage>} = item ? JSON.parse(item) : {};
+	let storage: { [id: string]: Partial<TimelineStorage> } = item ? JSON.parse(item) : {};
 	if (storage instanceof Array) {
 		console.warn('SoshalThingSvelte Timelines should be an object {[id: string]: TimelineStorage}');
 		storage = Object.assign({}, storage);
@@ -153,8 +153,19 @@ export function updateTimelinesStorage(timelines: TimelineCollection) {
 	localStorage.setItem(TIMELINE_STORAGE_KEY, JSON.stringify(storage));
 }
 
+//maybe would fit better in a utils file
+//https://stackoverflow.com/a/21125098/2692695
+export function getCookie(name: string): string | null {
+	const regex = new RegExp(`(^| )${name}=([^;]+)`);
+	const match = document.cookie.match(regex);
+	if (match)
+		return match[2];
+	else
+		return null;
+}
+
 function parseContainer(container: string | undefined): new (...args: any[]) => SvelteComponent {
-	switch(container) {
+	switch (container) {
 		case 'Row':
 		case 'RowContainer':
 			return RowContainer;
@@ -188,7 +199,7 @@ function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | unde
 	if (!Object.hasOwn(services, storage.service)) {
 		console.error(`"${storage.service}" isn't a registered service`);
 		return undefined;
-	}else if (services[storage.service].endpointConstructors.length <= storage.endpointType) {
+	} else if (services[storage.service].endpointConstructors.length <= storage.endpointType) {
 		console.error(`"${storage.service}" doesn't have endpointType "${storage.endpointType}"`);
 		return undefined;
 	}
@@ -234,7 +245,7 @@ function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | unde
 	};
 }
 
-function parseSortInfo({method, reversed}: TimelineStorage['sortInfo']): SortInfo {
+function parseSortInfo({ method, reversed }: TimelineStorage['sortInfo']): SortInfo {
 	let sortMethod: SortMethod | null = null;
 	switch (method?.toLowerCase()) {
 		case 'id':
@@ -298,14 +309,14 @@ function parseFullscreenInfo(fullscreen?: boolean | number | FullscreenInfoStora
 
 type MainStorage = Partial<MainStorageParsed> & {
 	defaultTimelineView?: string
-	timelineViews: {[name: string]: TimelineViewStorage}
+	timelineViews: { [name: string]: TimelineViewStorage }
 	fullscreen?: boolean | number | FullscreenInfoStorage
 }
 
 type MainStorageParsed = {
 	timelineIds: TimelineView['timelineIds'] | null
 	defaultTimelineView: string | null
-	timelineViews: {[name: string]: TimelineView}
+	timelineViews: { [name: string]: TimelineView }
 	fullscreen: FullscreenInfo
 	maximized: boolean
 	markAsReadLocal: boolean

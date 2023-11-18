@@ -5,36 +5,47 @@
 	import MasonryContainer from '../../../containers/MasonryContainer.svelte'
 	import {loadMainStorage} from '../../../storages'
 	import portal from '../../../usePortal'
-    import TimelineAPI, { TimelineType } from "services/twitter/endpoints/domainEndpoints/TimelineAPI";
     import { everyRefreshType } from "services/endpoints";
+    import UserTweetsAPI, { TimelineType } from "services/twitter/endpoints/domainEndpoints/UserTweetsAPI";
+    import ColumnContainer from "containers/ColumnContainer.svelte";
     import { SortMethod } from "sorting";
 
+	const split = location.pathname.split('/');
+	const username = split[1];
+
 	let currentTimeline: TimelineType | null;
-	switch (document.querySelector('div[role="presentation"] > a[aria-selected="true"] span')!.textContent) {
-		case 'For you':
-			currentTimeline = TimelineType.ForYou;
+	switch (split[split.length - 1]) {
+		case username:
+			currentTimeline = TimelineType.Tweets;
 			break;
-		case 'Following':
-			currentTimeline = TimelineType.Following;
+		case 'media':
+			currentTimeline = TimelineType.Media;
 			break;
 		default:
 			currentTimeline = null;
 			break;
 	}
 
-	const endpoints = currentTimeline === null ? [] : [{
-		endpoint: new TimelineAPI(currentTimeline),
+	const profileSchema = document.querySelector('script[data-testid="UserProfileSchema-test"]')?.textContent;
+	let userId: string | null = null;
+	if (!profileSchema)
+		console.error('Could not find profile schema to get userId');
+	else
+		userId = JSON.parse(profileSchema).author.identifier;
+
+	const endpoints = currentTimeline === null || userId === null ? [] : [{
+		endpoint: new UserTweetsAPI(currentTimeline, username, userId),
 		refreshTypes: everyRefreshType,
 		filters: [],
 	}];
 
 	const timelines: TimelineCollection = {
-		'Home': {
+		username: {
 			...defaultTimeline(),
-			title: 'Home',
+			title: username,
 			endpoints,
-			container: MasonryContainer,
-			columnCount: 2,
+			container: ColumnContainer,
+			columnCount: 4,
 			animatedAsGifs: true,
 			sortInfo: {
 				method: SortMethod.Date,
@@ -46,7 +57,7 @@
 
 	const mainStorage = loadMainStorage();
 
-	let favviewerHidden = currentTimeline === null;
+	let favviewerHidden = currentTimeline === null || userId === null;
 	let favviewerMaximized = mainStorage.maximized;
 	let activatorMount = document.querySelector('nav[aria-label="Primary"]');
 
@@ -80,17 +91,7 @@
 		</style>
 	{:else}
 		<style>
-			/* div[aria-label="Home timeline"] {
-				height: 100%;
-			} */
-
-			/* I think making the timeline stop at viewport forces twitter to spam refresh */
-			/* div[aria-label="Home timeline"] > div:nth-child(6) {
-				display: none;
-			} */
-
 			.soshalthing {
-				/* flex-grow: 1; */
 				height: 80vh;
 			}
 		</style>

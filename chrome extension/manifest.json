@@ -52,6 +52,20 @@
 			],
 			"js": ["dist/twitter/homePage/entry.js"],
 			"css": ["dist/twitter/homePage/entry.css"]
+		},
+		{
+			"matches": [
+				"https://*.twitter.com/*",
+				"https://*.x.com/*"
+			],
+			"exclude_matches": [
+				"https://*.twitter.com/home",
+				"https://*.x.com/home",
+				"https://*.twitter.com/*/status*",
+				"https://*.x.com/*/status*"
+			],
+			"js": ["dist/twitter/userPage/entry.js"],
+			"css": ["dist/twitter/userPage/entry.css"]
 		}
 	]
 }

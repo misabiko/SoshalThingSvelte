@@ -18,14 +18,18 @@ const DedupSvelteInternalPlugin = {
 
 const outdir = './chrome extension/dist';
 
+
+//TODO Recursively look for "entry.ts" in src/extension, apparently recursive is fixed but not released yet
+//const entryPoints = fs.readdirSync('./src/extension', { recursive: true, withFileTypes: true });
+
 const extensionBuildOptions = {
 	...buildOptions,
 	entryPoints: [
 		'./src/extension/background.js',
-		//TODO Recursively look for "entry.ts" in src/extension
 		'./src/extension/pixiv/userPage/entry.ts',
 		'./src/extension/pixiv/followIllusts/entry.ts',
 		'./src/extension/twitter/homePage/entry.ts',
+		'./src/extension/twitter/userPage/entry.ts',
 	],
 	outdir,
 	splitting: false,

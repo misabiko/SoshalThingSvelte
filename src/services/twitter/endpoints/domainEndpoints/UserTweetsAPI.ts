@@ -1,25 +1,25 @@
 import type { ArticleWithRefs } from 'articles';
 import { Endpoint, RefreshType } from 'services/endpoints';
-import { parseResponse, type Instruction } from 'services/twitter/pageAPI';
+import { parseResponse, type Instruction, type ResponseError } from 'services/twitter/pageAPI';
 import { TwitterService } from 'services/twitter/service';
 import { getServiceStorage } from 'storages';
 
-export default class TimelineAPI extends Endpoint {
+export default class UserTweetsAPI extends Endpoint {
 	readonly service = TwitterService.name;
 	readonly name: string;
 	readonly endpointPath: string;
 
-	constructor(readonly timelineType: TimelineType) {
+	constructor(readonly timelineType: TimelineType, readonly username: string, readonly userId: string) {
 		super(new Set([RefreshType.RefreshStart, RefreshType.Refresh]));
 
 		switch (timelineType) {
-			case TimelineType.ForYou:
-				this.name = 'ForYouTimelineAPI';
-				this.endpointPath = 'QwrCVrjexN3CAvAAVDU5iw/HomeTimeline';
+			case TimelineType.Tweets:
+				this.name = 'UserTweetsAPI(' + username + ')';
+				this.endpointPath = 'VgitpdpNZ-RUIp5D1Z_D-A/UserTweets';
 				break;
-			case TimelineType.Following:
-				this.name = 'FollowingTimelineAPI';
-				this.endpointPath = 'Qe2CCi4SE0Dvsb1TYrDfKQ/HomeLatestTimeline';
+			case TimelineType.Media:
+				this.name = 'UserMediaAPI(' + username + ')';
+				this.endpointPath = '7_ZP_xN3Bcq1I2QkK5yc2w/UserMedia';
 				break;
 			default:
 				throw new Error('Unsupported timeline type');
@@ -27,16 +27,19 @@ export default class TimelineAPI extends Endpoint {
 	}
 
 	async refresh(_refreshType: RefreshType): Promise<ArticleWithRefs[]> {
-		const response = await fetch(`https://twitter.com/i/api/graphql/${this.endpointPath}${fetchParams}`, {
+		const response = await fetch(`https://twitter.com/i/api/graphql/${this.endpointPath}${fetchParams(this.userId)}`, {
 			headers: {
 				'Authorization': 'Bearer ' + getServiceStorage(TwitterService.name).bearerToken,
 				//TODO Redo typescript friendly cookie thing
 				'X-Csrf-Token': (await cookieStore.get('ct0')).value,
 			}
 		});
-		const data: HomeTimelineResponse = await response.json();
+		const data: UserTweetsResponse = await response.json();
 
-		return parseResponse(data.data.home.home_timeline_urt.instructions);
+		if ('errors' in data)
+			throw new Error('Error fetching tweets: ' + data.errors.map(e => e.message).join('\n'));
+
+		return parseResponse(data.data.user.result.timeline_v2.timeline.instructions);
 	}
 
 	matchParams(_params: any): boolean {
@@ -45,13 +48,22 @@ export default class TimelineAPI extends Endpoint {
 }
 
 export enum TimelineType {
-	ForYou,
-	Following,
+	Tweets,
+	//Replies,
+	Media,
+	//Likes,
 }
 
-const fetchParams = '?variables='
+const fetchParams = (userId: string) => '?variables='
 	+ encodeURIComponent(JSON.stringify({
-		includePromotedContent: true
+		userId,
+		// count: number,
+		// cursor: string,
+		includePromotedContent: true,
+		// withQuickPromoteEligibilityTweetFields: true,
+		withVoice: false,
+		//withV2Timeline is optional and false by default, but we parse in v2 anyway
+		withV2Timeline: true,
 	}))
 	+ '&features='
 	+ encodeURIComponent(JSON.stringify({
@@ -78,14 +90,17 @@ const fetchParams = '?variables='
 		responsive_web_enhance_cards_enabled: false
 	}));
 
-type HomeTimelineResponse = {
+type UserTweetsResponse = {
 	data: {
-		home: {
-			home_timeline_urt: {
-				instructions: Instruction[]
-				responseObjects: object
-				metadata: object
+		user: {
+			result: {
+				timeline_v2: {
+					timeline: {
+						instructions: Instruction[]
+						metadata: object
+					}
+				}
 			}
 		}
 	}
-};
+} | ResponseError;

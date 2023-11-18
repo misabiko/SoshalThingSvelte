@@ -388,7 +388,7 @@ type RetweetResponse = {
 	errors: undefined;
 } | ResponseError;
 
-type ResponseError = {
+export type ResponseError = {
 	errors: ({
 		message: string;
 		locations: {

@@ -15,11 +15,18 @@
 		throw new Error("Could not find sidebar menu button");
 
 	let hovered = false;
+
+	//7 should be the "buy premium" button, which least probable to be selected
+	const sampleMenuItem = activatorMount.children[7];
 </script>
 
 <style>
-	.svelte-fa {
+	:global(.twitterMenuIcon > svg) {
 		padding: 0 3px;
+	}
+
+	.soshalHovered {
+		background-color: rgba(231, 233, 234, 0.1);
 	}
 </style>
 
@@ -27,25 +34,25 @@
 <a
 	use:portal={{ target: activatorMount, insertBefore: sidebarMenuButton }}
 	id="favvieweractivator"
-	class={activatorMount.children[0].className}
+	class={sampleMenuItem.className}
 	on:click={() => (favviewerHidden = !favviewerHidden)}
 	on:mouseenter={() => {hovered = true}}
 	on:mouseleave={() => {hovered = false}}
 >
 	<div
-		class="css-1dbjc4n r-1awozwy r-sdzlij r-18u37iz r-1777fci r-dnmrzs r-xyw6el r-o7ynqc r-6416eg"
-		class:r-3al2xr={hovered}
+		class={sampleMenuItem?.firstElementChild?.className}
+		class:soshalHovered={hovered}
 	>
-		<div class="css-1dbjc4n">
+		<div class={sampleMenuItem?.firstElementChild?.firstElementChild?.className + ' twitterMenuIcon'}>
 			<Fa icon={faCrow} flip='horizontal'/>
 		</div>
 		<div
 			dir="ltr"
-			class="css-901oao css-1hf3ou5 r-vlxjld r-37j5jr r-adyw6z r-16dba41 r-135wba7 r-1joea0r r-88pszg r-bcqeeo r-qvutc0"
+			class={sampleMenuItem?.firstElementChild?.children[1]?.className}
 			style="text-overflow: unset;"
 		>
 			<span
-				class="css-901oao css-16my406 r-poiln3 r-bcqeeo r-qvutc0"
+				class={sampleMenuItem?.firstElementChild?.children[1]?.firstElementChild?.className}
 				style="text-overflow: unset;">SoshalThing</span
 			>
 		</div>

@@ -2,7 +2,7 @@
 	//TODO Make settings menu dynamically per-service
 	import {extensionCheck, extensionContextStore, fetchExtension, fetchExtensionService} from "../services/extension.js"
 	import {TwitterService} from '../services/twitter/service'
-	import {PixivService} from "../services/pixiv/service.js";
+	import {PixivService} from '../services/pixiv/service';
 	import {getServiceStorage, loadMainStorage, updateServiceStorage} from "../storages"
 	import {updateMainStorage} from "../storages";
 
@@ -31,8 +31,9 @@
 		console.log(html.getElementsByTagName('article'));
 	}
 
-	const pixivStorage = getServiceStorage(PixivService.name)
-	const mainStorage = loadMainStorage()
+	const twitterStorage = getServiceStorage(TwitterService.name) ?? '';
+	const pixivStorage = getServiceStorage(PixivService.name) ?? '';
+	const mainStorage = loadMainStorage();
 </script>
 
 <label class='field'>
@@ -52,6 +53,11 @@
 		bind:checked={mainStorage.markAsReadLocal}
 		on:input={e => updateMainStorage('markAsReadLocal', e.target.checked)}
 	/>
+</label>
+
+<label class='field'>
+	Twitter Bearer Token
+	<input value={twitterStorage.csrfToken} on:change={e => updateServiceStorage(TwitterService.name, 'bearerToken', e.target.value)}/>
 </label>
 
 <div>

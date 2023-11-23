@@ -24,6 +24,7 @@
 	export let toggleFullscreen: (() => void) | undefined = undefined
 	export let removeTimeline: () => void
 	export let setModalTimeline: (data: TimelineData, width?: number) => void
+	export let modal = false;
 
 	export let favviewerButtons = false
 	export let favviewerHidden = false
@@ -312,6 +313,7 @@
 
 	:global(.modal .timeline) {
 		width: unset;
+		background-color: var(--body-background-color);
 	}
 
 	:global(.articlesContainer) {
@@ -329,7 +331,7 @@
 	}
 </style>
 
-<div class='timeline' class:fullscreenTimeline={fullscreen !== undefined} style='{data.width > 1 ? `width: ${data.width * 500}px` : ""}'>
+<div class='timeline' class:fullscreenTimeline={fullscreen !== undefined} style={modal ? '' : '{data.width > 1 ? `width: ${data.width * 500}px` : ""}'}>
 	<TimelineHeader
 		bind:data
 		bind:availableRefreshTypes

@@ -88,8 +88,8 @@ function articleFromResult(result: Result): ArticleWithRefs {
 		};
 }
 
-export type Instruction = AddEntriesInstruction | { type: string };
-type AddEntriesInstruction = {
+export type Instruction = AddEntriesInstruction | { type: Omit<string, 'TimelineAddEntries'> };
+export type AddEntriesInstruction = {
 	type: 'TimelineAddEntries';
 	entries: Entry[];
 };
@@ -97,14 +97,21 @@ type AddEntriesInstruction = {
 type Entry = {
 	entryId: string;
 	sortIndex: string;
-	content: {
-		entryType: 'TimelineTimelineItem';
-		itemContent: {
-			tweet_results: {
-				result: Result
+	content:
+		| {
+			entryType: 'TimelineTimelineItem';
+			itemContent: {
+				tweet_results: {
+					result: Result
+				}
 			}
 		}
-	}
+		| {
+			entryType: 'TimelineTimelineCursor'
+			__typename: 'TimelineTimelineCursor'
+			value: string
+			cursorType: 'Top' | 'Bottom'
+		}
 }
 
 type Result = {

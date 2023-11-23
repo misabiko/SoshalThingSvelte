@@ -46,6 +46,7 @@
 		margin: 5em;
 		z-index: 1001;
 		overflow-y: auto;
+		pointer-events: visible;
 	}
 </style>
 

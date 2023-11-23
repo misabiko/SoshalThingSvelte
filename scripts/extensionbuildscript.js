@@ -29,6 +29,7 @@ const extensionBuildOptions = {
 		'./src/extension/pixiv/followIllusts/entry.ts',
 		'./src/extension/twitter/homePage/entry.ts',
 		'./src/extension/twitter/userPage/entry.ts',
+		'./src/extension/twitter/listPage/entry.ts',
 	],
 	outdir,
 	splitting: false,

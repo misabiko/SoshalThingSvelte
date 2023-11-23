@@ -58,10 +58,20 @@
 				"https://*.twitter.com/home",
 				"https://*.x.com/home",
 				"https://*.twitter.com/*/status*",
-				"https://*.x.com/*/status*"
+				"https://*.x.com/*/status*",
+				"https://*.twitter.com/i/lists/*",
+				"https://*.x.com/i/lists/*"
 			],
 			"js": ["dist/twitter/userPage/entry.js"],
 			"css": ["dist/twitter/userPage/entry.css"]
+		},
+		{
+			"matches": [
+				"https://*.twitter.com/i/lists/*",
+				"https://*.x.com/i/lists/*"
+			],
+			"js": ["dist/twitter/listPage/entry.js"],
+			"css": ["dist/twitter/listPage/entry.css"]
 		}
 	]
 }

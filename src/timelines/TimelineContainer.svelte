@@ -112,6 +112,7 @@
 				data={modalTimeline}
 				{setModalTimeline}
 				removeTimeline={() => modalTimeline = null}
+				modal={true}
 			/>
 		</Modal>
 	{/if}

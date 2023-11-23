@@ -1,3 +1,4 @@
+import 'services/twitter/endpoints';
 //TODO Merge with pixiv's tryInject
 export async function tryInject(elementQuery: () => Element | null, delayMs = 500): Promise<Element> {
 	let attempts = 0;

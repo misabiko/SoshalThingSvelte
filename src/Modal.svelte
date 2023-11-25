@@ -1,16 +1,18 @@
 <script lang='ts'>
 	//https://github.com/c0bra/svelma/blob/master/src/components/Modal/Modal.svelte
 	//https://svelte.dev/examples/modal
-	export let active: boolean;
-	export let mountElement: Element | null = null;
+	let { active, mountElement } = $props<{
+		active: boolean;
+		mountElement: HTMLElement | null;
+	}>();
 
 	let modal: HTMLDivElement;
 
-	$: {
+	$effect(() => {
 		if (modal && active && mountElement) {
 			mountElement.appendChild(modal)
 		}
-	}
+	});
 
 	function close() {
 		active = false;

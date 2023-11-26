@@ -36,7 +36,11 @@ const SveltePlugin = {
 			// Convert Svelte syntax to JavaScript
 			try {
 				const {code: preprocessed} = await svelte.preprocess(source, sveltePreprocess(), { filename });
-				let { js, warnings } = svelte.compile(preprocessed, { filename, dev: process.env.NODE_ENV === 'development' });
+				let { js, warnings } = svelte.compile(preprocessed, {
+					filename,
+					dev: process.env.NODE_ENV === 'development',
+					css: 'injected', //TODO Probably temporary while we wait for svelte-preprocess to work
+				});
 				const contents = js.code + '//# sourceMappingURL=' + js.map.toUrl();
 
 				warnings = warnings

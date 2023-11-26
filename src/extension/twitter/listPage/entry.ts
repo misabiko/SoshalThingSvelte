@@ -1,3 +1,4 @@
+import { mount } from 'svelte';
 import { tryInject } from '..';
 import ListPage from './ListPage.svelte';
 
@@ -13,5 +14,9 @@ tryInject(() => {
 		if (!anchor)
 			throw new Error("Couldn't find anchor");
 
-		new ListPage({ target, anchor });
+		const soshalanchor = document.createElement('div');
+		soshalanchor.id = 'soshalanchor';
+		target.insertBefore(soshalanchor, anchor);
+
+		mount(ListPage, { target: soshalanchor });
 	});

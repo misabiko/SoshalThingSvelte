@@ -1,3 +1,4 @@
+import { mount } from 'svelte';
 import UserArtworksPage from './UserArtworksPage.svelte';
 import {tryInject} from '../index';
 import UserBookmarksPage from './UserBookmarksPage.svelte';
@@ -17,7 +18,11 @@ if (path.length === 4 || path[4] === 'illustrations' || path[4] === 'artworks') 
 		if (!target)
 			throw new Error("Couldn't find ul");
 
-		new UserArtworksPage({target, anchor});
+		const soshalanchor = document.createElement('div');
+		soshalanchor.id = 'soshalanchor';
+		target.insertBefore(soshalanchor, anchor);
+
+		mount(UserArtworksPage, {target: soshalanchor});
 	});
 }else if (path[4] === 'bookmarks') {
 	tryInject(() => {
@@ -33,6 +38,10 @@ if (path.length === 4 || path[4] === 'illustrations' || path[4] === 'artworks') 
 			if (!target)
 				throw new Error("Couldn't find ul");
 
-			new UserBookmarksPage({target, anchor});
+			const soshalanchor = document.createElement('div');
+			soshalanchor.id = 'soshalanchor';
+			target.insertBefore(soshalanchor, anchor);
+
+			mount(UserBookmarksPage, {target: soshalanchor});
 		});
 }

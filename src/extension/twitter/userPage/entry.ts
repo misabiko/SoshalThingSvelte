@@ -1,3 +1,4 @@
+import { mount } from 'svelte';
 import { tryInject } from '..';
 import UserPage from './UserPage.svelte';
 
@@ -7,5 +8,9 @@ tryInject(() => document.querySelector('nav[aria-label="Profile timelines"]')?.p
 		if (!target)
 			throw new Error("Couldn't find target");
 
-		new UserPage({ target, anchor });
+		const soshalanchor = document.createElement('div');
+		soshalanchor.id = 'soshalanchor';
+		target.insertBefore(soshalanchor, anchor);
+
+		mount(UserPage, { target: soshalanchor });
 	});

@@ -37,36 +37,36 @@
 	let loadingStates: LoadingState[]
 	$: {
 		loadingStates = []
-		for (let mediaIndex = 0; mediaIndex < actualArticle.medias.length; ++mediaIndex)
-			loadingStates.push(loadingStore.getLoadingState(actualArticle.idPair, mediaIndex, timelineProps.shouldLoadMedia))
+		// for (let mediaIndex = 0; mediaIndex < actualArticle.medias.length; ++mediaIndex)
+		// 	loadingStates.push(loadingStore.getLoadingState(actualArticle.idPair, mediaIndex, timelineProps.shouldLoadMedia))
 	}
 
 	let divRef: HTMLDivElement | null = null
 
-	afterUpdate(() => {
-		//TODO Use mediaRefs?
-		const articleMediaEls = divRef?.querySelectorAll('.articleMedia')
-		if (articleMediaEls) {
-			const modifiedMedias = []
-			for (let i = 0; i < actualArticle.medias.length; ++i)
-				if (actualArticle.medias[i].ratio === null)
-					modifiedMedias.push([i, articleMediaEls[i].clientHeight / articleMediaEls[i].clientWidth])
+	// afterUpdate(() => {
+	// 	//TODO Use mediaRefs?
+	// 	const articleMediaEls = divRef?.querySelectorAll('.articleMedia')
+	// 	if (articleMediaEls) {
+	// 		const modifiedMedias = []
+	// 		for (let i = 0; i < actualArticle.medias.length; ++i)
+	// 			if (actualArticle.medias[i].ratio === null)
+	// 				modifiedMedias.push([i, articleMediaEls[i].clientHeight / articleMediaEls[i].clientWidth])
 
-			getWritable(actualArticle.idPair).update(a => {
-				for (const [i, ratio] of modifiedMedias)
-					a.medias[i].ratio = ratio
-				return a
-			})
-		}
+	// 		getWritable(actualArticle.idPair).update(a => {
+	// 			for (const [i, ratio] of modifiedMedias)
+	// 				a.medias[i].ratio = ratio
+	// 			return a
+	// 		})
+	// 	}
 
-		const count = actualArticle.medias.length
-		for (let i = 0; i < count; ++i) {
-			if (actualArticle.medias[i].queueLoadInfo === MediaLoadType.LazyLoad && !actualArticle.medias[i].loaded) {
-				if (mediaRefs[i]?.complete)
-					loadingStore.mediaLoaded(actualArticle.idPair, i)
-			}
-		}
-	})
+	// 	const count = actualArticle.medias.length
+	// 	for (let i = 0; i < count; ++i) {
+	// 		if (actualArticle.medias[i].queueLoadInfo === MediaLoadType.LazyLoad && !actualArticle.medias[i].loaded) {
+	// 			if (mediaRefs[i]?.complete)
+	// 				loadingStore.mediaLoaded(actualArticle.idPair, i)
+	// 		}
+	// 	}
+	// })
 
 	let actions = Object.values(getServices()[rootArticle.idPair.service].articleActions)
 		.filter(a => a.icon !== undefined)

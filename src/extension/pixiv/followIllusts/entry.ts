@@ -1,3 +1,4 @@
+import { mount } from 'svelte';
 import FollowIllusts from './FollowIllusts.svelte';
 import {tryInject} from '../index';
 
@@ -8,5 +9,9 @@ tryInject(() => document.querySelector('section ul'))
 		if (!target)
 			throw new Error("Couldn't find ul");
 
-		new FollowIllusts({target, anchor});
+		const soshalanchor = document.createElement('div');
+		soshalanchor.id = 'soshalanchor';
+		anchor?.parentElement.insertBefore(target, anchor);
+
+		mount(FollowIllusts, { target: soshalanchor });
 	});

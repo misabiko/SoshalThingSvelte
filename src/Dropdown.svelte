@@ -10,11 +10,11 @@
 		labelClasses = '',
 		labelText = '',
 	} = $props<{
-		isActive: boolean,
-		isRight: boolean,
-		triggerClasses: string,
-		labelClasses: string,
-		labelText: string,
+		isActive?: boolean,
+		isRight?: boolean,
+		triggerClasses?: string,
+		labelClasses?: string,
+		labelText?: string,
 	}>();
 
 	let triggerRef = $state<HTMLButtonElement | null>(null);

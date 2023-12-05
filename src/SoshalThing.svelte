@@ -30,12 +30,12 @@
 		favviewerHidden = false,
 		favviewerMaximized = undefined,
 	} = $props<{
-		timelines: TimelineCollection,
-		timelineView: TimelineView,
-		timelineViews: {[name: string]: TimelineView},
-		isInjected: boolean,
-		favviewerHidden: boolean,
-		favviewerMaximized: boolean | undefined,
+		timelines?: TimelineCollection,
+		timelineView?: TimelineView,
+		timelineViews?: {[name: string]: TimelineView},
+		isInjected?: boolean,
+		favviewerHidden?: boolean,
+		favviewerMaximized?: boolean | undefined,
 	}>();
 
 	let modalTimeline = $state<TimelineData | null>(null);

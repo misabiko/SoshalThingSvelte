@@ -32,15 +32,15 @@
 		showSidebar = true,
 	} = $props<{
 		data: TimelineData,
-		fullscreen: FullscreenInfo,
-		toggleFullscreen: () => void,
+		fullscreen?: FullscreenInfo,
+		toggleFullscreen?: () => void,
 		removeTimeline: () => void,
 		setModalTimeline: (data: TimelineData, width?: number) => void,
-		modal: boolean,
-		favviewerButtons: boolean,
-		favviewerHidden: boolean,
-		favviewerMaximized: boolean,
-		showSidebar: boolean,
+		modal?: boolean,
+		favviewerButtons?: boolean,
+		favviewerHidden?: boolean,
+		favviewerMaximized?: boolean,
+		showSidebar?: boolean,
 	}>();
 
 	let showOptions = $state(false);
@@ -162,7 +162,11 @@
 		}
 	});
 
-	let availableRefreshTypes = $state<Set<RefreshType>>();
+	//TODO Try merging effects into state
+	let availableRefreshTypes = $state<Set<RefreshType>>(new Set(data.endpoints.flatMap(e => {
+			const endpoint = e.name !== undefined ? get(endpoints[e.name]) : e.endpoint
+			return [...endpoint.refreshTypes.values()]
+		})));
 	$effect(() => {
 		availableRefreshTypes = new Set(data.endpoints.flatMap(e => {
 			const endpoint = e.name !== undefined ? get(endpoints[e.name]) : e.endpoint

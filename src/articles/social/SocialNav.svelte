@@ -20,8 +20,8 @@
 		onLogJSON,
 	} = $props<{
 		article: Article,
-		repost: Article,
-		isQuoted: boolean,
+		repost?: Article,
+		isQuoted?: boolean,
 		modal: boolean,
 		timelineProps: TimelineArticleProps,
 		onLogData: () => void,

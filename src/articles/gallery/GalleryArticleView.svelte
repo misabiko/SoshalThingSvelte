@@ -35,7 +35,7 @@
 	} = $props<{
 		timelineProps: TimelineArticleProps,
 		articleProps: ArticleProps,
-		style: string,
+		style?: string,
 		modal: boolean,
 		showAllMedia: boolean,
 		rootArticle: Readonly<Article>,

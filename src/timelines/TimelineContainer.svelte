@@ -25,9 +25,9 @@
 		showSidebar,
 		modalTimelineActive,
 	} = $props<{
-		timelines: TimelineCollection,
+		timelines?: TimelineCollection,
 		modalTimeline: TimelineData | null,
-		timelineView: TimelineView,
+		timelineView?: TimelineView,
 		setModalTimeline: (data: TimelineData, width?: number) => void,
 		removeTimeline: (id: string) => void,
 		initialRefresh: (...refreshingTimelines: TimelineData[]) => void,

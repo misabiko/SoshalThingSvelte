@@ -8,7 +8,7 @@
 		containerRef = undefined,
 	} = $props<{
 		props: ContainerProps,
-		containerRef: HTMLDivElement | undefined,
+		containerRef?: HTMLDivElement | undefined,
 	}>();
 </script>
 

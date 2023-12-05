@@ -23,7 +23,7 @@
 		removeFiltered,
 	} = $props<{
 		data: TimelineData,
-		fullscreen: FullscreenInfo | undefined,
+		fullscreen?: FullscreenInfo | undefined,
 		removeTimeline: () => void,
 		sortOnce: (method: SortMethod, reversed: boolean) => void,
 		articleCountLabel: string,

@@ -73,5 +73,13 @@
 			"js": ["dist/twitter/listPage/entry.js"],
 			"css": ["dist/twitter/listPage/entry.css"]
 		}
-	]
+	],
+	"web_accessible_resources": [{
+		"resources": [
+			"dist/*.js.map",
+			"src/**/*.ts",
+			"src/**/*.svelte"
+		],
+		"matches": ["https://*.twitter.com/*", "https://*.x.com/*"]
+	}]
 }

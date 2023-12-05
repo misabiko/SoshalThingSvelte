@@ -1,6 +1,7 @@
 import fs from 'fs';
 import esbuild from 'esbuild';
 import * as svelte from 'svelte/compiler';
+import svelteConfig from '../svelte.config.js';
 import sveltePreprocess from 'svelte-preprocess';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -38,10 +39,10 @@ const SveltePlugin = {
 				const {code: preprocessed} = await svelte.preprocess(source, sveltePreprocess(), { filename });
 				let { js, warnings } = svelte.compile(preprocessed, {
 					filename,
-					dev: process.env.NODE_ENV === 'development',
-					css: 'injected', //TODO Probably temporary while we wait for svelte-preprocess to work
+					...svelteConfig,
+					runes: !filename.startsWith('node_modules'),
 				});
-				const contents = js.code + '//# sourceMappingURL=' + js.map.toUrl();
+				const contents = js.code;// + '//# sourceMappingURL=' + js.map.toUrl();
 
 				warnings = warnings
 					.filter(w =>
@@ -68,6 +69,9 @@ const entryIndex = process.argv.findIndex(s => s === '--entry');
 if (entryIndex > -1 && process.argv.length >= entryIndex)
 	entryPoint = path.join(dirname(fileURLToPath(import.meta.url)), process.argv[entryIndex + 1]);
 
+/**
+ * @type {import('esbuild').BuildOptions}
+ */
 export const buildOptions = {
 	entryPoints: [entryPoint],
 	bundle: true,
@@ -75,7 +79,7 @@ export const buildOptions = {
 	mainFields: ['svelte', 'browser', 'module', 'main', 'exports'],
 	// logLevel: `debug`,
 	minify: false, //so the resulting code is easier to understand
-	sourcemap: 'inline',
+	sourcemap: 'linked',
 	splitting: true,
 	write: true,
 	format: 'esm',

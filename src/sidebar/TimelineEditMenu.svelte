@@ -6,17 +6,22 @@
 	import {MisskeyService} from "../services/misskey/service";
 	import {RefreshType} from "../services/endpoints";
 
-	export let setModalTimeline: (data: TimelineData, width?: number) => void
-	export let addTimeline: (data: TimelineData) => void
+	let {
+		setModalTimeline,
+		addTimeline,
+	} = $props<{
+		setModalTimeline: (data: TimelineData, width?: number) => void,
+		addTimeline: (data: TimelineData) => void,
+	}>();
 
 	enum TimelineAddTypes {
 		Empty,
 		TwitterUser,
 	}
 
-	let timelineAddType = TimelineAddTypes.Empty;
-	let addDisabled = false
-	$: {
+	let timelineAddType = $state<TimelineAddTypes.Empty>();
+	let addDisabled = $state(false)
+	$effect(() => {
 		switch (timelineAddType) {
 			case TimelineAddTypes.TwitterUser:
 				addDisabled = !username.length;
@@ -25,10 +30,10 @@
 				addDisabled = false;
 				break;
 		}
-	}
+	});
 
-	let title = ''
-	let username = ''
+	let title = $state('');
+	let username = $state('');
 
 	function getTimelineData() {
 		switch (timelineAddType) {

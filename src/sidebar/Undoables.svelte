@@ -3,7 +3,9 @@
 	import {defaultTimeline, type TimelineData} from '../timelines'
 	import {get} from 'svelte/store'
 
-	export let setModalTimeline: (data: TimelineData, width?: number) => void
+	let { setModalTimeline } = $props<{
+		setModalTimeline: (data: TimelineData, width?: number) => void,
+	}>();
 
 	function modalTimeline() {
 		setModalTimeline({

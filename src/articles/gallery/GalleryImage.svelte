@@ -5,12 +5,21 @@
 	import {loadingStore} from '../../bufferedMediaLoading';
 	import GalleryThumbnail from "./GalleryThumbnail.svelte";
 
-	export let actualArticle: Readonly<Article>;
-	export let mediaIndex: number;
-	export let media: ArticleMedia;
-	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number;
-	export let isLoading: boolean;
-	export let ref;
+	let {
+		actualArticle,
+		mediaIndex,
+		media,
+		onMediaClick,
+		isLoading,
+		ref,
+	} = $props<{
+		actualArticle: Readonly<Article>,
+		mediaIndex: number,
+		media: ArticleMedia,
+		onMediaClick: (idPair: ArticleIdPair, index: number) => number,
+		isLoading: boolean,
+		ref: HTMLImageElement | undefined,
+	}>();
 
 	const cropped = !!(media.offsetX || media.offsetY);
 </script>

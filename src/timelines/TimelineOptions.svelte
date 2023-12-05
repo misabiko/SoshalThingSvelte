@@ -13,12 +13,22 @@
 	import {endpoints} from '../services/endpoints'
     import { get } from "svelte/store";
 
-	export let data: TimelineData
-	export let fullscreen: FullscreenInfo | undefined = undefined
-	export let removeTimeline: () => void
-	export let sortOnce: (method: SortMethod, reversed: boolean) => void
-	export let articleCountLabel: string
-	export let removeFiltered: () => void
+	let {
+		data,
+		//TODO Try replacing all `= undefined` props with `= null`
+		fullscreen = undefined,
+		removeTimeline,
+		sortOnce,
+		articleCountLabel,
+		removeFiltered,
+	} = $props<{
+		data: TimelineData,
+		fullscreen: FullscreenInfo | undefined,
+		removeTimeline: () => void,
+		sortOnce: (method: SortMethod, reversed: boolean) => void,
+		articleCountLabel: string,
+		removeFiltered: () => void,
+	}>();
 
 	function setFullscreenContainer(checked: boolean) {
 		if (checked)

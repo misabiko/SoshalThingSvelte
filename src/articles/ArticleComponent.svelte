@@ -8,21 +8,29 @@
 	import {getRootArticle} from './index'
 	import Modal from '../Modal.svelte'
 
-	export let articleProps: ArticleProps
-	export let timelineProps: TimelineArticleProps
-	export let view: new (...args: any[]) => SvelteComponent;
-	export let style = ''; style;
-	let modal = false
-	let showAllMedia = false
+	let {
+		articleProps,
+		timelineProps,
+		view,
+		style,
+	} = $props<{
+		articleProps: ArticleProps,
+		timelineProps: TimelineArticleProps,
+		view: new (...args: any[]) => SvelteComponent,
+		style: string,
+	}>();
+
+	let modal = $state(false);
+	let showAllMedia = $state(false);
 
 	const isInjected = getContext('isInjected') as boolean
 
 	let rootArticle: Readonly<Article>
 	let actualArticle: Readonly<Article>
-	$: {
+	$effect(() => {
 		rootArticle = getRootArticle(articleProps)
 		actualArticle = getActualArticle(articleProps)
-	}
+	});
 
 	function onLogData() {
 		console.dir(articleProps)

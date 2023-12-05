@@ -5,7 +5,7 @@
 	import {defaultFilter} from './index'
 	import {getServices} from '../services/service'
 
-	export let instances: FilterInstance[]
+	let { instances } = $props<{instances: FilterInstance[]}>();
 
 	//[ServiceName, FilterName, FilterTypeInfo][]
 	const serviceFilterTypes: [string, string, object][] = Object.values(getServices()).flatMap(s => Object.entries(s.filterTypes).map(m => [s.name, ...m]))

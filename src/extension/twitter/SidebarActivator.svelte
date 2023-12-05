@@ -3,7 +3,7 @@
 	import portal from "../../usePortal";
 	import Fa from 'svelte-fa';
 
-	export let favviewerHidden: boolean;
+	let { favviewerHidden } = $props<{ favviewerHidden: boolean }>();
 
 	const activatorMount = document.querySelector('nav[aria-label="Primary"]');
 	if (activatorMount === null)
@@ -14,7 +14,7 @@
 	if (sidebarMenuButton === null)
 		throw new Error("Could not find sidebar menu button");
 
-	let hovered = false;
+	let hovered = $state(false);
 
 	//7 should be the "buy premium" button, which least probable to be selected
 	const sampleMenuItem = activatorMount.children[7];

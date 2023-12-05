@@ -29,14 +29,23 @@
 		Undoables,
 	}
 
-	let menu: (new (...args: any[]) => SvelteComponent) | SidebarMenu | null = null;
+	let menu = $state<(new (...args: any[]) => SvelteComponent) | SidebarMenu | null>(null);
 
-	export let setModalTimeline: (data: TimelineData, width?: number) => void
-	export let addTimeline: (data: TimelineData) => void
-	export let timelines: TimelineCollection
-	export let batchActionFilters: FilterInstance[]
-	export let timelineViews: {[name: string]: TimelineView}
-	export let timelineView: TimelineView
+	let {
+		setModalTimeline,
+		addTimeline,
+		timelines,
+		batchActionFilters,
+		timelineViews,
+		timelineView,
+	} = $props<{
+		setModalTimeline: (data: TimelineData, width?: number) => void,
+		addTimeline: (data: TimelineData) => void,
+		timelines: TimelineCollection,
+		batchActionFilters: FilterInstance[],
+		timelineViews: {[name: string]: TimelineView},
+		timelineView: TimelineView,
+	}>();
 
 	function toggleSidebarMenu(newMenu: (new (...args: any[]) => SvelteComponent) | SidebarMenu) {
 		menu = menu === newMenu ? null : newMenu;

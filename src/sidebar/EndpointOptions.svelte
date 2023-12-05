@@ -3,7 +3,7 @@
 	import {startAutoRefresh, stopAutoRefresh} from "../services/endpoints.js"
 	import type {Writable} from 'svelte/store'
 
-	export let endpoint: Writable<Endpoint>
+	let { endpoint } = $props<{endpoint: Writable<Endpoint>}>();
 </script>
 
 <div class='block endpointOptions'>

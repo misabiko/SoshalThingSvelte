@@ -15,27 +15,36 @@
 		return this.toString();
 	};
 
-	export let timelines: TimelineCollection = {}
-	export let timelineView: TimelineView = {
-		timelineIds: [],
-		fullscreen: {
-			index: null,
-			columnCount: null,
-			container: null,
-		}
-	}
-	export let timelineViews: {[name: string]: TimelineView} = {}
-	export let isInjected = true
-	export let favviewerHidden = false
-	export let favviewerMaximized: boolean | undefined = undefined
+	let {
+		timelines = {},
+		timelineView = {
+			timelineIds: [],
+			fullscreen: {
+				index: null,
+				columnCount: null,
+				container: null,
+			},
+		},
+		timelineViews = {},
+		isInjected = true,
+		favviewerHidden = false,
+		favviewerMaximized = undefined,
+	} = $props<{
+		timelines: TimelineCollection,
+		timelineView: TimelineView,
+		timelineViews: {[name: string]: TimelineView},
+		isInjected: boolean,
+		favviewerHidden: boolean,
+		favviewerMaximized: boolean | undefined,
+	}>();
 
-	let modalTimeline: TimelineData | null = null
-	let modalTimelineActive = false
+	let modalTimeline = $state<TimelineData | null>(null);
+	let modalTimelineActive = $state(false)
 
-	let batchActionFilters: FilterInstance[] = []
+	let batchActionFilters = $state<FilterInstance[]>([]);
 
 	setContext('isInjected', isInjected)
-	let showSidebar = !isInjected && favviewerMaximized !== true
+	let showSidebar = $state(!isInjected && favviewerMaximized !== true);
 
 	function addTimeline(data: TimelineData) {
 		let idNum = 0;

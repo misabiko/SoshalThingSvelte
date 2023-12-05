@@ -15,20 +15,37 @@
 	import {RefreshType} from '../services/endpoints'
 	import {updateMaximized} from "../storages";
 
-	export let data: TimelineData
-	export let favviewerButtons: boolean
-	export let favviewerHidden: boolean
-	export let favviewerMaximized: boolean | undefined = undefined
-	export let fullscreen: FullscreenInfo | undefined = undefined
-	export let articleCountLabel: string
-	export let availableRefreshTypes: Set<RefreshType>
-	export let containerRebalance: boolean
-	export let showSidebar: boolean
-	export let showOptions: boolean
-	export let toggleFullscreen: (() => void) | undefined = undefined
-	export let shuffle: () => void
-	export let autoscroll: () => void
-	export let refresh: (refreshType: RefreshType) => void
+	let {
+		data,
+		favviewerButtons,
+		favviewerHidden,
+		favviewerMaximized = undefined,
+		fullscreen = undefined,
+		articleCountLabel,
+		availableRefreshTypes,
+		containerRebalance,
+		showSidebar,
+		showOptions,
+		toggleFullscreen = undefined,
+		shuffle,
+		autoscroll,
+		refresh,
+	} = $props<{
+		data: TimelineData,
+		favviewerButtons: boolean,
+		favviewerHidden: boolean,
+		favviewerMaximized: boolean,
+		fullscreen: FullscreenInfo,
+		articleCountLabel: string,
+		availableRefreshTypes: Set<RefreshType>,
+		containerRebalance: boolean,
+		showSidebar: boolean,
+		showOptions: boolean,
+		toggleFullscreen: () => void,
+		shuffle: () => void,
+		autoscroll: () => void,
+		refresh: (refreshType: RefreshType) => void,
+	}>();
 </script>
 
 <style>

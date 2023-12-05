@@ -8,17 +8,29 @@
 	import Timestamp from "./Timestamp.svelte";
 	import {newUserTimeline} from '../../timelines'
 
-	export let timelineProps: TimelineArticleProps
-	export let articleProps: ArticleProps
-	export let modal: boolean; modal;
-	export let showAllMedia: boolean;
-	export let rootArticle: Readonly<Article>
-	export let actualArticle: Readonly<Article>
-	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number
-	export let onLogData: () => void
-	export let onLogJSON: () => void
+	let {
+		timelineProps,
+		articleProps,
+		modal,
+		showAllMedia,
+		rootArticle,
+		actualArticle,
+		onMediaClick,
+		onLogData,
+		onLogJSON,
+	} = $props<{
+		timelineProps: TimelineArticleProps,
+		articleProps: ArticleProps,
+		modal: boolean,
+		showAllMedia: boolean,
+		rootArticle: Readonly<Article>,
+		actualArticle: Readonly<Article>,
+		onMediaClick: (idPair: ArticleIdPair, index: number) => number,
+		onLogData: () => void,
+		onLogJSON: () => void,
+	}>();
 
-	let minimized = false
+	let minimized = $state(false);
 	const isArticleRepost = articleProps.type === 'reposts'
 
 	function onUsernameClick(clickedArticle: Article) {

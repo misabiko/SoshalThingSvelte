@@ -4,14 +4,19 @@
 	import {directionLabel, genericSortMethods} from "./index.js"
 	import {getServices} from '../services/service'
 
-	export let sortInfo: SortInfo
-	export let sortOnce: (method: SortMethod, reversed: boolean) => void
+	let {
+		sortInfo,
+		sortOnce
+	} = $props<{
+		sortInfo: SortInfo,
+		sortOnce: (method: SortMethod, reversed: boolean) => void
+	}>();
 
 	//[ServiceName, MethodName, MethodInfo][]
 	const serviceSortMethods: [string, string, object][] = Object.values(getServices()).flatMap(s => Object.entries(s.sortMethods).map(m => [s.name, ...m]))
 
-	let currentMethodName: string
-	$: {
+	let currentMethodName = $state<string>();
+	$effect(() => {
 		switch (sortInfo.method) {
 			case null:
 			case undefined:
@@ -23,7 +28,7 @@
 			default:
 				currentMethodName = methodName(sortInfo.method);
 		}
-	}
+	});
 </script>
 
 <div class='block field has-addons'>

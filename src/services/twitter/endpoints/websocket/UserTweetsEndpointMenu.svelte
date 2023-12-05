@@ -5,8 +5,13 @@
     import { parseResponse } from "services/twitter/pageAPI";
     import type { TimelineData } from "timelines";
 
-	export let timeline: TimelineData;
-	export let endpoint: Endpoint;
+	let {
+		timeline,
+		endpoint,
+	} = $props<{
+		timeline: TimelineData,
+		endpoint: Endpoint,
+	}>();
 
 	async function parseAPI() {
 		let parsed = null;

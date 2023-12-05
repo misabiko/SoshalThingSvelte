@@ -4,13 +4,18 @@
 	import {getActualArticle, getRootArticle} from '../articles'
 	import type {ContainerProps} from './index'
 
-	export let containerRef = undefined;
-	export let props: ContainerProps
-	let lastRebalanceTrigger = false
-	let lastColumnCount = props.columnCount
+	let {
+		containerRef = undefined,
+		props,
+	} = $props<{
+		containerRef: HTMLDivElement | undefined,
+		props: ContainerProps,
+	}>();
+	let lastRebalanceTrigger = $state(false);
+	let lastColumnCount = $state(props.columnCount);
 
 	let uniqueArticles: { [idPairStr: string]: { articleProps: ArticleProps, index: number } }
-	$: {
+	$effect(() => {
 		uniqueArticles = {}
 		const idPairs = new Set<string>()
 		for (const a of props.articles) {
@@ -20,21 +25,23 @@
 				uniqueArticles[getRootArticle(a).idPairStr] = {articleProps: a, index: lastSize}
 			}
 		}
-	}
+	});
 	//TODO Support duplicate articles
 	//Maybe by making a second MasonryContainer which refreshes every column every time
 
 	type Column = {articles: string[], ratio: number}
-	let columns: Column[] = []
+	let columns = $state<Column[]>([]);
 
-	$: if (props.rebalanceTrigger !== lastRebalanceTrigger || props.columnCount !== lastColumnCount) {
-		//TODO Add columnRef array and rebalance by moving overflowing articles
-		columns = []
-		lastRebalanceTrigger = props.rebalanceTrigger
-		lastColumnCount = props.columnCount
-	}
+	$effect(() => {
+		if (props.rebalanceTrigger !== lastRebalanceTrigger || props.columnCount !== lastColumnCount) {
+			//TODO Add columnRef array and rebalance by moving overflowing articles
+			columns = []
+			lastRebalanceTrigger = props.rebalanceTrigger
+			lastColumnCount = props.columnCount
+		}
+	});
 
-	$: {
+	$effect(() => {
 		if (!columns.length) {
 			columns = makeColumns()
 		}else {
@@ -67,7 +74,7 @@
 			for (const i of columnsChanged.values())
 				columns[i].ratio = columns[i].articles.reduce((acc, curr) => acc + getRatio(uniqueArticles[curr].articleProps), 0)
 		}
-	}
+	});
 
 	function makeColumns() {
 		columns = []

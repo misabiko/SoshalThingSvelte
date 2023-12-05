@@ -3,10 +3,17 @@
 	import type {ArticleIdPair} from "../index";
 	import Article from "../index";
 
-	export let actualArticle: Readonly<Article>;
-	export let mediaIndex: number;
-	export let media: ArticleMedia;
-	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number;
+	let {
+		actualArticle,
+		mediaIndex,
+		media,
+		onMediaClick,
+	} = $props<{
+		actualArticle: Readonly<Article>,
+		mediaIndex: number,
+		media: ArticleMedia,
+		onMediaClick: (idPair: ArticleIdPair, index: number) => number,
+	}>();
 
 	const cropped = !!(media.thumbnail?.offsetX || media.thumbnail?.offsetY);
 	const hasThumbnail = !!media.thumbnail;

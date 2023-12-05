@@ -3,8 +3,13 @@
 	import type {ContainerProps} from './index'
 	import {articlesWithUniqueKeys} from "./index.js";
 
-	export let props: ContainerProps;
-	export let containerRef = undefined;
+	let {
+		props,
+		containerRef = undefined,
+	} = $props<{
+		props: ContainerProps,
+		containerRef: HTMLDivElement | undefined,
+	}>();
 </script>
 
 <div class='articlesContainer columnContainer' bind:this={containerRef}>

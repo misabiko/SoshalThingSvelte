@@ -10,19 +10,29 @@
 	import type {TimelineArticleProps} from '../index'
 	import {getServices} from "../../services/service.js";
 
-	export let article: Article
-	export let repost: Article | undefined = undefined
-	export let isQuoted = false
-	export let modal: boolean
-	export let timelineProps: TimelineArticleProps
-	export let onLogData: () => void
-	export let onLogJSON: () => void
+	let {
+		article,
+		repost = undefined,
+		isQuoted = false,
+		modal,
+		timelineProps,
+		onLogData,
+		onLogJSON,
+	} = $props<{
+		article: Article,
+		repost: Article,
+		isQuoted: boolean,
+		modal: boolean,
+		timelineProps: TimelineArticleProps,
+		onLogData: () => void,
+		onLogJSON: () => void,
+	}>();
 
-	let actions = Object.values(getServices()[article.idPair.service].articleActions)
+	let actions = $state(Object.values(getServices()[article.idPair.service].articleActions)
 		.filter(a => a.icon !== undefined)
-		.sort((a, b) => a.index - b.index)
+		.sort((a, b) => a.index - b.index));
 
-	let hoveredActions = new Set<string>()
+	let hoveredActions = $state(new Set<string>());
 	function updateActionHover(key: string, hovered: boolean) {
 		if (hovered)
 			hoveredActions.add(key)
@@ -32,7 +42,7 @@
 		hoveredActions = hoveredActions
 	}
 
-	let status: string | null = null
+	let status = $state<string | null>(null);
 </script>
 
 <style>

@@ -21,26 +21,39 @@
 	import GalleryThumbnail from "./GalleryThumbnail.svelte";
 	import GalleryImage from "./GalleryImage.svelte";
 
-	export let timelineProps: TimelineArticleProps
-	export let articleProps: ArticleProps; articleProps;
-	export let style = ''; style;
-	export let modal: boolean; modal;
-	export let showAllMedia: boolean;
-	export let rootArticle: Readonly<Article>; rootArticle;
-	export let actualArticle: Readonly<Article>
-	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number
-	export let onLogData: () => void
-	export let onLogJSON: () => void
+	let {
+		timelineProps,
+		articleProps,
+		style = '',
+		modal,
+		showAllMedia,
+		rootArticle,
+		actualArticle,
+		onMediaClick,
+		onLogData,
+		onLogJSON,
+	} = $props<{
+		timelineProps: TimelineArticleProps,
+		articleProps: ArticleProps,
+		style: string,
+		modal: boolean,
+		showAllMedia: boolean,
+		rootArticle: Readonly<Article>,
+		actualArticle: Readonly<Article>,
+		onMediaClick: (idPair: ArticleIdPair, index: number) => number,
+		onLogData: () => void,
+		onLogJSON: () => void,
+	}>();
 
 	const mediaRefs: HTMLImageElement[] = []
 	let loadingStates: LoadingState[]
-	$: {
+	$effect(() => {
 		loadingStates = []
 		// for (let mediaIndex = 0; mediaIndex < actualArticle.medias.length; ++mediaIndex)
 		// 	loadingStates.push(loadingStore.getLoadingState(actualArticle.idPair, mediaIndex, timelineProps.shouldLoadMedia))
-	}
+	});
 
-	let divRef: HTMLDivElement | null = null
+	let divRef = $state<HTMLDivElement | null>(null);
 
 	//TODO svelte5 afterUpdate(() => {
 	// 	//TODO Use mediaRefs?
@@ -67,9 +80,9 @@
 	// 	}
 	// })
 
-	let actions = Object.values(getServices()[rootArticle.idPair.service].articleActions)
+	let actions = $state(Object.values(getServices()[rootArticle.idPair.service].articleActions)
 		.filter(a => a.icon !== undefined)
-		.sort((a, b) => a.index - b.index)
+		.sort((a, b) => a.index - b.index));
 </script>
 
 <style>

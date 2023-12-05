@@ -2,8 +2,7 @@
 	import type {Notification} from './store'
 	import {notifications} from './store'
 
-	export let data: Notification
-	export let id: string
+	let { data, id } = $props<{data: Notification, id: string}>();
 </script>
 
 <div class='notification'>

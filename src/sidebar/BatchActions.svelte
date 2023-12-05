@@ -11,30 +11,37 @@
 	} from '../articles'
 	import {articleAction, STANDARD_ACTIONS} from '../services/actions'
 
-	export let timelines: TimelineCollection
-	export let filterInstances: FilterInstance[]
+	let {
+		timelines,
+		filterInstances,
+	} = $props<{
+		timelines: TimelineCollection,
+		filterInstances: FilterInstance[],
+	}>();
 
 	//TODO Use timeline ids instead of indices?
-	let timelineIndex: number = 0
-	let action = STANDARD_ACTIONS.markAsRead.key
-	let onlyListedArticles = true
+	let timelineIndex = $state(0);
+	let action = $state(STANDARD_ACTIONS.markAsRead.key);
+	let onlyListedArticles = $state(true);
 
-	let articleIdPairs: Writable<ArticleIdPair[]> = timelines[timelineIndex].articles
+	let articleIdPairs = $state<Writable<ArticleIdPair[]>>(timelines[timelineIndex].articles);
 
-	let articles: Readable<Article[]>
-	$: articles = derived($articleIdPairs.map(getWritable), a => a)
+	let articles = $state<Readable<Article[]>>();
+	$effect(() => { articles = derived($articleIdPairs.map(getWritable), a => a); });
 
-	let articlesWithRefs: Readable<ArticleWithRefs[]>
-	$: articlesWithRefs = derived($articles.map(deriveArticleRefs), a => a.map(getDerivedArticleWithRefs))
+	let articlesWithRefs = $state<Readable<ArticleWithRefs[]>>();
+	$effect(() => { articlesWithRefs = derived($articles.map(deriveArticleRefs), a => a.map(getDerivedArticleWithRefs)); });
 
-	let filteredArticles: Readable<ArticleWithRefs[]>
-	$: filteredArticles = derived(
-		articlesWithRefs,
-		articlesWithRefs => useFilters(articlesWithRefs, [
-			...filterInstances,
-			...(onlyListedArticles ? timelines[timelineIndex].filters : [])
-		])
-	)
+	let filteredArticles = $state<Readable<ArticleWithRefs[]>>();
+	$effect(() => {
+		filteredArticles = derived(
+			articlesWithRefs,
+			articlesWithRefs => useFilters(articlesWithRefs, [
+				...filterInstances,
+				...(onlyListedArticles ? timelines[timelineIndex].filters : [])
+			])
+		)
+	});
 
 	function doAction() {
 		for (const articleWithRefs of $filteredArticles) {

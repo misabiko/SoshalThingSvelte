@@ -6,7 +6,7 @@
 		mountElement: HTMLElement | null;
 	}>();
 
-	let modal: HTMLDivElement;
+	let modal = $state<HTMLDivElement>();
 
 	$effect(() => {
 		if (modal && active && mountElement) {

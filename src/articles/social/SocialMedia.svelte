@@ -1,20 +1,21 @@
 <script lang='ts'>
 	import type {TimelineArticleProps} from '../index'
 	import Article from "../index";
-	import {afterUpdate} from 'svelte'
 	import {getWritable} from '../../services/service'
 	import Fa from 'svelte-fa'
 	import {faImages} from "@fortawesome/free-solid-svg-icons";
 	import {MediaType} from '../media'
 
-	export let article: Article
-	export let timelineProps: TimelineArticleProps
-	export let showAllMedia: boolean;
-	export let onMediaClick: (index: number) => void
+	let { article, timelineProps, showAllMedia, onMediaClick } = $props<{
+		article: Article,
+		timelineProps: TimelineArticleProps,
+		showAllMedia: boolean,
+		onMediaClick: (index: number) => void,
+	}>();
 
-	let divRef: HTMLDivElement | null = null
+	let divRef = $state<HTMLDivElement | null>(null);
 
-	afterUpdate(() => {
+	/*TODO svelte5 $effect(() => {
 		const articleMediaEls = divRef?.querySelectorAll('.articleMedia')
 		if (articleMediaEls) {
 			const modifiedMedias = []
@@ -28,7 +29,7 @@
 				return a
 			})
 		}
-	})
+	}) */
 </script>
 
 <style>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type {TimelineCollection, TimelineData, TimelineView} from './index'
 	import Timeline from './Timeline.svelte'
-	import {afterUpdate, getContext, onMount} from 'svelte'
+	import {getContext, onMount} from 'svelte'
 	import {timelineEndpoints} from '../services/endpoints'
 	import {updateMainStorage} from '../storages'
     import Modal from 'Modal.svelte';
@@ -79,12 +79,12 @@
 		timelineEndpoints.set(newTimelineEndpoints)
 	}
 
-	afterUpdate(() => {
-		//Workaround for https://github.com/sveltejs/svelte/issues/5268
-		//During Modal's close transition, the child Timeline still calls reactive statements for modalTimeline
-		if (!modalTimelineActive)
-			modalTimeline = null
-	})
+	// TODO svelte5 afterUpdate(() => {
+	// 	//Workaround for https://github.com/sveltejs/svelte/issues/5268
+	// 	//During Modal's close transition, the child Timeline still calls reactive statements for modalTimeline
+	// 	if (!modalTimelineActive)
+	// 		modalTimeline = null
+	// })
 
 	onMount(() => {
 		initialRefresh(...[

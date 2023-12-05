@@ -7,7 +7,6 @@
 		faExternalLinkAlt,
 		faEllipsisH, faImages,
 	} from '@fortawesome/free-solid-svg-icons'
-	import {afterUpdate} from 'svelte'
 	import {LoadingState, loadingStore} from '../../bufferedMediaLoading'
 	import Dropdown from "../../Dropdown.svelte"
 	import {
@@ -43,7 +42,7 @@
 
 	let divRef: HTMLDivElement | null = null
 
-	// afterUpdate(() => {
+	//TODO svelte5 afterUpdate(() => {
 	// 	//TODO Use mediaRefs?
 	// 	const articleMediaEls = divRef?.querySelectorAll('.articleMedia')
 	// 	if (articleMediaEls) {

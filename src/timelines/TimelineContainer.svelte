@@ -6,35 +6,46 @@
 	import {updateMainStorage} from '../storages'
     import Modal from 'Modal.svelte';
 
-	export let timelines: TimelineCollection = {}
-	export let modalTimeline: TimelineData | null;
-	export let timelineView: TimelineView = {
-		timelineIds: [],
-		fullscreen: {
-			index: null,
-			columnCount: null,
-			container: null,
+	let {
+		timelines = {},
+		modalTimeline,
+		timelineView = {
+			timelineIds: [],
+			fullscreen: {
+				index: null,
+				columnCount: null,
+				container: null,
+			},
 		},
-	}
-
-	export let setModalTimeline: (data: TimelineData, width?: number) => void
-	export let removeTimeline: (id: string) => void
-	export let initialRefresh: (...refreshingTimelines: TimelineData[]) => void
-
-	export let favviewerHidden: boolean;
-	export let favviewerMaximized: boolean | undefined = undefined;
-	export let showSidebar: boolean;
-	export let modalTimelineActive: boolean
+		setModalTimeline,
+		removeTimeline,
+		initialRefresh,
+		favviewerHidden,
+		favviewerMaximized = undefined,
+		showSidebar,
+		modalTimelineActive,
+	} = $props<{
+		timelines: TimelineCollection,
+		modalTimeline: TimelineData | null,
+		timelineView: TimelineView,
+		setModalTimeline: (data: TimelineData, width?: number) => void,
+		removeTimeline: (id: string) => void,
+		initialRefresh: (...refreshingTimelines: TimelineData[]) => void,
+		favviewerHidden: boolean,
+		favviewerMaximized: boolean | undefined,
+		showSidebar: boolean,
+		modalTimelineActive: boolean,
+	}>();
 
 	const isInjected = getContext('isInjected');
 
-	$: {
+	$effect(() => {
 		for (const id of timelineView.timelineIds)
 			if (!timelines.hasOwnProperty(id))
 				console.error(`Timeline with id "${id}" not found.\nTimeline ids: `, Object.keys(timelines), '\nTimeline View: ', timelineView)
-	}
+	})
 
-	$: {
+	$effect(() => {
 		const newTimelineEndpoints = timelineView.timelineIds.map(id => ({
 			endpoints: timelines[id].endpoints,
 			addArticles(newIdPairs) {
@@ -77,14 +88,14 @@
 			})
 
 		timelineEndpoints.set(newTimelineEndpoints)
-	}
+	})
 
-	// TODO svelte5 afterUpdate(() => {
-	// 	//Workaround for https://github.com/sveltejs/svelte/issues/5268
-	// 	//During Modal's close transition, the child Timeline still calls reactive statements for modalTimeline
-	// 	if (!modalTimelineActive)
-	// 		modalTimeline = null
-	// })
+	$effect(() => {
+		//Workaround for https://github.com/sveltejs/svelte/issues/5268
+		//During Modal's close transition, the child Timeline still calls reactive statements for modalTimeline
+		if (!modalTimelineActive)
+			modalTimeline = null
+	})
 
 	onMount(() => {
 		initialRefresh(...[

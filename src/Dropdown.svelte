@@ -39,7 +39,7 @@
 	.dropdown-trigger .button:not(.borderless-button) {
 		background: white;
 		font-weight: 400;
-		font-size: normal;
+		font-size: unset;
 	}
 	.dropdown-trigger .button, .dropdown-trigger .svelte-fa {
 		color: var(--grey-darker);

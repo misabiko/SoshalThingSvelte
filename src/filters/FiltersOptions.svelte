@@ -23,10 +23,13 @@
 		instances.splice(index, 1)
 		instances = instances
 	}
+
+	// let instanceIndices = $derived(instances.map((i) => ))
 </script>
 
-<!--TODO Svelte 5 {#each instances as instance, index (`${JSON.stringify(instance)}/${index}`)}-->
-{#each instances as instance, index}
+<!-- https://github.com/sveltejs/svelte/pull/9641-->
+<!--{#each instances as instance, index (`${JSON.stringify(instance)}/${index}`)}-->
+{#each (Object.entries(instances)) as [index, instance] (`${JSON.stringify(instance)}/${index}`)}
 	<!-- TODO Add has-addons' merged buttons -->
 	<div class="field has-addons">
 		<label>

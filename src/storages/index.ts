@@ -195,7 +195,7 @@ function parseArticleView(articleView: string | undefined): new (...args: any[])
 
 function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | undefined {
 	const services = getServices();
-	const endpointsValue = get(derived(Object.values(endpoints), e => e));
+	const endpointsValue: Endpoint[] = get(derived(Object.values(endpoints), (e: Endpoint) => e));
 	if (!Object.hasOwn(services, storage.service)) {
 		console.error(`"${storage.service}" isn't a registered service`);
 		return undefined;

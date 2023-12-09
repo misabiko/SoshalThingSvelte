@@ -69,11 +69,11 @@ type UserTweetsResponse = {
 	}
 };
 
-interface UserTweetsAPIParams extends APIParams {
-	variables: {
-		userId: string
-		withVoice: boolean
-		withQuickPromoteEligibilityTweetFields?: boolean
-		withV2Timeline?: boolean
-	}
-}
+// interface UserTweetsAPIParams extends APIParams {
+// 	variables: {
+// 		userId: string
+// 		withVoice: boolean
+// 		withQuickPromoteEligibilityTweetFields?: boolean
+// 		withV2Timeline?: boolean
+// 	}
+// }

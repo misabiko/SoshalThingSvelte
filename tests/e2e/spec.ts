@@ -118,7 +118,10 @@ test.describe('autoscroll', () => {
 		const container = page.locator('.articlesContainer').first();
 
 		//Making sure we have room to scroll
-		expect((await container.evaluate(c => c.scrollHeight) - (await container.boundingBox()).height)).toBeGreaterThan(500);
+		const box = await container.boundingBox();
+		if (box === null)
+			throw new Error('No bounding box');
+		expect((await container.evaluate(c => c.scrollHeight) - box.height)).toBeGreaterThan(500);
 	});
 
 	test('scroll bounces from top', async ({page}) => {

@@ -1,4 +1,5 @@
 import { MediaLoadType, MediaType } from 'articles/media';
+import type { ArticleMedia } from 'articles/media';
 import TwitterArticle from './article';
 import type { ArticleWithRefs } from 'articles';
 
@@ -28,14 +29,15 @@ export function parseHTMLArticle(article: HTMLElement): ArticleWithRefs | null {
 
 	const time = new Date(timestamp.dateTime);
 
-	const medias = [...article.querySelectorAll('div[data-testid="tweetPhoto"] img')].map((img: HTMLImageElement) => {
-		return {
-			src: img.src,
-			ratio: null,
-			queueLoadInfo: MediaLoadType.DirectLoad,
-			mediaType: MediaType.Image,
-		};
-	});
+	const medias: ArticleMedia[] = ([...article.querySelectorAll('div[data-testid="tweetPhoto"] img')] as HTMLImageElement[])
+		.map((img: HTMLImageElement) => {
+			return {
+				src: img.src,
+				ratio: null,
+				queueLoadInfo: MediaLoadType.DirectLoad,
+				mediaType: MediaType.Image,
+			};
+		});
 	return {
 		type: 'normal',
 		article: new TwitterArticle(

@@ -25,12 +25,8 @@
 
 	const isInjected = getContext('isInjected') as boolean
 
-	let rootArticle: Readonly<Article>
-	let actualArticle: Readonly<Article>
-	$effect(() => {
-		rootArticle = getRootArticle(articleProps)
-		actualArticle = getActualArticle(articleProps)
-	});
+	let rootArticle = $derived<Readonly<Article>>(getRootArticle(articleProps));
+	let actualArticle = $derived<Readonly<Article>>(getActualArticle(articleProps));
 
 	function onLogData() {
 		console.dir(articleProps)

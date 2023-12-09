@@ -28,9 +28,10 @@
 		onLogJSON: () => void,
 	}>();
 
-	let actions = $state(Object.values(getServices()[article.idPair.service].articleActions)
+	const service = getServices()[article.idPair.service];
+	const actions = Object.values(service.articleActions)
 		.filter(a => a.icon !== undefined)
-		.sort((a, b) => a.index - b.index));
+		.sort((a, b) => a.index - b.index);
 
 	let hoveredActions = $state(new Set<string>());
 	function updateActionHover(key: string, hovered: boolean) {

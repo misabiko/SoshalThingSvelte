@@ -25,7 +25,8 @@
 	}
 </script>
 
-{#each instances as instance, index (`${JSON.stringify(instance)}/${index}`)}
+<!--TODO Svelte 5 {#each instances as instance, index (`${JSON.stringify(instance)}/${index}`)}-->
+{#each instances as instance, index}
 	<!-- TODO Add has-addons' merged buttons -->
 	<div class="field has-addons">
 		<label>

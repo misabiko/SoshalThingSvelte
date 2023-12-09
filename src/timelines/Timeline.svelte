@@ -20,7 +20,7 @@
 
 	let {
 		data,
-		//Would like to make this immutable https://github.com/sveltejs/svelte/issues/5572
+	//Would like to make this immutable https://github.com/sveltejs/svelte/issues/5572
 		fullscreen = undefined,
 		toggleFullscreen = undefined,
 		removeTimeline,
@@ -49,67 +49,62 @@
 
 	let articleIdPairs = $state<Writable<ArticleIdPair[]>>(data.articles);
 
-	let articles = $state<Readable<Article[]>>();
-	$effect(() => { articles = derived($articleIdPairs.map(getWritable), a => a); });
+	let articles = $derived<Readable<Article[]>>(derived($articleIdPairs.map(getWritable), a => a));
 
-	let articlesWithRefs = $state<Readable<ArticleWithRefs[]>>();
-	$effect(() => { articlesWithRefs = derived($articles.map(deriveArticleRefs), a => a.map(getDerivedArticleWithRefs)); });
+	let articlesWithRefs = $derived<Readable<ArticleWithRefs[]>>(derived($articles.map(deriveArticleRefs), a => a.map(getDerivedArticleWithRefs)));
 
-	let filteredArticles = $state<Readable<ArticleProps[]>>();
-	$effect(() => {
-		filteredArticles = derived(articlesWithRefs, stores => {
-			let articleProps: ArticleProps[] = stores
-				.map((articleWithRefs, i) => addProps(articleWithRefs, i))
+	let filteredArticles =  $derived<Readable<ArticleProps[]>>(derived(articlesWithRefs, stores => {
+		let articleProps: ArticleProps[] = stores
+			.map((articleWithRefs, i) => addProps(articleWithRefs, i))
 
-			if (data.hideFilteredOutArticles)
-				articleProps = articleProps.filter(a => !a.filteredOut)
+		if (data.hideFilteredOutArticles)
+			articleProps = articleProps.filter(a => !a.filteredOut)
 
-			if (data.mergeReposts) {
-				let merged: ArticleProps[] = []
-				for (const a of articleProps) {
-					if (a.type === 'reposts') {
-						const aIdPair = getRootArticle(a.reposted).idPair
+		if (data.mergeReposts) {
+			let merged: ArticleProps[] = []
+			for (const a of articleProps) {
+				if (a.type === 'reposts') {
+					const aIdPair = getRootArticle(a.reposted).idPair
 
-						//Checking if the reposted article is already in merged
-						const plainIndex = merged.findIndex(m =>
-							idPairEqual(getRootArticle(m).idPair, aIdPair)
-						)
-						if (plainIndex > -1) {
-							//Replacing it with the repost
-							merged[plainIndex] = a
-							continue
-						}
+					//Checking if the reposted article is already in merged
+					const plainIndex = merged.findIndex(m =>
+						idPairEqual(getRootArticle(m).idPair, aIdPair)
+					)
+					if (plainIndex > -1) {
+						//Replacing it with the repost
+						merged[plainIndex] = a
+						continue
+					}
 
-						//Checking if a duplicate repost is in merged
-						const index = merged.findIndex(m =>
-							m.type === 'reposts' &&
-							idPairEqual(getRootArticle(m.reposted).idPair, aIdPair)
-						)
+					//Checking if a duplicate repost is in merged
+					const index = merged.findIndex(m =>
+						m.type === 'reposts' &&
+						idPairEqual(getRootArticle(m.reposted).idPair, aIdPair)
+					)
 
-						if (index > -1)
-							(merged[index] as any).reposts.push(...a.reposts)
-						else
-							merged.push(a)
-					}else
+					if (index > -1)
+						(merged[index] as any).reposts.push(...a.reposts)
+					else
 						merged.push(a)
-				}
-
-				articleProps = merged
-
-				//TODO Sort reposts
+				}else
+					merged.push(a)
 			}
 
-			if (data.sortInfo.method !== undefined)
-				articleProps.sort(compare(data.sortInfo))
-			if (data.sortInfo.reversed)
-				articleProps.reverse()
+			articleProps = merged
 
-			if (data.section.useSection)
-				articleProps = articleProps.slice(0, data.section.count)
+			//TODO Sort reposts
+		}
 
-			return articleProps
-		})
-	});
+		if (data.sortInfo.method !== undefined)
+			articleProps.sort(compare(data.sortInfo))
+		if (data.sortInfo.reversed)
+			articleProps.reverse()
+
+		if (data.section.useSection)
+			articleProps = articleProps.slice(0, data.section.count)
+
+		return articleProps
+	}));
 
 	function addProps(articleWithRefs: ArticleWithRefs, index: number): ArticleProps {
 		const filteredOut = !data.filters.every(f => !f.enabled || (keepArticle(articleWithRefs, index, f.filter) !== f.inverted))
@@ -137,60 +132,52 @@
 		}
 	}
 
-	let articleCountLabel = $state<string>();
-	$effect(() => {
+	let articleCountLabel = $derived<string>((() => {
 		if ($filteredArticles.length)
-			articleCountLabel = `${$filteredArticles.length} articles shown, ${$articles.length - $filteredArticles.length} hidden.`
+			return `${$filteredArticles.length} articles shown, ${$articles.length - $filteredArticles.length} hidden.`;
 		else if ($articles.length)
-			articleCountLabel = `${$articles.length} hidden articles`
+			return `${$articles.length} hidden articles`;
 		else
-			articleCountLabel = 'No articles listed.'
-	});
+			return 'No articles listed.';
+	})());
 
 	$effect(() => {
 		if (data.shouldLoadMedia && $filteredArticles.length) {
-			for (const articleProps of $filteredArticles) {
-				const actualArticle = getActualArticle(articleProps)
-				if (!actualArticle.fetched)
-					fetchArticle(actualArticle.idPair)
-				if (data.shouldLoadMedia)
-					for (const article of articleWithRefToArray(articleProps))
-						for (let i = 0; i < article.medias.length; ++i)
-							if (article.medias[i].loaded === false)
-								loadingStore.requestLoad(article.idPair, i)
-			}
+		for (const articleProps of $filteredArticles) {
+			const actualArticle = getActualArticle(articleProps)
+			if (!actualArticle.fetched)
+				fetchArticle(actualArticle.idPair)
+			if (data.shouldLoadMedia)
+				for (const article of articleWithRefToArray(articleProps))
+					for (let i = 0; i < article.medias.length; ++i)
+						if (article.medias[i].loaded === false)
+							loadingStore.requestLoad(article.idPair, i)
 		}
+	}
 	});
 
-	//TODO Try merging effects into state
-	let availableRefreshTypes = $state<Set<RefreshType>>(new Set(data.endpoints.flatMap(e => {
-			const endpoint = e.name !== undefined ? get(endpoints[e.name]) : e.endpoint
-			return [...endpoint.refreshTypes.values()]
-		})));
-	$effect(() => {
-		availableRefreshTypes = new Set(data.endpoints.flatMap(e => {
-			const endpoint = e.name !== undefined ? get(endpoints[e.name]) : e.endpoint
-			return [...endpoint.refreshTypes.values()]
-		}))
-	});
+	let availableRefreshTypes = $state<Set<RefreshType>>(new Set(
+		data.endpoints
+			.flatMap(e => {
+				const endpoint = e.name !== undefined ? get(endpoints[e.name]) : e.endpoint
+				return [...endpoint.refreshTypes.values()]
+			})
+	));
 
-	let containerProps = $state<ContainerProps>();
-	$effect(() => {
-		containerProps = {
-			articles: $filteredArticles,
-			timelineArticleProps: {
-				animatedAsGifs: data.animatedAsGifs,
-				compact: data.compact,
-				hideText: data.hideText,
-				shouldLoadMedia: data.shouldLoadMedia,
-				maxMediaCount: data.maxMediaCount,
-				setModalTimeline,
-			},
-			articleView: data.articleView,
-			columnCount: fullscreen?.columnCount ?? data.columnCount,
-			rtl: data.rtl,
-			rebalanceTrigger: containerRebalance,
-		}
+	let containerProps = $derived<ContainerProps>({
+		articles: $filteredArticles,
+		timelineArticleProps: {
+			animatedAsGifs: data.animatedAsGifs,
+			compact: data.compact,
+			hideText: data.hideText,
+			shouldLoadMedia: data.shouldLoadMedia,
+			maxMediaCount: data.maxMediaCount,
+			setModalTimeline,
+		},
+		articleView: data.articleView,
+		columnCount: fullscreen?.columnCount ?? data.columnCount,
+		rtl: data.rtl,
+		rebalanceTrigger: containerRebalance,
 	});
 
 	enum ScrollDirection {
@@ -292,15 +279,6 @@
 			sorted.reverse()
 		data.articles.set(sorted.map(a => getRootArticle(a).idPair))
 	}
-
-	onMount(() => {
-		if (!data.endpoints.length)
-			return
-
-		return () => {
-			console.log('Destroying timeline ' + data.title)
-		}
-	})
 
 	function removeFiltered() {
 		//TODO Prevent articles from just being added back

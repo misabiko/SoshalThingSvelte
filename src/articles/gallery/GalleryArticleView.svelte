@@ -46,12 +46,12 @@
 	}>();
 
 	const mediaRefs: HTMLImageElement[] = []
-	let loadingStates: LoadingState[]
-	$effect(() => {
-		loadingStates = []
-		// for (let mediaIndex = 0; mediaIndex < actualArticle.medias.length; ++mediaIndex)
-		// 	loadingStates.push(loadingStore.getLoadingState(actualArticle.idPair, mediaIndex, timelineProps.shouldLoadMedia))
-	});
+	let loadingStates = $state<LoadingState[]>([]);
+	// $: {
+	// 	loadingStates = []
+	// 	// for (let mediaIndex = 0; mediaIndex < actualArticle.medias.length; ++mediaIndex)
+	// 	// 	loadingStates.push(loadingStore.getLoadingState(actualArticle.idPair, mediaIndex, timelineProps.shouldLoadMedia))
+	// }
 
 	let divRef = $state<HTMLDivElement | null>(null);
 
@@ -80,9 +80,10 @@
 	// 	}
 	// })
 
-	let actions = $state(Object.values(getServices()[rootArticle.idPair.service].articleActions)
+	const service = getServices()[rootArticle.idPair.service];
+	const actions = Object.values(service.articleActions)
 		.filter(a => a.icon !== undefined)
-		.sort((a, b) => a.index - b.index));
+		.sort((a, b) => a.index - b.index);
 </script>
 
 <style>

@@ -24,24 +24,19 @@
 	let action = $state(STANDARD_ACTIONS.markAsRead.key);
 	let onlyListedArticles = $state(true);
 
-	let articleIdPairs = $state<Writable<ArticleIdPair[]>>(timelines[timelineIndex].articles);
+	let articleIdPairs = $derived<Writable<ArticleIdPair[]>>(timelines[timelineIndex].articles);
 
-	let articles = $state<Readable<Article[]>>();
-	$effect(() => { articles = derived($articleIdPairs.map(getWritable), a => a); });
+	let articles = $derived<Readable<Article[]>>(derived($articleIdPairs.map(getWritable), a => a));
 
-	let articlesWithRefs = $state<Readable<ArticleWithRefs[]>>();
-	$effect(() => { articlesWithRefs = derived($articles.map(deriveArticleRefs), a => a.map(getDerivedArticleWithRefs)); });
+	let articlesWithRefs = $derived<Readable<ArticleWithRefs[]>>(derived($articles.map(deriveArticleRefs), a => a.map(getDerivedArticleWithRefs)));
 
-	let filteredArticles = $state<Readable<ArticleWithRefs[]>>();
-	$effect(() => {
-		filteredArticles = derived(
-			articlesWithRefs,
-			articlesWithRefs => useFilters(articlesWithRefs, [
-				...filterInstances,
-				...(onlyListedArticles ? timelines[timelineIndex].filters : [])
-			])
-		)
-	});
+	let filteredArticles = $derived<Readable<ArticleWithRefs[]>>(derived(
+		articlesWithRefs,
+		articlesWithRefs => useFilters(articlesWithRefs, [
+			...filterInstances,
+			...(onlyListedArticles ? timelines[timelineIndex].filters : [])
+		])
+	));
 
 	function doAction() {
 		for (const articleWithRefs of $filteredArticles) {

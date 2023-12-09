@@ -14,18 +14,21 @@
 	let lastRebalanceTrigger = $state(false);
 	let lastColumnCount = $state(props.columnCount);
 
-	let uniqueArticles: { [idPairStr: string]: { articleProps: ArticleProps, index: number } }
-	$effect(() => {
-		uniqueArticles = {}
-		const idPairs = new Set<string>()
+	let uniqueArticles = $derived<{ [idPairStr: string]: { articleProps: ArticleProps, index: number } }>(getUniqueArticles());
+
+	function getUniqueArticles() {
+		const articles = {};
+		const idPairs = new Set<string>();
 		for (const a of props.articles) {
-			let lastSize = idPairs.size
-			idPairs.add(getRootArticle(a).idPairStr)
+			let lastSize = idPairs.size;
+			idPairs.add(getRootArticle(a).idPairStr);
 			if (idPairs.size > lastSize) {
-				uniqueArticles[getRootArticle(a).idPairStr] = {articleProps: a, index: lastSize}
+				articles[getRootArticle(a).idPairStr] = {articleProps: a, index: lastSize};
 			}
 		}
-	});
+
+		return articles;
+	}
 	//TODO Support duplicate articles
 	//Maybe by making a second MasonryContainer which refreshes every column every time
 

@@ -1,5 +1,6 @@
 <script lang='ts'>
-	import Fa from 'svelte-fa'
+	// noinspection ES6UnusedImports
+	import Fa from 'svelte-fa';
 	import {
 		faEyeSlash,
 		faEllipsisH, faExpandAlt, faEye, faSpinner,

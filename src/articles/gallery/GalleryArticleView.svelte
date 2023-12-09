@@ -1,6 +1,7 @@
 <script lang='ts'>
 	import Article from '../index'
 	import type {ArticleIdPair} from '../index'
+	// noinspection ES6UnusedImports
 	import Fa from 'svelte-fa'
 	import {
 		faExpandArrowsAlt,
@@ -13,11 +14,11 @@
 		fetchArticle,
 		toggleHide,
 		toggleMarkAsRead,
-		getWritable, getServices,
+		getServices,
 	} from "../../services/service"
 	import type {TimelineArticleProps} from '../index'
 	import type {ArticleProps} from '../index'
-	import {MediaLoadType, MediaType} from '../media'
+	import {MediaType} from '../media'
 	import GalleryThumbnail from "./GalleryThumbnail.svelte";
 	import GalleryImage from "./GalleryImage.svelte";
 

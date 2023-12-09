@@ -9,7 +9,7 @@ export function parseHTMLArticle(article: HTMLElement): ArticleWithRefs | null {
 			return null;
 	}
 
-	const anchors = article.getElementsByTagName('a');
+	// const anchors = article.getElementsByTagName('a');
 	const timestamp = article.getElementsByTagName('time')[0];
 	const timestampAnchor = timestamp.parentElement! as HTMLAnchorElement;
 	const id = BigInt(timestampAnchor.href.split('/').pop()!);

@@ -1,4 +1,5 @@
 <script lang="ts">
+	// noinspection ES6UnusedImports
 	import Fa from 'svelte-fa'
 	import { faAngleDown } from '@fortawesome/free-solid-svg-icons'
 	import {onMount} from 'svelte'

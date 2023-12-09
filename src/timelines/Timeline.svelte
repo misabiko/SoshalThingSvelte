@@ -8,7 +8,6 @@
 		getActualArticle, getDerivedArticleWithRefs, getRootArticle, idPairEqual,
 	} from '../articles'
 	import {fetchArticle, getWritable} from '../services/service'
-	import {onMount} from 'svelte'
 	import type {FullscreenInfo, TimelineData} from './index'
 	import {keepArticle} from '../filters'
 	import {compare, SortMethod} from '../sorting'

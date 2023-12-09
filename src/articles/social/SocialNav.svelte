@@ -45,6 +45,8 @@
 	}
 
 	let status = $state<string | null>(null);
+
+	//TODO Svelte5 Have icon be reactive
 </script>
 
 <style>

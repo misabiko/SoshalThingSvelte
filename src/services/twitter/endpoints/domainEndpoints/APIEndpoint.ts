@@ -3,7 +3,6 @@ import { Endpoint, RefreshType } from 'services/endpoints';
 import { parseResponse, type Instruction, type ResponseError, type AddEntriesInstruction } from 'services/twitter/pageAPI';
 import { TwitterService } from 'services/twitter/service';
 import { getCookie, getServiceStorage } from 'storages';
-import {writable} from "svelte/store";
 
 export default abstract class APIEndpoint<Response extends APIResponse> extends Endpoint {
 	readonly service = TwitterService.name;
@@ -14,7 +13,7 @@ export default abstract class APIEndpoint<Response extends APIResponse> extends 
 	bottomCursor: string | null = null;
 
 	constructor() {
-		super(writable(new Set([RefreshType.RefreshStart, RefreshType.Refresh])));
+		super(new Set([RefreshType.RefreshStart, RefreshType.Refresh]));
 	}
 
 	async refresh(refreshType: RefreshType): Promise<ArticleWithRefs[]> {
@@ -107,7 +106,7 @@ export default abstract class APIEndpoint<Response extends APIResponse> extends 
 	fetchParams(): APIParams {
 		return {
 			variables: {
-				includePromotedContent: true,
+				includePromotedContent: false,
 			},
 			features: {
 				responsive_web_graphql_exclude_directive_enabled: true,

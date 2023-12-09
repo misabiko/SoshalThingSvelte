@@ -11,29 +11,65 @@ import { sendRequest } from 'services/remotePage';
 import { getCookie, getServiceStorage } from 'storages';
 
 export function parseResponse(instructions: Instruction[]): ArticleWithRefs[] {
-	if (instructions.filter(i => i.type === 'TimelineAddEntries').length !== 1)
-		console.warn('Unhandled multiple AddEntries instructions', instructions);
+	// if (instructions.filter(i => i.type === 'TimelineAddEntries').length !== 1)
+	// 	console.warn('Unhandled multiple AddEntries instructions', instructions);
 
-	const addEntries = instructions.find(i => i.type === 'TimelineAddEntries') as AddEntriesInstruction | undefined;
-	const entries = addEntries?.entries;
+	let entries =
+		((instructions.find(i => i.type === 'TimelineAddToModule') as AddToModuleInstruction | undefined)?.moduleItems) ??
+		(instructions.find(i => i.type === 'TimelineAddEntries') as AddEntriesInstruction | undefined)?.entries;
 
 	if (entries === undefined)
 		throw new Error('No entries found');
 
-	return entries
-		//TODO Support TimelineTimelineModule (replies)
-		.filter(e => e.content.entryType === 'TimelineTimelineItem' && e.entryId.startsWith('tweet-'))
-		.map(e => e.content.itemContent.tweet_results.result)
-		.filter(result => result?.legacy !== undefined)
-		.map(result => {
-			try {
-				return articleFromResult(result);
-			} catch (e) {
-				console.error('Error parsing result tweet', result, e);
-				return null;
-			}
-		})
-		.filter((a): a is ArticleWithRefs => a !== null);
+	if (entries[0].entryId.startsWith('profile-grid-')) {
+		let itemContents: ItemContent[];
+		if (!entries[0].entryId.includes('-tweet-')) {
+			const gridEntry = entries[0];
+			if (gridEntry.item !== undefined)
+				throw new Error('Unhandled profile grid entry type: ' + gridEntry.item.itemType);
+			if (gridEntry.content.entryType !== 'TimelineTimelineModule')
+				throw new Error('Unhandled profile grid entry type: ' + gridEntry.content.entryType);
+
+			itemContents = gridEntry.content.items.map(i => i.item.itemContent)
+		}else {
+			itemContents = (entries as EntryWithItem[]).map(e => e.item.itemContent);
+		}
+
+		return itemContents
+			//TODO Support TimelineTimelineModule (replies)
+			// .filter(e => e.entryId.startsWith('profile-grid-0-tweet-'))
+			.map(e => e.tweet_results.result)
+			.filter(result => result?.legacy !== undefined)
+			.map(result => {
+				try {
+					return articleFromResult(result);
+				} catch (e) {
+					console.error('Error parsing result tweet', result, e);
+					return null;
+				}
+			})
+			.filter((a): a is ArticleWithRefs => a !== null);
+	}else {
+		return (entries as EntryWithContent[])
+			//TODO Support TimelineTimelineModule (replies)
+			.filter(e => e.content.entryType === 'TimelineTimelineItem' && (e.entryId.startsWith('tweet-') || e.entryId.startsWith('profile-grid-0-tweet-')))
+			.map(e => {
+				//To calm down TypeScript
+				if (e.content.entryType !== 'TimelineTimelineItem')
+					throw new Error('Unhandled entry type: ' + e.content.entryType);
+				return e.content.itemContent.tweet_results.result;
+			})
+			.filter(result => result?.legacy !== undefined)
+			.map(result => {
+				try {
+					return articleFromResult(result);
+				} catch (e) {
+					console.error('Error parsing result tweet', result, e);
+					return null;
+				}
+			})
+			.filter((a): a is ArticleWithRefs => a !== null);
+	}
 }
 
 function articleFromResult(result: Result): ArticleWithRefs {
@@ -88,23 +124,38 @@ function articleFromResult(result: Result): ArticleWithRefs {
 		};
 }
 
-export type Instruction = AddEntriesInstruction | { type: Omit<string, 'TimelineAddEntries'> };
+export type Instruction =
+	| AddEntriesInstruction
+	| AddToModuleInstruction
+	| {
+		type: Omit<string, 'TimelineAddEntries' | 'TimelineAddToModule'>
+	};
 export type AddEntriesInstruction = {
 	type: 'TimelineAddEntries';
-	entries: Entry[];
+	entries: EntryWithContent[];
+};
+type AddToModuleInstruction = {
+	type: 'TimelineAddToModule'
+	moduleItems: EntryWithItem[]
 };
 
-type Entry = {
+type EntryWithContent = {
 	entryId: string;
 	sortIndex: string;
 	content:
 		| {
 			entryType: 'TimelineTimelineItem';
-			itemContent: {
-				tweet_results: {
-					result: Result
+			itemContent: ItemContent
+		}
+		| {
+			entryType: 'TimelineTimelineModule';
+			items: {
+				entryId: string
+				item: {
+					entryType: 'TimelineTimelineItem';
+					itemContent: ItemContent
 				}
-			}
+			}[]
 		}
 		| {
 			entryType: 'TimelineTimelineCursor'
@@ -112,6 +163,21 @@ type Entry = {
 			value: string
 			cursorType: 'Top' | 'Bottom'
 		}
+	item?: never
+};
+type EntryWithItem = {
+	entryId: string;
+	item: {
+		itemType: 'TimelineTweet'
+		itemContent: ItemContent
+	}
+	content?: never
+};
+
+type ItemContent = {
+	tweet_results: {
+		result: Result
+	}
 }
 
 type Result = {

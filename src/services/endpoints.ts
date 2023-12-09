@@ -27,10 +27,10 @@ export abstract class Endpoint {
 	menuComponent: any | null = null;
 
 	constructor(
-		public refreshTypes = new Set<RefreshType>([
+		public refreshTypes = writable(new Set<RefreshType>([
 			RefreshType.RefreshStart,
 			RefreshType.Refresh,
-		])
+		])),
 	) {
 		this.autoRefreshId = null;
 	}
@@ -67,11 +67,11 @@ export abstract class LoadablePageEndpoint extends PageEndpoint {
 	abstract currentPage: number
 
 	//Need a way to add RefreshType.LoadTop if currentPage > 0
-	protected constructor(refreshTypes = new Set<RefreshType>([
+	protected constructor(refreshTypes = writable(new Set<RefreshType>([
 		RefreshType.RefreshStart,
 		RefreshType.Refresh,
 		RefreshType.LoadBottom,
-	])) {
+	]))) {
 		super(refreshTypes);
 	}
 
@@ -80,7 +80,10 @@ export abstract class LoadablePageEndpoint extends PageEndpoint {
 			case RefreshType.LoadTop:
 				this.currentPage = Math.max(0, --this.currentPage);
 				if (this.currentPage === 0)
-					this.refreshTypes.delete(RefreshType.LoadTop);
+					this.refreshTypes.update(rt => {
+						rt.delete(RefreshType.LoadTop);
+						return rt;
+					});
 				break;
 			case RefreshType.LoadBottom:
 				++this.currentPage;
@@ -100,11 +103,11 @@ export abstract class LoadablePageEndpoint extends PageEndpoint {
 export abstract class LoadableEndpoint extends Endpoint {
 	abstract currentPage: number
 
-	protected constructor(refreshTypes = new Set<RefreshType>([
+	protected constructor(refreshTypes = writable(new Set<RefreshType>([
 		RefreshType.RefreshStart,
 		RefreshType.Refresh,
 		RefreshType.LoadBottom,
-	])) {
+	]))) {
 		super(refreshTypes);
 	}
 
@@ -113,7 +116,10 @@ export abstract class LoadableEndpoint extends Endpoint {
 			case RefreshType.LoadTop:
 				this.currentPage = Math.max(0, --this.currentPage);
 				if (this.currentPage === 0)
-					this.refreshTypes.delete(RefreshType.LoadTop);
+					this.refreshTypes.update(rt => {
+						rt.delete(RefreshType.LoadTop);
+						return rt;
+					});
 				break;
 			case RefreshType.LoadBottom:
 				++this.currentPage;
@@ -185,7 +191,7 @@ export async function addEndpointArticlesToTimeline(endpointName: string, articl
 
 export async function refreshEndpointName(endpointName: string, refreshType: RefreshType, autoRefreshing = false) {
 	const endpoint = get(endpoints[endpointName]);
-	if (!endpoint.refreshTypes.has(refreshType))
+	if (!get(endpoint.refreshTypes).has(refreshType))
 		return;
 
 	const articles = await refreshEndpoint(endpoint, refreshType, autoRefreshing);
@@ -194,7 +200,7 @@ export async function refreshEndpointName(endpointName: string, refreshType: Ref
 }
 
 export async function refreshEndpoint(endpoint: Endpoint, refreshType: RefreshType, autoRefreshing = false): Promise<ArticleWithRefs[]> {
-	if (!endpoint.refreshTypes.has(refreshType))
+	if (!get(endpoint.refreshTypes).has(refreshType))
 		throw new Error(`Endpoint ${endpoint.name} doesn't have refresh type ${refreshType}`);
 
 	if (endpoint.isRateLimited()) {

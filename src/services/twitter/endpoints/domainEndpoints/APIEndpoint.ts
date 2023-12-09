@@ -3,6 +3,7 @@ import { Endpoint, RefreshType } from 'services/endpoints';
 import { parseResponse, type Instruction, type ResponseError, type AddEntriesInstruction } from 'services/twitter/pageAPI';
 import { TwitterService } from 'services/twitter/service';
 import { getCookie, getServiceStorage } from 'storages';
+import {writable} from "svelte/store";
 
 export default abstract class APIEndpoint<Response extends APIResponse> extends Endpoint {
 	readonly service = TwitterService.name;
@@ -13,7 +14,7 @@ export default abstract class APIEndpoint<Response extends APIResponse> extends 
 	bottomCursor: string | null = null;
 
 	constructor() {
-		super(new Set([RefreshType.RefreshStart, RefreshType.Refresh]));
+		super(writable(new Set([RefreshType.RefreshStart, RefreshType.Refresh])));
 	}
 
 	async refresh(refreshType: RefreshType): Promise<ArticleWithRefs[]> {
@@ -66,11 +67,17 @@ export default abstract class APIEndpoint<Response extends APIResponse> extends 
 				if (entry.content.entryType === 'TimelineTimelineCursor') {
 					if (entry.entryId.startsWith('cursor-top')) {
 						this.topCursor = entry.content.value;
-						this.refreshTypes.add(RefreshType.LoadTop);
+						this.refreshTypes.update(rt => {
+							rt.add(RefreshType.LoadTop);
+							return rt;
+						});
 						foundTopCursor = true;
 					}else if (entry.entryId.startsWith('cursor-bottom')) {
 						this.bottomCursor = entry.content.value;
-						this.refreshTypes.add(RefreshType.LoadBottom);
+						this.refreshTypes.update(rt => {
+							rt.add(RefreshType.LoadBottom);
+							return rt;
+						});
 						foundBottomCursor = true;
 					}
 				}
@@ -78,11 +85,17 @@ export default abstract class APIEndpoint<Response extends APIResponse> extends 
 
 			if (!foundTopCursor) {
 				this.topCursor = null;
-				this.refreshTypes.delete(RefreshType.LoadTop);
+				this.refreshTypes.update(rt => {
+					rt.delete(RefreshType.LoadTop);
+					return rt;
+				});
 			}
 			if (!foundBottomCursor) {
 				this.bottomCursor = null;
-				this.refreshTypes.delete(RefreshType.LoadBottom);
+				this.refreshTypes.update(rt => {
+					rt.delete(RefreshType.LoadBottom);
+					return rt;
+				});
 			}
 		}
 

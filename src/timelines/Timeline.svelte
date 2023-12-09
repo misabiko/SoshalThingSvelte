@@ -144,11 +144,11 @@
 		}
 	}
 
-	let availableRefreshTypes: Set<RefreshType>
-	$: availableRefreshTypes = new Set(data.endpoints.flatMap(e => {
-		const endpoint = e.name !== undefined ? get(endpoints[e.name]) : e.endpoint
-		return [...endpoint.refreshTypes.values()]
-	}))
+	let availableRefreshTypes: Readable<Set<RefreshType>>
+	$: availableRefreshTypes = derived(data.endpoints.flatMap(e => {
+		const endpoint = e.name !== undefined ? get(endpoints[e.name]) : e.endpoint;
+		return derived(endpoint.refreshTypes, $rt => [...$rt.values()]);
+	}), $rts => new Set($rts.flatMap(rt => rt)));
 
 	let containerProps: ContainerProps
 	$: containerProps = {
@@ -334,7 +334,7 @@
 <div class='timeline' class:fullscreenTimeline={fullscreen !== undefined} style={modal ? '' : '{data.width > 1 ? `width: ${data.width * 500}px` : ""}'}>
 	<TimelineHeader
 		bind:data
-		bind:availableRefreshTypes
+		availableRefreshTypes={$availableRefreshTypes}
 		bind:containerRebalance
 		bind:showSidebar
 		bind:showOptions

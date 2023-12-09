@@ -21,7 +21,7 @@
 	export let favviewerMaximized: boolean | undefined = undefined
 	export let fullscreen: FullscreenInfo | undefined = undefined
 	export let articleCountLabel: string
-	export let availableRefreshTypes: Set<RefreshType>
+	export let availableRefreshTypes: Readonly<Set<RefreshType>>
 	export let containerRebalance: boolean
 	export let showSidebar: boolean
 	export let showOptions: boolean

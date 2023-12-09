@@ -10,6 +10,7 @@
 	import type {FilterInstance} from './filters'
 	import {getRootArticle} from './articles'
 	import {updateTimelinesStorage} from 'storages'
+	import {get} from "svelte/store";
 
 	(BigInt.prototype as any).toJSON = function () {
 		return this.toString();
@@ -78,7 +79,7 @@
 			for (const timelineEndpoint of timeline.endpoints.filter(e => e.refreshTypes.has(RefreshType.RefreshStart)))
 				if (timelineEndpoint.name !== undefined)
 					endpointNames.add(timelineEndpoint.name)
-				else if (timelineEndpoint.endpoint?.refreshTypes?.has(RefreshType.RefreshStart))
+				else if (timelineEndpoint.endpoint?.refreshTypes && get(timelineEndpoint.endpoint.refreshTypes).has(RefreshType.RefreshStart))
 					refreshEndpoint(timelineEndpoint.endpoint as Endpoint, RefreshType.RefreshStart)
 						.then(articles => {
 							if (articles.length) {

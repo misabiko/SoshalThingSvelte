@@ -13,34 +13,37 @@ const SveltePlugin = {
 	name: 'svelte',
 	setup(build) {
 		build.onLoad({ filter: /\.svelte$/ }, async (args) => {
-			// This converts a message in Svelte's format to esbuild's format
-			const convertMessage = ({ message, start, end, code }) => {
-				let location;
-				if (start && end) {
-					const lineText = source.split(/\r\n|\r|\n/g)[start.line - 1];
-					const lineEnd = start.line === end.line ? end.column : lineText.length;
-					location = {
-						file: filename,
-						line: start.line,
-						column: start.column,
-						length: lineEnd - start.column,
-						lineText,
-					};
-				}
-				return { text: `${message} (${code})`, location };
-			};
-
 			// Load the file from the file system
 			const source = await fs.promises.readFile(args.path, 'utf8');
 			const filename = path.relative(process.cwd(), args.path);
 
+			let convertMessage;
+
 			// Convert Svelte syntax to JavaScript
 			try {
 				const {code: preprocessed} = await svelte.preprocess(source, sveltePreprocess(), { filename });
+
+				convertMessage = ({ message, start, end, code }) => {
+					let location;
+					if (start && end) {
+						const lineText = preprocessed.split(/\r\n|\r|\n/g)[start.line - 1];
+						const lineEnd = start.line === end.line ? end.column : lineText.length;
+						location = {
+							file: filename,
+							line: start.line,
+							column: start.column,
+							length: lineEnd - start.column,
+							lineText,
+						};
+					}
+					return { text: `${message} (${code})`, location };
+				};
+
 				let { js, warnings } = svelte.compile(preprocessed, {
 					filename,
 					...svelteConfig,
-					runes: !filename.startsWith('node_modules'),
+					dev: process.env.NODE_ENV === 'development',
+					runes: undefined,
 				});
 				const contents = js.code;// + '//# sourceMappingURL=' + js.map.toUrl();
 

@@ -25,13 +25,16 @@ export abstract class Endpoint {
 	autoRefreshInterval = 90_000;
 	//TODO Find component type
 	menuComponent: any | null = null;
+	refreshTypes: Writable<Set<RefreshType>>;
 
 	constructor(
-		public refreshTypes = writable(new Set<RefreshType>([
+		refreshTypes = new Set<RefreshType>([
 			RefreshType.RefreshStart,
 			RefreshType.Refresh,
-		])),
+		]),
 	) {
+		this.refreshTypes = writable(refreshTypes);
+
 		this.autoRefreshId = null;
 	}
 
@@ -67,11 +70,11 @@ export abstract class LoadablePageEndpoint extends PageEndpoint {
 	abstract currentPage: number
 
 	//Need a way to add RefreshType.LoadTop if currentPage > 0
-	protected constructor(refreshTypes = writable(new Set<RefreshType>([
+	protected constructor(refreshTypes = new Set<RefreshType>([
 		RefreshType.RefreshStart,
 		RefreshType.Refresh,
 		RefreshType.LoadBottom,
-	]))) {
+	])) {
 		super(refreshTypes);
 	}
 
@@ -103,11 +106,11 @@ export abstract class LoadablePageEndpoint extends PageEndpoint {
 export abstract class LoadableEndpoint extends Endpoint {
 	abstract currentPage: number
 
-	protected constructor(refreshTypes = writable(new Set<RefreshType>([
+	protected constructor(refreshTypes = new Set<RefreshType>([
 		RefreshType.RefreshStart,
 		RefreshType.Refresh,
 		RefreshType.LoadBottom,
-	]))) {
+	])) {
 		super(refreshTypes);
 	}
 

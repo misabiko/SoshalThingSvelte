@@ -1,6 +1,7 @@
 import fs from 'fs';
 import esbuild from 'esbuild';
 import * as svelte from 'svelte/compiler';
+import svelteConfig from '../svelte.config.js';
 import sveltePreprocess from 'svelte-preprocess';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -12,11 +13,16 @@ const SveltePlugin = {
 	name: 'svelte',
 	setup(build) {
 		build.onLoad({ filter: /\.svelte$/ }, async (args) => {
-			// This converts a message in Svelte's format to esbuild's format
+			// Load the file from the file system
+			const source = await fs.promises.readFile(args.path, 'utf8');
+			const filename = path.relative(process.cwd(), args.path);
+
+			const {code: preprocessed} = await svelte.preprocess(source, sveltePreprocess(), { filename });
+
 			const convertMessage = ({ message, start, end, code }) => {
 				let location;
 				if (start && end) {
-					const lineText = source.split(/\r\n|\r|\n/g)[start.line - 1];
+					const lineText = preprocessed.split(/\r\n|\r|\n/g)[start.line - 1];
 					const lineEnd = start.line === end.line ? end.column : lineText.length;
 					location = {
 						file: filename,
@@ -29,14 +35,13 @@ const SveltePlugin = {
 				return { text: `${message} (${code})`, location };
 			};
 
-			// Load the file from the file system
-			const source = await fs.promises.readFile(args.path, 'utf8');
-			const filename = path.relative(process.cwd(), args.path);
-
 			// Convert Svelte syntax to JavaScript
 			try {
-				const {code: preprocessed} = await svelte.preprocess(source, sveltePreprocess(), { filename });
-				let { js, warnings } = svelte.compile(preprocessed, { filename, dev: process.env.NODE_ENV === 'development' });
+				let { js, warnings } = svelte.compile(preprocessed, {
+					filename,
+					...svelteConfig,
+					dev: process.env.NODE_ENV === 'development',
+				});
 				const contents = js.code + '//# sourceMappingURL=' + js.map.toUrl();
 
 				warnings = warnings
@@ -64,6 +69,9 @@ const entryIndex = process.argv.findIndex(s => s === '--entry');
 if (entryIndex > -1 && process.argv.length >= entryIndex)
 	entryPoint = path.join(dirname(fileURLToPath(import.meta.url)), process.argv[entryIndex + 1]);
 
+/**
+ * @type {import('esbuild').BuildOptions}
+ */
 export const buildOptions = {
 	entryPoints: [entryPoint],
 	bundle: true,

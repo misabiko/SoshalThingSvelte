@@ -1,4 +1,5 @@
 <script lang="ts">
+	// noinspection ES6UnusedImports
 	import Fa from 'svelte-fa'
 	import { faAngleDown } from '@fortawesome/free-solid-svg-icons'
 	import {onMount} from 'svelte'
@@ -28,7 +29,7 @@
 	.dropdown-trigger .button:not(.borderless-button) {
 		background: white;
 		font-weight: 400;
-		font-size: normal;
+		font-size: unset;
 	}
 	.dropdown-trigger .button, .dropdown-trigger .svelte-fa {
 		color: var(--grey-darker);

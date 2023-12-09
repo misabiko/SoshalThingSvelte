@@ -4,20 +4,20 @@
 	import {getActualArticle, getRootArticle} from '../articles'
 	import type {ContainerProps} from './index'
 
-	export let containerRef = undefined;
+	export let containerRef = undefined
 	export let props: ContainerProps
 	let lastRebalanceTrigger = false
 	let lastColumnCount = props.columnCount
 
-	let uniqueArticles: { [idPairStr: string]: { articleProps: ArticleProps, index: number } }
+	let uniqueArticles: { [idPairStr: string]: { articleProps: ArticleProps, index: number } };
 	$: {
-		uniqueArticles = {}
+		uniqueArticles = {};
 		const idPairs = new Set<string>()
 		for (const a of props.articles) {
-			let lastSize = idPairs.size
-			idPairs.add(getRootArticle(a).idPairStr)
+			let lastSize = idPairs.size;
+			idPairs.add(getRootArticle(a).idPairStr);
 			if (idPairs.size > lastSize) {
-				uniqueArticles[getRootArticle(a).idPairStr] = {articleProps: a, index: lastSize}
+				uniqueArticles[getRootArticle(a).idPairStr] = {articleProps: a, index: lastSize};
 			}
 		}
 	}

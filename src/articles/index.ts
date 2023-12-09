@@ -213,7 +213,7 @@ export function deriveArticleRefs(article: Article): Readable<DerivedArticleWith
 				article,
 			});
 		case 'repost':
-			return derived(getWritable(article.actualArticleRef.reposted), repostedArticle =>
+			return derived(getWritable(article.actualArticleRef.reposted), (repostedArticle: Article) =>
 				({
 					type: 'repost',
 					article,
@@ -221,7 +221,7 @@ export function deriveArticleRefs(article: Article): Readable<DerivedArticleWith
 				} as unknown as DerivedArticleWithRefs)
 			);
 		case 'quote':
-			return derived(getWritable(article.actualArticleRef.quoted), quotedArticle =>
+			return derived(getWritable(article.actualArticleRef.quoted), (quotedArticle: Article) =>
 				({
 					type: 'quote',
 					article,

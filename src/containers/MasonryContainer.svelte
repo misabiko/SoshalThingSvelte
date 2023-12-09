@@ -128,11 +128,13 @@
 <!--		<span>Ratio: {column.ratio}</span>-->
 <!--		TODO Find a way to share key among multiple columns?-->
 			{#each column.articles as idPairStr, index (idPairStr)}
-				<ArticleComponent
-					view={props.articleView}
-					articleProps={uniqueArticles[idPairStr].articleProps}
-					timelineProps={props.timelineArticleProps}
-				/>
+				{#if uniqueArticles[idPairStr] !== undefined}	<!--Shouldn't be necessary, columns should update when uniqueArticle does-->
+					<ArticleComponent
+						view={props.articleView}
+						articleProps={uniqueArticles[idPairStr].articleProps}
+						timelineProps={props.timelineArticleProps}
+					/>
+				{/if}
 			{/each}
 		</div>
 	{/each}

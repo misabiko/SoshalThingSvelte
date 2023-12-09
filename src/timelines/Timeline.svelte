@@ -86,7 +86,7 @@
 			//TODO Sort reposts
 		}
 
-		if (data.sortInfo.method !== undefined)
+		if (data.sortInfo.method !== null)
 			articleProps.sort(compare(data.sortInfo))
 		if (data.sortInfo.reversed)
 			articleProps.reverse()
@@ -147,8 +147,8 @@
 	let availableRefreshTypes: Readable<Set<RefreshType>>
 	$: availableRefreshTypes = derived(data.endpoints.flatMap(e => {
 		const endpoint = e.name !== undefined ? get(endpoints[e.name]) : e.endpoint;
-		return derived(endpoint.refreshTypes, $rt => [...$rt.values()]);
-	}), $rts => new Set($rts.flatMap(rt => rt)));
+		return derived(endpoint.refreshTypes, rt => [...rt.values()]);
+	}), rts => new Set(rts.flatMap(rt => rt)));
 
 	let containerProps: ContainerProps
 	$: containerProps = {
@@ -196,7 +196,7 @@
 					idPairs[randomIndex], idPairs[currentIndex]];
 			}
 
-			data.sortInfo.method = undefined
+			data.sortInfo.method = null
 			containerRebalance = !containerRebalance
 			return idPairs
 		})
@@ -204,6 +204,9 @@
 
 	function autoscroll() {
 		const scrollStep = () => {
+			if (containerRef === undefined)
+				return;
+
 			if ((autoscrollInfo.direction === ScrollDirection.Down && containerRef.scrollTop < containerRef.scrollHeight - containerRef.clientHeight) ||
 				(autoscrollInfo.direction === ScrollDirection.Up && containerRef.scrollTop > 0))
 				containerRef.scrollBy(0, autoscrollInfo.direction === ScrollDirection.Down ? data.scrollSpeed : -data.scrollSpeed)
@@ -244,7 +247,7 @@
 					.then(articles => {
 						if (articles.length) {
 							data.addedIdPairs.update(addedIdPairs => {
-								const newAddedIdPairs = []
+								const newAddedIdPairs: ArticleIdPair[] = []
 								for (const idPair of articles.map(a => getRootArticle(a).idPair))
 									if (!addedIdPairs.some(idp => idPairEqual(idPair, idp))) {
 										addedIdPairs.push(idPair)

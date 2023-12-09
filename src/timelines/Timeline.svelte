@@ -270,15 +270,6 @@
 		data.articles.set(sorted.map(a => getRootArticle(a).idPair))
 	}
 
-	onMount(() => {
-		if (!data.endpoints.length)
-			return
-
-		return () => {
-			console.log('Destroying timeline ' + data.title)
-		}
-	})
-
 	function removeFiltered() {
 		//TODO Prevent articles from just being added back
 		data.articles.set(

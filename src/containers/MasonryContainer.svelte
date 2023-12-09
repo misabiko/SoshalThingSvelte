@@ -44,7 +44,7 @@
 		}
 	});
 
-	$effect(() => {
+	$effect.pre(() => {
 		if (!columns.length) {
 			columns = makeColumns()
 		}else {
@@ -77,6 +77,12 @@
 			for (const i of columnsChanged.values())
 				columns[i].ratio = columns[i].articles.reduce((acc, curr) => acc + getRatio(uniqueArticles[curr].articleProps), 0)
 		}
+
+		//Svelte5Check Shouldn't be necessary, columns should update when uniqueArticle does
+		for (const c of columns)
+			for (const a of c.articles)
+				if (!Object.hasOwn(uniqueArticles, a))
+					console.warn('Article not found in uniqueArticles', a);
 	});
 
 	function makeColumns() {
@@ -128,7 +134,7 @@
 <!--		<span>Ratio: {column.ratio}</span>-->
 <!--		TODO Find a way to share key among multiple columns?-->
 			{#each column.articles as idPairStr, index (idPairStr)}
-				{#if uniqueArticles[idPairStr] !== undefined}	<!--Shouldn't be necessary, columns should update when uniqueArticle does-->
+				{#if uniqueArticles[idPairStr] !== undefined}	<!--Svelte5Check Shouldn't be necessary, columns should update when uniqueArticle does-->
 					<ArticleComponent
 						view={props.articleView}
 						articleProps={uniqueArticles[idPairStr].articleProps}

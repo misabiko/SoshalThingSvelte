@@ -13,8 +13,8 @@ export default class ListAPI extends APIEndpoint<ListLatestTweetsTimelineRespons
 		this.endpointPath = 'd1mUZHaqFMxe0xHI3rVc-w/ListLatestTweetsTimeline';
 	}
 
-	matchParams(_params: any): boolean {
-		throw new Error('Method not implemented.');
+	matchParams(params: any): boolean {
+		return params.listId === this.listId;
 	}
 
 	getInstructions(data: ListLatestTweetsTimelineResponse): Instruction[] {

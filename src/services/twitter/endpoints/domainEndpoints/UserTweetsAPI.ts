@@ -23,8 +23,8 @@ export default class UserTweetsAPI extends APIEndpoint<UserTweetsResponse> {
 		}
 	}
 
-	matchParams(_params: any): boolean {
-		throw new Error('Method not implemented.');
+	matchParams(params: any): boolean {
+		return params.username === this.username;
 	}
 
 	getInstructions(data: UserTweetsResponse): Instruction[] {

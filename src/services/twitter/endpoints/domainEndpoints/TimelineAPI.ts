@@ -23,8 +23,12 @@ export default class TimelineAPI extends APIEndpoint<HomeTimelineResponse> {
 		}
 	}
 
-	matchParams(_params: any): boolean {
-		throw new Error('Method not implemented.');
+	matchParams(params: any): boolean {
+		if (params.following !== undefined) {
+			return params.following === (this.timelineType === TimelineType.Following);
+		}else {
+			return false
+		}
 	}
 
 	getInstructions(data: HomeTimelineResponse): Instruction[] {

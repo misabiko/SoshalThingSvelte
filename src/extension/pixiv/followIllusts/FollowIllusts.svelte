@@ -81,8 +81,9 @@
 	{/if}
 </svelte:head>
 
+<!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
 <a
-	use:portal={activatorMount}
+	use:portal={{ target: activatorMount }}
 	id='favvieweractivator'
 	class={activatorMount.children[0].className}
 	on:click={() => favviewerHidden = !favviewerHidden}

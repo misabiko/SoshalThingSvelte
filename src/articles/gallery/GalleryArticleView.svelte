@@ -1,7 +1,7 @@
 <script lang='ts'>
 	import Article from '../index'
 	import type {ArticleIdPair} from '../index'
-	import Fa from 'svelte-fa/src/fa.svelte'
+	import Fa from 'svelte-fa'
 	import {
 		faExpandArrowsAlt,
 		faExternalLinkAlt,
@@ -74,8 +74,6 @@
 </script>
 
 <style>
-	/* TODO Fix bulma-less styling */
-
 	.galleryArticle {
 		padding: 0;
 		margin-bottom: 0;

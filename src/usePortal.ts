@@ -1,5 +1,8 @@
-export default function portal(node: HTMLElement, target: HTMLElement) {
-	target.appendChild(node);
+export default function portal(node: Element, { target, insertBefore }: PortalProps) {
+	if (insertBefore)
+		target.insertBefore(node, insertBefore);
+	else
+		target.appendChild(node);
 
 	return {
 		destroy() {
@@ -10,4 +13,9 @@ export default function portal(node: HTMLElement, target: HTMLElement) {
 			});
 		}
 	};
+}
+
+type PortalProps = {
+	target: Element;
+	insertBefore?: Element | null;
 }

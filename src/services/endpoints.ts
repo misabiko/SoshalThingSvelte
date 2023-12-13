@@ -5,7 +5,6 @@ import {useFilters} from '../filters';
 import {addArticles, getServices} from './service';
 import {get, writable} from 'svelte/store';
 import type {Writable} from 'svelte/store';
-import type { SvelteComponent } from 'svelte';
 
 export const endpoints: { [name: string]: Writable<Endpoint> } = {};
 
@@ -26,13 +25,16 @@ export abstract class Endpoint {
 	autoRefreshInterval = 90_000;
 	//TODO Find component type
 	menuComponent: any | null = null;
+	refreshTypes: Writable<Set<RefreshType>>;
 
 	constructor(
-		public refreshTypes = new Set<RefreshType>([
+		refreshTypes = new Set<RefreshType>([
 			RefreshType.RefreshStart,
 			RefreshType.Refresh,
-		])
+		]),
 	) {
+		this.refreshTypes = writable(refreshTypes);
+
 		this.autoRefreshId = null;
 	}
 
@@ -81,7 +83,10 @@ export abstract class LoadablePageEndpoint extends PageEndpoint {
 			case RefreshType.LoadTop:
 				this.currentPage = Math.max(0, --this.currentPage);
 				if (this.currentPage === 0)
-					this.refreshTypes.delete(RefreshType.LoadTop);
+					this.refreshTypes.update(rt => {
+						rt.delete(RefreshType.LoadTop);
+						return rt;
+					});
 				break;
 			case RefreshType.LoadBottom:
 				++this.currentPage;
@@ -114,7 +119,10 @@ export abstract class LoadableEndpoint extends Endpoint {
 			case RefreshType.LoadTop:
 				this.currentPage = Math.max(0, --this.currentPage);
 				if (this.currentPage === 0)
-					this.refreshTypes.delete(RefreshType.LoadTop);
+					this.refreshTypes.update(rt => {
+						rt.delete(RefreshType.LoadTop);
+						return rt;
+					});
 				break;
 			case RefreshType.LoadBottom:
 				++this.currentPage;
@@ -127,6 +135,7 @@ export abstract class LoadableEndpoint extends Endpoint {
 	abstract _refresh(refreshType: RefreshType): Promise<ArticleWithRefs[]>;
 }
 
+//TODO Try passing the paramTemplate as a generic
 export interface EndpointConstructorInfo {
 	readonly name: string;
 	readonly paramTemplate: [string, ParamType][];
@@ -165,17 +174,11 @@ export function addEndpoint(endpoint: Endpoint) {
 		endpoints[endpoint.name] = writable(endpoint);
 }
 
-export async function refreshEndpointName(endpointName: string, refreshType: RefreshType, autoRefreshing = false) {
-	const endpoint = get(endpoints[endpointName]);
-	if (!endpoint.refreshTypes.has(refreshType))
-		return;
-
-	const articles = await refreshEndpoint(endpoint, refreshType, autoRefreshing);
-
+export async function addEndpointArticlesToTimeline(endpointName: string, articles: ArticleWithRefs[], refreshType?: RefreshType) {
 	const matchingTimelineEndpoints = timelineEndpointsValue
 		.map(te => ({
 			endpoint: te.endpoints
-				.find(es => (es.name ?? es.endpoint.name) === endpointName && es.refreshTypes.has(refreshType)),
+				.find(es => (es.name ?? es.endpoint.name) === endpointName && (refreshType === undefined || es.refreshTypes.has(refreshType))),
 			addArticles: te.addArticles
 		}))
 		.filter(te => te.endpoint !== undefined) as { endpoint: TimelineEndpoint, addArticles: (idPairs: ArticleIdPair[]) => void }[];
@@ -189,8 +192,18 @@ export async function refreshEndpointName(endpointName: string, refreshType: Ref
 	}
 }
 
+export async function refreshEndpointName(endpointName: string, refreshType: RefreshType, autoRefreshing = false) {
+	const endpoint = get(endpoints[endpointName]);
+	if (!get(endpoint.refreshTypes).has(refreshType))
+		return;
+
+	const articles = await refreshEndpoint(endpoint, refreshType, autoRefreshing);
+
+	await addEndpointArticlesToTimeline(endpointName, articles, refreshType);
+}
+
 export async function refreshEndpoint(endpoint: Endpoint, refreshType: RefreshType, autoRefreshing = false): Promise<ArticleWithRefs[]> {
-	if (!endpoint.refreshTypes.has(refreshType))
+	if (!get(endpoint.refreshTypes).has(refreshType))
 		throw new Error(`Endpoint ${endpoint.name} doesn't have refresh type ${refreshType}`);
 
 	if (endpoint.isRateLimited()) {

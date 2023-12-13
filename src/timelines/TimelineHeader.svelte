@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import Fa from 'svelte-fa/src/fa.svelte'
+	import Fa from 'svelte-fa'
 	import {
 		faArrowDown,
 		faArrowUp, faColumns,
@@ -21,11 +21,11 @@
 	export let favviewerMaximized: boolean | undefined = undefined
 	export let fullscreen: FullscreenInfo | undefined = undefined
 	export let articleCountLabel: string
-	export let availableRefreshTypes: Set<RefreshType>
+	export let availableRefreshTypes: Readonly<Set<RefreshType>>
 	export let containerRebalance: boolean
 	export let showSidebar: boolean
 	export let showOptions: boolean
-	export let toggleFullscreen: () => void | undefined = undefined
+	export let toggleFullscreen: (() => void) | undefined = undefined
 	export let shuffle: () => void
 	export let autoscroll: () => void
 	export let refresh: (refreshType: RefreshType) => void

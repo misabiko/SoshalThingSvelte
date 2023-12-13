@@ -1,4 +1,5 @@
 import { MediaLoadType, MediaType } from 'articles/media';
+import type { ArticleMedia } from 'articles/media';
 import TwitterArticle from './article';
 import type { ArticleWithRefs } from 'articles';
 
@@ -8,7 +9,7 @@ export function parseHTMLArticle(article: HTMLElement): ArticleWithRefs | null {
 			return null;
 	}
 
-	const anchors = article.getElementsByTagName('a');
+	// const anchors = article.getElementsByTagName('a');
 	const timestamp = article.getElementsByTagName('time')[0];
 	const timestampAnchor = timestamp.parentElement! as HTMLAnchorElement;
 	const id = BigInt(timestampAnchor.href.split('/').pop()!);
@@ -28,14 +29,15 @@ export function parseHTMLArticle(article: HTMLElement): ArticleWithRefs | null {
 
 	const time = new Date(timestamp.dateTime);
 
-	const medias = [...article.querySelectorAll('div[data-testid="tweetPhoto"] img')].map((img: HTMLImageElement) => {
-		return {
-			src: img.src,
-			ratio: null,
-			queueLoadInfo: MediaLoadType.DirectLoad,
-			mediaType: MediaType.Image,
-		};
-	});
+	const medias: ArticleMedia[] = ([...article.querySelectorAll('div[data-testid="tweetPhoto"] img')] as HTMLImageElement[])
+		.map((img: HTMLImageElement) => {
+			return {
+				src: img.src,
+				ratio: null,
+				queueLoadInfo: MediaLoadType.DirectLoad,
+				mediaType: MediaType.Image,
+			};
+		});
 	return {
 		type: 'normal',
 		article: new TwitterArticle(

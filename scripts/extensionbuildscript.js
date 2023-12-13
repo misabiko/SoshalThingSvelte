@@ -8,8 +8,8 @@ import path from 'path';
 const DedupSvelteInternalPlugin = {
 	name: 'dedup-svelte',
 	async setup({ onResolve }) {
-		const svelteInternal = path.join(process.cwd(), '/node_modules/svelte/internal/index.mjs');
-		const svelte = path.join(process.cwd(), '/node_modules/svelte/index.mjs');
+		const svelteInternal = path.join(process.cwd(), '/node_modules/svelte/src/runtime/internal/index.js');
+		const svelte = path.join(process.cwd(), '/node_modules/svelte/src/runtime/index.js');
 
 		onResolve({ filter: /^svelte\/internal$/ }, () => ({ path: svelteInternal }));
 		onResolve({ filter: /^svelte$/ }, () => ({ path: svelte }));
@@ -18,12 +18,18 @@ const DedupSvelteInternalPlugin = {
 
 const outdir = './chrome extension/dist';
 
+
+//TODO Recursively look for "entry.ts" in src/extension, apparently recursive is fixed but not released yet
+//const entryPoints = fs.readdirSync('./src/extension', { recursive: true, withFileTypes: true });
+
 const extensionBuildOptions = {
 	...buildOptions,
 	entryPoints: [
-		'./src/extension/background.js',
 		'./src/extension/pixiv/userPage/entry.ts',
 		'./src/extension/pixiv/followIllusts/entry.ts',
+		'./src/extension/twitter/homePage/entry.ts',
+		'./src/extension/twitter/userPage/entry.ts',
+		'./src/extension/twitter/listPage/entry.ts',
 	],
 	outdir,
 	splitting: false,

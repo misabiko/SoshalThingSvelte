@@ -1,5 +1,6 @@
 <script lang="ts">
-	import Fa from 'svelte-fa/src/fa.svelte'
+	// noinspection ES6UnusedImports
+	import Fa from 'svelte-fa'
 	import { faAngleDown } from '@fortawesome/free-solid-svg-icons'
 	import {onMount} from 'svelte'
 
@@ -28,7 +29,7 @@
 	.dropdown-trigger .button:not(.borderless-button) {
 		background: white;
 		font-weight: 400;
-		font-size: normal;
+		font-size: unset;
 	}
 	.dropdown-trigger .button, .dropdown-trigger .svelte-fa {
 		color: var(--grey-darker);
@@ -40,6 +41,8 @@
 
 	.dropdown-menu {
 		position: relative;
+		/* At 0, the menu is blocked by videos */
+		z-index: 1;
 	}
 
 	.dropdown-content {
@@ -69,7 +72,7 @@
 		background: none;
 	}
 
-	:global(a.dropdown-item) {
+	:global(a.dropdown-item), :global(a.dropdown-item:-webkit-any-link) {
 		text-decoration: none;
 		color: var(--text);
 		text-align: center;

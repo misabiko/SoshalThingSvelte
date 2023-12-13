@@ -1,6 +1,3 @@
-//TODO Port Modal
-//TODO Try adding command palette https://svelte-command-palette.vercel.app/docs/command-palette-api
-
 //Add service endpoints here to include them
 import './services/twitter/endpoints';
 import SoshalThing from './SoshalThing.svelte';

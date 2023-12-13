@@ -2,8 +2,8 @@
     import { getRootArticle, type ArticleWithRefs } from "articles";
     import { endpoints, type Endpoint } from "services/endpoints";
     import { addArticles, getServices } from "services/service";
+    import { parseResponse } from "services/twitter/pageAPI";
     import type { TimelineData } from "timelines";
-    import { parseResponse } from "./usertweets";
 
 	export let timeline: TimelineData;
 	export let endpoint: Endpoint;

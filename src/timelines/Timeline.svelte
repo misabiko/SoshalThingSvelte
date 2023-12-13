@@ -21,9 +21,10 @@
 	export let data: TimelineData
 	//Would like to make this immutable https://github.com/sveltejs/svelte/issues/5572
 	export let fullscreen: FullscreenInfo | undefined = undefined
-	export let toggleFullscreen: () => void | undefined = undefined
+	export let toggleFullscreen: (() => void) | undefined = undefined
 	export let removeTimeline: () => void
 	export let setModalTimeline: (data: TimelineData, width?: number) => void
+	export let modal = false;
 
 	export let favviewerButtons = false
 	export let favviewerHidden = false
@@ -36,7 +37,7 @@
 
 	let articleIdPairs: Writable<ArticleIdPair[]> = data.articles
 
-	let articles: Readable<Article[]>
+	let articles: Readable<Article[]>;
 	$: articles = derived($articleIdPairs.map(getWritable), a => a)
 
 	let articlesWithRefs: Readable<ArticleWithRefs[]>
@@ -85,7 +86,7 @@
 			//TODO Sort reposts
 		}
 
-		if (data.sortInfo.method !== undefined)
+		if (data.sortInfo.method !== null)
 			articleProps.sort(compare(data.sortInfo))
 		if (data.sortInfo.reversed)
 			articleProps.reverse()
@@ -117,6 +118,8 @@
 					filteredOut,
 					quoted: addProps(articleWithRefs.quoted, index)
 				} as ArticleProps
+			default:
+				throw new Error('Unknown article type: ' + articleWithRefs.type)
 		}
 	}
 
@@ -141,11 +144,11 @@
 		}
 	}
 
-	let availableRefreshTypes: Set<RefreshType>
-	$: availableRefreshTypes = new Set(data.endpoints.flatMap(e => {
-		const endpoint = e.name !== undefined ? get(endpoints[e.name]) : e.endpoint
-		return [...endpoint.refreshTypes.values()]
-	}))
+	let availableRefreshTypes: Readable<Set<RefreshType>>
+	$: availableRefreshTypes = derived(data.endpoints.flatMap(e => {
+		const endpoint = e.name !== undefined ? get(endpoints[e.name]) : e.endpoint;
+		return derived(endpoint.refreshTypes, rt => [...rt.values()]);
+	}), rts => new Set(rts.flatMap(rt => rt)));
 
 	let containerProps: ContainerProps
 	$: containerProps = {
@@ -193,7 +196,7 @@
 					idPairs[randomIndex], idPairs[currentIndex]];
 			}
 
-			data.sortInfo.method = undefined
+			data.sortInfo.method = null
 			containerRebalance = !containerRebalance
 			return idPairs
 		})
@@ -201,6 +204,9 @@
 
 	function autoscroll() {
 		const scrollStep = () => {
+			if (containerRef === undefined)
+				return;
+
 			if ((autoscrollInfo.direction === ScrollDirection.Down && containerRef.scrollTop < containerRef.scrollHeight - containerRef.clientHeight) ||
 				(autoscrollInfo.direction === ScrollDirection.Up && containerRef.scrollTop > 0))
 				containerRef.scrollBy(0, autoscrollInfo.direction === ScrollDirection.Down ? data.scrollSpeed : -data.scrollSpeed)
@@ -241,7 +247,7 @@
 					.then(articles => {
 						if (articles.length) {
 							data.addedIdPairs.update(addedIdPairs => {
-								const newAddedIdPairs = []
+								const newAddedIdPairs: ArticleIdPair[] = []
 								for (const idPair of articles.map(a => getRootArticle(a).idPair))
 									if (!addedIdPairs.some(idp => idPairEqual(idPair, idp))) {
 										addedIdPairs.push(idPair)
@@ -263,15 +269,6 @@
 			sorted.reverse()
 		data.articles.set(sorted.map(a => getRootArticle(a).idPair))
 	}
-
-	onMount(async () => {
-		if (!data.endpoints.length)
-			return
-
-		return () => {
-			console.log('Destroying timeline ' + data.title)
-		}
-	})
 
 	function removeFiltered() {
 		//TODO Prevent articles from just being added back
@@ -296,6 +293,7 @@
 		flex-flow: column;
 		width: 500px;
 		flex-shrink: 0;
+		background-color: var(--main-background);
 	}
 	.timeline:first-child {
 		padding: 0;
@@ -309,6 +307,7 @@
 
 	:global(.modal .timeline) {
 		width: unset;
+		background-color: var(--body-background-color);
 	}
 
 	:global(.articlesContainer) {
@@ -326,10 +325,10 @@
 	}
 </style>
 
-<div class='timeline' class:fullscreenTimeline={fullscreen !== undefined} style='{data.width > 1 ? `width: ${data.width * 500}px` : ""}'>
+<div class='timeline' class:fullscreenTimeline={fullscreen !== undefined} style={modal ? '' : '{data.width > 1 ? `width: ${data.width * 500}px` : ""}'}>
 	<TimelineHeader
 		bind:data
-		bind:availableRefreshTypes
+		availableRefreshTypes={$availableRefreshTypes}
 		bind:containerRebalance
 		bind:showSidebar
 		bind:showOptions

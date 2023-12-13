@@ -6,10 +6,11 @@
 	import type {SvelteComponent} from 'svelte'
 	import {getContext} from 'svelte'
 	import {getRootArticle} from './index'
+	import Modal from '../Modal.svelte'
 
 	export let articleProps: ArticleProps
 	export let timelineProps: TimelineArticleProps
-	export let view: typeof SvelteComponent
+	export let view: new (...args: any[]) => SvelteComponent;
 	export let style = ''; style;
 	let modal = false
 	let showAllMedia = false
@@ -69,8 +70,9 @@
 	}
 </style>
 
-<!--{#if modal}
-	<Modal bind:active={modal} onBody={!isInjected}>
+{#if modal}
+<!-- TODO Find way to get specific parent soshalthing -->
+	<Modal bind:active={modal} mountElement={document.getElementsByClassName('soshalthing')[0]}>
 		<article class:transparent={articleProps.filteredOut}>
 			<svelte:component
 				this={view}
@@ -86,7 +88,7 @@
 			/>
 		</article>
 	</Modal>
-{/if}-->
+{/if}
 
 <article class={articleProps.filteredOut ? 'transparent' : ''} {style}>
 	<svelte:component

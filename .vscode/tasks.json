@@ -5,11 +5,21 @@
 			"type": "npm",
 			"script": "build",
 			"group": {
-				"kind": "build",
-				"isDefault": true
+				"kind": "build"
 			},
 			"label": "npm: build",
 			"detail": "node scripts/buildscript.js",
+			"problemMatcher": "$esbuild"
+		},
+		{
+			"type": "npm",
+			"script": "build:extension",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"label": "npm: build:extension",
+			"detail": "npm run build:extension",
 			"problemMatcher": "$esbuild"
 		}
 	]

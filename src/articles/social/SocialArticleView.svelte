@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import Article from '../../articles'
+	import type Article from '../../articles'
 	import type {ArticleIdPair} from '../index'
 	import type {ArticleProps, TimelineArticleProps} from '../index'
 	import {shortTimestamp} from "../index";
@@ -34,7 +34,6 @@
 </script>
 
 <style>
-	/* TODO Fix bulma-less styling */
 	.socialArticle {
 		padding: 1rem;
 		margin-bottom: 2px;
@@ -59,6 +58,7 @@
 
 	.avatar {
 		width: 64px;
+		min-width: 64px;
 		height: 64px;
 		margin: 0 1rem 0 0;
 	}
@@ -99,6 +99,7 @@
 		overflow: hidden;
 		display: inline-block;
 		max-width: 300px;
+		text-decoration: none;
 	}
 	.names strong {
 		margin-right: 0.5rem;
@@ -112,6 +113,8 @@
 		white-space: pre-line;
 		overflow-wrap: anywhere;
 		padding: 0.5rem 0;
+		margin-block-start: 0;
+		margin-block-end: 0;
 	}
 
 	/* , .replyLabel */
@@ -123,6 +126,7 @@
 	.repostLabel a {
 		margin-left: 1rem;
 		color: var(--light);
+		text-decoration: none;
 	}
 
 	.repostLabel a:hover {

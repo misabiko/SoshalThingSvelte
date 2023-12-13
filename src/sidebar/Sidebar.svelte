@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import Fa from 'svelte-fa/src/fa.svelte'
+	import Fa from 'svelte-fa'
 	import type {IconDefinition} from '@fortawesome/free-solid-svg-icons'
 	import {
 		faAngleDoubleLeft,
@@ -29,7 +29,7 @@
 		Undoables,
 	}
 
-	let menu: typeof SvelteComponent | SidebarMenu | null = null;
+	let menu: (new (...args: any[]) => SvelteComponent) | SidebarMenu | null = null;
 
 	export let setModalTimeline: (data: TimelineData, width?: number) => void
 	export let addTimeline: (data: TimelineData) => void
@@ -38,11 +38,11 @@
 	export let timelineViews: {[name: string]: TimelineView}
 	export let timelineView: TimelineView
 
-	function toggleSidebarMenu(newMenu: typeof SvelteComponent | SidebarMenu) {
+	function toggleSidebarMenu(newMenu: (new (...args: any[]) => SvelteComponent) | SidebarMenu) {
 		menu = menu === newMenu ? null : newMenu;
 	}
 
-	const buttons: {icon: IconDefinition, menu: typeof SvelteComponent | SidebarMenu, title: string}[] = [
+	const buttons: {icon: IconDefinition, menu: (new (...args: any[]) => SvelteComponent) | SidebarMenu, title: string}[] = [
 		{icon: faPlus, menu: SidebarMenu.TimelineEdit, title: 'Add new timeline'},
 		{icon: faBarsProgress, menu: Endpoints, title: 'Endpoints'},
 		{icon: faRotateLeft, menu: SidebarMenu.Undoables, title: 'Undoables'},

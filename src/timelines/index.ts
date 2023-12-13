@@ -20,8 +20,8 @@ export type TimelineData = {
 	//TODO Give timelines a list of article lists
 	articles: Writable<ArticleIdPair[]>;
 	section: { useSection: boolean; count: number };
-	container: typeof SvelteComponent;
-	articleView: typeof SvelteComponent;
+	container: new (...args: any[]) => SvelteComponent;
+	articleView: new (...args: any[]) => SvelteComponent;
 	columnCount: number;
 	rtl: boolean;
 	width: number;
@@ -90,7 +90,7 @@ export type TimelineEndpoint = {
 export type FullscreenInfo = {
 	index: number | null;
 	columnCount: number | null;
-	container: typeof SvelteComponent | null;
+	container: ((new (...args: any[]) => SvelteComponent)) | null;
 }
 
 export function newUserTimeline(serviceName: string, author: ArticleAuthor): TimelineData | undefined {

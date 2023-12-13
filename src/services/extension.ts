@@ -2,20 +2,13 @@ import {writable} from 'svelte/store';
 import {MAIN_STORAGE_KEY} from '../storages';
 
 export type ExtensionContext =
-	{
-		id: null,
-		available: false,
-		hasAccessToken: false,
-	} |
-	{
-		id: string,
-		available: false,
-		hasAccessToken: false,
-	} |
-	{
-		id: string,
-		available: true,
-		hasAccessToken: boolean,
+	| {
+		id: null
+		available: false
+	}
+	| {
+		id: string
+		available: boolean
 	}
 
 const EXTENSION_ID_STORAGE_KEY = `${MAIN_STORAGE_KEY} Extension Id`;
@@ -23,7 +16,6 @@ const EXTENSION_ID_STORAGE_KEY = `${MAIN_STORAGE_KEY} Extension Id`;
 let extensionContext: Readonly<ExtensionContext> = {
 	id: localStorage.getItem(EXTENSION_ID_STORAGE_KEY),
 	available: false,
-	hasAccessToken: false,
 };
 
 
@@ -118,7 +110,6 @@ export async function extensionCheck(): Promise<ExtensionContext> {
 					extensionContextStore.set({
 						id: extensionContext.id,
 						available: false,
-						hasAccessToken: false,
 					});
 					console.error(response);
 					reject(response);
@@ -135,7 +126,6 @@ export async function extensionCheck(): Promise<ExtensionContext> {
 		extensionContextStore.set({
 			id: extensionContext.id,
 			available: false,
-			hasAccessToken: false,
 		});
 		return extensionContext;
 	}

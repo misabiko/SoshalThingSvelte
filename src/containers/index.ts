@@ -6,7 +6,7 @@ export type ContainerProps = {
 	articles: ArticleProps[];
 	columnCount: number;
 	rtl: boolean;
-	articleView: typeof SvelteComponent;
+	articleView: new (...args: any[]) => SvelteComponent;
 	timelineArticleProps: TimelineArticleProps;
 	rebalanceTrigger: boolean;
 }

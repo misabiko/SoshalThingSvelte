@@ -2,10 +2,6 @@
 	"name": "SoshalThing Svelte",
 	"manifest_version": 3,
 	"version": "0.1",
-	"background": {
-		"service_worker": "dist/background.js",
-		"type": "module"
-	},
 	"declarative_net_request": {
 		"rule_resources": [
 			{
@@ -44,6 +40,46 @@
 			],
 			"js": ["dist/pixiv/followIllusts/entry.js"],
 			"css": ["dist/pixiv/followIllusts/entry.css"]
+		},
+		{
+			"matches": [
+				"https://*.twitter.com/home",
+				"https://*.x.com/home"
+			],
+			"js": ["dist/twitter/homePage/entry.js"],
+			"css": ["dist/twitter/homePage/entry.css"]
+		},
+		{
+			"matches": [
+				"https://*.twitter.com/*",
+				"https://*.x.com/*"
+			],
+			"exclude_matches": [
+				"https://*.twitter.com/home",
+				"https://*.x.com/home",
+				"https://*.twitter.com/*/status*",
+				"https://*.x.com/*/status*",
+				"https://*.twitter.com/i/lists/*",
+				"https://*.x.com/i/lists/*"
+			],
+			"js": ["dist/twitter/userPage/entry.js"],
+			"css": ["dist/twitter/userPage/entry.css"]
+		},
+		{
+			"matches": [
+				"https://*.twitter.com/i/lists/*",
+				"https://*.x.com/i/lists/*"
+			],
+			"js": ["dist/twitter/listPage/entry.js"],
+			"css": ["dist/twitter/listPage/entry.css"]
 		}
-	]
+	],
+	"web_accessible_resources": [{
+		"resources": [
+			"dist/*.js.map",
+			"src/**/*.ts",
+			"src/**/*.svelte"
+		],
+		"matches": ["https://*.twitter.com/*", "https://*.x.com/*"]
+	}]
 }

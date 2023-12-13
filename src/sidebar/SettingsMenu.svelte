@@ -2,27 +2,9 @@
 	//TODO Make settings menu dynamically per-service
 	import {extensionCheck, extensionContextStore, fetchExtension, fetchExtensionService} from "../services/extension.js"
 	import {TwitterService} from '../services/twitter/service'
-	import {PixivService} from "../services/pixiv/service.js";
+	import {PixivService} from '../services/pixiv/service';
 	import {getServiceStorage, loadMainStorage, updateServiceStorage} from "../storages"
 	import {updateMainStorage} from "../storages";
-
-	//TODO Remove twitter auth stuff
-	let oauthToken: string | undefined
-	let oobPIN: string
-
-	async function twitterRequestToken() {
-		const response = await fetchExtensionService<{oauth_token: string}>(TwitterService.name, 'oauth1.0aRequestToken', undefined)
-		oauthToken = response.json.oauth_token
-	}
-
-	async function twitterAccessToken() {
-		const response = await fetchExtensionService<{soshalthing: true}>(TwitterService.name, 'oauth1.0aAccessToken', undefined, 'GET', {oauthVerifier: oobPIN})
-		if (!response?.json.soshalthing)
-			throw new Error(JSON.stringify(response, null, '\t'))
-		oauthToken = undefined
-		//TODO Add service and request to extensionCheck
-		await extensionCheck()
-	}
 
 	let tabId: number | null = null;
 
@@ -49,8 +31,9 @@
 		console.log(html.getElementsByTagName('article'));
 	}
 
-	const pixivStorage = getServiceStorage(PixivService.name)
-	const mainStorage = loadMainStorage()
+	const twitterStorage = getServiceStorage(TwitterService.name) ?? '';
+	const pixivStorage = getServiceStorage(PixivService.name) ?? '';
+	const mainStorage = loadMainStorage();
 </script>
 
 <label class='field'>
@@ -72,25 +55,10 @@
 	/>
 </label>
 
-{#if $extensionContextStore.hasAccessToken}
-	<div class='field'>
-		Twitter logged in
-	</div>
-{:else}
-	<label class='field'>
-		Twitter
-		<button on:click={twitterRequestToken}>Request Token</button>
-		{#if oauthToken}
-			<a class='button' href={`https://api.twitter.com/oauth/authenticate?oauth_token=${oauthToken}`} target='_blank' rel='noreferrer'>
-				Authenticate
-			</a>
-		{/if}
-		<input type='text' bind:value={oobPIN}/>
-		{#if oobPIN?.length}
-			<button on:click={twitterAccessToken}>Get Access Token</button>
-		{/if}
-	</label>
-{/if}
+<label class='field'>
+	Twitter Bearer Token
+	<input value={twitterStorage.csrfToken} on:change={e => updateServiceStorage(TwitterService.name, 'bearerToken', e.target.value)}/>
+</label>
 
 <div>
 	<button on:click={listTabs}>List Tabs</button>

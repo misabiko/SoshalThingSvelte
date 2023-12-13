@@ -1,5 +1,6 @@
 import { type Instruction } from 'services/twitter/pageAPI';
 import APIEndpoint from './APIEndpoint';
+import type { EndpointConstructorInfo } from 'services/endpoints';
 
 export default class TimelineAPI extends APIEndpoint<HomeTimelineResponse> {
 	readonly name: string;
@@ -29,6 +30,12 @@ export default class TimelineAPI extends APIEndpoint<HomeTimelineResponse> {
 	getInstructions(data: HomeTimelineResponse): Instruction[] {
 		return data.data.home.home_timeline_urt.instructions;
 	}
+
+	static readonly constructorInfo: EndpointConstructorInfo = {
+		name: 'TwitterTimelineAPI',
+		paramTemplate: [['following', false]],
+		constructor: ({following}) => new TimelineAPI(following ? TimelineType.Following : TimelineType.ForYou)
+	};
 }
 
 export enum TimelineType {

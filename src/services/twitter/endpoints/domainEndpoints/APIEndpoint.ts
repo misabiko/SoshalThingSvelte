@@ -17,13 +17,6 @@ export default abstract class APIEndpoint<Response extends APIResponse> extends 
 	}
 
 	async refresh(refreshType: RefreshType): Promise<ArticleWithRefs[]> {
-		const bearerToken = getServiceStorage(TwitterService.name).bearerToken;
-		if (!bearerToken)
-			throw new Error('Bearer token not found');
-		const csrfToken = getCookie('ct0');
-		if (csrfToken === null)
-			throw new Error('Csrf token not found');
-
 		let cursor: string | undefined = undefined;
 		switch (refreshType) {
 			case RefreshType.LoadTop:
@@ -45,13 +38,7 @@ export default abstract class APIEndpoint<Response extends APIResponse> extends 
 			+ '&features='
 			+ encodeURIComponent(JSON.stringify(features));
 
-		const response = await fetch(`https://twitter.com/i/api/graphql/${this.endpointPath}${params}`, {
-			headers: {
-				'Authorization': 'Bearer ' + bearerToken,
-				'X-Csrf-Token': csrfToken,
-			}
-		});
-		const data: Response | ResponseError = await response.json();
+		const data: Response | ResponseError = await TwitterService.fetch(`https://twitter.com/i/api/graphql/${this.endpointPath}${params}`, {});
 
 		if ('errors' in data)
 			throw new Error('Error fetching tweets: ' + data.errors.map(e => e.message).join('\n'));

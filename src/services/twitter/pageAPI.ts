@@ -411,20 +411,11 @@ export async function retweetPage(idPair: ArticleIdPair) {
 }
 
 async function pageRequest<T>(queryId: string, endpoint: string, tweetId: string): Promise<T> {
-	const bearerToken = getServiceStorage(TwitterService.name).bearerToken;
-	if (!bearerToken)
-		throw new Error('Bearer token not found');
-	const csrfToken = getCookie('ct0');
-	if (csrfToken === null)
-		throw new Error('Csrf token not found');
-
-	const response = await fetch(`https://twitter.com/i/api/graphql/${queryId}/${endpoint}`, {
+	return await TwitterService.fetch(`https://twitter.com/i/api/graphql/${queryId}/${endpoint}`, {
 		method: 'POST',
 
 		headers: {
 			'Content-Type': 'application/json',
-			'Authorization': 'Bearer ' + bearerToken,
-			'X-Csrf-Token': csrfToken,
 		},
 
 		body: JSON.stringify({
@@ -434,8 +425,6 @@ async function pageRequest<T>(queryId: string, endpoint: string, tweetId: string
 			}
 		})
 	});
-
-	return await response.json();
 }
 
 type FavoriteResponse = {

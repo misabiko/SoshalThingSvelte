@@ -32,6 +32,7 @@ export interface Service<A extends Article = Article> {
 		compare(a: ArticleWithRefs | ArticleProps, b: ArticleWithRefs | ArticleProps): number
 		directionLabel(reversed: boolean): string
 	} }
+	fetch: (url: RequestInfo | URL, init?: RequestInit) => Promise<any>
 }
 
 export function addArticles(service: Service<any>, ignoreRefs: boolean, ...articlesWithRefs: ArticleWithRefs[]) {
@@ -170,6 +171,7 @@ export function newService<A extends Article = Article>(name: string): Service<A
 		defaultFilter(filterType: string) { return {type:filterType, service: name};},
 		filterTypes: {},
 		sortMethods: {},
+		fetch(url, init) { return fetch(url, init); },
 	};
 }
 

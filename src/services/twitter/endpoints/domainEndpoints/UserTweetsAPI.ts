@@ -1,5 +1,6 @@
 import { type Instruction } from 'services/twitter/pageAPI';
 import APIEndpoint, { type APIParams } from './APIEndpoint';
+import type { EndpointConstructorInfo } from 'services/endpoints';
 
 export default class UserTweetsAPI extends APIEndpoint<UserTweetsResponse> {
 	readonly name: string;
@@ -45,6 +46,20 @@ export default class UserTweetsAPI extends APIEndpoint<UserTweetsResponse> {
 			features,
 		};
 	}
+
+	static readonly constructorInfo: EndpointConstructorInfo = {
+		name: 'TwitterUserTweetsAPI',
+		paramTemplate: [
+			['username', ''],
+			['userId', ''],
+			['media', false]
+		],
+		constructor: ({username, userId, media}) => new UserTweetsAPI(
+			media ? TimelineType.Media : TimelineType.Tweets,
+			username as string,
+			userId as string
+		),
+	};
 }
 
 export enum TimelineType {

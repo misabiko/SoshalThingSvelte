@@ -8,7 +8,7 @@ import { retweetPage, retweetWebSocket, toggleLikePage, toggleLikeWebSocket } fr
 import { getCookie, getServiceStorage } from 'storages';
 import { fetchExtension } from 'services/extension';
 
-export const isOnTwitter = window.location.hostname === 'twitter.com';
+export const isOnTwitter = window?.location?.hostname === 'twitter.com';
 
 export const TwitterService: Service<TwitterArticle> = {
 	...newService('Twitter'),

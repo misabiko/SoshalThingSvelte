@@ -6,18 +6,20 @@
 	import {getServiceStorage, loadMainStorage, updateServiceStorage} from "../storages"
 	import {updateMainStorage} from "../storages";
 
-	let tabId: number | null = null;
+	let tabs: string[][] = [];
 
 	async function listTabs() {
 		const response = await fetchExtension<any>('listTabs', {query: {url: '*://twitter.com/*'}});
 		console.log(response);
 
+		tabs = response.map((tab: any) => [tab.id, tab.title]);
+
 		if (Array.isArray(response) && response.length > 0)
-			tabId = response[0].id;
+			TwitterService.tabId = response[0].id;
 	}
 
 	async function twitterPageFetch() {
-		if (tabId === null) {
+		if (TwitterService.tabId === null) {
 			console.log('Tab id not set');
 			return;
 		}
@@ -62,7 +64,13 @@
 
 <div>
 	<button on:click={listTabs}>List Tabs</button>
-	<p>TabId: {tabId}</p>
+	{#if tabs.length > 0}
+		<select bind:value={TwitterService.tabId}>
+			{#each tabs as [id, title]}
+				<option value={id}>{title}</option>
+			{/each}
+		</select>
+	{/if}
 	<button on:click={twitterPageFetch}>Twitter Page Fetch</button>
 </div>
 

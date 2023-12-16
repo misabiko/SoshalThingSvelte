@@ -33,6 +33,7 @@ export interface Service<A extends Article = Article> {
 		directionLabel(reversed: boolean): string
 	} }
 	fetch: (url: RequestInfo | URL, init?: RequestInit) => Promise<any>
+	tabId: number | null
 }
 
 export function addArticles(service: Service<any>, ignoreRefs: boolean, ...articlesWithRefs: ArticleWithRefs[]) {
@@ -172,6 +173,7 @@ export function newService<A extends Article = Article>(name: string): Service<A
 		filterTypes: {},
 		sortMethods: {},
 		fetch(url, init) { return fetch(url, init); },
+		tabId: null,
 	};
 }
 

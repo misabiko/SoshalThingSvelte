@@ -62,11 +62,13 @@ export const TwitterService: Service<TwitterArticle> = {
 			const response = await fetch(url, init);
 			return await response.json();
 		}else {
-			const listTabsResponse: any[] = await fetchExtension('listTabs', {query: {url: '*://twitter.com/*'}});
-			const tabId = listTabsResponse[0].id;
+			if (this.tabId === null) {
+				const listTabsResponse: any[] = await fetchExtension('listTabs', {query: {url: '*://twitter.com/*'}});
+				this.tabId = listTabsResponse[0].id;
+			}
 
 			return await fetchExtension('twitterFetch', {
-				tabId,
+				tabId: this.tabId,
 				message: {
 					soshalthing: true,
 					request: 'fetch',

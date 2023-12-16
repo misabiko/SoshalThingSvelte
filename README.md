@@ -1,4 +1,4 @@
-# SoshalThingSvelte [![CI@main](https://github.com/misabiko/SoshalThingSvelte/actions/workflows/ci.yml/badge.svg?branch=main "CI@main")](https://github.com/misabiko/SoshalThingSvelte/actions/workflows/ci.yml) <a href="https://bulma.io"> <img src="https://bulma.io/images/made-with-bulma.png" alt="Made with Bulma" width="128" height="24"> </a>
+# SoshalThingSvelte [![CI@main](https://github.com/misabiko/SoshalThingSvelte/actions/workflows/ci.yml/badge.svg?branch=main "CI@main")](https://github.com/misabiko/SoshalThingSvelte/actions/workflows/ci.yml)
 
 Tweetdeck-style timeline app to display feeds from various services in columns.
 
@@ -25,7 +25,6 @@ Serve the app  on `localhost:8080` with `npm run serve`
 You can pass `--port <port>` to serve over a specific port
 
 Build the extension with `npm run build:extension`
-Needs a `credentials.json` in the working directory with `twitter.consumer_key` and `twitter.consumer_secret` for a Twitter app.
 
 Test with `npm test`, it uses the port 8089 by default
 

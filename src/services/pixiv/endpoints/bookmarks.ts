@@ -5,7 +5,7 @@ import PixivArticle from '../article';
 import type {PixivUser} from '../article';
 import {getHiddenStorage, getMarkedAsReadStorage} from '../../../storages/serviceCache';
 import {getWritable} from '../../service';
-import {getEachPageURL, getUserUrl, parseThumbnail} from './index';
+import {getEachPageURL, getUserUrl, parseThumbnail, type BookmarkData} from './index';
 import {MediaLoadType, MediaType} from '../../../articles/media';
 
 export default class BookmarkPageEndpoint extends PageEndpoint {
@@ -86,7 +86,10 @@ export class BookmarkAPIEndpoint extends LoadableEndpoint {
 		super();
 
 		if (this.currentPage > 0)
-			this.refreshTypes.add(RefreshType.LoadTop);
+			this.refreshTypes.update(rt => {
+				rt.add(RefreshType.LoadTop);
+				return rt;
+			});
 	}
 
 	async _refresh(_refreshType: RefreshType): Promise<ArticleWithRefs[]> {
@@ -109,6 +112,8 @@ export class BookmarkAPIEndpoint extends LoadableEndpoint {
 
 		//For now, I'm only parsing illusts, not novels
 		return Object.values(response.body.works).map(illust => {
+			const bookmarked = illust.bookmarkData !== null;
+
 			return {
 				type: 'normal',
 				article: new PixivArticle(
@@ -131,7 +136,7 @@ export class BookmarkAPIEndpoint extends LoadableEndpoint {
 					markedAsReadStorage,
 					hiddenStorage,
 					illust,
-					null,
+					bookmarked,
 				),
 			};
 		});
@@ -173,7 +178,7 @@ type FollowAjaxResponse = {
 				height: number
 				pageCount: number
 				isBookmarkable: boolean
-				bookmarkData: null
+				bookmarkData: BookmarkData | null
 				alt: string
 				titleCaptionTranslation: {
 					workTitle: null

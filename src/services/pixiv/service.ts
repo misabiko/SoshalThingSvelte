@@ -47,7 +47,7 @@ export const PixivService: PixivServiceType = {
 			async action(idPair: ArticleIdPair) {
 				const csrfToken = getServiceStorage(PixivService.name)['csrfToken'] as string | undefined;
 				if (!csrfToken)
-					return;
+					throw new Error('No CSRF token');
 
 				const response : LikeResponse = await fetch('https://www.pixiv.net/ajax/illusts/like', {
 					method: 'POST',
@@ -62,10 +62,8 @@ export const PixivService: PixivServiceType = {
 					body: JSON.stringify({illust_id: idPair.id}),
 				}).then(r => r.json());
 
-				if (response.error) {
-					console.error('Error during like: ', response);
-					return;
-				}
+				if (response.error)
+					throw new Error('Error during like: ' + response.message);
 
 				if (response.body.is_liked)
 					console.debug(idPair.id + ' was already liked.');
@@ -80,6 +78,7 @@ export const PixivService: PixivServiceType = {
 			actionned(article) { return article.liked; },
 		},
 		bookmark: {
+			key: 'bookmark',
 			name: 'Bookmark',
 			color: STANDARD_ACTIONS.like.color,
 			icon: STANDARD_ACTIONS.like.icon,
@@ -90,7 +89,7 @@ export const PixivService: PixivServiceType = {
 				const storage = getServiceStorage(PixivService.name);
 				const csrfToken = storage['csrfToken'] as string | undefined;
 				if (!csrfToken)
-					return;
+					throw new Error('No CSRF token');
 
 				const privateBookmark = (storage['privateBookmark'] as boolean | undefined) ?? false;
 
@@ -112,10 +111,8 @@ export const PixivService: PixivServiceType = {
 					}),
 				}).then(r => r.json());
 
-				if (response.error) {
-					console.error('Error during bookmark: ', response);
-					return;
-				}
+				if (response.error)
+					throw new Error('Error during bookmark: ' + response.message);
 
 				console.debug('Bookmarked ' + idPair.id);
 
@@ -126,7 +123,8 @@ export const PixivService: PixivServiceType = {
 			},
 			actionned(article) { return article.bookmarked === true; },
 		}
-	}
+	},
+	isOnDomain: globalThis.window?.location?.hostname === 'pixiv.net',
 };
 PixivArticle.service = PixivService.name;
 

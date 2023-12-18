@@ -63,7 +63,7 @@ export function fromAPI(
 
 	let actualArticleRefIdPair: ArticleRefIdPair | undefined;
 
-	const medias = note.files.map(f => {
+	const medias: ArticleMedia[] = note.files.map(f => {
 		let mediaType: MediaType;
 		switch (f.type) {
 			case 'image/png':
@@ -207,7 +207,7 @@ function mfmToHtml(node: MfmNode): string {
 		case 'mention':
 			return `<a href="https://misskey.io/${node.props.acct}">${node.props.acct}</a>`;
 		case 'hashtag':
-			return `<a href="https://misskey.io/tags/${node.props.hashtag}">#${node.props.hashtag}</a>`;return `#${node.props.hashtag}`;
+			return `<a href="https://misskey.io/tags/${node.props.hashtag}">#${node.props.hashtag}</a>`;
 		case 'url':
 			if (node.props.brackets !== undefined)
 				console.log('url brackets:', node.props.brackets, node);

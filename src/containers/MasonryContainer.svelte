@@ -4,7 +4,7 @@
 	import {getActualArticle, getRootArticle} from '../articles'
 	import type {ContainerProps} from './index'
 
-	export let containerRef = undefined
+	export let containerRef = null
 	export let props: ContainerProps
 	let lastRebalanceTrigger = false
 	let lastColumnCount = props.columnCount

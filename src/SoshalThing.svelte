@@ -28,7 +28,7 @@
 	export let timelineViews: {[name: string]: TimelineView} = {}
 	export let isInjected = true
 	export let favviewerHidden = false
-	export let favviewerMaximized: boolean | undefined = undefined
+	export let favviewerMaximized: boolean | null = null
 
 	let modalTimeline: TimelineData | null = null
 	let modalTimelineActive = false

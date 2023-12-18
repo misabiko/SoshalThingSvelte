@@ -2,13 +2,21 @@
 	import {methodName, type SortInfo, SortMethod} from './index'
 	import Dropdown from "../Dropdown.svelte"
 	import {directionLabel, genericSortMethods} from "./index.js"
-	import {getServices} from '../services/service'
+	import {getServices, type SortMethodInfo} from '../services/service'
 
 	export let sortInfo: SortInfo
 	export let sortOnce: (method: SortMethod, reversed: boolean) => void
 
 	//[ServiceName, MethodName, MethodInfo][]
-	const serviceSortMethods: [string, string, object][] = Object.values(getServices()).flatMap(s => Object.entries(s.sortMethods).map(m => [s.name, ...m]))
+	const serviceSortMethods: {
+		service: string,
+		method: string,
+		methodInfo: SortMethodInfo
+	}[] = Object.values(getServices()).flatMap(s => Object.entries(s.sortMethods).map(m => ({
+		service: s.name,
+		method: m[0],
+		methodInfo: m[1]
+	})));
 
 	let currentMethodName: string
 	$: {
@@ -18,6 +26,8 @@
 				currentMethodName = 'Unsorted';
 				break;
 			case SortMethod.Custom:
+				if (sortInfo.customMethod === null)
+					throw new Error('Custom sort method is null');
 				currentMethodName = `${sortInfo.customMethod.service} - ${getServices()[sortInfo.customMethod.service].sortMethods[sortInfo.customMethod.method].name}`
 				break;
 			default:
@@ -47,28 +57,28 @@
 						on:click={() => {
 							sortInfo.method = SortMethod.Custom;
 							sortInfo.customMethod = {
-								method: method[1],
-								service: method[0]
+								method: method.method,
+								service: method.service
 							};
 							sortInfo.reversed = reversed;
 						}}
 					>
-						{ `${method[2].name} - ${method[2].directionLabel(reversed)}` }
+						{ `${method.methodInfo.name} - ${method.methodInfo.directionLabel(reversed)}` }
 					</button>
 				{/each}
 			{/each}
-			<button class='dropdown-item' on:click={() => sortInfo.method = undefined}>
+			<button class='dropdown-item' on:click={() => sortInfo.method = null}>
 				Unsorted
 			</button>
 		</Dropdown>
 		<button class='button' on:click={() => sortInfo.reversed = !sortInfo.reversed}>
-			{#if sortInfo.method !== undefined}
+			{#if sortInfo.method !== null}
 				{directionLabel(sortInfo.method, sortInfo.reversed)}
 			{:else}
 				{sortInfo.reversed ? 'Reversed' : 'Normal'}
 			{/if}
 		</button>
-		{#if sortInfo.method === undefined}
+		{#if sortInfo.method === null}
 			<Dropdown labelText='Sort once'>
 				{#each genericSortMethods as method}
 					<button class='dropdown-item' on:click={() => sortOnce(method, false)}>

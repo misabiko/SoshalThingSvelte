@@ -7,6 +7,7 @@ import type Article from '../articles';
 
 export type ArticleAction<A extends Article = Article> = {
 	action: (idPair: ArticleIdPair) => void
+	key: string
 	name: string
 	actionned: (article: A) => boolean
 	disabled?: (article: A) => boolean

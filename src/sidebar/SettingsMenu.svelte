@@ -1,6 +1,6 @@
 <script lang='ts'>
 	//TODO Make settings menu dynamically per-service
-	import {extensionCheck, extensionContextStore, fetchExtension, fetchExtensionService} from "../services/extension.js"
+	import {extensionCheck, extensionContextStore, fetchExtension} from "../services/extension.js"
 	import {TwitterService} from '../services/twitter/service'
 	import {PixivService} from '../services/pixiv/service';
 	import {getServiceStorage, loadMainStorage, updateServiceStorage} from "../storages"
@@ -16,21 +16,6 @@
 
 		if (Array.isArray(response) && response.length > 0)
 			TwitterService.tabId = response[0].id;
-	}
-
-	async function twitterPageFetch() {
-		if (TwitterService.tabId === null) {
-			console.log('Tab id not set');
-			return;
-		}
-
-		const response = await fetchExtension<any>('twitterFetch', {tabId, message: {
-			soshalthing: true,
-			request: 'getPageHTML',
-		}});
-		const html = document.createElement('html');
-		html.innerHTML = response;
-		console.log(html.getElementsByTagName('article'));
 	}
 
 	const twitterStorage = getServiceStorage(TwitterService.name) ?? '';
@@ -71,9 +56,9 @@
 			{/each}
 		</select>
 	{/if}
-	<button on:click={twitterPageFetch}>Twitter Page Fetch</button>
 </div>
 
+<!-- Get from document.getElementsByTagname('meta')[global].content thing -->
 <label class='field'>
 	Pixiv token
 	<input value={pixivStorage.csrfToken} on:change={e => updateServiceStorage(PixivService.name, 'csrfToken', e.target.value)}/>

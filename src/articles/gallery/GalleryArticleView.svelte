@@ -47,7 +47,7 @@
 		//TODO Use mediaRefs?
 		const articleMediaEls = divRef?.querySelectorAll('.articleMedia')
 		if (articleMediaEls) {
-			const modifiedMedias = []
+			const modifiedMedias: [number, number][] = []
 			for (let i = 0; i < actualArticle.medias.length; ++i)
 				if (actualArticle.medias[i].ratio === null)
 					modifiedMedias.push([i, articleMediaEls[i].clientHeight / articleMediaEls[i].clientWidth])

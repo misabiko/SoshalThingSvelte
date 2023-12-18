@@ -4,7 +4,7 @@
 	import {articlesWithUniqueKeys} from "./index.js";
 
 	export let props: ContainerProps;
-	export let containerRef = undefined;
+	export let containerRef = null;
 </script>
 
 <div class='articlesContainer columnContainer' bind:this={containerRef}>

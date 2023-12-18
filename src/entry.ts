@@ -17,7 +17,7 @@ const timelineView: TimelineView = searchTimelineView ??
 	fullscreen,
 };
 const searchParamsFullscreen = parseFullscreen(searchParams);
-if (searchParamsFullscreen !== undefined)
+if (searchParamsFullscreen !== null)
 	timelineView.fullscreen = searchParamsFullscreen;
 
 new SoshalThing({
@@ -32,13 +32,13 @@ new SoshalThing({
 
 
 
-function parseFullscreen(search: URLSearchParams): FullscreenInfo | undefined {
+function parseFullscreen(search: URLSearchParams): FullscreenInfo | null {
 	const param = search.get('fullscreen_timeline');
 
 	switch (param) {
 		case null:
 		case 'false':
-			return undefined;
+			return null;
 		case '':
 		case 'true':
 		case '0':
@@ -52,7 +52,7 @@ function parseFullscreen(search: URLSearchParams): FullscreenInfo | undefined {
 	const num = parseInt(param);
 
 	if (isNaN(num))
-		return undefined;
+		return null;
 
 	return {
 		index: num,
@@ -61,14 +61,14 @@ function parseFullscreen(search: URLSearchParams): FullscreenInfo | undefined {
 	};
 }
 
-function parseTimelineView(timelineViews: {[name: string]: TimelineView}, search: URLSearchParams): TimelineView | undefined {
+function parseTimelineView(timelineViews: {[name: string]: TimelineView}, search: URLSearchParams): TimelineView | null {
 	const param = search.get('view');
 
 	if (!param?.length)
-		return undefined;
+		return null;
 	else if (!Object.hasOwn(timelineViews, param)) {
 		console.error(`Couldn't find timeline view "${param}"\nAvailable views: `, timelineViews);
-		return undefined;
+		return null;
 	}else
 		return timelineViews[param];
 }

@@ -33,7 +33,9 @@
 
 	let favviewerHidden = false
 	let favviewerMaximized = mainStorage.maximized
-	let activatorMount = document.querySelector('nav')
+	const activatorMount = document.querySelector('nav');
+	if (activatorMount === null)
+		throw new Error('Could not find activator mount');
 
 	const timelineView: TimelineView = {
 		timelineIds: Object.keys(timelines),

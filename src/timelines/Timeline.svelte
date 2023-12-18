@@ -20,19 +20,19 @@
 
 	export let data: TimelineData
 	//Would like to make this immutable https://github.com/sveltejs/svelte/issues/5572
-	export let fullscreen: FullscreenInfo | undefined = undefined
-	export let toggleFullscreen: (() => void) | undefined = undefined
+	export let fullscreen: FullscreenInfo | null = null
+	export let toggleFullscreen: (() => void) | null = null
 	export let removeTimeline: () => void
 	export let setModalTimeline: (data: TimelineData, width?: number) => void
 	export let modal = false;
 
 	export let favviewerButtons = false
 	export let favviewerHidden = false
-	export let favviewerMaximized: boolean | undefined = undefined
+	export let favviewerMaximized: boolean | null = null
 	export let showSidebar = true
 
 	let showOptions = false
-	let containerRef: HTMLElement | undefined = undefined
+	let containerRef: HTMLElement | null = null
 	let containerRebalance = false;
 
 	let articleIdPairs: Writable<ArticleIdPair[]> = data.articles
@@ -204,7 +204,7 @@
 
 	function autoscroll() {
 		const scrollStep = () => {
-			if (containerRef === undefined)
+			if (containerRef === null)
 				return;
 
 			if ((autoscrollInfo.direction === ScrollDirection.Down && containerRef.scrollTop < containerRef.scrollHeight - containerRef.clientHeight) ||
@@ -325,7 +325,7 @@
 	}
 </style>
 
-<div class='timeline' class:fullscreenTimeline={fullscreen !== undefined} style={modal ? '' : '{data.width > 1 ? `width: ${data.width * 500}px` : ""}'}>
+<div class='timeline' class:fullscreenTimeline={fullscreen !== null} style={modal ? '' : '{data.width > 1 ? `width: ${data.width * 500}px` : ""}'}>
 	<TimelineHeader
 		bind:data
 		availableRefreshTypes={$availableRefreshTypes}

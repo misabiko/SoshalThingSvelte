@@ -17,7 +17,7 @@ export default abstract class APIEndpoint<Response extends APIResponse> extends 
 	}
 
 	async refresh(refreshType: RefreshType): Promise<ArticleWithRefs[]> {
-		let cursor: string | undefined = undefined;
+		let cursor: string | null = null;
 		switch (refreshType) {
 			case RefreshType.LoadTop:
 				if (this.topCursor)

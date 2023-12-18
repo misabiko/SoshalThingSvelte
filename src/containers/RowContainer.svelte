@@ -3,7 +3,7 @@
 	import type {ContainerProps} from './index'
 	import {articlesWithUniqueKeys} from "./index.js";
 
-	export let containerRef = undefined;
+	export let containerRef = null;
 	export let props: ContainerProps;
 </script>
 

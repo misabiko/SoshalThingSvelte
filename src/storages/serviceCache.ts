@@ -138,5 +138,5 @@ export function getCachedArticlesStorage(service: Service<any>): { [id: string]:
 }
 
 function getServiceArticles(service: Service): Article[] {
-	return get(derived(Object.values(service.articles), (a: Article) => a));
+	return get(derived(Object.values(service.articles), (a: Article[]) => a));
 }

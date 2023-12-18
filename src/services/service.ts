@@ -17,24 +17,29 @@ export interface Service<A extends Article = Article> {
 	readonly articles: { [id: string]: Writable<A> };
 	//TODO Store constructors by name
 	readonly endpointConstructors: EndpointConstructorInfo[]
-	userEndpoint: ((author: ArticleAuthor) => Endpoint) | undefined,
+	userEndpoint: ((author: ArticleAuthor) => Endpoint) | null,
 	articleActions: { [name: string]: ArticleAction<A> };
 	requestImageLoad?: (id: ArticleId, index: number) => void;
 	getCachedArticles?: () => {[id: string]: object}
 	keepArticle(articleWithRefs: ArticleWithRefs | ArticleProps, index: number, filter: Filter): boolean
 	defaultFilter(filterType: string): Filter
-	filterTypes: { [name: string]: {
-			name(inverted: boolean): string
-			props: string[]
-		} }
-	sortMethods: { [name: string]: {
-		name: string
-		compare(a: ArticleWithRefs | ArticleProps, b: ArticleWithRefs | ArticleProps): number
-		directionLabel(reversed: boolean): string
-	} }
+	filterTypes: { [name: string]: FilterTypeInfo }
+	sortMethods: { [name: string]: SortMethodInfo }
 	fetch: (url: RequestInfo | URL, init?: RequestInit) => Promise<any>
 	tabId: number | null
+	isOnDomain: boolean | null
 }
+
+export type SortMethodInfo = {
+	name: string
+	compare(a: ArticleWithRefs | ArticleProps, b: ArticleWithRefs | ArticleProps): number
+	directionLabel(reversed: boolean): string
+};
+
+export type FilterTypeInfo = {
+	name(inverted: boolean): string
+	props: string[]
+};
 
 export function addArticles(service: Service<any>, ignoreRefs: boolean, ...articlesWithRefs: ArticleWithRefs[]) {
 	const articles = ignoreRefs
@@ -166,7 +171,7 @@ export function newService<A extends Article = Article>(name: string): Service<A
 		name,
 		articles: {},
 		endpointConstructors: [],
-		userEndpoint: undefined,
+		userEndpoint: null,
 		articleActions: {},
 		keepArticle() { return true; },
 		defaultFilter(filterType: string) { return {type:filterType, service: name};},
@@ -174,6 +179,7 @@ export function newService<A extends Article = Article>(name: string): Service<A
 		sortMethods: {},
 		fetch(url, init) { return fetch(url, init); },
 		tabId: null,
+		isOnDomain: null,
 	};
 }
 

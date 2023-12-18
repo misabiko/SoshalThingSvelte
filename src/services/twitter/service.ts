@@ -4,11 +4,9 @@ import {newService, registerService} from '../service';
 import {STANDARD_ACTIONS} from '../actions';
 import Article, {type ArticleWithRefs, getRootArticle} from '../../articles';
 import type {Filter} from '../../filters';
-import { retweetPage, retweetWebSocket, toggleLikePage, toggleLikeWebSocket } from './pageAPI';
+import { retweetPage, toggleLikePage } from './pageAPI';
 import { getCookie, getServiceStorage } from 'storages';
 import { fetchExtension } from 'services/extension';
-
-export const isOnTwitter = globalThis.window?.location?.hostname === 'twitter.com';
 
 export const TwitterService: Service<TwitterArticle> = {
 	...newService('Twitter'),
@@ -50,7 +48,7 @@ export const TwitterService: Service<TwitterArticle> = {
 			init.headers = {};
 		(init.headers as Record<string, string>)['Authorization'] = `Bearer ${bearerToken}`;
 
-		if (isOnTwitter) {
+		if (this.isOnDomain) {
 			if (init?.headers === undefined)
 				throw new Error('Cannot fetch on twitter service without headers');
 
@@ -84,7 +82,9 @@ export const TwitterService: Service<TwitterArticle> = {
 				}
 			});
 		}
-	}
+	},
+	isOnDomain: globalThis.window?.location?.hostname === 'twitter.com'
+		|| globalThis.window?.location?.hostname === 'x.com',
 };
 TwitterArticle.service = TwitterService.name;
 

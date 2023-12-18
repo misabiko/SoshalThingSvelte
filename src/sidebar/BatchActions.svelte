@@ -46,7 +46,7 @@
 <label class='field'>
 	Timeline
 	<select bind:value={timelineIndex}>
-		{#each timelines as t, index}
+		{#each Object.values(timelines) as t, index}
 			<option value={index}>{t.title}</option>
 		{/each}
 	</select>

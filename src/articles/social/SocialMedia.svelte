@@ -17,7 +17,7 @@
 	afterUpdate(() => {
 		const articleMediaEls = divRef?.querySelectorAll('.articleMedia')
 		if (articleMediaEls) {
-			const modifiedMedias = []
+			const modifiedMedias: [number, number][] = []
 			for (let i = 0; i < article.medias.length; ++i)
 				if (article.medias[i].ratio === null && articleMediaEls[i] !== undefined)
 					modifiedMedias.push([i, articleMediaEls[i].clientHeight / articleMediaEls[i].clientWidth])
@@ -77,7 +77,7 @@
 		{#if media.mediaType === MediaType.Image || media.mediaType === MediaType.Gif}
 			<div class='imagesHolder'>
 				<div class='imgPlaceHolder' style:aspect-ratio={1 / media.ratio} style:display='none'></div>
-				<img class='articleMedia' alt={`${article.id}/${index}`} src={media.src} on:click={() => onMediaClick(index)}/>
+				<img class='articleMedia' alt={`${article.idPairStr}/${index}`} src={media.src} on:click={() => onMediaClick(index)}/>
 			</div>
 		{:else if !timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
 			<!-- svelte-ignore a11y-media-has-caption -->

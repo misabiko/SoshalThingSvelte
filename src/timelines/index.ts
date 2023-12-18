@@ -93,10 +93,10 @@ export type FullscreenInfo = {
 	container: ((new (...args: any[]) => SvelteComponent)) | null;
 }
 
-export function newUserTimeline(serviceName: string, author: ArticleAuthor): TimelineData | undefined {
+export function newUserTimeline(serviceName: string, author: ArticleAuthor): TimelineData | null {
 	const endpointConstructor = getServices()[serviceName].userEndpoint;
-	if (endpointConstructor === undefined)
-		return undefined;
+	if (endpointConstructor === null)
+		return null;
 
 	return {
 		...defaultTimeline(),

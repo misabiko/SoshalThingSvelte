@@ -13,14 +13,17 @@
 	import {endpoints} from '../services/endpoints'
     import { get } from "svelte/store";
 
-	export let data: TimelineData
-	export let fullscreen: FullscreenInfo | undefined = undefined
-	export let removeTimeline: () => void
-	export let sortOnce: (method: SortMethod, reversed: boolean) => void
-	export let articleCountLabel: string
-	export let removeFiltered: () => void
+	export let data: TimelineData;
+	export let fullscreen: FullscreenInfo | null = null;
+	export let removeTimeline: () => void;
+	export let sortOnce: (method: SortMethod, reversed: boolean) => void;
+	export let articleCountLabel: string;
+	export let removeFiltered: () => void;
 
 	function setFullscreenContainer(checked: boolean) {
+		if (fullscreen === null)
+			throw new Error('FullscreenInfo is null');
+
 		if (checked)
 			fullscreen.container ??= data.container
 		else
@@ -30,6 +33,9 @@
 	}
 
 	function setFullscreenColumnCount(checked: boolean) {
+		if (fullscreen === null)
+			throw new Error('FullscreenInfo is null');
+
 		if (checked)
 			fullscreen.columnCount ??= data.columnCount
 		else
@@ -81,7 +87,7 @@
 				<option value={MasonryContainer}>Masonry</option>
 			</select>
 		</label>
-		{#if fullscreen !== undefined}
+		{#if fullscreen !== null}
 			<label class='field'>
 				<input type='checkbox' checked={!!fullscreen.container} on:input={e => setFullscreenContainer(e.target.checked)}/>
 				Fullscreen Container
@@ -109,7 +115,7 @@
 					-
 				</button>
 			</label>
-			{#if fullscreen !== undefined}
+			{#if fullscreen !== null}
 				<label class='field'>
 					<input type='checkbox' checked={fullscreen.columnCount !== null} on:input={e => setFullscreenColumnCount(e.target.checked)}/>
 					Fullscreen Column Count
@@ -136,7 +142,7 @@
 				Right to left
 			</label>
 		{/if}
-		{#if fullscreen === undefined}
+		{#if fullscreen === null}
 			<label class='field'>
 				Timeline Width
 				<input class='input' type='number' bind:value={data.width} min={1}/>

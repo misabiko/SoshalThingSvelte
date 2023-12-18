@@ -3,12 +3,20 @@
 	import Dropdown from "../Dropdown.svelte";
 	import {filterTypes, getFilterName} from "./index.js"
 	import {defaultFilter} from './index'
-	import {getServices} from '../services/service'
+	import {getServices, type FilterTypeInfo} from '../services/service'
 
 	export let instances: FilterInstance[]
 
 	//[ServiceName, FilterName, FilterTypeInfo][]
-	const serviceFilterTypes: [string, string, object][] = Object.values(getServices()).flatMap(s => Object.entries(s.filterTypes).map(m => [s.name, ...m]))
+	const serviceFilterTypes: {
+		service: string,
+		filter: string,
+		filterTypeInfo: FilterTypeInfo
+	}[] = Object.values(getServices()).flatMap(s => Object.entries(s.filterTypes).map(m => ({
+		service: s.name,
+		filter: m[0],
+		filterTypeInfo: m[1],
+	})))
 
 	function addFilter(filterType: Filter['type'], inverted: boolean, service: string = null) {
 		instances.push({
@@ -93,8 +101,8 @@
 		</button>
 	{/each}
 	{#each serviceFilterTypes as filterType}
-		<button class='dropdown-item' on:click={() => addFilter(filterType[1], false, filterType[0])}>
-			{ filterType[2].name(false) }
+		<button class='dropdown-item' on:click={() => addFilter(filterType.filter, false, filterType.service)}>
+			{ filterType.filterTypeInfo.name(false) }
 		</button>
 	{/each}
 </Dropdown>
@@ -105,8 +113,8 @@
 		</button>
 	{/each}
 	{#each serviceFilterTypes as filterType}
-		<button class="dropdown-item" on:click={() => addFilter(filterType[1], true, filterType[0])}>
-			{ filterType[2].name(true) }
+		<button class="dropdown-item" on:click={() => addFilter(filterType.filter, true, filterType.service)}>
+			{ filterType.filterTypeInfo.name(true) }
 		</button>
 	{/each}
 </Dropdown>

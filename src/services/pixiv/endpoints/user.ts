@@ -259,6 +259,3 @@ type UserAjaxResponse = {
 		}
 	}
 }
-
-//TODO PixivService.userEndpoint
-PixivService.userEndpoint = user => new UserAPIEndpoint((user as PixivUser).id);

@@ -1,4 +1,4 @@
-import PixivArticle from './article';
+import PixivArticle, { type PixivUser } from './article';
 import type {FetchingService, Service} from '../service';
 import {getWritable, newFetchingService, newService, registerService} from '../service';
 import type {Writable} from 'svelte/store';
@@ -8,6 +8,7 @@ import {STANDARD_ACTIONS} from '../actions';
 import {getServiceStorage} from '../../storages';
 import {getRatio, MediaLoadType, MediaType} from '../../articles/media';
 import {faFaceSmile} from '@fortawesome/free-solid-svg-icons';
+import { UserAPIEndpoint } from './endpoints/user';
 
 export const PixivService: PixivServiceType = {
 	...newService('Pixiv'),
@@ -125,6 +126,7 @@ export const PixivService: PixivServiceType = {
 		}
 	},
 	isOnDomain: globalThis.window?.location?.hostname === 'pixiv.net',
+	userEndpoint: user => new UserAPIEndpoint((user as PixivUser).id),
 };
 PixivArticle.service = PixivService.name;
 

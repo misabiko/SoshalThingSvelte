@@ -3,12 +3,13 @@ import type {FetchingService, Service} from '../service';
 import {getWritable, newFetchingService, newService, registerService} from '../service';
 import type {Writable} from 'svelte/store';
 import {get} from 'svelte/store';
-import type {ArticleIdPair} from '../../articles';
+import Article, {articleWithRefToArray, type ArticleIdPair, getRootArticle, type ArticleWithRefs} from '../../articles';
 import {STANDARD_ACTIONS} from '../actions';
 import {getServiceStorage} from '../../storages';
 import {getRatio, MediaLoadType, MediaType} from '../../articles/media';
 import {faFaceSmile} from '@fortawesome/free-solid-svg-icons';
 import { UserAPIEndpoint } from './endpoints/user';
+import type { Filter } from 'filters';
 
 export const PixivService: PixivServiceType = {
 	...newService('Pixiv'),
@@ -127,6 +128,23 @@ export const PixivService: PixivServiceType = {
 	},
 	isOnDomain: globalThis.window?.location?.hostname === 'pixiv.net',
 	userEndpoint: user => new UserAPIEndpoint((user as PixivUser).id),
+	keepArticle(articleWithRefs: ArticleWithRefs, index: number, filter: Filter): boolean {
+		if ((getRootArticle(articleWithRefs).constructor as typeof Article).service !== this.name)
+			return true;
+
+		switch (filter.type) {
+			case 'bookmarked':
+				return (articleWithRefToArray(articleWithRefs) as PixivArticle[])
+					.some(a => a.bookmarked);
+			default: return true;
+		}
+	},
+	filterTypes: {
+		bookmarked: {
+			name: (inverted) => inverted ? 'Not bookmarked' : 'Bookmarked',
+			props: [],
+		},
+	},
 };
 PixivArticle.service = PixivService.name;
 

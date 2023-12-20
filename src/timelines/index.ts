@@ -24,6 +24,7 @@ export type TimelineData = {
 	articleView: new (...args: any[]) => SvelteComponent;
 	columnCount: number;
 	rtl: boolean;
+	// TODO Add option to set flex-grow: 1 instead of fixed width
 	width: number;
 	filters: FilterInstance[];
 	sortInfo: SortInfo;

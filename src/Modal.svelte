@@ -26,9 +26,11 @@
 		width: 100%;
 		height: 100%;
 		display: flex;
-		align-content: center;
+		align-items: center;
 		justify-content: center;
 		z-index: 1000;
+		padding: 5em;
+		box-sizing: border-box;
 	}
 
 	.modal:not(.active) {
@@ -43,9 +45,14 @@
 	}
 
 	.modal-content {
-		margin: 5em;
 		z-index: 1001;
 		overflow-y: auto;
+		pointer-events: none;
+		height: 100%
+
+	}
+
+	:global(.modal-content > *) {
 		pointer-events: visible;
 	}
 </style>
@@ -53,8 +60,8 @@
 <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 <div class="modal" class:active={active} bind:this={modal}>
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<div class="modal-background" on:click={close}/>
-	<div class="modal-content">
+	<div class='modal-background' on:click={close}/>
+	<div class='modal-content'>
 		<slot/>
 	</div>
 </div>

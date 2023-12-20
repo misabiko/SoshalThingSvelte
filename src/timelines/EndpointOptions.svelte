@@ -2,7 +2,7 @@
 	import {get} from 'svelte/store';
 	import {getServices} from '../services/service';
 	import type {TimelineData} from './index';
-	import {endpoints, everyRefreshType} from '../services/endpoints';
+	import {endpoints, everyRefreshType, RefreshType} from '../services/endpoints';
 	import {updateTimelinesStorageEndpoints} from '../storages';
 
 	export let timelineId: string | null;
@@ -27,21 +27,73 @@
 			filters: [],
 		});
 
+		data.endpoints = data.endpoints;
+
 		if (timelineId !== null)
 			updateTimelinesStorageEndpoints(timelineId, data.endpoints);
 	}
+
+	function removeEndpoint(index: number) {
+		data.endpoints.splice(index, 1);
+
+		data.endpoints = data.endpoints;
+
+		if (timelineId !== null)
+			updateTimelinesStorageEndpoints(timelineId, data.endpoints);
+	}
+
+	function onRefreshTypeChange(index: number, refreshType: RefreshType, checked: boolean) {
+		if (checked)
+			data.endpoints[index].refreshTypes.add(refreshType);
+		else
+			data.endpoints[index].refreshTypes.delete(refreshType);
+
+		data.endpoints = data.endpoints;
+
+		if (timelineId !== null)
+			updateTimelinesStorageEndpoints(timelineId, data.endpoints);
+	}
+
+	const refreshTypeNames = {
+		[RefreshType.RefreshStart]: 'Refresh Start',
+		[RefreshType.Refresh]: 'Refresh',
+		[RefreshType.LoadTop]: 'Load Top',
+		[RefreshType.LoadBottom]: 'Load Bottom',
+	}
 </script>
 
+<style>
+	ul {
+		list-style-type: none;
+		padding-left: 0;
+	}
+</style>
+
 <ul>
-	{#each data.endpoints.map(te => te.endpoint || get(endpoints[te.name])) as endpoint (endpoint)}
+	{#each data.endpoints as timelineEndpoint, i}
+		{@const endpoint = (timelineEndpoint.endpoint || get(endpoints[timelineEndpoint.name]))}
+		{@const endpointRefreshTypes = get(endpoint.refreshTypes)}
 		<li>
-			{endpoint.name}
+			<h2>{endpoint.name}</h2>
 			{#if endpoint.menuComponent}
 				<svelte:component this={endpoint.menuComponent} {endpoint} timeline={data}/>
 			{/if}
+			{#each [...everyRefreshType].filter(rt => endpointRefreshTypes.has(rt)) as refreshType (refreshType)}
+				<label>
+					{refreshTypeNames[refreshType]}
+					<input
+							type='checkbox'
+							checked={timelineEndpoint.refreshTypes.has(refreshType)}
+							on:change={e => onRefreshTypeChange(i, refreshType, e.target.checked)}
+					/>
+				</label>
+			{/each}
+
+			<button on:click={() => removeEndpoint(i)}>Remove</button>
 		</li>
 	{/each}
 </ul>
+
 {#if newEndpointServices.length > 0}
 	<select bind:value={newEndpointService} on:change={updateParams}>
 		{#each newEndpointServices as service}
@@ -54,6 +106,7 @@
 		{/each}
 	</select>
 	<br/>
+
 	{#each Object.entries(params) as [key, value]}
 		<label class='field'>
 			{key}
@@ -67,5 +120,6 @@
 		</label>
 	{/each}
 	<br/>
+
 	<button on:click={addEndpoint}>New Endpoint</button>
 {/if}

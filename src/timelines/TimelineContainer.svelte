@@ -128,7 +128,7 @@
 		{#key `${timelineView.timelineIds[timelineView.fullscreen.index]}/${timelineView.fullscreen.index}`}
 			{#if isInjected}
 				<Timeline
-					timelineId={timelineView.timelineIds[timelineView.fullscreen.index]}}
+					timelineId={timelineView.timelineIds[timelineView.fullscreen.index]}
 					favviewerButtons={true}
 					bind:favviewerHidden
 					bind:favviewerMaximized
@@ -144,7 +144,7 @@
 				/>
 			{:else}
 				<Timeline
-					timelineId={timelineView.timelineIds[timelineView.fullscreen.index]}}
+					timelineId={timelineView.timelineIds[timelineView.fullscreen.index]}
 					data={timelines[timelineView.timelineIds[timelineView.fullscreen.index]]}
 					{setModalTimeline}
 					bind:fullscreen={timelineView.fullscreen}

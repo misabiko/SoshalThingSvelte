@@ -14,6 +14,7 @@ export default class BookmarkPageEndpoint extends PageEndpoint {
 	readonly hostPage: number;
 	readonly user: PixivUser;
 	readonly private: boolean;
+	readonly params = null;
 
 	constructor() {
 		super(new Set([RefreshType.RefreshStart, RefreshType.Refresh]));
@@ -81,6 +82,7 @@ export default class BookmarkPageEndpoint extends PageEndpoint {
 export class BookmarkAPIEndpoint extends LoadableEndpoint {
 	readonly name = 'Pixiv Bookmark API Endpoint';
 	static service = PixivService.name;
+	readonly params;
 
 	constructor(readonly userId: number, readonly r18: boolean, public currentPage = 0) {
 		super();
@@ -90,6 +92,12 @@ export class BookmarkAPIEndpoint extends LoadableEndpoint {
 				rt.add(RefreshType.LoadTop);
 				return rt;
 			});
+
+		this.params = {
+			userId,
+			r18,
+			page: currentPage,
+		}
 	}
 
 	async _refresh(_refreshType: RefreshType): Promise<ArticleWithRefs[]> {

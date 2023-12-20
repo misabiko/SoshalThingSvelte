@@ -4,6 +4,7 @@ import WebSocketPageEndpoint from './WebSocketPageEndpoint';
 
 export default class TwitterFollowingTimelineAPIEndpoint extends WebSocketPageEndpoint {
 	readonly name = 'FollowingTimelineAPI';
+	params = {};
 
 	constructor() {
 		super({

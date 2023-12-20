@@ -26,6 +26,8 @@ export abstract class Endpoint {
 	//TODO Find component type
 	menuComponent: any | null = null;
 	refreshTypes: Writable<Set<RefreshType>>;
+	//Can we make params only if constructorInfo is defined?
+	abstract readonly params: EndpointConstructorParams | null;
 
 	constructor(
 		refreshTypes = new Set<RefreshType>([
@@ -142,7 +144,7 @@ export interface EndpointConstructorInfo {
 	readonly constructor: (params: EndpointConstructorParams) => Endpoint;
 }
 
-export type EndpointConstructorParams = { [param: string]: ParamType };
+export type EndpointConstructorParams = Record<string, ParamType>;
 
 export enum RefreshType {
 	RefreshStart,
@@ -251,7 +253,7 @@ export function startAutoRefresh(endpointName: string) {
 
 function startAutoRefreshEndpoint(endpoint: Endpoint) {
 	if (endpoint.autoRefreshId === null) {
-		endpoint.autoRefreshId = setInterval(() => {
+		endpoint.autoRefreshId = window.setInterval(() => {
 			console.debug('Refreshing ' + endpoint.name);
 			refreshEndpointName(endpoint.name, RefreshType.Refresh, true).then();
 		}, endpoint.autoRefreshInterval);

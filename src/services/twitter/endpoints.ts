@@ -17,6 +17,7 @@ import TimelineAPI from './endpoints/domainEndpoints/TimelineAPI';
 export class TwitterHomeEndpoint extends Endpoint {
 	static service = TwitterService.name;
 	readonly name = 'Home Page';
+	params = {};
 
 	async refresh(_refreshType: RefreshType): Promise<ArticleWithRefs[]> {
 		const listTabsResponse = await fetchExtension<any>('listTabs', {query: {url: '*://twitter.com/*'}});

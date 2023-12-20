@@ -4,6 +4,7 @@ import WebSocketPageEndpoint from './WebSocketPageEndpoint';
 
 export default class TwitterListAPIEndpoint extends WebSocketPageEndpoint {
 	readonly name: string;
+	readonly params;
 
 	constructor(listId: string) {
 		const name = `TwitterListAPIEndpoint/${listId}`;
@@ -14,6 +15,10 @@ export default class TwitterListAPIEndpoint extends WebSocketPageEndpoint {
 		});
 
 		this.name = name;
+
+		this.params = {
+			listId,
+		};
 	}
 
 	matchParams(_params: any): boolean {

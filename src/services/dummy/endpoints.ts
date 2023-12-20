@@ -9,6 +9,7 @@ import {getServices, registerEndpointConstructor} from '../service';
 export class DummyEndpoint extends Endpoint {
 	readonly name = 'DummyEndpoint';
 	static service = DummyService.name;
+	params = {};
 
 	async refresh(_refreshType: RefreshType) {
 		const markAsReadStorage = getMarkedAsReadStorage(DummyService);
@@ -34,11 +35,16 @@ export class DummyEndpoint extends Endpoint {
 export class DummyEndpointWithParam extends Endpoint {
 	readonly name;
 	static service = DummyService.name;
+	readonly params;
 
 	constructor(readonly query: string) {
 		super();
 
 		this.name = `Dummy Endpoint ${query}`;
+
+		this.params = {
+			query
+		};
 	}
 
 	async refresh(_refreshType: RefreshType) {

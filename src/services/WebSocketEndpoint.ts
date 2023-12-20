@@ -30,7 +30,7 @@ export default abstract class WebSocketEndpoint extends Endpoint {
 				)
 			);
 
-			addArticles(getServices()[this.service], false, ...articles);
+			addArticles(getServices()[WebSocketEndpoint.service], false, ...articles);
 
 			if (endpoints[this.name] !== undefined)
 				endpoints[this.name].set(this);

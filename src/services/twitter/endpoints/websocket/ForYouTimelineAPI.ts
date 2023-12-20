@@ -4,6 +4,7 @@ import WebSocketPageEndpoint from './WebSocketPageEndpoint';
 
 export default class TwitterForYouTimelineAPIEndpoint extends WebSocketPageEndpoint {
 	readonly name = 'ForYouTimelineAPI';
+	params = {};
 
 	constructor() {
 		super({

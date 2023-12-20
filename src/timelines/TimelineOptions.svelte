@@ -9,7 +9,7 @@
 	import SortOptions from "../sorting/SortOptions.svelte"
 	import type { SortMethod } from '../sorting';
 	import type {FullscreenInfo} from './index'
-	import {updateFullscreenStorage} from '../storages'
+	import {updateFullscreenStorage} from '../storages';
 	import {endpoints, everyRefreshType} from '../services/endpoints';
     import { get } from "svelte/store";
 	import {getServices} from '../services/service';
@@ -20,6 +20,7 @@
 	export let sortOnce: (method: SortMethod, reversed: boolean) => void;
 	export let articleCountLabel: string;
 	export let removeFiltered: () => void;
+	export let updateTimelinesStorage: () => void;
 
 	function setFullscreenContainer(checked: boolean) {
 		if (fullscreen === null)
@@ -56,7 +57,7 @@
 			filters: [],
 		});
 
-		//TODO updateTimelinesStorage()
+		updateTimelinesStorage();
 	}
 </script>
 

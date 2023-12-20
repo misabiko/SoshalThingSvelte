@@ -8,7 +8,6 @@
 		getActualArticle, getDerivedArticleWithRefs, getRootArticle, idPairEqual,
 	} from '../articles'
 	import {fetchArticle, getWritable} from '../services/service'
-	import {onMount} from 'svelte'
 	import type {FullscreenInfo, TimelineData} from './index'
 	import {keepArticle} from '../filters'
 	import {compare, SortMethod} from '../sorting'
@@ -25,6 +24,7 @@
 	export let removeTimeline: () => void
 	export let setModalTimeline: (data: TimelineData, width?: number) => void
 	export let modal = false;
+	export let updateTimelinesStorage: () => void;
 
 	export let favviewerButtons = false
 	export let favviewerHidden = false
@@ -351,6 +351,7 @@
 			{removeTimeline}
 			{articleCountLabel}
 			{removeFiltered}
+			{updateTimelinesStorage}
 		/>
 	{/if}
 	{#if $filteredArticles.length}

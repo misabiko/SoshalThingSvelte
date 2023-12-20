@@ -11,6 +11,7 @@ export class TimelineEndpoint extends Endpoint {
 	readonly name = 'Timeline Endpoint';
 	static service = MisskeyService.name;
 	public cli: Misskey.api.APIClient | null = null;
+	params = {};
 
 	constructor() {
 		super(new Set([RefreshType.Refresh]));

@@ -13,6 +13,7 @@ export class FollowPageEndpoint extends PageEndpoint {
 	readonly name = 'Follow Endpoint';
 	static service = PixivService.name;
 	readonly hostPage: number;
+	readonly params = null;
 
 	constructor() {
 		super();
@@ -52,6 +53,7 @@ export class FollowPageEndpoint extends PageEndpoint {
 export class FollowAPIEndpoint extends LoadableEndpoint {
 	readonly name = 'Pixiv Follow API Endpoint';
 	static service = PixivService.name;
+	readonly params;
 
 	constructor(public currentPage = 0, readonly r18 = false) {
 		super();
@@ -61,6 +63,11 @@ export class FollowAPIEndpoint extends LoadableEndpoint {
 				rt.add(RefreshType.LoadTop);
 				return rt;
 			});
+
+		this.params = {
+			page: currentPage,
+			r18,
+		};
 	}
 
 	async _refresh(_refreshType: RefreshType): Promise<ArticleWithRefs[]> {

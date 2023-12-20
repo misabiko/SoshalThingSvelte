@@ -3,7 +3,7 @@
 	import Timeline from './Timeline.svelte'
 	import {afterUpdate, getContext, onMount} from 'svelte'
 	import {timelineEndpoints} from '../services/endpoints'
-	import {updateMainStorage} from '../storages'
+	import {updateMainStorage, updateTimelinesStorage} from '../storages';
     import Modal from 'Modal.svelte';
     import type { ArticleIdPair } from 'articles';
 
@@ -120,6 +120,7 @@
 				{setModalTimeline}
 				removeTimeline={() => modalTimeline = null}
 				modal={true}
+				updateTimelinesStorage={() => updateTimelinesStorage(timelines)}
 			/>
 		</Modal>
 	{/if}
@@ -136,6 +137,7 @@
 					bind:fullscreen={timelineView.fullscreen}
 					removeTimeline={() => removeTimeline(timelineView.timelineIds[timelineView.fullscreen.index])}
 					toggleFullscreen={() => {timelineView.fullscreen.index = null; updateMainStorage('fullscreen', timelineView.fullscreen)}}
+					updateTimelinesStorage={() => updateTimelinesStorage(timelines)}
 				/>
 			{:else}
 				<Timeline
@@ -144,6 +146,7 @@
 					bind:fullscreen={timelineView.fullscreen}
 					removeTimeline={() => removeTimeline(timelineView.timelineIds[timelineView.fullscreen.index])}
 					toggleFullscreen={() => {timelineView.fullscreen.index = null; updateMainStorage('fullscreen', timelineView.fullscreen)}}
+					updateTimelinesStorage={() => updateTimelinesStorage(timelines)}
 				/>
 			{/if}
 		{/key}
@@ -159,6 +162,7 @@
 					{setModalTimeline}
 					removeTimeline={() => removeTimeline(id)}
 					toggleFullscreen={() => {timelineView.fullscreen.index = i; updateMainStorage('fullscreen', timelineView.fullscreen)}}
+					updateTimelinesStorage={() => updateTimelinesStorage(timelines)}
 				/>
 			{:else}
 				<Timeline
@@ -166,6 +170,7 @@
 					{setModalTimeline}
 					removeTimeline={() => removeTimeline(id)}
 					toggleFullscreen={() => {timelineView.fullscreen.index = i; updateMainStorage('fullscreen', timelineView.fullscreen)}}
+					updateTimelinesStorage={() => updateTimelinesStorage(timelines)}
 				/>
 			{/if}
 		{/each}

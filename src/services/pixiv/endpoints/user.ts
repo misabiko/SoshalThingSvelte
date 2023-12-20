@@ -14,6 +14,7 @@ export default class UserPageEndpoint extends PageEndpoint {
 	static service = PixivService.name;
 	readonly hostPage: number;
 	readonly user: PixivUser;
+	readonly params = null;
 
 	constructor() {
 		super(new Set([RefreshType.RefreshStart, RefreshType.Refresh]));
@@ -57,6 +58,7 @@ export default class UserPageEndpoint extends PageEndpoint {
 export class UserAPIEndpoint extends LoadableEndpoint {
 	readonly name = 'Pixiv User API Endpoint';
 	static service = PixivService.name;
+	readonly params;
 
 	constructor(readonly userId: number, public currentPage = 0) {
 		super();
@@ -66,6 +68,11 @@ export class UserAPIEndpoint extends LoadableEndpoint {
 				rt.add(RefreshType.LoadTop);
 				return rt;
 			});
+
+		this.params = {
+			userId,
+			page: currentPage,
+		};
 	}
 
 	async _refresh(_refreshType: RefreshType): Promise<ArticleWithRefs[]> {

@@ -8,7 +8,8 @@
 
 		"types": [
 			"svelte",
-			"chrome"
+			"chrome",
+			"node"
 		],
 
 		"esModuleInterop": true,

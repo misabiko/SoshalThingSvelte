@@ -6,6 +6,7 @@ import {registerEndpointConstructor} from '../../../service';
 export default class TimelineAPI extends APIEndpoint<HomeTimelineResponse> {
 	readonly name: string;
 	readonly endpointPath: string;
+	readonly params;
 
 	constructor(readonly timelineType: TimelineType) {
 		super();
@@ -22,6 +23,10 @@ export default class TimelineAPI extends APIEndpoint<HomeTimelineResponse> {
 			default:
 				throw new Error('Unsupported timeline type');
 		}
+
+		this.params = {
+			following: timelineType === TimelineType.Following,
+		};
 	}
 
 	matchParams(params: any): boolean {

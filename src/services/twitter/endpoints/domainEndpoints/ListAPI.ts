@@ -1,18 +1,22 @@
 import type { Instruction } from 'services/twitter/pageAPI';
 import APIEndpoint, { type APIParams } from './APIEndpoint';
 import type { EndpointConstructorInfo } from 'services/endpoints';
-import {getServices, registerEndpointConstructor} from '../../../service';
-import {TwitterService} from '../../service';
+import {registerEndpointConstructor} from '../../../service';
 
 export default class ListAPI extends APIEndpoint<ListLatestTweetsTimelineResponse> {
 	readonly name: string;
 	readonly endpointPath: string;
+	readonly params;
 
 	constructor(readonly listId: string) {
 		super();
 
 		this.name = 'ListAPI(' + listId + ')';
 		this.endpointPath = 'd1mUZHaqFMxe0xHI3rVc-w/ListLatestTweetsTimeline';
+
+		this.params = {
+			listId,
+		};
 	}
 
 	matchParams(params: any): boolean {

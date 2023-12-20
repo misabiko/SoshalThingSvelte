@@ -128,27 +128,38 @@ export function loadTimelines(): TimelineCollection {
 }
 
 export function updateTimelinesStorage(timelines: TimelineCollection) {
-	const storage = Object.fromEntries(Object.entries(timelines).map(([id, t]) => [id, {
+	//TODO Remove already default optional fields
+	const storage: Record<string, Partial<TimelineStorage>> = Object.fromEntries(Object.entries(timelines).map(([id, t]) => [id, {
 		title: t.title,
-		//TODO Serialize more timeline properties
-		// container?: string
-		// articleView?: string
-		// endpoints: EndpointStorage[]
-		// columnCount: number
-		// width: number
-		// filters: FilterInstance[],
-		// sortInfo: {
-		// 	method?: string | null
-		// 	reversed: boolean
-		// },
-		// compact: boolean
-		// animatedAsGifs: boolean
-		// hideText: boolean
-		// section?: {
-		// 	useSection: boolean
-		// 	count: number
-		// }
-	}]));
+		container: t.container.name,
+		articleView: t.articleView.name,
+		endpoints: t.endpoints
+			.map(e => ({
+				endpoint: e.endpoint ?? get(endpoints[e.name]),
+				filters: e.filters,
+				refreshTypes: e.refreshTypes,
+			}))
+			.map(({endpoint, filters, refreshTypes}) => ({
+				service: (endpoint.constructor as typeof Endpoint).service,
+				endpointType: (endpoint.constructor as typeof Endpoint).constructorInfo.name,
+				params: endpoint.params ?? undefined,
+				filters,
+				autoRefresh: endpoint.autoRefreshId !== null,
+				onStart: refreshTypes.has(RefreshType.RefreshStart),
+				onRefresh: refreshTypes.has(RefreshType.Refresh),
+				loadTop: refreshTypes.has(RefreshType.LoadTop),
+				loadBottom: refreshTypes.has(RefreshType.LoadBottom),
+			})),
+		columnCount: t.columnCount,
+		width: t.width,
+		filters: t.filters,
+		//TODO Support custom sort methods
+		// sortInfo: t.sortInfo,
+		compact: t.compact,
+		animatedAsGifs: t.animatedAsGifs,
+		hideText: t.hideText,
+		section: t.section,
+	} satisfies Partial<TimelineStorage>]));
 
 	localStorage.setItem(TIMELINE_STORAGE_KEY, JSON.stringify(storage));
 }
@@ -263,6 +274,7 @@ function parseSortInfo({method, reversed}: TimelineStorage['sortInfo']): SortInf
 	}
 	return {
 		method: sortMethod,
+		//TODO Support custom sort methods
 		customMethod: null,
 		reversed: reversed || false
 	};

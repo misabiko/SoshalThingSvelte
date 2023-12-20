@@ -8,6 +8,7 @@ import type {TwitterUser} from '../../article';
 export default class UserTweetsAPI extends APIEndpoint<UserTweetsResponse> {
 	readonly name: string;
 	readonly endpointPath: string;
+	readonly params;
 
 	constructor(readonly timelineType: TimelineType, readonly username: string, readonly userId: string) {
 		super();
@@ -24,6 +25,12 @@ export default class UserTweetsAPI extends APIEndpoint<UserTweetsResponse> {
 			default:
 				throw new Error('Unsupported timeline type');
 		}
+
+		this.params = {
+			username,
+			userId,
+			media: timelineType === TimelineType.Media,
+		};
 	}
 
 	matchParams(params: any): boolean {

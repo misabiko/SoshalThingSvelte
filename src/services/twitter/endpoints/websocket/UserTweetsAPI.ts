@@ -6,6 +6,7 @@ import WebSocketPageEndpoint from './WebSocketPageEndpoint';
 export default class TwitterUserTweetsAPIEndpoint extends WebSocketPageEndpoint {
 	readonly name: string;
 	menuComponent = UserTweetsEndpointMenu;
+	readonly params;
 
 	constructor(username: string) {
 		const name = `TwitterUserTweetsAPIEndpoint(${username})`;
@@ -16,6 +17,10 @@ export default class TwitterUserTweetsAPIEndpoint extends WebSocketPageEndpoint 
 		});
 
 		this.name = name;
+
+		this.params = {
+			username,
+		};
 	}
 
 	matchParams(_params: any): boolean {

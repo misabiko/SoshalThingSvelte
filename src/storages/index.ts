@@ -113,16 +113,26 @@ export function loadTimelines(): TimelineCollection {
 			...defaultTimeline(),
 			title: defaulted.title,
 			endpoints,
-			container: parseContainer(defaulted.container),
-			articleView: parseArticleView(defaulted.articleView),
-			columnCount: defaulted.columnCount,
-			width: defaulted.width,
-			filters: defaulted.filters,
-			sortInfo: parseSortInfo(defaulted.sortInfo),
 			section: defaulted.section ?? {
 				useSection: false,
 				count: 100
-			}
+			},
+			container: parseContainer(defaulted.container),
+			articleView: parseArticleView(defaulted.articleView),
+			columnCount: defaulted.columnCount ?? 1,
+			rtl: defaulted.rtl ?? false,
+			width: defaulted.width ?? 1,
+			filters: defaulted.filters,
+			sortInfo: parseSortInfo(defaulted.sortInfo),
+			animatedAsGifs: defaulted.animatedAsGifs ?? false,
+			scrollSpeed: defaulted.scrollSpeed ?? 3,
+			hideText: defaulted.hideText ?? false,
+			compact: defaulted.compact ?? false,
+			shouldLoadMedia: defaulted.shouldLoadMedia ?? true,
+			hideFilteredOutArticles: defaulted.hideFilteredOutArticles ?? true,
+			mergeReposts: defaulted.mergeReposts ?? true,
+			showArticleCount: defaulted.showArticleCount ?? false,
+			maxMediaCount: defaulted.maxMediaCount ?? 4,
 		}];
 	}));
 }
@@ -407,11 +417,16 @@ type TimelineViewStorage = TimelineView & {
 
 type TimelineStorage = {
 	title: string
+	endpoints: EndpointStorage[]
+	section?: {
+		useSection: boolean
+		count: number
+	}
 	container?: string
 	articleView?: string
-	endpoints: EndpointStorage[]
-	columnCount: number
-	width: number
+	columnCount?: number
+	rtl?: boolean
+	width?: number
 	filters: FilterInstance[],
 	sortInfo: {
 		method: string | null
@@ -425,23 +440,20 @@ type TimelineStorage = {
 		},
 		reversed: boolean
 	},
-	compact: boolean
-	animatedAsGifs: boolean
-	hideText: boolean
-	section?: {
-		useSection: boolean
-		count: number
-	}
+	animatedAsGifs?: boolean
+	scrollSpeed?: number
+	hideText?: boolean
+	compact?: boolean
+	shouldLoadMedia?: boolean
+	hideFilteredOutArticles?: boolean
+	mergeReposts?: boolean
+	showArticleCount?: boolean
+	maxMediaCount?: number | null
 }
 
 const DEFAULT_TIMELINE_STORAGE: TimelineStorage = {
 	title: 'Timeline',
 	endpoints: [],
-	columnCount: 1,
-	width: 1,
-	compact: false,
-	animatedAsGifs: false,
-	hideText: false,
 	filters: defaultFilterInstances,
 	sortInfo: {
 		method: null,

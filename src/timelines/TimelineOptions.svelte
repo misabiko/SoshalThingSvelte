@@ -86,8 +86,14 @@
 </style>
 
 <div class='timelineOptions'>
-<!--	TODO Add field for title-->
 	<section>
+		<label class='field'>
+			Title
+			<input type='text'
+				   bind:value={data.title}
+				   on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'title', data.title)}
+			/>
+		</label>
 		<p>{articleCountLabel}</p>
 		<label class='field'>
 			Show article count on header
@@ -242,15 +248,16 @@
 			<label>
 				<input type='checkbox'
 					   bind:checked={data.hideFilteredOutArticles}
+					   on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'hideFilteredOutArticles', data.hideFilteredOutArticles)}
 				/>
-				<!--TODO Add hideFilteredOutArticles to storage on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'hideFilteredOutArticles', data.hideFilteredOutArticles)}-->
 				Hide filtered out articles
 			</label>
 		</div>
 		<div class='field'>
 			<label>
-				<input type='checkbox' bind:checked={data.mergeReposts}/>
-				<!--TODO Add mergeReposts to storage on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'mergeReposts', data.mergeReposts)}-->
+				<input type='checkbox' bind:checked={data.mergeReposts}
+					   on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'mergeReposts', data.mergeReposts)}
+				/>
 				Merge duplicate reposts
 			</label>
 		</div>
@@ -276,8 +283,13 @@
 		{/if}
 		<label class='field'>
 			Max media count
-			<input class='input' type='number' bind:value={data.maxMediaCount} min={1}/>
-			<!--TODO Add maxMediaCount to storage on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'maxMediaCount', data.maxMediaCount)}-->
+			<input
+					class='input'
+					type='number'
+					bind:value={data.maxMediaCount}
+					min={1}
+					on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'maxMediaCount', data.maxMediaCount)}
+			/>
 		</label>
 	</section>
 	<section>

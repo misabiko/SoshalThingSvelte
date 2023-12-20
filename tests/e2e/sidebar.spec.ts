@@ -2,17 +2,17 @@ import {expect, test} from '@playwright/test';
 import { TIMELINE_STORAGE_KEY } from '../storagesUtils';
 
 //TODO Move add timeline to dedicated spec file
-test('Add Timeline', async ({page}) => {
+test.beforeEach(async ({page}) => {
 	await page.goto('/');
+});
 
+test('Add Timeline', async ({page}) => {
 	await page.click('#sidebarButtons button[title = "Add new timeline"]');
 
-	await expect(page.locator('.sidebarMenu label')).toContainText('Add Timeline');
+	expect(page.locator('.sidebarMenu h1', {hasText: 'Add new timeline'}));
 });
 
 test('Add Timeline adds a timeline', async ({page}) => {
-	await page.goto('/');
-
 	await page.click('#sidebarButtons button[title = "Add new timeline"]');
 
 	await page.click('.sidebarMenu button:text("Add Timeline")');
@@ -21,8 +21,6 @@ test('Add Timeline adds a timeline', async ({page}) => {
 });
 
 test('Add Timeline title', async ({page}) => {
-	await page.goto('/');
-
 	await page.click('#sidebarButtons button[title = "Add new timeline"]');
 
 	await page.fill('.sidebarMenu input[name = "title"]', 'test');
@@ -35,8 +33,6 @@ test('Add Timeline title', async ({page}) => {
 });
 
 test('Add Timeline local storage', async ({page}) => {
-	await page.goto('/');
-
 	await page.click('#sidebarButtons button[title = "Add new timeline"]');
 
 	await page.click('.sidebarMenu button:text("Add Timeline")');

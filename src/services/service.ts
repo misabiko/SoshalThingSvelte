@@ -2,39 +2,49 @@ import type Article from '../articles';
 import type { ArticleAuthor } from '../articles';
 import type { ArticleId, ArticleIdPair, ArticleWithRefs, ArticleProps } from '../articles';
 import {articleWithRefToArray, getRootArticle} from '../articles';
-import type {Writable} from 'svelte/store';
+import {get, type Writable} from 'svelte/store';
 import {writable} from 'svelte/store';
 import {updateCachedArticlesStorage, updateHiddenStorage, updateMarkAsReadStorage} from '../storages/serviceCache';
 import type {Endpoint, EndpointConstructorInfo} from './endpoints';
 import {undoables} from '../undo';
 import type {Filter} from '../filters';
 import type {ArticleAction} from './actions';
+import {fetchExtension} from './extension';
 
 const services: { [name: string]: Service<any> } = {};
 
 export interface Service<A extends Article = Article> {
 	readonly name: string;
 	readonly articles: { [id: string]: Writable<A> };
-	//TODO Store constructors by name
-	readonly endpointConstructors: EndpointConstructorInfo[]
-	userEndpoint: ((author: ArticleAuthor) => Endpoint) | undefined,
+	readonly endpointConstructors: Record<string, EndpointConstructorInfo>
+	userEndpoint: ((author: ArticleAuthor) => Endpoint) | null,
 	articleActions: { [name: string]: ArticleAction<A> };
 	requestImageLoad?: (id: ArticleId, index: number) => void;
 	getCachedArticles?: () => {[id: string]: object}
 	keepArticle(articleWithRefs: ArticleWithRefs | ArticleProps, index: number, filter: Filter): boolean
 	defaultFilter(filterType: string): Filter
-	filterTypes: { [name: string]: {
-			name(inverted: boolean): string
-			props: string[]
-		} }
-	sortMethods: { [name: string]: {
-		name: string
-		compare(a: ArticleWithRefs | ArticleProps, b: ArticleWithRefs | ArticleProps): number
-		directionLabel(reversed: boolean): string
-	} }
+	filterTypes: { [name: string]: FilterTypeInfo }
+	sortMethods: { [name: string]: SortMethodInfo }
 	fetch: (url: RequestInfo | URL, init?: RequestInit) => Promise<any>
-	tabId: number | null
+	tabInfo: {
+		tabId: Writable<number | null>,
+		url: string,
+		matchUrl: string[],
+	} | null
+	isOnDomain: boolean | null
+	settings: ConstructorOfATypedSvelteComponent | null	//TODO Try retyping other components to ConstructorOfATypedSvelteComponent
 }
+
+export type SortMethodInfo = {
+	name: string
+	compare(a: ArticleWithRefs | ArticleProps, b: ArticleWithRefs | ArticleProps): number
+	directionLabel(reversed: boolean): string
+};
+
+export type FilterTypeInfo = {
+	name(inverted: boolean): string
+	props: string[]
+};
 
 export function addArticles(service: Service<any>, ignoreRefs: boolean, ...articlesWithRefs: ArticleWithRefs[]) {
 	const articles = ignoreRefs
@@ -58,6 +68,11 @@ export function addArticles(service: Service<any>, ignoreRefs: boolean, ...artic
 
 export function registerService(service: Service<any>) {
 	services[service.name] = service;
+}
+
+//Kinda wack typing
+export function registerEndpointConstructor(endpoint: (new (...args: any[]) => Endpoint) & { constructorInfo: EndpointConstructorInfo, service: string }) {
+	services[endpoint.service].endpointConstructors[endpoint.constructorInfo.name] = endpoint.constructorInfo;
 }
 
 export function getServices(): Readonly<{ [name: string]: Service }> {
@@ -165,15 +180,42 @@ export function newService<A extends Article = Article>(name: string): Service<A
 	return {
 		name,
 		articles: {},
-		endpointConstructors: [],
-		userEndpoint: undefined,
+		endpointConstructors: {},
+		userEndpoint: null,
 		articleActions: {},
 		keepArticle() { return true; },
 		defaultFilter(filterType: string) { return {type:filterType, service: name};},
 		filterTypes: {},
 		sortMethods: {},
-		fetch(url, init) { return fetch(url, init); },
-		tabId: null,
+		async fetch(url, init) {
+			if (this.isOnDomain) {
+				const response = await fetch(url, init);
+				return await response.json();
+			}else if (this.tabInfo) {
+				let tabId = get(this.tabInfo.tabId);
+				if (tabId === null) {
+					this.tabInfo.tabId.set(tabId = await fetchExtension('getTabId', {
+						url: this.tabInfo.url,
+						matchUrl: this.tabInfo.matchUrl
+					}));
+				}
+
+				return await fetchExtension('domainFetch', {
+					tabId,
+					message: {
+						soshalthing: true,
+						request: 'fetchText',
+						fetch: url,
+						fetchOptions: init
+					}
+				});
+			}else {
+				throw new Error('Service is not on domain and has no tab info');
+			}
+		},
+		tabInfo: null,
+		isOnDomain: null,
+		settings: null,
 	};
 }
 

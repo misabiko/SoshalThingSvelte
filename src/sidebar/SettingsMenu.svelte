@@ -1,84 +1,36 @@
 <script lang='ts'>
-	//TODO Make settings menu dynamically per-service
-	import {extensionCheck, extensionContextStore, fetchExtension, fetchExtensionService} from "../services/extension.js"
-	import {TwitterService} from '../services/twitter/service'
-	import {PixivService} from '../services/pixiv/service';
-	import {getServiceStorage, loadMainStorage, updateServiceStorage} from "../storages"
+	import {extensionCheck, extensionContextStore} from "../services/extension";
+	import {loadMainStorage} from "../storages"
 	import {updateMainStorage} from "../storages";
+	import {getServices} from '../services/service';
+	import ServiceSettings from './ServiceSettings.svelte';
 
-	let tabs: string[][] = [];
-
-	async function listTabs() {
-		const response = await fetchExtension<any>('listTabs', {query: {url: '*://twitter.com/*'}});
-		console.log(response);
-
-		tabs = response.map((tab: any) => [tab.id, tab.title]);
-
-		if (Array.isArray(response) && response.length > 0)
-			TwitterService.tabId = response[0].id;
-	}
-
-	async function twitterPageFetch() {
-		if (TwitterService.tabId === null) {
-			console.log('Tab id not set');
-			return;
-		}
-
-		const response = await fetchExtension<any>('twitterFetch', {tabId, message: {
-			soshalthing: true,
-			request: 'getPageHTML',
-		}});
-		const html = document.createElement('html');
-		html.innerHTML = response;
-		console.log(html.getElementsByTagName('article'));
-	}
-
-	const twitterStorage = getServiceStorage(TwitterService.name) ?? '';
-	const pixivStorage = getServiceStorage(PixivService.name) ?? '';
 	const mainStorage = loadMainStorage();
 </script>
 
-<label class='field'>
-	Extension Id
-	<input type='text' bind:value={$extensionContextStore.id} placeholder='Extension Id'/>
-	<button on:click={extensionCheck}>Check Extension</button>
-</label>
+<section>
+	<label class='field'>
+		Extension Id
+		<input type='text' bind:value={$extensionContextStore.id} placeholder='Extension Id'/>
+		<button on:click={extensionCheck}>Check Extension</button>
+	</label>
 
-<div class='field'>
-	Available: {$extensionContextStore.available}
-</div>
+	<div class='field'>
+		Available: {$extensionContextStore.available}
+	</div>
 
-<label class='field'>
-	Mark as read in local storage
-	<input
-		type='checkbox'
-		bind:checked={mainStorage.markAsReadLocal}
-		on:input={e => updateMainStorage('markAsReadLocal', e.target.checked)}
-	/>
-</label>
+	<label class='field'>
+		Mark as read in local storage
+		<input
+			type='checkbox'
+			bind:checked={mainStorage.markAsReadLocal}
+			on:input={e => updateMainStorage('markAsReadLocal', e.target.checked)}
+		/>
+	</label>
+</section>
 
-<label class='field'>
-	Twitter Bearer Token
-	<input value={twitterStorage.csrfToken} on:change={e => updateServiceStorage(TwitterService.name, 'bearerToken', e.target.value)}/>
-</label>
-
-<div>
-	<button on:click={listTabs}>List Tabs</button>
-	{#if tabs.length > 0}
-		<select bind:value={TwitterService.tabId}>
-			{#each tabs as [id, title]}
-				<option value={id}>{title}</option>
-			{/each}
-		</select>
-	{/if}
-	<button on:click={twitterPageFetch}>Twitter Page Fetch</button>
-</div>
-
-<label class='field'>
-	Pixiv token
-	<input value={pixivStorage.csrfToken} on:change={e => updateServiceStorage(PixivService.name, 'csrfToken', e.target.value)}/>
-</label>
-<label class='field'>
-	<input type='checkbox' checked={pixivStorage.privateBookmark ?? false} on:input={e => updateServiceStorage(PixivService.name, 'privateBookmark', e.target.checked)}/>
-	Pixiv bookmark as private
-</label>
+{#each Object.values(getServices()).filter(s => s.settings) as service}
+	<section>
+		<ServiceSettings {service}/>
+	</section>
+{/each}

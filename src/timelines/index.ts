@@ -24,6 +24,7 @@ export type TimelineData = {
 	articleView: new (...args: any[]) => SvelteComponent;
 	columnCount: number;
 	rtl: boolean;
+	// TODO Add option to set flex-grow: 1 instead of fixed width
 	width: number;
 	filters: FilterInstance[];
 	sortInfo: SortInfo;
@@ -70,6 +71,8 @@ export function defaultTimeline(articles: ArticleIdPair[] = []): TimelineData {
 
 export type TimelineCollection = { [id: string]: TimelineData }
 
+//Would've wanted to use a symbol, but then we need to stringify in json anyway
+export const defaultTimelineView = 'default';
 export type TimelineView = {
 	timelineIds: string[];
 	fullscreen: FullscreenInfo;
@@ -93,10 +96,10 @@ export type FullscreenInfo = {
 	container: ((new (...args: any[]) => SvelteComponent)) | null;
 }
 
-export function newUserTimeline(serviceName: string, author: ArticleAuthor): TimelineData | undefined {
+export function newUserTimeline(serviceName: string, author: ArticleAuthor): TimelineData | null {
 	const endpointConstructor = getServices()[serviceName].userEndpoint;
-	if (endpointConstructor === undefined)
-		return undefined;
+	if (endpointConstructor === null)
+		return null;
 
 	return {
 		...defaultTimeline(),

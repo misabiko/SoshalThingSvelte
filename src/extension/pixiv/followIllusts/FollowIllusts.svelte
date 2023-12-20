@@ -1,6 +1,10 @@
 <script lang='ts'>
 	import SoshalThing from "../../../SoshalThing.svelte"
-	import type {TimelineCollection, TimelineView} from '../../../timelines'
+	import {
+		defaultTimelineView,
+		type TimelineCollection,
+		type TimelineView,
+	} from '../../../timelines';
 	import {defaultTimeline} from '../../../timelines'
 	import MasonryContainer from '../../../containers/MasonryContainer.svelte'
 	import {loadMainStorage} from '../../../storages'
@@ -34,13 +38,17 @@
 
 	let favviewerHidden = false
 	let favviewerMaximized = mainStorage.maximized
-	let activatorMount = document.querySelector('nav')
+	const activatorMount = document.querySelector('nav');
+	if (activatorMount === null)
+		throw new Error('Could not find activator mount');
 
-	const timelineView: TimelineView = {
-		timelineIds: Object.keys(timelines),
-		fullscreen: {
-			...mainStorage.fullscreen,
-			index: 0
+	const timelineViews: Record<string, TimelineView> = {
+		[defaultTimelineView]: {
+			timelineIds: Object.keys(timelines),
+			fullscreen: {
+				...mainStorage.fullscreen,
+				index: 0
+			}
 		}
 	}
 </script>
@@ -95,6 +103,6 @@
 	bind:favviewerHidden
 	bind:favviewerMaximized
 	{timelines}
-	{timelineView}
+	{timelineViews}
 	isInjected={true}
 />

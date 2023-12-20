@@ -6,18 +6,21 @@
 	import Fa from 'svelte-fa'
 	import {faImages} from "@fortawesome/free-solid-svg-icons";
 	import {MediaType} from '../media'
+	import {LoadingState} from '../../bufferedMediaLoading';
 
 	export let article: Article
 	export let timelineProps: TimelineArticleProps
 	export let showAllMedia: boolean;
 	export let onMediaClick: (index: number) => void
 
-	let divRef: HTMLDivElement | null = null
+	export let divRef: HTMLDivElement | null;
+	export let mediaRefs: HTMLImageElement[];
+	export let loadingStates: LoadingState[];
 
 	afterUpdate(() => {
 		const articleMediaEls = divRef?.querySelectorAll('.articleMedia')
 		if (articleMediaEls) {
-			const modifiedMedias = []
+			const modifiedMedias: [number, number][] = []
 			for (let i = 0; i < article.medias.length; ++i)
 				if (article.medias[i].ratio === null && articleMediaEls[i] !== undefined)
 					modifiedMedias.push([i, articleMediaEls[i].clientHeight / articleMediaEls[i].clientWidth])
@@ -74,19 +77,55 @@
 
 <div class='socialMedia' bind:this={divRef}>
 	{#each article.medias.slice(0, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined) as media, index (index)}
-		{#if media.mediaType === MediaType.Image || media.mediaType === MediaType.Gif}
+		{@const isLoading = loadingStates[index] === LoadingState.Loading}
+		{#if loadingStates[index] === LoadingState.NotLoaded}
 			<div class='imagesHolder'>
-				<div class='imgPlaceHolder' style:aspect-ratio={1 / media.ratio} style:display='none'></div>
-				<img class='articleMedia' alt={`${article.id}/${index}`} src={media.src} on:click={() => onMediaClick(index)}/>
+				<div class='imgPlaceHolder' style:aspect-ratio={1 / (media.ratio ?? 1)} style:display='none'></div>
+				<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
+				{#if media.thumbnail}
+					<img
+							class='articleMedia'
+							alt={`${article.idPairStr}/${index}`}
+							src={media.thumbnail.src}
+							on:click={() => onMediaClick(index)}
+					/>
+				{/if}
+			</div>
+		{:else if media.mediaType === MediaType.Image || media.mediaType === MediaType.Gif}
+			<div class='imagesHolder'>
+				<div class='imgPlaceHolder' style:aspect-ratio={1 / (media.ratio ?? 1)} style:display='none'></div>
+				<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
+				<img
+						class='articleMedia'
+						alt={`${article.idPairStr}/${index}`}
+						src={media.src}
+						on:click={() => onMediaClick(index)}
+						bind:this={mediaRefs[index]}
+				/>
 			</div>
 		{:else if !timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
 			<!-- svelte-ignore a11y-media-has-caption -->
-			<video class='articleMedia' controls preload='auto' on:click|preventDefault={() => onMediaClick(index)}>
+			<video
+					class='articleMedia'
+					controls
+					preload='auto'
+					on:click|preventDefault={() => onMediaClick(index)}
+					bind:this={mediaRefs[index]}
+			>
 				<source src={media.src} type='video/mp4'/>
 			</video>
 		{:else if media.mediaType === MediaType.VideoGif || timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
 			<!-- svelte-ignore a11y-media-has-caption -->
-			<video class='articleMedia' controls autoplay loop muted preload='auto' on:click|preventDefault={() => onMediaClick(index)}>
+			<video
+					class='articleMedia'
+					controls
+					autoplay
+					loop
+					muted
+					preload='auto'
+					on:click|preventDefault={() => onMediaClick(index)}
+					bind:this={mediaRefs[index]}
+			>
 				<source src={media.src} type='video/mp4'/>
 			</video>
 		{/if}

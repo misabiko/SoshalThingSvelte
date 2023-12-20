@@ -1,10 +1,14 @@
 import { type Instruction } from 'services/twitter/pageAPI';
 import APIEndpoint from './APIEndpoint';
 import type { EndpointConstructorInfo } from 'services/endpoints';
+import {registerEndpointConstructor} from '../../../service';
+import {TwitterService} from '../../service';
 
 export default class TimelineAPI extends APIEndpoint<HomeTimelineResponse> {
+	static service = TwitterService.name;
 	readonly name: string;
 	readonly endpointPath: string;
+	readonly params;
 
 	constructor(readonly timelineType: TimelineType) {
 		super();
@@ -21,6 +25,10 @@ export default class TimelineAPI extends APIEndpoint<HomeTimelineResponse> {
 			default:
 				throw new Error('Unsupported timeline type');
 		}
+
+		this.params = {
+			following: timelineType === TimelineType.Following,
+		};
 	}
 
 	matchParams(params: any): boolean {
@@ -41,6 +49,8 @@ export default class TimelineAPI extends APIEndpoint<HomeTimelineResponse> {
 		constructor: ({following}) => new TimelineAPI(following ? TimelineType.Following : TimelineType.ForYou)
 	};
 }
+
+registerEndpointConstructor(TimelineAPI);
 
 export enum TimelineType {
 	ForYou,

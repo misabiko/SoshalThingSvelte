@@ -18,10 +18,11 @@
 	import SettingsMenu from "./SettingsMenu.svelte"
 	import TimelineEditMenu from "./TimelineEditMenu.svelte";
 	import BatchActions from "./BatchActions.svelte";
-	import type {TimelineCollection, TimelineData, TimelineView} from '../timelines'
+	import type {TimelineCollection, TimelineData, TimelineView} from '../timelines';
 	import type {FilterInstance} from '../filters'
 	import {faTableColumns} from "@fortawesome/free-solid-svg-icons/faTableColumns";
 	import TimelineViewEdit from "./TimelineViewEdit.svelte";
+	import {updateMainStorage} from '../storages';
 
 	enum SidebarMenu {
 		TimelineEdit,
@@ -35,8 +36,8 @@
 	export let addTimeline: (data: TimelineData) => void
 	export let timelines: TimelineCollection
 	export let batchActionFilters: FilterInstance[]
-	export let timelineViews: {[name: string]: TimelineView}
-	export let timelineView: TimelineView
+	export let timelineViews: Record<string, TimelineView>
+	export let timelineViewId: string
 
 	function toggleSidebarMenu(newMenu: (new (...args: any[]) => SvelteComponent) | SidebarMenu) {
 		menu = menu === newMenu ? null : newMenu;
@@ -88,6 +89,7 @@
 		padding: 1rem;
 		background-color: var(--scheme-main-ter);
 		overflow-y: auto;
+		box-sizing: border-box;
 	}
 
 	.sidebarMenu::-webkit-scrollbar-thumb {
@@ -100,15 +102,17 @@
 		<div class='sidebarMenu'>
 			{#if menu === SidebarMenu.TimelineEdit}
 				<section>
+					<h1>Add new timeline</h1>
 					<TimelineEditMenu
 						{setModalTimeline}
 						{addTimeline}
 					/>
 				</section>
 				<section>
+					<h1>Timeline Views</h1>
 					<TimelineViewEdit
 						bind:timelineViews
-						bind:timelineView
+						bind:timelineViewId
 						bind:timelines
 					/>
 				</section>
@@ -140,8 +144,15 @@
 					<Fa icon={icon} size='2x'/>
 				</button>
 			{/each}
-			{#each Object.entries(timelineViews) as [name, view]}
-				<button class='borderless-button' title={`Set view: ${name}`} on:click='{() => timelineView = view}'>
+			{#each Object.entries(timelineViews) as [id, view]}
+				<button
+						class='borderless-button'
+						title={`Set view: ${id}`}
+						on:click={() => {
+							timelineViewId = id;
+							updateMainStorage('currentTimelineView', timelineViewId);
+						}}
+				>
 					<Fa icon={faTableColumns} size='2x'/>
 				</button>
 			{/each}

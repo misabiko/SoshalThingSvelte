@@ -3,7 +3,7 @@ import type {ArticleAuthor} from '../../articles';
 import type {ArticleMedia} from '../../articles/media';
 
 export default class PixivArticle extends Article {
-	static service: string;
+	static service = 'Pixiv';
 
 	liked = false;
 

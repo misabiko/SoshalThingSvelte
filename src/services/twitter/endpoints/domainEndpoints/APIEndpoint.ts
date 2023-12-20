@@ -2,10 +2,8 @@ import type { ArticleWithRefs } from 'articles';
 import { Endpoint, RefreshType } from 'services/endpoints';
 import { parseResponse, type Instruction, type ResponseError, type AddEntriesInstruction } from 'services/twitter/pageAPI';
 import { TwitterService } from 'services/twitter/service';
-import { getCookie, getServiceStorage } from 'storages';
 
 export default abstract class APIEndpoint<Response extends APIResponse> extends Endpoint {
-	readonly service = TwitterService.name;
 	abstract readonly name: string;
 	abstract readonly endpointPath: string;
 
@@ -17,7 +15,7 @@ export default abstract class APIEndpoint<Response extends APIResponse> extends 
 	}
 
 	async refresh(refreshType: RefreshType): Promise<ArticleWithRefs[]> {
-		let cursor: string | undefined = undefined;
+		let cursor: string | null = null;
 		switch (refreshType) {
 			case RefreshType.LoadTop:
 				if (this.topCursor)

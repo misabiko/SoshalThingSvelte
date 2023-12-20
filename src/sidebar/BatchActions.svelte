@@ -46,14 +46,14 @@
 <label class='field'>
 	Timeline
 	<select bind:value={timelineIndex}>
-		{#each timelines as t, index}
+		{#each Object.values(timelines) as t, index}
 			<option value={index}>{t.title}</option>
 		{/each}
 	</select>
 </label>
 
 <div class='block'>
-	<FiltersOptions bind:instances={filterInstances}/>
+	<FiltersOptions timelineId={null} bind:instances={filterInstances}/>
 </div>
 
 <label class='field'>

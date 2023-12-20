@@ -1,11 +1,12 @@
 import type { EndpointConstructorInfo } from 'services/endpoints';
-import { TwitterService } from '../../service';
 import { parseResponse, type Instruction } from '../../pageAPI';
 import WebSocketPageEndpoint from './WebSocketPageEndpoint';
+import {TwitterService} from '../../service';
 
 export default class TwitterUserMediaAPIEndpoint extends WebSocketPageEndpoint {
-	readonly service = TwitterService.name;
+	static service = TwitterService.name;
 	readonly name: string;
+	readonly params;
 
 	constructor(username: string) {
 		const name = `TwitterUserMediaAPIEndpoint(${username})`;
@@ -16,6 +17,10 @@ export default class TwitterUserMediaAPIEndpoint extends WebSocketPageEndpoint {
 		});
 
 		this.name = name;
+
+		this.params = {
+			username,
+		};
 	}
 
 	matchParams(_params: any): boolean {

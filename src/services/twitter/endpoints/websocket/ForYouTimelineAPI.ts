@@ -1,11 +1,12 @@
 import type { EndpointConstructorInfo } from 'services/endpoints';
-import { TwitterService } from '../../service';
 import { parseResponse, type Instruction } from '../../pageAPI';
 import WebSocketPageEndpoint from './WebSocketPageEndpoint';
+import {TwitterService} from '../../service';
 
 export default class TwitterForYouTimelineAPIEndpoint extends WebSocketPageEndpoint {
-	readonly service = TwitterService.name;
+	static service = TwitterService.name;
 	readonly name = 'ForYouTimelineAPI';
+	params = {};
 
 	constructor() {
 		super({

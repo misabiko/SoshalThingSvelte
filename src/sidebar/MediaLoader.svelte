@@ -5,7 +5,7 @@
 <button on:click={loadingStore.clearLoadings}>Clear loadings</button>
 <button on:click={loadingStore.clearQueue}>Clear queue</button>
 <section>
-	{#if $loadingStore.loadings.length}
+	{#if $loadingStore.loadings.size}
 		Currently loading:
 		{#each [...$loadingStore.loadings] as idPair (idPair)}
 			{idPair}

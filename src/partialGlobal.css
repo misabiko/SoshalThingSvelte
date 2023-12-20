@@ -195,3 +195,7 @@ img.emoji {
 .soshalthing section:not(:last-child) {
 	margin-bottom: 1rem;
 }
+
+.soshalthing section > h1 {
+	margin-top: 0;
+}

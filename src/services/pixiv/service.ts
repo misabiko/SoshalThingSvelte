@@ -1,13 +1,15 @@
-import PixivArticle from './article';
+import type PixivArticle from './article';
 import type {FetchingService, Service} from '../service';
 import {getWritable, newFetchingService, newService, registerService} from '../service';
 import type {Writable} from 'svelte/store';
 import {get} from 'svelte/store';
-import type {ArticleIdPair} from '../../articles';
+import Article, {articleWithRefToArray, type ArticleIdPair, getRootArticle, type ArticleWithRefs} from '../../articles';
 import {STANDARD_ACTIONS} from '../actions';
 import {getServiceStorage} from '../../storages';
 import {getRatio, MediaLoadType, MediaType} from '../../articles/media';
 import {faFaceSmile} from '@fortawesome/free-solid-svg-icons';
+import type { Filter } from 'filters';
+import ServiceSettings from './ServiceSettings.svelte';
 
 export const PixivService: PixivServiceType = {
 	...newService('Pixiv'),
@@ -47,7 +49,7 @@ export const PixivService: PixivServiceType = {
 			async action(idPair: ArticleIdPair) {
 				const csrfToken = getServiceStorage(PixivService.name)['csrfToken'] as string | undefined;
 				if (!csrfToken)
-					return;
+					throw new Error('No CSRF token');
 
 				const response : LikeResponse = await fetch('https://www.pixiv.net/ajax/illusts/like', {
 					method: 'POST',
@@ -62,10 +64,8 @@ export const PixivService: PixivServiceType = {
 					body: JSON.stringify({illust_id: idPair.id}),
 				}).then(r => r.json());
 
-				if (response.error) {
-					console.error('Error during like: ', response);
-					return;
-				}
+				if (response.error)
+					throw new Error('Error during like: ' + response.message);
 
 				if (response.body.is_liked)
 					console.debug(idPair.id + ' was already liked.');
@@ -80,6 +80,7 @@ export const PixivService: PixivServiceType = {
 			actionned(article) { return article.liked; },
 		},
 		bookmark: {
+			key: 'bookmark',
 			name: 'Bookmark',
 			color: STANDARD_ACTIONS.like.color,
 			icon: STANDARD_ACTIONS.like.icon,
@@ -90,7 +91,7 @@ export const PixivService: PixivServiceType = {
 				const storage = getServiceStorage(PixivService.name);
 				const csrfToken = storage['csrfToken'] as string | undefined;
 				if (!csrfToken)
-					return;
+					throw new Error('No CSRF token');
 
 				const privateBookmark = (storage['privateBookmark'] as boolean | undefined) ?? false;
 
@@ -112,10 +113,8 @@ export const PixivService: PixivServiceType = {
 					}),
 				}).then(r => r.json());
 
-				if (response.error) {
-					console.error('Error during bookmark: ', response);
-					return;
-				}
+				if (response.error)
+					throw new Error('Error during bookmark: ' + response.message);
 
 				console.debug('Bookmarked ' + idPair.id);
 
@@ -126,9 +125,27 @@ export const PixivService: PixivServiceType = {
 			},
 			actionned(article) { return article.bookmarked === true; },
 		}
-	}
+	},
+	isOnDomain: globalThis.window?.location?.hostname === 'pixiv.net',
+	keepArticle(articleWithRefs: ArticleWithRefs, index: number, filter: Filter): boolean {
+		if ((getRootArticle(articleWithRefs).constructor as typeof Article).service !== this.name)
+			return true;
+
+		switch (filter.type) {
+			case 'bookmarked':
+				return (articleWithRefToArray(articleWithRefs) as PixivArticle[])
+					.some(a => a.bookmarked);
+			default: return true;
+		}
+	},
+	filterTypes: {
+		bookmarked: {
+			name: (inverted) => inverted ? 'Not bookmarked' : 'Bookmarked',
+			props: [],
+		},
+	},
+	settings: ServiceSettings,
 };
-PixivArticle.service = PixivService.name;
 
 registerService(PixivService);
 

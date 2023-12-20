@@ -18,14 +18,14 @@
 	export let data: TimelineData
 	export let favviewerButtons: boolean
 	export let favviewerHidden: boolean
-	export let favviewerMaximized: boolean | undefined = undefined
-	export let fullscreen: FullscreenInfo | undefined = undefined
+	export let favviewerMaximized: boolean | null = null
+	export let fullscreen: FullscreenInfo | null = null
 	export let articleCountLabel: string
 	export let availableRefreshTypes: Readonly<Set<RefreshType>>
 	export let containerRebalance: boolean
 	export let showSidebar: boolean
 	export let showOptions: boolean
-	export let toggleFullscreen: (() => void) | undefined = undefined
+	export let toggleFullscreen: (() => void) | null = null
 	export let shuffle: () => void
 	export let autoscroll: () => void
 	export let refresh: (refreshType: RefreshType) => void
@@ -75,7 +75,7 @@
 				<button class='borderless-button' title='Toggle SoshalThing' on:click={() => favviewerHidden = !favviewerHidden}>
 					<Fa icon={faEyeSlash} size='large'/>
 				</button>
-				{#if favviewerMaximized !== undefined}
+				{#if favviewerMaximized !== null}
 					<button class='borderless-button'
 							title={favviewerMaximized ? 'Minimize SoshalThing' : 'Maximize SoshalThing'}
 							on:click={() => {favviewerMaximized = !favviewerMaximized; updateMaximized(favviewerMaximized)}}

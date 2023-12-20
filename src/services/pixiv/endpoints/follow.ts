@@ -4,14 +4,16 @@ import {PixivService} from '../service';
 import {getHiddenStorage, getMarkedAsReadStorage} from '../../../storages/serviceCache';
 import type {PixivUser} from '../article';
 import PixivArticle from '../article';
-import {getCurrentPage, getEachPageURL, getUserUrl, parseThumbnail} from './index';
+import {getCurrentPage, getEachPageURL, getUserUrl, parseThumbnail, type BookmarkData} from './index';
 import {MediaLoadType, MediaType} from '../../../articles/media';
 import {avatarHighRes} from './bookmarks';
+import {registerEndpointConstructor} from '../../service';
 
 export class FollowPageEndpoint extends PageEndpoint {
 	readonly name = 'Follow Endpoint';
-	readonly service = PixivService.name;
+	static service = PixivService.name;
 	readonly hostPage: number;
+	readonly params = null;
 
 	constructor() {
 		super();
@@ -50,13 +52,22 @@ export class FollowPageEndpoint extends PageEndpoint {
 
 export class FollowAPIEndpoint extends LoadableEndpoint {
 	readonly name = 'Pixiv Follow API Endpoint';
-	readonly service = PixivService.name;
+	static service = PixivService.name;
+	readonly params;
 
 	constructor(public currentPage = 0, readonly r18 = false) {
 		super();
 
 		if (this.currentPage > 0)
-			this.refreshTypes.add(RefreshType.LoadTop);
+			this.refreshTypes.update(rt => {
+				rt.add(RefreshType.LoadTop);
+				return rt;
+			});
+
+		this.params = {
+			page: currentPage,
+			r18,
+		};
 	}
 
 	async _refresh(_refreshType: RefreshType): Promise<ArticleWithRefs[]> {
@@ -70,6 +81,8 @@ export class FollowAPIEndpoint extends LoadableEndpoint {
 
 		//For now, I'm only parsing illusts, not novels
 		return response.body.thumbnails.illust.map(illust => {
+			const bookmarked = illust.bookmarkData !== null;
+
 			return {
 				type: 'normal',
 				article: new PixivArticle(
@@ -92,7 +105,7 @@ export class FollowAPIEndpoint extends LoadableEndpoint {
 					markedAsReadStorage,
 					hiddenStorage,
 					illust,
-					null,
+					bookmarked,
 				),
 			};
 		});
@@ -111,6 +124,8 @@ export class FollowAPIEndpoint extends LoadableEndpoint {
 		constructor: params => new FollowAPIEndpoint(params.page as number, params.r18 as boolean)
 	};
 }
+
+registerEndpointConstructor(FollowAPIEndpoint);
 
 type FollowAPIResponse = {
 	error: boolean
@@ -143,7 +158,7 @@ type FollowAPIResponse = {
 				height: number
 				pageCount: number
 				isBookmarkable: boolean
-				bookmarkData: null
+				bookmarkData: BookmarkData | null
 				alt: string
 				titleCaptionTranslation: {
 					workTitle: null

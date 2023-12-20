@@ -1,44 +1,58 @@
-//Add service endpoints here to include them
-import './services/twitter/endpoints';
+import './services/twitter/service';
+import './services/twitter/endpoints/domainEndpoints/TimelineAPI';
+import './services/twitter/endpoints/domainEndpoints/UserTweetsAPI';
+import './services/twitter/endpoints/domainEndpoints/ListAPI';
+
+import './services/pixiv/service';
+import './services/pixiv/endpoints/bookmarks';
+import './services/pixiv/endpoints/follow';
+import './services/pixiv/endpoints/user';
+import './services/misskey/service';
+
+import './services/misskey/endpoints/timelineEndpoint';
+
+
+
 import SoshalThing from './SoshalThing.svelte';
 import {loadMainStorage, loadTimelines} from './storages';
-import type {FullscreenInfo, TimelineView} from './timelines';
+import {defaultTimelineView, type FullscreenInfo, type TimelineView} from './timelines';
 
-const {timelineIds, fullscreen, timelineViews, defaultTimelineView} = loadMainStorage();
+const {timelineIds, fullscreen, timelineViews, currentTimelineView} = loadMainStorage();
 const timelines = loadTimelines();
 
 const searchParams = new URLSearchParams(location.search);
 
 const searchTimelineView = parseTimelineView(timelineViews, searchParams);
-const timelineView: TimelineView = searchTimelineView ??
-	(defaultTimelineView !== null ? timelineViews[defaultTimelineView]: null) ??
-	{
-	timelineIds: timelineIds ?? Object.keys(timelines),
-	fullscreen,
-};
+let timelineViewId: string = searchTimelineView ?? currentTimelineView ?? defaultTimelineView;
+if (timelineViewId === defaultTimelineView) {
+	timelineViews[defaultTimelineView] ??= {
+		timelineIds: timelineIds ?? Object.keys(timelines),
+		fullscreen,
+	};
+}
 const searchParamsFullscreen = parseFullscreen(searchParams);
-if (searchParamsFullscreen !== undefined)
-	timelineView.fullscreen = searchParamsFullscreen;
+if (searchParamsFullscreen !== null)
+	timelineViews[timelineViewId].fullscreen = searchParamsFullscreen;
 
 new SoshalThing({
 	target: document.body,
 	props: {
 		isInjected: false,
 		timelines,
-		timelineView,
+		timelineViewId,
 		timelineViews,
 	}
 });
 
 
 
-function parseFullscreen(search: URLSearchParams): FullscreenInfo | undefined {
+function parseFullscreen(search: URLSearchParams): FullscreenInfo | null {
 	const param = search.get('fullscreen_timeline');
 
 	switch (param) {
 		case null:
 		case 'false':
-			return undefined;
+			return null;
 		case '':
 		case 'true':
 		case '0':
@@ -52,7 +66,7 @@ function parseFullscreen(search: URLSearchParams): FullscreenInfo | undefined {
 	const num = parseInt(param);
 
 	if (isNaN(num))
-		return undefined;
+		return null;
 
 	return {
 		index: num,
@@ -61,14 +75,14 @@ function parseFullscreen(search: URLSearchParams): FullscreenInfo | undefined {
 	};
 }
 
-function parseTimelineView(timelineViews: {[name: string]: TimelineView}, search: URLSearchParams): TimelineView | undefined {
+function parseTimelineView(timelineViews: {[name: string]: TimelineView}, search: URLSearchParams): string | null {
 	const param = search.get('view');
 
 	if (!param?.length)
-		return undefined;
+		return null;
 	else if (!Object.hasOwn(timelineViews, param)) {
 		console.error(`Couldn't find timeline view "${param}"\nAvailable views: `, timelineViews);
-		return undefined;
+		return null;
 	}else
-		return timelineViews[param];
+		return param;
 }

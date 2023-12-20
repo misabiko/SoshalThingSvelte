@@ -326,108 +326,7 @@ export async function retweetWebSocket(idPair: ArticleIdPair) {
 	}
 }
 
-export async function toggleLikePage(idPair: ArticleIdPair) {
-	const writable = getWritable<TwitterArticle>(idPair);
-	const liked = get(writable).liked;
-	const [queryId, endpoint] = liked
-		? ['ZYKSe-w7KEslx3JhSIk5LA', 'UnfavoriteTweet']
-		: ['lI07N6Otwv1PhnEgXILM7A', 'FavoriteTweet'];
-
-	try {
-		const response = await pageRequest<FavoriteResponse>(queryId, endpoint, idPair.id.toString());
-
-		if (response.errors !== undefined)
-			throw response;
-		if ((liked ? response.data.unfavorite_tweet : response.data.favorite_tweet) === 'Done')
-			writable.update(a => {
-				a.liked = !liked;
-				return a;
-			});
-		else
-			throw response;
-	} catch (cause: ResponseError | any) {
-		let shouldThrow = true;
-		if (cause.errors !== undefined) {
-			for (const err of (cause as ResponseError).errors)
-				switch (err.code) {
-					case 139:
-						console.warn(cause);
-						writable.update(a => {
-							a.liked = true;
-							return a;
-						});
-
-						if (cause.errors.length === 1)
-							shouldThrow = false;
-						break;
-					case 144:
-						writable.update(a => {
-							a.deleted = true;
-							return a;
-						});
-
-						if (cause.errors.length === 1)
-							shouldThrow = false;
-						break;
-				}
-		}
-
-		if (shouldThrow)
-			throw cause;
-	}
-}
-
-export async function retweetPage(idPair: ArticleIdPair) {
-	const writable = TwitterService.articles[idPair.id as string];
-	if (get(writable).retweeted)
-		return;
-
-	try {
-		const response = await pageRequest<RetweetResponse>('ojPdsZsimiJrUGLR1sjUtA', 'CreateRetweet', idPair.id.toString());
-
-		if (response.errors !== undefined)
-			throw response;
-		if (response.data.create_retweet !== undefined)
-			writable.update(a => {
-				a.retweeted = true;
-				return a;
-			});
-		else
-			throw response;
-	} catch (err: ResponseError | any) {
-		if (err.errors !== undefined) {
-			if ((err as ResponseError).errors.some(e => e.code === 144)) {
-				writable.update(a => {
-					a.deleted = true;
-					return a;
-				});
-				if (err.errors.length === 1)
-					return;
-			}
-		}
-
-		throw new Error(err);
-	}
-}
-
-async function pageRequest<T>(queryId: string, endpoint: string, tweetId: string): Promise<T> {
-	return await TwitterService.fetch(`https://twitter.com/i/api/graphql/${queryId}/${endpoint}`, {
-		method: 'POST',
-
-		headers: {
-			'Content-Type': 'application/json',
-		},
-
-		body: JSON.stringify({
-			queryId,
-			variables: {
-				tweet_id: tweetId,
-			}
-		})
-	});
-}
-
-type FavoriteResponse = {
+export type FavoriteResponse = {
 	data: {
 		favorite_tweet: 'Done';
 		unfavorite_tweet: undefined;
@@ -441,7 +340,7 @@ type FavoriteResponse = {
 	errors: undefined;
 } | ResponseError;
 
-type RetweetResponse = {
+export type RetweetResponse = {
 	data: {
 		create_retweet: {
 			retweet_results: {

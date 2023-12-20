@@ -54,5 +54,5 @@
 		/>
 	{/if}
 {:else}
-	<div class='imgPlaceHolder' style:aspect-ratio={1 / media.ratio}></div>
+	<div class='imgPlaceHolder' style:aspect-ratio={1 / (media.ratio ?? 1)}></div>
 {/if}

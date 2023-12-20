@@ -11,7 +11,7 @@ export type ContainerProps = {
 	rebalanceTrigger: boolean;
 }
 
-export function articlesWithUniqueKeys(articles: ArticleWithRefs[]): [ArticleWithRefs, string][] {
+export function articlesWithUniqueKeys<T extends ArticleWithRefs>(articles: T[]): [T, string][] {
 	const idPairs = new Set<string>();
 	return articles.map(a => {
 		let i = 0;

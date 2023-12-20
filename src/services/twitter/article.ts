@@ -3,7 +3,8 @@ import Article from '../../articles';
 import type {ArticleMedia} from '../../articles/media';
 
 export default class TwitterArticle extends Article {
-	static service: string;
+	//Giving up on using TwitterService.name, endpoints are safe, but too much race condition on articles
+	static service = 'Twitter';
 	deleted = false;
 
 	constructor(

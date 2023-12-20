@@ -11,7 +11,7 @@
 		"test:e2e:headed": "playwright test --headed",
 		"test:unit": "npm run build:unit && playwright test -c playwright.config.unit.ts",
 		"test": "npm run test:e2e && npm run test:unit",
-		"lint": "eslint ."
+		"check": "tsc --noEmit && svelte-check && eslint ."
 	},
 	"type": "module",
 	"devDependencies": {

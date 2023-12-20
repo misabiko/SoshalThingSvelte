@@ -4,10 +4,12 @@ import {getHiddenStorage, getMarkedAsReadStorage} from '../../storages/serviceCa
 import {Endpoint, RefreshType} from '../endpoints';
 import type {EndpointConstructorInfo} from '../endpoints';
 import type {ArticleWithRefs} from '../../articles';
+import {registerEndpointConstructor} from '../service';
 
 export class DummyEndpoint extends Endpoint {
 	readonly name = 'DummyEndpoint';
-	readonly service = DummyService.name;
+	static service = DummyService.name;
+	params = {};
 
 	async refresh(_refreshType: RefreshType) {
 		const markAsReadStorage = getMarkedAsReadStorage(DummyService);
@@ -32,12 +34,17 @@ export class DummyEndpoint extends Endpoint {
 
 export class DummyEndpointWithParam extends Endpoint {
 	readonly name;
-	readonly service = DummyService.name;
+	static service = DummyService.name;
+	readonly params;
 
 	constructor(readonly query: string) {
 		super();
 
 		this.name = `Dummy Endpoint ${query}`;
+
+		this.params = {
+			query
+		};
 	}
 
 	async refresh(_refreshType: RefreshType) {
@@ -55,7 +62,5 @@ export class DummyEndpointWithParam extends Endpoint {
 	}
 }
 
-DummyService.endpointConstructors.push(
-	DummyEndpoint.constructorInfo,
-	DummyEndpointWithParam.constructorInfo,
-);
+registerEndpointConstructor(DummyEndpoint);
+registerEndpointConstructor(DummyEndpointWithParam);

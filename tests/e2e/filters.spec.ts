@@ -4,11 +4,11 @@ import {loadWithLocalStorage, TIMELINE_STORAGE_KEY} from '../storagesUtils';
 test.describe('mark as read/hide', () => {
 	test.beforeEach(async ({page}) => {
 		await loadWithLocalStorage(page, {
-			[TIMELINE_STORAGE_KEY]: [{
+			[TIMELINE_STORAGE_KEY]: {t1: {
 				endpoints: [
 					{
 						service: 'Dummy',
-						endpointType: 0,
+						endpointType: 'DummyEndpoint',
 					}
 				],
 				filters: [
@@ -22,7 +22,7 @@ test.describe('mark as read/hide', () => {
 						inverted: false,
 					},
 				]
-			}]
+			}}
 		});
 	});
 

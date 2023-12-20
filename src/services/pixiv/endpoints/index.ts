@@ -78,3 +78,8 @@ export function getCurrentPage(): number {
 	const p = new URLSearchParams(location.search).get('p');
 	return p === null ? 0 : parseInt(p) - 1;
 }
+
+export type BookmarkData = {
+	id: string
+	private: boolean
+}

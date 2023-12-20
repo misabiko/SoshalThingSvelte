@@ -11,7 +11,7 @@
 	import {getServices} from "../../services/service.js";
 
 	export let article: Article
-	export let repost: Article | undefined = undefined
+	export let repost: Article | null = null
 	export let isQuoted = false
 	export let modal: boolean
 	export let timelineProps: TimelineArticleProps

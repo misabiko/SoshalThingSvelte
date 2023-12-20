@@ -2,33 +2,48 @@
 	import './partialGlobal.css';
 	import {setContext} from 'svelte'
 	import Sidebar from "./sidebar/Sidebar.svelte"
-	import type {TimelineCollection, TimelineData, TimelineView} from "./timelines"
+	import {
+		defaultTimelineView,
+		type TimelineCollection,
+		type TimelineData, type TimelineView,
+	} from './timelines';
 	import TimelineContainer from "./timelines/TimelineContainer.svelte"
 	import {notifications} from './notifications/store'
 	import Notification from "./notifications/Notification.svelte";
-	import {Endpoint, refreshEndpoint, refreshEndpointName, RefreshType} from './services/endpoints';
+	import {Endpoint, endpoints, refreshEndpoint, refreshEndpointName, RefreshType} from './services/endpoints';
 	import type {FilterInstance} from './filters'
 	import {getRootArticle} from './articles'
 	import {updateTimelinesStorage} from 'storages'
 	import {get} from "svelte/store";
+	import {getServices} from './services/service';
+	import {fetchExtension} from './services/extension';
 
 	(BigInt.prototype as any).toJSON = function () {
 		return this.toString();
 	};
 
 	export let timelines: TimelineCollection = {}
-	export let timelineView: TimelineView = {
-		timelineIds: [],
-		fullscreen: {
-			index: null,
-			columnCount: null,
-			container: null,
+	export let timelineViews: Record<string, TimelineView> = {
+		[defaultTimelineView]: {
+			timelineIds: [],
+			fullscreen: {
+				index: null,
+				columnCount: null,
+				container: null,
+			}
 		}
+	};
+	for (const [viewName, view] of Object.entries(timelineViews)) {
+		if (view.fullscreen.index !== null && !Object.hasOwn(view.timelineIds, view.fullscreen.index)) {
+			console.warn(`TimelineView ${viewName} has invalid fullscreen.index ${view.fullscreen.index}`);
+			view.fullscreen.index = null;
 	}
-	export let timelineViews: {[name: string]: TimelineView} = {}
+	}
+
+	export let timelineViewId: string = defaultTimelineView
 	export let isInjected = true
 	export let favviewerHidden = false
-	export let favviewerMaximized: boolean | undefined = undefined
+	export let favviewerMaximized: boolean | null = null
 
 	let modalTimeline: TimelineData | null = null
 	let modalTimelineActive = false
@@ -46,7 +61,7 @@
 		const id = `Timeline ${idNum}`;
 		timelines[id] = data;
 		timelines = timelines;
-		timelineView.timelineIds = [...timelineView.timelineIds, id];
+		timelineViews[timelineViewId].timelineIds = [...timelineViews[timelineViewId].timelineIds, id];
 
 		updateTimelinesStorage(timelines);
 	}
@@ -54,11 +69,11 @@
 	function removeTimeline(id: string) {
 		delete timelines[id];
 		//We don't cache index since TimelineView.timelineIds might hold duplicates
-		if (timelineView.fullscreen.index === timelineView.timelineIds.indexOf(id))
-			timelineView.fullscreen.index = null;
+		if (timelineViews[timelineViewId].fullscreen.index === timelineViews[timelineViewId].timelineIds.indexOf(id))
+			timelineViews[timelineViewId].fullscreen.index = null;
 
-		timelineView.timelineIds = timelineView.timelineIds.filter(viewId => viewId !== id);
-		timelineView = timelineView;
+		timelineViews[timelineViewId].timelineIds = timelineViews[timelineViewId].timelineIds.filter(viewId => viewId !== id);
+		timelineViewId = timelineViewId;
 
 		updateTimelinesStorage(timelines);
 	}
@@ -73,7 +88,21 @@
 		initialRefresh(modalTimeline)
 	}
 
-	function initialRefresh(...refreshingTimelines: TimelineData[]) {
+	async function initialRefresh(...refreshingTimelines: TimelineData[]) {
+		const services = new Set<string>(
+			refreshingTimelines
+				.flatMap(t => t.endpoints.map(e => (e.endpoint ?? get(endpoints[e.name]))))
+				.map(e => (e.constructor as typeof Endpoint).service)
+		);
+		for (const serviceName of services) {
+			const service = getServices()[serviceName];
+			if (service.tabInfo !== null && get(service.tabInfo.tabId) === null)
+				service.tabInfo.tabId.set(await fetchExtension('getTabId', {
+					url: service.tabInfo.url,
+					matchUrl: service.tabInfo.matchUrl
+				}));
+		}
+
 		const endpointNames = new Set<string>()
 		for (const timeline of refreshingTimelines)
 			for (const timelineEndpoint of timeline.endpoints.filter(e => e.refreshTypes.has(RefreshType.RefreshStart)))
@@ -145,7 +174,7 @@
 	{#if showSidebar}
 		<Sidebar
 			bind:batchActionFilters
-			bind:timelineView
+			bind:timelineViewId
 			bind:timelineViews
 			bind:timelines
 			{setModalTimeline}
@@ -154,7 +183,7 @@
 	{/if}
 	<TimelineContainer
 		bind:timelines
-		bind:timelineView
+		bind:timelineView={timelineViews[timelineViewId]}
 		bind:modalTimeline
 		bind:modalTimelineActive
 		bind:favviewerHidden

@@ -1,6 +1,7 @@
 import type { ArticleWithRefs } from 'articles';
 import WebSocketEndpoint, { type SetupData } from 'services/WebSocketEndpoint';
 import { RefreshType } from 'services/endpoints';
+import {TwitterService} from '../../service';
 
 export default abstract class WebSocketPageEndpoint extends WebSocketEndpoint {
 	constructor(setupData: SetupData) {

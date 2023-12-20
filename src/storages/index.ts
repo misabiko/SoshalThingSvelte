@@ -1,16 +1,22 @@
-import type { FullscreenInfo, TimelineCollection, TimelineEndpoint, TimelineView } from '../timelines';
-import type { SvelteComponent } from 'svelte';
+import {
+	defaultTimelineView,
+	type FullscreenInfo,
+	type TimelineCollection,
+	type TimelineEndpoint,
+	type TimelineView,
+} from '../timelines';
+import type {SvelteComponent} from 'svelte';
 import ColumnContainer from '../containers/ColumnContainer.svelte';
 import RowContainer from '../containers/RowContainer.svelte';
 import MasonryContainer from '../containers/MasonryContainer.svelte';
 import SocialArticleView from '../articles/social/SocialArticleView.svelte';
 import GalleryArticleView from '../articles/gallery/GalleryArticleView.svelte';
-import { getServices } from '../services/service';
-import type { FilterInstance } from '../filters';
-import type { SortInfo } from '../sorting';
-import { SortMethod } from '../sorting';
-import { defaultTimeline } from '../timelines';
-import { defaultFilterInstances } from '../filters';
+import {getServices} from '../services/service';
+import type {FilterInstance} from '../filters';
+import type {SortInfo} from '../sorting';
+import {SortMethod} from '../sorting';
+import {defaultTimeline} from '../timelines';
+import {defaultFilterInstances} from '../filters';
 import {
 	addEndpoint,
 	Endpoint,
@@ -18,8 +24,8 @@ import {
 	RefreshType,
 	startAutoRefresh,
 } from '../services/endpoints';
-import type { EndpointConstructorParams } from '../services/endpoints';
-import { derived, get } from 'svelte/store';
+import type {EndpointConstructorParams} from '../services/endpoints';
+import {derived, get} from 'svelte/store';
 
 export const MAIN_STORAGE_KEY = 'SoshalThingSvelte';
 export const TIMELINE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Timelines';
@@ -42,7 +48,7 @@ export function loadMainStorage() {
 			if (Object.hasOwn(mainStorage.timelineViews, view))
 				(mainStorage as MainStorageParsed).timelineViews[view].fullscreen = parseFullscreenInfo(mainStorage.timelineViews[view].fullscreen);
 
-	(mainStorage as MainStorageParsed).defaultTimelineView = mainStorage.defaultTimelineView ?? null;
+	(mainStorage as MainStorageParsed).currentTimelineView = mainStorage.currentTimelineView ?? null;
 
 	if (!mainStorage.useWebSocket)
 		mainStorage.useWebSocket = false;
@@ -50,7 +56,7 @@ export function loadMainStorage() {
 	return mainStorage as MainStorageParsed;
 }
 
-//TODO Type storage per storage
+//TODO Type storage per service
 export function getServiceStorage(service: string): { [key: string]: any } {
 	const storageKey = `${MAIN_STORAGE_KEY} ${service}`;
 	const item = localStorage.getItem(storageKey);
@@ -74,12 +80,22 @@ export function updateMainStorage(key: string, value: any) {
 	localStorage.setItem(MAIN_STORAGE_KEY, JSON.stringify(storage));
 }
 
+export function updateMainStorageTimelineViews(views: Record<string, TimelineView>) {
+	const item = localStorage.getItem(MAIN_STORAGE_KEY);
+	const storage = item ? JSON.parse(item) : {};
+
+	views['default'] = views[defaultTimelineView];
+	storage['timelineViews'] = views;
+
+	localStorage.setItem(MAIN_STORAGE_KEY, JSON.stringify(storage));
+}
+
 export function updateMaximized(maximized: boolean) {
 	updateMainStorage('maximized', maximized);
 }
 
 export function updateFullscreenStorage(fullscreen: FullscreenInfo) {
-	const stringified: any = { ...fullscreen };
+	const stringified: any = {...fullscreen};
 	if (stringified.container)
 		stringified.container = stringified.container.name;
 
@@ -113,44 +129,65 @@ export function loadTimelines(): TimelineCollection {
 			...defaultTimeline(),
 			title: defaulted.title,
 			endpoints,
-			container: parseContainer(defaulted.container),
-			articleView: parseArticleView(defaulted.articleView),
-			columnCount: defaulted.columnCount,
-			width: defaulted.width,
-			filters: defaulted.filters,
-			sortInfo: parseSortInfo(defaulted.sortInfo),
 			section: defaulted.section ?? {
 				useSection: false,
 				count: 100
-			}
+			},
+			container: parseContainer(defaulted.container),
+			articleView: parseArticleView(defaulted.articleView),
+			columnCount: defaulted.columnCount ?? 1,
+			rtl: defaulted.rtl ?? false,
+			width: defaulted.width ?? 1,
+			filters: defaulted.filters,
+			sortInfo: parseSortInfo(defaulted.sortInfo),
+			animatedAsGifs: defaulted.animatedAsGifs ?? false,
+			scrollSpeed: defaulted.scrollSpeed ?? 3,
+			hideText: defaulted.hideText ?? false,
+			compact: defaulted.compact ?? false,
+			shouldLoadMedia: defaulted.shouldLoadMedia ?? true,
+			hideFilteredOutArticles: defaulted.hideFilteredOutArticles ?? true,
+			mergeReposts: defaulted.mergeReposts ?? true,
+			showArticleCount: defaulted.showArticleCount ?? false,
+			maxMediaCount: defaulted.maxMediaCount ?? 4,
 		}];
 	}));
 }
 
 export function updateTimelinesStorage(timelines: TimelineCollection) {
-	const storage = Object.fromEntries(Object.entries(timelines).map(([id, t]) => [id, {
+	//TODO Remove already default optional fields
+	const storage: Record<string, Partial<TimelineStorage>> = Object.fromEntries(Object.entries(timelines).map(([id, t]) => [id, {
 		title: t.title,
-		//TODO Serialize more timeline properties
-		// container?: string
-		// articleView?: string
-		// endpoints: EndpointStorage[]
-		// columnCount: number
-		// width: number
-		// filters: FilterInstance[],
-		// sortInfo: {
-		// 	method?: string | null
-		// 	reversed: boolean
-		// },
-		// compact: boolean
-		// animatedAsGifs: boolean
-		// hideText: boolean
-		// section?: {
-		// 	useSection: boolean
-		// 	count: number
-		// }
-	}]));
+		container: t.container.name,
+		articleView: t.articleView.name,
+		endpoints: endpointsToStorage(t.endpoints),
+		columnCount: t.columnCount,
+		width: t.width,
+		filters: t.filters,
+		sortInfo: sortInfoToStorage(t.sortInfo),
+		compact: t.compact,
+		animatedAsGifs: t.animatedAsGifs,
+		hideText: t.hideText,
+		section: t.section,
+	} satisfies Partial<TimelineStorage>]));
 
 	localStorage.setItem(TIMELINE_STORAGE_KEY, JSON.stringify(storage));
+}
+
+export function updateTimelinesStorageValue<K extends keyof TimelineStorage>(timelineId: string, key: K, value: TimelineStorage[K]) {
+	const storageStr = localStorage.getItem(TIMELINE_STORAGE_KEY);
+	const storage = storageStr ? JSON.parse(storageStr) : {};
+	storage[timelineId] ??= {};
+	storage[timelineId][key] = value;
+
+	localStorage.setItem(TIMELINE_STORAGE_KEY, JSON.stringify(storage));
+}
+
+export function updateTimelinesStorageEndpoints(timelineId: string, endpoints: TimelineEndpoint[]) {
+	updateTimelinesStorageValue(timelineId, 'endpoints', endpointsToStorage(endpoints));
+}
+
+export function updateTimelinesStorageSortInfo(timelineId: string, sortInfo: SortInfo) {
+	updateTimelinesStorageValue(timelineId, 'sortInfo', sortInfoToStorage(sortInfo));
 }
 
 //maybe would fit better in a utils file
@@ -195,11 +232,11 @@ function parseArticleView(articleView: string | undefined): new (...args: any[])
 
 function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | undefined {
 	const services = getServices();
-	const endpointsValue: Endpoint[] = get(derived(Object.values(endpoints), (e: Endpoint) => e));
+	const endpointsValue: Endpoint[] = get(derived(Object.values(endpoints), (e: Endpoint[]) => e));
 	if (!Object.hasOwn(services, storage.service)) {
 		console.error(`"${storage.service}" isn't a registered service`);
 		return undefined;
-	} else if (services[storage.service].endpointConstructors.length <= storage.endpointType) {
+	} else if (!Object.hasOwn(services[storage.service].endpointConstructors, storage.endpointType)) {
 		console.error(`"${storage.service}" doesn't have endpointType "${storage.endpointType}"`);
 		return undefined;
 	}
@@ -245,27 +282,89 @@ function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | unde
 	};
 }
 
-function parseSortInfo({ method, reversed }: TimelineStorage['sortInfo']): SortInfo {
-	let sortMethod: SortMethod | null = null;
-	switch (method?.toLowerCase()) {
-		case 'id':
-			sortMethod = SortMethod.Id;
-			break;
-		case 'date':
-			sortMethod = SortMethod.Date;
-			break;
-		case 'likes':
-			sortMethod = SortMethod.Likes;
-			break;
-		case 'reposts':
-			sortMethod = SortMethod.Reposts;
-			break;
+function endpointsToStorage(timelineEndpoints: TimelineEndpoint[]): EndpointStorage[] {
+	return timelineEndpoints
+		.map(e => ({
+			endpoint: e.endpoint ?? get(endpoints[e.name]),
+			filters: e.filters,
+			refreshTypes: e.refreshTypes,
+		}))
+		.map(({endpoint, filters, refreshTypes}) => ({
+			service: (endpoint.constructor as typeof Endpoint).service,
+			endpointType: (endpoint.constructor as typeof Endpoint).constructorInfo.name,
+			params: endpoint.params ?? undefined,
+			filters,
+			autoRefresh: endpoint.autoRefreshId !== null,
+			onStart: refreshTypes.has(RefreshType.RefreshStart),
+			onRefresh: refreshTypes.has(RefreshType.Refresh),
+			loadTop: refreshTypes.has(RefreshType.LoadTop),
+			loadBottom: refreshTypes.has(RefreshType.LoadBottom),
+		}))
+}
+
+function parseSortInfo(storage: TimelineStorage['sortInfo']): SortInfo {
+	const reversed = storage.reversed || false;
+
+	if (storage.customMethod) {
+		return {
+			method: SortMethod.Custom,
+			customMethod: storage.customMethod,
+			reversed
+		};
+	}else {
+		let method: SortMethod | null = null;
+		switch (storage.method?.toLowerCase()) {
+			case 'id':
+				method = SortMethod.Id;
+				break;
+			case 'date':
+				method = SortMethod.Date;
+				break;
+			case 'likes':
+				method = SortMethod.Likes;
+				break;
+			case 'reposts':
+				method = SortMethod.Reposts;
+				break;
+		}
+
+		return {
+			method,
+			customMethod: null,
+			reversed,
+		};
 	}
-	return {
-		method: sortMethod,
-		customMethod: null,
-		reversed: reversed || false
-	};
+}
+
+function sortInfoToStorage(sortInfo: SortInfo): TimelineStorage['sortInfo'] {
+	if (sortInfo.customMethod) {
+		return {
+			customMethod: sortInfo.customMethod,
+			reversed: sortInfo.reversed
+		};
+	}else {
+		let method: string | null = null;
+		switch (sortInfo.method) {
+			case SortMethod.Id:
+				method = 'Id';
+				break;
+			case SortMethod.Date:
+				method = 'Date';
+				break;
+			case SortMethod.Likes:
+				method = 'Likes';
+				break;
+			case SortMethod.Reposts:
+				method = 'Reposts';
+				break;
+		}
+
+		return {
+			method,
+			reversed: sortInfo.reversed,
+		};
+	}
+
 }
 
 function parseFilters(filters: FilterInstance[] | undefined) {
@@ -308,15 +407,15 @@ function parseFullscreenInfo(fullscreen?: boolean | number | FullscreenInfoStora
 }
 
 type MainStorage = Partial<MainStorageParsed> & {
-	defaultTimelineView?: string
+	currentTimelineView?: string
 	timelineViews: { [name: string]: TimelineViewStorage }
 	fullscreen?: boolean | number | FullscreenInfoStorage
 }
 
 type MainStorageParsed = {
 	timelineIds: TimelineView['timelineIds'] | null
-	defaultTimelineView: string | null
-	timelineViews: { [name: string]: TimelineView }
+	currentTimelineView: string | null
+	timelineViews: Record<string, TimelineView>
 	fullscreen: FullscreenInfo
 	maximized: boolean
 	markAsReadLocal: boolean
@@ -334,33 +433,43 @@ type TimelineViewStorage = TimelineView & {
 
 type TimelineStorage = {
 	title: string
-	container?: string
-	articleView?: string
 	endpoints: EndpointStorage[]
-	columnCount: number
-	width: number
-	filters: FilterInstance[],
-	sortInfo: {
-		method?: string | null
-		reversed: boolean
-	},
-	compact: boolean
-	animatedAsGifs: boolean
-	hideText: boolean
 	section?: {
 		useSection: boolean
 		count: number
 	}
+	container?: string
+	articleView?: string
+	columnCount?: number
+	rtl?: boolean
+	width?: number
+	filters: FilterInstance[],
+	sortInfo: {
+		method: string | null
+		customMethod?: never
+		reversed: boolean
+	} | {
+		method?: never
+		customMethod: {
+			service: string
+			method: string
+		},
+		reversed: boolean
+	},
+	animatedAsGifs?: boolean
+	scrollSpeed?: number
+	hideText?: boolean
+	compact?: boolean
+	shouldLoadMedia?: boolean
+	hideFilteredOutArticles?: boolean
+	mergeReposts?: boolean
+	showArticleCount?: boolean
+	maxMediaCount?: number | null
 }
 
 const DEFAULT_TIMELINE_STORAGE: TimelineStorage = {
 	title: 'Timeline',
 	endpoints: [],
-	columnCount: 1,
-	width: 1,
-	compact: false,
-	animatedAsGifs: false,
-	hideText: false,
 	filters: defaultFilterInstances,
 	sortInfo: {
 		method: null,
@@ -370,7 +479,7 @@ const DEFAULT_TIMELINE_STORAGE: TimelineStorage = {
 
 type EndpointStorage = {
 	service: string
-	endpointType: number
+	endpointType: string
 	params?: EndpointConstructorParams
 	filters?: FilterInstance[]
 	autoRefresh?: boolean

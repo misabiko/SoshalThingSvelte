@@ -1,14 +1,14 @@
-import TwitterArticle from './article';
-import type {Service} from '../service';
+import type TwitterArticle from './article';
+import {getWritable, type Service} from '../service';
 import {newService, registerService} from '../service';
 import {STANDARD_ACTIONS} from '../actions';
-import Article, {type ArticleWithRefs, getRootArticle} from '../../articles';
+import Article, {type ArticleIdPair, type ArticleWithRefs, getRootArticle} from '../../articles';
 import type {Filter} from '../../filters';
-import { retweetPage, retweetWebSocket, toggleLikePage, toggleLikeWebSocket } from './pageAPI';
+import {type FavoriteResponse, type ResponseError, type RetweetResponse} from './pageAPI';
 import { getCookie, getServiceStorage } from 'storages';
 import { fetchExtension } from 'services/extension';
-
-export const isOnTwitter = globalThis.window?.location?.hostname === 'twitter.com';
+import {get, writable} from 'svelte/store';
+import ServiceSettings from './ServiceSettings.svelte';
 
 export const TwitterService: Service<TwitterArticle> = {
 	...newService('Twitter'),
@@ -50,7 +50,7 @@ export const TwitterService: Service<TwitterArticle> = {
 			init.headers = {};
 		(init.headers as Record<string, string>)['Authorization'] = `Bearer ${bearerToken}`;
 
-		if (isOnTwitter) {
+		if (this.isOnDomain) {
 			if (init?.headers === undefined)
 				throw new Error('Cannot fetch on twitter service without headers');
 
@@ -61,14 +61,17 @@ export const TwitterService: Service<TwitterArticle> = {
 
 			const response = await fetch(url, init);
 			return await response.json();
-		}else {
-			if (this.tabId === null) {
-				const listTabsResponse: any[] = await fetchExtension('listTabs', {query: {url: '*://twitter.com/*'}});
-				this.tabId = listTabsResponse[0].id;
+		}else if (this.tabInfo) {
+			let tabId = get(this.tabInfo.tabId);
+			if (tabId === null) {
+				this.tabInfo.tabId.set(tabId = await fetchExtension('getTabId', {
+					url: this.tabInfo.url,
+					matchUrl: this.tabInfo.matchUrl
+				}));
 			}
 
-			return await fetchExtension('twitterFetch', {
-				tabId: this.tabId,
+			return await fetchExtension('domainFetch', {
+				tabId,
 				message: {
 					soshalthing: true,
 					request: 'fetch',
@@ -77,15 +80,124 @@ export const TwitterService: Service<TwitterArticle> = {
 						...init,
 						headers: {
 							'Authorization': 'Bearer ' + bearerToken,
-							// 'X-Csrf-Token': csrfToken,
 							...((init as any).headers ?? {}),
 						},
 					}
 				}
 			});
+		}else {
+			throw new Error('Service is not on domain and has no tab info');
 		}
-	}
+	},
+	isOnDomain: globalThis.window?.location?.hostname === 'twitter.com'
+		|| globalThis.window?.location?.hostname === 'x.com',
+	tabInfo: {
+		url: 'https://twitter.com',
+		matchUrl: ['*://twitter.com/*'],
+		tabId: writable(null),
+	},
+	settings: ServiceSettings,
 };
-TwitterArticle.service = TwitterService.name;
 
 registerService(TwitterService);
+
+export async function toggleLikePage(idPair: ArticleIdPair) {
+	const writable = getWritable<TwitterArticle>(idPair);
+	const liked = get(writable).liked;
+	const [queryId, endpoint] = liked
+		? ['ZYKSe-w7KEslx3JhSIk5LA', 'UnfavoriteTweet']
+		: ['lI07N6Otwv1PhnEgXILM7A', 'FavoriteTweet'];
+
+	try {
+		const response = await pageRequest<FavoriteResponse>(queryId, endpoint, idPair.id.toString());
+
+		if (response.errors !== undefined)
+			throw response;
+		if ((liked ? response.data.unfavorite_tweet : response.data.favorite_tweet) === 'Done')
+			writable.update(a => {
+				a.liked = !liked;
+				return a;
+			});
+		else
+			throw response;
+	} catch (cause: ResponseError | any) {
+		let shouldThrow = true;
+		if (cause.errors !== undefined) {
+			for (const err of (cause as ResponseError).errors)
+				switch (err.code) {
+					case 139:
+						console.warn(cause);
+						writable.update(a => {
+							a.liked = true;
+							return a;
+						});
+
+						if (cause.errors.length === 1)
+							shouldThrow = false;
+						break;
+					case 144:
+						writable.update(a => {
+							a.deleted = true;
+							return a;
+						});
+
+						if (cause.errors.length === 1)
+							shouldThrow = false;
+						break;
+				}
+		}
+
+		if (shouldThrow)
+			throw cause;
+	}
+}
+
+export async function retweetPage(idPair: ArticleIdPair) {
+	const writable = TwitterService.articles[idPair.id as string];
+	if (get(writable).retweeted)
+		return;
+
+	try {
+		const response = await pageRequest<RetweetResponse>('ojPdsZsimiJrUGLR1sjUtA', 'CreateRetweet', idPair.id.toString());
+
+		if (response.errors !== undefined)
+			throw response;
+		if (response.data.create_retweet !== undefined)
+			writable.update(a => {
+				a.retweeted = true;
+				return a;
+			});
+		else
+			throw response;
+	} catch (err: ResponseError | any) {
+		if (err.errors !== undefined) {
+			if ((err as ResponseError).errors.some(e => e.code === 144)) {
+				writable.update(a => {
+					a.deleted = true;
+					return a;
+				});
+				if (err.errors.length === 1)
+					return;
+			}
+		}
+
+		throw new Error(err);
+	}
+}
+
+async function pageRequest<T>(queryId: string, endpoint: string, tweetId: string): Promise<T> {
+	return await TwitterService.fetch(`https://twitter.com/i/api/graphql/${queryId}/${endpoint}`, {
+		method: 'POST',
+
+		headers: {
+			'Content-Type': 'application/json',
+		},
+
+		body: JSON.stringify({
+			queryId,
+			variables: {
+				tweet_id: tweetId,
+			}
+		})
+	});
+}

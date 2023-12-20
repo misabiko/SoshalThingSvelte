@@ -72,11 +72,11 @@ export function parseResponse(instructions: Instruction[]): ArticleWithRefs[] {
 }
 
 function articleFromResult(result: Result): ArticleWithRefs {
-	const {textHtml} = parseText(result.legacy.full_text, result.legacy.entities, result.legacy.extended_entities);
+	const {text, textHtml} = parseText(result.legacy.full_text, result.legacy.entities, result.legacy.extended_entities);
 
 	const article = (actualArticleRef?: ArticleRefIdPair) => new TwitterArticle(
 		BigInt(result.legacy.id_str),
-		result.legacy.full_text,
+		text,
 		textHtml,
 		{
 			username: result.core.user_results.result.legacy.screen_name,

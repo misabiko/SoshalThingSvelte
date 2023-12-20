@@ -210,9 +210,9 @@
 				</div>
 				{#if !timelineProps.hideText && !minimized}
 					<p class='articleParagraph'>
-						{#if actualArticle.textHtml}
+						{#if actualArticle.textHtml !== undefined}
 							{@html actualArticle.textHtml}
-						{:else if actualArticle.text}
+						{:else if actualArticle.text !== undefined}
 							{actualArticle.text}
 						{/if}
 					</p>
@@ -231,9 +231,9 @@
 					{#if !minimized}<!--&& !actualArticleProps.quoted.filteredOut-->
 						{#if !timelineProps.hideText}
 							<p class='refArticleParagraph'>
-								{#if quoted.textHtml}
+								{#if quoted.textHtml !== undefined}
 									{@html quoted.textHtml}
-								{:else}
+								{:else if quoted.text !== undefined}
 									{quoted.text}
 								{/if}
 							</p>

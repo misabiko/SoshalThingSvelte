@@ -13,9 +13,9 @@
 	export let showAllMedia: boolean;
 	export let onMediaClick: (index: number) => void
 
-	export let divRef: HTMLDivElement | null;
-	export let mediaRefs: HTMLImageElement[];
-	export let loadingStates: LoadingState[];
+	export let divRef: HTMLDivElement | null = null;
+	export let mediaRefs: (HTMLImageElement | HTMLVideoElement)[] = [];
+	export let loadingStates: LoadingState[] | null = null;
 
 	afterUpdate(() => {
 		const articleMediaEls = divRef?.querySelectorAll('.articleMedia')
@@ -77,8 +77,8 @@
 
 <div class='socialMedia' bind:this={divRef}>
 	{#each article.medias.slice(0, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined) as media, index (index)}
-		{@const isLoading = loadingStates[index] === LoadingState.Loading}
-		{#if loadingStates[index] === LoadingState.NotLoaded}
+		{@const isLoading = loadingStates && loadingStates[index] === LoadingState.Loading}
+		{#if loadingStates && loadingStates[index] === LoadingState.NotLoaded}
 			<div class='imagesHolder'>
 				<div class='imgPlaceHolder' style:aspect-ratio={1 / (media.ratio ?? 1)} style:display='none'></div>
 				<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->

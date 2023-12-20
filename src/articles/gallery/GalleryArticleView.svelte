@@ -7,18 +7,17 @@
 		faExternalLinkAlt,
 		faEllipsisH, faImages,
 	} from '@fortawesome/free-solid-svg-icons'
-	import {afterUpdate} from 'svelte'
 	import {LoadingState, loadingStore} from '../../bufferedMediaLoading'
 	import Dropdown from "../../Dropdown.svelte"
 	import {
 		fetchArticle,
 		toggleHide,
 		toggleMarkAsRead,
-		getWritable, getServices,
+		getServices,
 	} from "../../services/service"
 	import type {TimelineArticleProps} from '../index'
 	import type {ArticleProps} from '../index'
-	import {MediaLoadType, MediaType} from '../media'
+	import {MediaType} from '../media'
 	import GalleryThumbnail from "./GalleryThumbnail.svelte";
 	import GalleryImage from "./GalleryImage.svelte";
 

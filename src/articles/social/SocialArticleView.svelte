@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import type Article from '../../articles'
+	import Article from '../../articles';
 	import type {ArticleIdPair} from '../index'
 	import type {ArticleProps, TimelineArticleProps} from '../index'
 	import {shortTimestamp} from "../index";
@@ -8,6 +8,8 @@
 	import Timestamp from "./Timestamp.svelte";
 	import {newUserTimeline} from '../../timelines'
 	import {LoadingState} from '../../bufferedMediaLoading';
+	import {getWritable} from '../../services/service';
+	import {get} from 'svelte/store';
 
 	export let timelineProps: TimelineArticleProps
 	export let articleProps: ArticleProps
@@ -208,16 +210,16 @@
 				</div>
 				{#if !timelineProps.hideText && !minimized}
 					<p class='articleParagraph'>
-						{#if actualArticle.textHtml}
+						{#if actualArticle.textHtml !== undefined}
 							{@html actualArticle.textHtml}
-						{:else if actualArticle.text}
+						{:else if actualArticle.text !== undefined}
 							{actualArticle.text}
 						{/if}
 					</p>
 				{/if}
 			</div>
-			{#if articleProps.type === 'quote'}
-				{@const quoted = articleProps.quoted.article}
+			{#if actualArticle.actualArticleRef?.type === 'quote'}
+				{@const quoted = get(getWritable(actualArticle.actualArticleRef.quoted))}
 				<div class='quotedPost'>
 					<div class='articleHeader'>
 						<a class='names' href={quoted.author.url} target='_blank' rel='noreferrer'>
@@ -226,12 +228,12 @@
 						</a>
 						<Timestamp date={quoted.creationTime}/>
 					</div>
-					{#if !(minimized || articleProps.quoted.filteredOut)}
+					{#if !minimized}<!--&& !actualArticleProps.quoted.filteredOut-->
 						{#if !timelineProps.hideText}
 							<p class='refArticleParagraph'>
-								{#if quoted.textHtml}
+								{#if quoted.textHtml !== undefined}
 									{@html quoted.textHtml}
-								{:else}
+								{:else if quoted.text !== undefined}
 									{quoted.text}
 								{/if}
 							</p>

@@ -1,14 +1,13 @@
-import type { ArticleIdPair, ArticleRefIdPair, ArticleWithRefs } from '../../articles';
-import type { TwitterUser } from './article';
+import type {ArticleIdPair, ArticleRefIdPair, ArticleWithRefs} from '../../articles';
+import type {TwitterUser} from './article';
 import TwitterArticle from './article';
-import { getHiddenStorage, getMarkedAsReadStorage } from '../../storages/serviceCache';
-import { parseMedia, parseText } from './apiV1';
-import type { Entities, ExtendedEntities } from './apiV1';
-import { TwitterService } from './service';
-import { getWritable } from 'services/service';
-import { get } from 'svelte/store';
-import { sendRequest } from 'services/remotePage';
-import { getCookie, getServiceStorage } from 'storages';
+import {getHiddenStorage, getMarkedAsReadStorage} from '../../storages/serviceCache';
+import {parseMedia, parseText} from './apiV1';
+import type {Entities, ExtendedEntities} from './apiV1';
+import {TwitterService} from './service';
+import {getWritable} from 'services/service';
+import {get} from 'svelte/store';
+import {sendRequest} from 'services/remotePage';
 
 export function parseResponse(instructions: Instruction[]): ArticleWithRefs[] {
 	// if (instructions.filter(i => i.type === 'TimelineAddEntries').length !== 1)
@@ -30,8 +29,8 @@ export function parseResponse(instructions: Instruction[]): ArticleWithRefs[] {
 			if (gridEntry.content.entryType !== 'TimelineTimelineModule')
 				throw new Error('Unhandled profile grid entry type: ' + gridEntry.content.entryType);
 
-			itemContents = gridEntry.content.items.map(i => i.item.itemContent)
-		}else {
+			itemContents = gridEntry.content.items.map(i => i.item.itemContent);
+		} else {
 			itemContents = (entries as EntryWithItem[]).map(e => e.item.itemContent);
 		}
 
@@ -49,7 +48,7 @@ export function parseResponse(instructions: Instruction[]): ArticleWithRefs[] {
 				}
 			})
 			.filter((a): a is ArticleWithRefs => a !== null);
-	}else {
+	} else {
 		return (entries as EntryWithContent[])
 			//TODO Support TimelineTimelineModule (replies)
 			.filter(e => e.content.entryType === 'TimelineTimelineItem' && (e.entryId.startsWith('tweet-') || e.entryId.startsWith('profile-grid-0-tweet-')))
@@ -73,11 +72,11 @@ export function parseResponse(instructions: Instruction[]): ArticleWithRefs[] {
 }
 
 function articleFromResult(result: Result): ArticleWithRefs {
-	const { textHtml } = parseText(result.legacy.full_text, result.legacy.entities, result.legacy.extended_entities);
+	const {text, textHtml} = parseText(result.legacy.full_text, result.legacy.entities, result.legacy.extended_entities);
 
 	const article = (actualArticleRef?: ArticleRefIdPair) => new TwitterArticle(
 		BigInt(result.legacy.id_str),
-		result.legacy.full_text,
+		text,
 		textHtml,
 		{
 			username: result.core.user_results.result.legacy.screen_name,
@@ -95,16 +94,10 @@ function articleFromResult(result: Result): ArticleWithRefs {
 		result.legacy.favorite_count,
 		result.legacy.retweeted,
 		result.legacy.retweet_count,
-		result.legacy,
+		result,
 	);
 
-	/* if (legacy.is_quote_status)
-		return {
-			type: 'quote',
-			article: article(),
-			reposted: legacy.retweeted_status_result !== undefined ? articleFromLegacy(legacy.retweeted_status_result.result.legacy) : undefined,
-		};
-	else  */if (result.legacy.retweeted_status_result !== undefined) {
+	if (result.legacy.retweeted_status_result !== undefined) {
 		const reposted = articleFromResult(result.legacy.retweeted_status_result.result);
 		if (reposted.type === 'repost' || reposted.type === 'reposts')
 			throw new Error('Retweeted article is a retweet itself: ' + JSON.stringify(reposted));
@@ -117,6 +110,28 @@ function articleFromResult(result: Result): ArticleWithRefs {
 			}),
 			reposted,
 		};
+	} else if (result.legacy.is_quote_status) {
+		if (result.quoted_status_result === undefined) {
+			console.debug('Quoted article not found (probably nested quotes): ', result);
+
+			return {
+				type: 'normal',
+				article: article(),
+			}
+		}else {
+			const quoted = articleFromResult(result.quoted_status_result.result);
+			if (quoted.type === 'repost' || quoted.type === 'reposts')
+				throw new Error('Quoted article is a retweet itself: ' + JSON.stringify(quoted));
+
+			return {
+				type: 'quote',
+				article: article({
+					type: 'quote',
+					quoted: quoted.article.idPair,
+				}),
+				quoted,
+			};
+		}
 	} else
 		return {
 			type: 'normal',
@@ -128,8 +143,8 @@ export type Instruction =
 	| AddEntriesInstruction
 	| AddToModuleInstruction
 	| {
-		type: Omit<string, 'TimelineAddEntries' | 'TimelineAddToModule'>
-	};
+	type: Omit<string, 'TimelineAddEntries' | 'TimelineAddToModule'>
+};
 export type AddEntriesInstruction = {
 	type: 'TimelineAddEntries';
 	entries: EntryWithContent[];
@@ -144,25 +159,25 @@ type EntryWithContent = {
 	sortIndex: string;
 	content:
 		| {
-			entryType: 'TimelineTimelineItem';
-			itemContent: ItemContent
-		}
+		entryType: 'TimelineTimelineItem';
+		itemContent: ItemContent
+	}
 		| {
-			entryType: 'TimelineTimelineModule';
-			items: {
-				entryId: string
-				item: {
-					entryType: 'TimelineTimelineItem';
-					itemContent: ItemContent
-				}
-			}[]
-		}
+		entryType: 'TimelineTimelineModule';
+		items: {
+			entryId: string
+			item: {
+				entryType: 'TimelineTimelineItem';
+				itemContent: ItemContent
+			}
+		}[]
+	}
 		| {
-			entryType: 'TimelineTimelineCursor'
-			__typename: 'TimelineTimelineCursor'
-			value: string
-			cursorType: 'Top' | 'Bottom'
-		}
+		entryType: 'TimelineTimelineCursor'
+		__typename: 'TimelineTimelineCursor'
+		value: string
+		cursorType: 'Top' | 'Bottom'
+	}
 	item?: never
 };
 type EntryWithItem = {
@@ -227,6 +242,7 @@ type Result = {
 			}
 		}
 	}
+	quoted_status_result?: { result: Result };
 }
 
 type Legacy = {

@@ -9,10 +9,7 @@
 	import SortOptions from '../sorting/SortOptions.svelte';
 	import type {SortMethod} from '../sorting';
 	import type {FullscreenInfo} from './index';
-	import {updateFullscreenStorage, updateTimelinesStorageEndpoints, updateTimelinesStorageValue} from '../storages';
-	import {endpoints, everyRefreshType} from '../services/endpoints';
-	import {get} from 'svelte/store';
-	import {getServices} from '../services/service';
+	import {updateFullscreenStorage, updateTimelinesStorageValue} from '../storages';
 	import EndpointOptions from './EndpointOptions.svelte';
 
 	export let timelineId: string | null;

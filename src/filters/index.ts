@@ -160,16 +160,22 @@ function keepArticleGeneric(articleWithRefs: ArticleWithRefs, index: number, fil
 					return !articleWithRefs.article.markedAsRead;
 				case 'repost':
 					return !articleWithRefs.article.markedAsRead && keepArticleGeneric(articleWithRefs.reposted, index, filter);
+				case 'reposts':
+					return articleWithRefs.reposts.every(a => !a.markedAsRead) && keepArticleGeneric(articleWithRefs.reposted, index, filter);
+				case 'quote':
+					return !articleWithRefs.article.markedAsRead && keepArticleGeneric(articleWithRefs.quoted, index, filter);
 			}
-			throw new Error('Invalid article type');
 		case 'notHidden':
 			switch (articleWithRefs.type) {
 				case 'normal':
 					return !articleWithRefs.article.hidden;
 				case 'repost':
 					return !articleWithRefs.article.hidden && keepArticleGeneric(articleWithRefs.reposted, index, filter);
+				case 'reposts':
+					return articleWithRefs.reposts.every(a => !a.hidden) && keepArticleGeneric(articleWithRefs.reposted, index, filter);
+				case 'quote':
+					return !articleWithRefs.article.hidden && keepArticleGeneric(articleWithRefs.quoted, index, filter);
 			}
-			throw new Error('Invalid article type');
 		case 'liked':
 			return getActualArticle(articleWithRefs).getLiked();
 		case 'reposted':

@@ -1,5 +1,5 @@
 <script lang='ts'>
-	//TODO Fix opening BatchActions? (Cannot read properties of undefined (reading 'articles'))
+	//TODO Fix/Test BatchActions
 	import FiltersOptions from "../filters/FiltersOptions.svelte"
 	import {type FilterInstance, useFilters} from '../filters'
 	import {getWritable} from '../services/service'
@@ -14,12 +14,11 @@
 	export let timelines: TimelineCollection
 	export let filterInstances: FilterInstance[]
 
-	//TODO Use timeline ids instead of indices?
-	let timelineIndex: number = 0
+	let timelineId: string = Object.keys(timelines)[0]
 	let action = STANDARD_ACTIONS.markAsRead.key
 	let onlyListedArticles = true
 
-	let articleIdPairs: Writable<ArticleIdPair[]> = timelines[timelineIndex].articles
+	let articleIdPairs: Writable<ArticleIdPair[]> = timelines[timelineId].articles
 
 	let articles: Readable<Article[]>
 	$: articles = derived($articleIdPairs.map(getWritable), a => a)
@@ -32,7 +31,7 @@
 		articlesWithRefs,
 		articlesWithRefs => useFilters(articlesWithRefs, [
 			...filterInstances,
-			...(onlyListedArticles ? timelines[timelineIndex].filters : [])
+			...(onlyListedArticles ? timelines[timelineId].filters : [])
 		])
 	)
 
@@ -45,9 +44,9 @@
 
 <label class='field'>
 	Timeline
-	<select bind:value={timelineIndex}>
-		{#each Object.values(timelines) as t, index}
-			<option value={index}>{t.title}</option>
+	<select bind:value={timelineId}>
+		{#each Object.entries(timelines) as [id, t] (id)}
+			<option value={id}>{t.title}</option>
 		{/each}
 	</select>
 </label>

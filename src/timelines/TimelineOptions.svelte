@@ -13,6 +13,7 @@
 	import {endpoints, everyRefreshType} from '../services/endpoints';
 	import {get} from 'svelte/store';
 	import {getServices} from '../services/service';
+	import EndpointOptions from './EndpointOptions.svelte';
 
 	export let timelineId: string | null;
 	export let data: TimelineData;
@@ -45,21 +46,6 @@
 
 		updateFullscreenStorage(fullscreen);
 	}
-
-	let newEndpointServices = Object.values(getServices()).filter(s => Object.values(s.endpointConstructors).length > 0);
-	let newEndpointService: string = newEndpointServices[0]?.name;
-	let newEndpoint: string = newEndpointServices[0]?.endpointConstructors[0]?.name;
-
-	function addEndpoint() {
-		data.endpoints.push({
-			endpoint: getServices()[newEndpointService].endpointConstructors[newEndpoint].constructor({}),
-			refreshTypes: everyRefreshType,
-			filters: [],
-		});
-
-		if (timelineId !== null)
-			updateTimelinesStorageEndpoints(timelineId, data.endpoints);
-	}
 </script>
 
 <style>
@@ -82,6 +68,11 @@
 
 	:global(#timelineContainer .timelineOptions::-webkit-scrollbar-thumb) {
 		background-color: var(--dark);
+	}
+
+	/*TODO Maybe move this to partialGlobal.css*/
+	section > h1 {
+		margin-top: 0;
 	}
 </style>
 
@@ -205,7 +196,6 @@
 			AutoScroll Speed
 			<input class='input' type='number' bind:value={data.scrollSpeed} min={0}/>
 		</label>
-		<!--		TODO Update on confirm-->
 		<label class='field'>
 			Section
 			<label>
@@ -293,33 +283,11 @@
 		</label>
 	</section>
 	<section>
-		<!-- TODO Move endpoint section to external component -->
-		<div class='field'>
-			Endpoints
-			<ul>
-				{#each data.endpoints.map(te => te.endpoint || get(endpoints[te.name])) as endpoint (endpoint)}
-					<li>
-						{endpoint.name}
-						{#if endpoint.menuComponent}
-							<svelte:component this={endpoint.menuComponent} {endpoint} timeline={data}/>
-						{/if}
-					</li>
-				{/each}
-			</ul>
-			{#if newEndpointServices.length > 0}
-				<select bind:value={newEndpointService}>
-					{#each newEndpointServices as service}
-						<option value={service.name}>{service.name}</option>
-					{/each}
-				</select>
-				<select bind:value={newEndpoint}>
-					{#each Object.values(getServices()[newEndpointService].endpointConstructors) as endpoint}
-						<option value={endpoint.name}>{endpoint.name}</option>
-					{/each}
-				</select>
-				<button on:click={addEndpoint}>New Endpoint</button>
-			{/if}
-		</div>
+		<h1>Endpoints</h1>
+		<EndpointOptions
+				{timelineId}
+				bind:data
+		/>
 	</section>
 	<section>
 		<FiltersOptions {timelineId} bind:instances={data.filters}/>

@@ -4,7 +4,7 @@ import {PixivService} from '../service';
 import PixivArticle from '../article';
 import type {PixivUser} from '../article';
 import {getHiddenStorage, getMarkedAsReadStorage} from '../../../storages/serviceCache';
-import {getServices, getWritable, registerEndpointConstructor} from '../../service';
+import {getWritable, registerEndpointConstructor} from '../../service';
 import {getEachPageURL, getUserUrl, parseThumbnail, type BookmarkData} from './index';
 import {MediaLoadType, MediaType} from '../../../articles/media';
 

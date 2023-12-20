@@ -6,6 +6,7 @@ import {TwitterService} from '../../service';
 import type {TwitterUser} from '../../article';
 
 export default class UserTweetsAPI extends APIEndpoint<UserTweetsResponse> {
+	static service = TwitterService.name;
 	readonly name: string;
 	readonly endpointPath: string;
 	readonly params;

@@ -5,7 +5,7 @@ import type * as Misskey from 'misskey-js';
 import {fromAPI} from '../article';
 import {getHiddenStorage, getMarkedAsReadStorage} from '../../../storages/serviceCache';
 import {MisskeyService} from '../service';
-import {getServices, registerEndpointConstructor} from '../../service';
+import {registerEndpointConstructor} from '../../service';
 
 export class TimelineEndpoint extends Endpoint {
 	readonly name = 'Timeline Endpoint';

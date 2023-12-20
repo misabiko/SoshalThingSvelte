@@ -2,8 +2,10 @@ import { type Instruction } from 'services/twitter/pageAPI';
 import APIEndpoint from './APIEndpoint';
 import type { EndpointConstructorInfo } from 'services/endpoints';
 import {registerEndpointConstructor} from '../../../service';
+import {TwitterService} from '../../service';
 
 export default class TimelineAPI extends APIEndpoint<HomeTimelineResponse> {
+	static service = TwitterService.name;
 	readonly name: string;
 	readonly endpointPath: string;
 	readonly params;

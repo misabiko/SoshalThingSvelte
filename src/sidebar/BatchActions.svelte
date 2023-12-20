@@ -53,7 +53,7 @@
 </label>
 
 <div class='block'>
-	<FiltersOptions bind:instances={filterInstances}/>
+	<FiltersOptions timelineId={null} bind:instances={filterInstances}/>
 </div>
 
 <label class='field'>

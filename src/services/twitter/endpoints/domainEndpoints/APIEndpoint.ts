@@ -4,7 +4,6 @@ import { parseResponse, type Instruction, type ResponseError, type AddEntriesIns
 import { TwitterService } from 'services/twitter/service';
 
 export default abstract class APIEndpoint<Response extends APIResponse> extends Endpoint {
-	static service = TwitterService.name;
 	abstract readonly name: string;
 	abstract readonly endpointPath: string;
 

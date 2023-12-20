@@ -4,8 +4,14 @@
 	import {filterTypes, getFilterName} from "./index.js"
 	import {defaultFilter} from './index'
 	import {getServices, type FilterTypeInfo} from '../services/service'
+	import {updateTimelinesStorageValue} from '../storages';
 
-	export let instances: FilterInstance[]
+	export let timelineId: string | null;
+	export let instances: FilterInstance[];
+	$: {
+		if (timelineId !== null)
+			updateTimelinesStorageValue(timelineId, 'filters', instances);
+	}
 
 	//[ServiceName, FilterName, FilterTypeInfo][]
 	const serviceFilterTypes: {

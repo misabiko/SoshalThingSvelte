@@ -2,8 +2,10 @@ import type { EndpointConstructorInfo } from 'services/endpoints';
 import UserTweetsEndpointMenu from './UserTweetsEndpointMenu.svelte';
 import { parseResponse, type Instruction } from '../../pageAPI';
 import WebSocketPageEndpoint from './WebSocketPageEndpoint';
+import {TwitterService} from '../../service';
 
 export default class TwitterUserTweetsAPIEndpoint extends WebSocketPageEndpoint {
+	static service = TwitterService.name;
 	readonly name: string;
 	menuComponent = UserTweetsEndpointMenu;
 	readonly params;

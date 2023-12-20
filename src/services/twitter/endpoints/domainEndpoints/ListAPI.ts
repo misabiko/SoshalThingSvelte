@@ -2,8 +2,10 @@ import type { Instruction } from 'services/twitter/pageAPI';
 import APIEndpoint, { type APIParams } from './APIEndpoint';
 import type { EndpointConstructorInfo } from 'services/endpoints';
 import {registerEndpointConstructor} from '../../../service';
+import {TwitterService} from '../../service';
 
 export default class ListAPI extends APIEndpoint<ListLatestTweetsTimelineResponse> {
+	static service = TwitterService.name;
 	readonly name: string;
 	readonly endpointPath: string;
 	readonly params;

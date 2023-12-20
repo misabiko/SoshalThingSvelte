@@ -116,11 +116,11 @@
 	<!-- TODO Find way to get specific parent soshalthing -->
 		<Modal bind:active={modalTimelineActive} mountElement={document.getElementsByClassName('soshalthing')[0]}>
 			<Timeline
+				timelineId={null}
 				data={modalTimeline}
 				{setModalTimeline}
 				removeTimeline={() => modalTimeline = null}
 				modal={true}
-				updateTimelinesStorage={() => updateTimelinesStorage(timelines)}
 			/>
 		</Modal>
 	{/if}
@@ -128,6 +128,7 @@
 		{#key `${timelineView.timelineIds[timelineView.fullscreen.index]}/${timelineView.fullscreen.index}`}
 			{#if isInjected}
 				<Timeline
+					timelineId={timelineView.timelineIds[timelineView.fullscreen.index]}}
 					favviewerButtons={true}
 					bind:favviewerHidden
 					bind:favviewerMaximized
@@ -137,16 +138,15 @@
 					bind:fullscreen={timelineView.fullscreen}
 					removeTimeline={() => removeTimeline(timelineView.timelineIds[timelineView.fullscreen.index])}
 					toggleFullscreen={() => {timelineView.fullscreen.index = null; updateMainStorage('fullscreen', timelineView.fullscreen)}}
-					updateTimelinesStorage={() => updateTimelinesStorage(timelines)}
 				/>
 			{:else}
 				<Timeline
+					timelineId={timelineView.timelineIds[timelineView.fullscreen.index]}}
 					data={timelines[timelineView.timelineIds[timelineView.fullscreen.index]]}
 					{setModalTimeline}
 					bind:fullscreen={timelineView.fullscreen}
 					removeTimeline={() => removeTimeline(timelineView.timelineIds[timelineView.fullscreen.index])}
 					toggleFullscreen={() => {timelineView.fullscreen.index = null; updateMainStorage('fullscreen', timelineView.fullscreen)}}
-					updateTimelinesStorage={() => updateTimelinesStorage(timelines)}
 				/>
 			{/if}
 		{/key}
@@ -154,6 +154,7 @@
 		{#each timelineView.timelineIds as id, i (`${id}/${i}`)}
 			{#if isInjected && i === 0}
 				<Timeline
+					timelineId={id}
 					favviewerButtons={true}
 					bind:favviewerHidden
 					bind:favviewerMaximized
@@ -162,15 +163,14 @@
 					{setModalTimeline}
 					removeTimeline={() => removeTimeline(id)}
 					toggleFullscreen={() => {timelineView.fullscreen.index = i; updateMainStorage('fullscreen', timelineView.fullscreen)}}
-					updateTimelinesStorage={() => updateTimelinesStorage(timelines)}
 				/>
 			{:else}
 				<Timeline
+					timelineId={id}
 					data={timelines[id]}
 					{setModalTimeline}
 					removeTimeline={() => removeTimeline(id)}
 					toggleFullscreen={() => {timelineView.fullscreen.index = i; updateMainStorage('fullscreen', timelineView.fullscreen)}}
-					updateTimelinesStorage={() => updateTimelinesStorage(timelines)}
 				/>
 			{/if}
 		{/each}

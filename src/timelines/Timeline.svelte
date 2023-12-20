@@ -17,6 +17,7 @@
 	import {endpoints, refreshEndpoint, refreshEndpointName, RefreshType} from '../services/endpoints'
 	import {loadingStore} from '../bufferedMediaLoading'
 
+	export let timelineId: string | null;
 	export let data: TimelineData
 	//Would like to make this immutable https://github.com/sveltejs/svelte/issues/5572
 	export let fullscreen: FullscreenInfo | null = null
@@ -24,7 +25,6 @@
 	export let removeTimeline: () => void
 	export let setModalTimeline: (data: TimelineData, width?: number) => void
 	export let modal = false;
-	export let updateTimelinesStorage: () => void;
 
 	export let favviewerButtons = false
 	export let favviewerHidden = false
@@ -345,13 +345,13 @@
 	/>
 	{#if showOptions}
 		<TimelineOptions
+			{timelineId}
 			bind:data
 			bind:fullscreen
 			{sortOnce}
 			{removeTimeline}
 			{articleCountLabel}
 			{removeFiltered}
-			{updateTimelinesStorage}
 		/>
 	{/if}
 	{#if $filteredArticles.length}

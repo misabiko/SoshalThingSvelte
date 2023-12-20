@@ -133,28 +133,11 @@ export function updateTimelinesStorage(timelines: TimelineCollection) {
 		title: t.title,
 		container: t.container.name,
 		articleView: t.articleView.name,
-		endpoints: t.endpoints
-			.map(e => ({
-				endpoint: e.endpoint ?? get(endpoints[e.name]),
-				filters: e.filters,
-				refreshTypes: e.refreshTypes,
-			}))
-			.map(({endpoint, filters, refreshTypes}) => ({
-				service: (endpoint.constructor as typeof Endpoint).service,
-				endpointType: (endpoint.constructor as typeof Endpoint).constructorInfo.name,
-				params: endpoint.params ?? undefined,
-				filters,
-				autoRefresh: endpoint.autoRefreshId !== null,
-				onStart: refreshTypes.has(RefreshType.RefreshStart),
-				onRefresh: refreshTypes.has(RefreshType.Refresh),
-				loadTop: refreshTypes.has(RefreshType.LoadTop),
-				loadBottom: refreshTypes.has(RefreshType.LoadBottom),
-			})),
+		endpoints: endpointsToStorage(t.endpoints),
 		columnCount: t.columnCount,
 		width: t.width,
 		filters: t.filters,
-		//TODO Support custom sort methods
-		// sortInfo: t.sortInfo,
+		sortInfo: sortInfoToStorage(t.sortInfo),
 		compact: t.compact,
 		animatedAsGifs: t.animatedAsGifs,
 		hideText: t.hideText,
@@ -162,6 +145,23 @@ export function updateTimelinesStorage(timelines: TimelineCollection) {
 	} satisfies Partial<TimelineStorage>]));
 
 	localStorage.setItem(TIMELINE_STORAGE_KEY, JSON.stringify(storage));
+}
+
+export function updateTimelinesStorageValue<K extends keyof TimelineStorage>(timelineId: string, key: K, value: TimelineStorage[K]) {
+	const storageStr = localStorage.getItem(TIMELINE_STORAGE_KEY);
+	const storage = storageStr ? JSON.parse(storageStr) : {};
+	storage[timelineId] ??= {};
+	storage[timelineId][key] = value;
+
+	localStorage.setItem(TIMELINE_STORAGE_KEY, JSON.stringify(storage));
+}
+
+export function updateTimelinesStorageEndpoints(timelineId: string, endpoints: TimelineEndpoint[]) {
+	updateTimelinesStorageValue(timelineId, 'endpoints', endpointsToStorage(endpoints));
+}
+
+export function updateTimelinesStorageSortInfo(timelineId: string, sortInfo: SortInfo) {
+	updateTimelinesStorageValue(timelineId, 'sortInfo', sortInfoToStorage(sortInfo));
 }
 
 //maybe would fit better in a utils file
@@ -256,28 +256,89 @@ function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | unde
 	};
 }
 
-function parseSortInfo({method, reversed}: TimelineStorage['sortInfo']): SortInfo {
-	let sortMethod: SortMethod | null = null;
-	switch (method?.toLowerCase()) {
-		case 'id':
-			sortMethod = SortMethod.Id;
-			break;
-		case 'date':
-			sortMethod = SortMethod.Date;
-			break;
-		case 'likes':
-			sortMethod = SortMethod.Likes;
-			break;
-		case 'reposts':
-			sortMethod = SortMethod.Reposts;
-			break;
+function endpointsToStorage(timelineEndpoints: TimelineEndpoint[]): EndpointStorage[] {
+	return timelineEndpoints
+		.map(e => ({
+			endpoint: e.endpoint ?? get(endpoints[e.name]),
+			filters: e.filters,
+			refreshTypes: e.refreshTypes,
+		}))
+		.map(({endpoint, filters, refreshTypes}) => ({
+			service: (endpoint.constructor as typeof Endpoint).service,
+			endpointType: (endpoint.constructor as typeof Endpoint).constructorInfo.name,
+			params: endpoint.params ?? undefined,
+			filters,
+			autoRefresh: endpoint.autoRefreshId !== null,
+			onStart: refreshTypes.has(RefreshType.RefreshStart),
+			onRefresh: refreshTypes.has(RefreshType.Refresh),
+			loadTop: refreshTypes.has(RefreshType.LoadTop),
+			loadBottom: refreshTypes.has(RefreshType.LoadBottom),
+		}))
+}
+
+function parseSortInfo(storage: TimelineStorage['sortInfo']): SortInfo {
+	const reversed = storage.reversed || false;
+
+	if (storage.customMethod) {
+		return {
+			method: SortMethod.Custom,
+			customMethod: storage.customMethod,
+			reversed
+		};
+	}else {
+		let method: SortMethod | null = null;
+		switch (storage.method?.toLowerCase()) {
+			case 'id':
+				method = SortMethod.Id;
+				break;
+			case 'date':
+				method = SortMethod.Date;
+				break;
+			case 'likes':
+				method = SortMethod.Likes;
+				break;
+			case 'reposts':
+				method = SortMethod.Reposts;
+				break;
+		}
+
+		return {
+			method,
+			customMethod: null,
+			reversed,
+		};
 	}
-	return {
-		method: sortMethod,
-		//TODO Support custom sort methods
-		customMethod: null,
-		reversed: reversed || false
-	};
+}
+
+function sortInfoToStorage(sortInfo: SortInfo): TimelineStorage['sortInfo'] {
+	if (sortInfo.customMethod) {
+		return {
+			customMethod: sortInfo.customMethod,
+			reversed: sortInfo.reversed
+		};
+	}else {
+		let method: string | null = null;
+		switch (sortInfo.method) {
+			case SortMethod.Id:
+				method = 'Id';
+				break;
+			case SortMethod.Date:
+				method = 'Date';
+				break;
+			case SortMethod.Likes:
+				method = 'Likes';
+				break;
+			case SortMethod.Reposts:
+				method = 'Reposts';
+				break;
+		}
+
+		return {
+			method,
+			reversed: sortInfo.reversed,
+		};
+	}
+
 }
 
 function parseFilters(filters: FilterInstance[] | undefined) {
@@ -353,7 +414,15 @@ type TimelineStorage = {
 	width: number
 	filters: FilterInstance[],
 	sortInfo: {
-		method?: string | null
+		method: string | null
+		customMethod?: never
+		reversed: boolean
+	} | {
+		method?: never
+		customMethod: {
+			service: string
+			method: string
+		},
 		reversed: boolean
 	},
 	compact: boolean

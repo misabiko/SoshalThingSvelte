@@ -3,8 +3,14 @@
 	import Dropdown from "../Dropdown.svelte"
 	import {directionLabel, genericSortMethods} from "./index.js"
 	import {getServices, type SortMethodInfo} from '../services/service'
+	import {updateTimelinesStorageSortInfo, updateTimelinesStorageValue} from '../storages';
 
-	export let sortInfo: SortInfo
+	export let timelineId: string | null;
+	export let sortInfo: SortInfo;
+	$: {
+		if (timelineId !== null)
+			updateTimelinesStorageSortInfo(timelineId, sortInfo);
+	}
 	export let sortOnce: (method: SortMethod, reversed: boolean) => void
 
 	//[ServiceName, MethodName, MethodInfo][]

@@ -5,7 +5,7 @@ import {getServices} from '../services/service';
 
 export type SortInfo = {
 	method: SortMethod | null
-	customMethod: null
+	customMethod: null	//TODO customMethod: never ?
 	reversed: boolean
 } | {
 	method: SortMethod.Custom

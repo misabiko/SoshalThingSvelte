@@ -76,7 +76,11 @@
 	}
 
 	async function initialRefresh(...refreshingTimelines: TimelineData[]) {
-		const services = new Set<string>(refreshingTimelines.flatMap(t => t.endpoints.map(e => (e.endpoint ?? get(endpoints[e.name]).constructor.service))));
+		const services = new Set<string>(
+			refreshingTimelines
+				.flatMap(t => t.endpoints.map(e => (e.endpoint ?? get(endpoints[e.name]))))
+				.map(e => (e.constructor as typeof Endpoint).service)
+		);
 		for (const serviceName of services) {
 			const service = getServices()[serviceName];
 			if (service.tabInfo !== null && get(service.tabInfo.tabId) === null)

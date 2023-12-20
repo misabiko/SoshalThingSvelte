@@ -7,7 +7,7 @@ import PixivArticle from '../article';
 import {getCurrentPage, getEachPageURL, getUserUrl, parseThumbnail, type BookmarkData} from './index';
 import {MediaLoadType, MediaType} from '../../../articles/media';
 import {avatarHighRes} from './bookmarks';
-import {getServices, registerEndpointConstructor} from '../../service';
+import {registerEndpointConstructor} from '../../service';
 
 export class FollowPageEndpoint extends PageEndpoint {
 	readonly name = 'Follow Endpoint';

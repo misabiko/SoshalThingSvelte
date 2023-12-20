@@ -4,7 +4,7 @@ import {getHiddenStorage, getMarkedAsReadStorage} from '../../storages/serviceCa
 import {Endpoint, RefreshType} from '../endpoints';
 import type {EndpointConstructorInfo} from '../endpoints';
 import type {ArticleWithRefs} from '../../articles';
-import {getServices, registerEndpointConstructor} from '../service';
+import {registerEndpointConstructor} from '../service';
 
 export class DummyEndpoint extends Endpoint {
 	readonly name = 'DummyEndpoint';

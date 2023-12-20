@@ -32,7 +32,14 @@
 				container: null,
 			}
 		}
+	};
+	for (const [viewName, view] of Object.entries(timelineViews)) {
+		if (view.fullscreen.index !== null && !Object.hasOwn(view.timelineIds, view.fullscreen.index)) {
+			console.warn(`TimelineView ${viewName} has invalid fullscreen.index ${view.fullscreen.index}`);
+			view.fullscreen.index = null;
 	}
+	}
+
 	export let timelineViewId: string = defaultTimelineView
 	export let isInjected = true
 	export let favviewerHidden = false

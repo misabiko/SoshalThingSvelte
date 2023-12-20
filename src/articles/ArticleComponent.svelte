@@ -3,10 +3,12 @@
 	import {toggleMarkAsRead} from "../services/service"
 	import Article, {getActualArticle} from '../articles'
 	import type {ArticleProps, TimelineArticleProps} from './index'
-	import type {SvelteComponent} from 'svelte'
+	import {afterUpdate, type SvelteComponent} from 'svelte';
 	import {getContext} from 'svelte'
 	import {getRootArticle} from './index'
 	import Modal from '../Modal.svelte'
+	import {MediaLoadType} from '../articles/media';
+	import {LoadingState, loadingStore} from '../bufferedMediaLoading';
 
 	export let articleProps: ArticleProps
 	export let timelineProps: TimelineArticleProps
@@ -23,6 +25,40 @@
 		rootArticle = getRootArticle(articleProps)
 		actualArticle = getActualArticle(articleProps)
 	}
+
+	let divRef: HTMLDivElement | null = null;
+	let mediaRefs: HTMLImageElement[] = [];
+	let loadingStates: LoadingState[] = []
+	$: {
+		loadingStates = []
+		for (let mediaIndex = 0; mediaIndex < actualArticle.medias.length; ++mediaIndex)
+			loadingStates.push(loadingStore.getLoadingState(actualArticle.idPair, mediaIndex, timelineProps.shouldLoadMedia))
+	}
+
+	afterUpdate(() => {
+		//TODO Use mediaRefs?
+		const articleMediaEls = divRef?.querySelectorAll('.articleMedia')
+		if (articleMediaEls) {
+			const modifiedMedias: [number, number][] = []
+			for (let i = 0; i < actualArticle.medias.length; ++i)
+				if (actualArticle.medias[i].ratio === null)
+					modifiedMedias.push([i, articleMediaEls[i].clientHeight / articleMediaEls[i].clientWidth])
+
+			getWritable(actualArticle.idPair).update(a => {
+				for (const [i, ratio] of modifiedMedias)
+					a.medias[i].ratio = ratio
+				return a
+			})
+		}
+
+		const count = actualArticle.medias.length
+		for (let i = 0; i < count; ++i) {
+			if (actualArticle.medias[i].queueLoadInfo === MediaLoadType.LazyLoad && !actualArticle.medias[i].loaded) {
+				if (mediaRefs[i]?.complete)
+					loadingStore.mediaLoaded(actualArticle.idPair, i)
+			}
+		}
+	})
 
 	function onLogData() {
 		console.dir(articleProps)
@@ -85,6 +121,9 @@
 				{onLogData}
 				{onLogJSON}
 				{onMediaClick}
+				bind:divRef
+				bind:mediaRefs
+				bind:loadingStates
 			/>
 		</article>
 	</Modal>
@@ -102,5 +141,8 @@
 		{onLogData}
 		{onLogJSON}
 		{onMediaClick}
+		bind:divRef
+		bind:mediaRefs
+		bind:loadingStates
 	/>
 </article>

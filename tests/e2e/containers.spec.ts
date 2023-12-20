@@ -4,7 +4,7 @@ import {loadWithLocalStorage, TIMELINE_STORAGE_KEY} from '../storagesUtils';
 test.describe('masonry', () => {
 	test('independant columns', async ({page}) => {
 		await loadWithLocalStorage(page, {
-			[TIMELINE_STORAGE_KEY]: [{
+			[TIMELINE_STORAGE_KEY]: {t1: {
 				endpoints: [
 					{
 						service: 'Dummy',
@@ -14,7 +14,7 @@ test.describe('masonry', () => {
 				container: 'Masonry',
 				columnCount: 3,
 				width: 2,
-			}]
+			}}
 		});
 
 		const column = page.locator('.masonryColumn');

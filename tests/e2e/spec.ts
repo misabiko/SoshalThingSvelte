@@ -5,7 +5,7 @@ test.describe('fullscreen timeline', () => {
 	test.describe('via search param', () => {
 		test('empty param', async ({page}) => {
 			await loadWithLocalStorage(page, {
-				[TIMELINE_STORAGE_KEY]: [{}, {}, {}]
+				[TIMELINE_STORAGE_KEY]: {t1: {}, t2: {}, t3: {}}
 			});
 			await page.goto('/?fullscreen_timeline');
 
@@ -16,7 +16,7 @@ test.describe('fullscreen timeline', () => {
 
 		test('true', async ({page}) => {
 			await loadWithLocalStorage(page, {
-				[TIMELINE_STORAGE_KEY]: [{}, {}, {}]
+				[TIMELINE_STORAGE_KEY]: {t1: {}, t2: {}, t3: {}}
 			});
 			await page.goto('/?fullscreen_timeline=true');
 
@@ -27,7 +27,7 @@ test.describe('fullscreen timeline', () => {
 
 		test('num', async ({page}) => {
 			await loadWithLocalStorage(page, {
-				[TIMELINE_STORAGE_KEY]: [{}, {}, {}]
+				[TIMELINE_STORAGE_KEY]: {t1: {}, t2: {}, t3: {}}
 			});
 			await page.goto('/?fullscreen_timeline=1');
 
@@ -39,11 +39,11 @@ test.describe('fullscreen timeline', () => {
 
 	test('setting timeline fullscreen retains order', async ({page}) => {
 		await loadWithLocalStorage(page, {
-			[TIMELINE_STORAGE_KEY]: [
-				{title: 'Timeline1'},
-				{title: 'Timeline2'},
-				{title: 'Timeline3'},
-			]
+			[TIMELINE_STORAGE_KEY]: {
+				Timeline1: {title: 'Timeline1'},
+				Timeline2: {title: 'Timeline2'},
+				Timeline3: {title: 'Timeline3'},
+			}
 		});
 
 		await page.click('.timeline:nth-child(2) .timelineHeader button[title = "Make timeline fullscreen"]');
@@ -57,11 +57,11 @@ test.describe('fullscreen timeline', () => {
 
 	test('removing main timeline retains order', async ({page}) => {
 		await loadWithLocalStorage(page, {
-			[TIMELINE_STORAGE_KEY]: [
-				{title: 'Timeline1'},
-				{title: 'Timeline2'},
-				{title: 'Timeline3'},
-			]
+			[TIMELINE_STORAGE_KEY]: {
+				Timeline1: {title: 'Timeline1'},
+				Timeline2: {title: 'Timeline2'},
+				Timeline3: {title: 'Timeline3'},
+			}
 		});
 
 		await page.click('.timeline:nth-child(2) .timelineHeader button[title = "Make timeline fullscreen"]');
@@ -105,14 +105,14 @@ test.describe('timeline views', () => {
 test.describe('autoscroll', () => {
 	test.beforeEach(async ({page}) => {
 		await loadWithLocalStorage(page, {
-			[TIMELINE_STORAGE_KEY]: [{
+			[TIMELINE_STORAGE_KEY]: {t1: {
 				endpoints: [
 					{
 						service: 'Dummy',
 						endpointType: 'DummyEndpoint',
 					}
 				]
-			}]
+			}}
 		});
 
 		const container = page.locator('.articlesContainer').first();

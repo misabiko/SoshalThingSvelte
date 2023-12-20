@@ -95,7 +95,7 @@ export abstract class LoadablePageEndpoint extends PageEndpoint {
 				break;
 		}
 
-		if (this.currentPage === this.hostPage)
+		if (this.currentPage === this.hostPage && getServices()[(this.constructor as typeof Endpoint).service].isOnDomain)
 			return this.hostPageRefresh(refreshType);
 		else
 			return this.parsePage(await this.loadPage());

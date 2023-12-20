@@ -136,7 +136,7 @@
 					data={timelines[timelineView.timelineIds[timelineView.fullscreen.index]]}
 					{setModalTimeline}
 					bind:fullscreen={timelineView.fullscreen}
-					removeTimeline={() => removeTimeline(timelineView.timelineIds[timelineView.fullscreen.index])}
+					removeTimeline={() => timelineView.fullscreen.index !== null && removeTimeline(timelineView.timelineIds[timelineView.fullscreen.index])}
 					toggleFullscreen={() => {
 						timelineView.fullscreen.index = null;
 						updateFullscreenStorage(timelineView.fullscreen);
@@ -148,7 +148,7 @@
 					data={timelines[timelineView.timelineIds[timelineView.fullscreen.index]]}
 					{setModalTimeline}
 					bind:fullscreen={timelineView.fullscreen}
-					removeTimeline={() => removeTimeline(timelineView.timelineIds[timelineView.fullscreen.index])}
+					removeTimeline={() => timelineView.fullscreen.index !== null && removeTimeline(timelineView.timelineIds[timelineView.fullscreen.index])}
 					toggleFullscreen={() => {
 						timelineView.fullscreen.index = null;
 						updateFullscreenStorage(timelineView.fullscreen);

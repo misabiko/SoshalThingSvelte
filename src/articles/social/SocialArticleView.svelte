@@ -7,6 +7,7 @@
 	import SocialNav from "./SocialNav.svelte";
 	import Timestamp from "./Timestamp.svelte";
 	import {newUserTimeline} from '../../timelines'
+	import {LoadingState} from '../../bufferedMediaLoading';
 
 	export let timelineProps: TimelineArticleProps
 	export let articleProps: ArticleProps
@@ -17,6 +18,10 @@
 	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number
 	export let onLogData: () => void
 	export let onLogJSON: () => void
+
+	export let divRef: HTMLDivElement | null;
+	export let mediaRefs: HTMLImageElement[];
+	export let loadingStates: LoadingState[];
 
 	let minimized = false
 	const isArticleRepost = articleProps.type === 'reposts'
@@ -264,6 +269,9 @@
 			article={actualArticle}
 			{timelineProps}
 			onMediaClick={index => onMediaClick(actualArticle.idPair, index)}
+			bind:divRef
+			bind:mediaRefs
+			bind:loadingStates
 		/>
 	{/if}
 </div>

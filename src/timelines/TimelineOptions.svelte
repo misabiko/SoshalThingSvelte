@@ -94,7 +94,7 @@
 			{`${fullscreen?.container !== null ? 'Timeline ' : ''}Container`}
 			<select
 					bind:value={data.container}
-					on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'container', data.container.name)}
+					on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'container', data.container.name.replace('Proxy<', '').replace('>', ''))}
 			>
 				<option value={ColumnContainer}>Column</option>
 				<option value={RowContainer}>Row</option>
@@ -104,12 +104,16 @@
 		{#if fullscreen !== null}
 			<label class='field'>
 				<input type='checkbox' checked={!!fullscreen.container}
-					   on:input={e => setFullscreenContainer(e.target.checked)}/>
+					   on:change={e => setFullscreenContainer(e.target.checked)}/>
 				Fullscreen Container
 				{#if fullscreen.container}
 					<select
 							bind:value={fullscreen.container}
-							on:input={() => updateFullscreenStorage(fullscreen)}
+						on:change={() => {
+							if (fullscreen === null)
+								throw new Error('FullscreenInfo is null');
+							updateFullscreenStorage(fullscreen);
+						}}
 					>
 						<option value={ColumnContainer}>Column</option>
 						<option value={RowContainer}>Row</option>
@@ -150,7 +154,7 @@
 			{#if fullscreen !== null}
 				<label class='field'>
 					<input type='checkbox' checked={fullscreen.columnCount !== null}
-						   on:input={e => setFullscreenColumnCount(e.target.checked)}/>
+						   on:change={e => setFullscreenColumnCount(e.target.checked)}/>
 					Fullscreen Column Count
 					{#if fullscreen.columnCount !== null}
 						<input
@@ -214,7 +218,7 @@
 			Article View
 			<select
 					bind:value={data.articleView}
-					on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'articleView', data.articleView.name)}
+					on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'articleView', data.articleView.name.replace('Proxy<', '').replace('>', ''))}
 			>
 				<option value={SocialArticleView}>Social</option>
 				<option value={GalleryArticleView}>Gallery</option>

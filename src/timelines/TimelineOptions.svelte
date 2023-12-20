@@ -69,11 +69,6 @@
 	:global(#timelineContainer .timelineOptions::-webkit-scrollbar-thumb) {
 		background-color: var(--dark);
 	}
-
-	/*TODO Maybe move this to partialGlobal.css*/
-	section > h1 {
-		margin-top: 0;
-	}
 </style>
 
 <div class='timelineOptions'>

@@ -1,4 +1,10 @@
-import type {FullscreenInfo, TimelineCollection, TimelineEndpoint, TimelineView} from '../timelines';
+import {
+	defaultTimelineView,
+	type FullscreenInfo,
+	type TimelineCollection,
+	type TimelineEndpoint,
+	type TimelineView,
+} from '../timelines';
 import type {SvelteComponent} from 'svelte';
 import ColumnContainer from '../containers/ColumnContainer.svelte';
 import RowContainer from '../containers/RowContainer.svelte';
@@ -42,7 +48,7 @@ export function loadMainStorage() {
 			if (Object.hasOwn(mainStorage.timelineViews, view))
 				(mainStorage as MainStorageParsed).timelineViews[view].fullscreen = parseFullscreenInfo(mainStorage.timelineViews[view].fullscreen);
 
-	(mainStorage as MainStorageParsed).defaultTimelineView = mainStorage.defaultTimelineView ?? null;
+	(mainStorage as MainStorageParsed).currentTimelineView = mainStorage.currentTimelineView ?? null;
 
 	if (!mainStorage.useWebSocket)
 		mainStorage.useWebSocket = false;
@@ -50,7 +56,7 @@ export function loadMainStorage() {
 	return mainStorage as MainStorageParsed;
 }
 
-//TODO Type storage per storage
+//TODO Type storage per service
 export function getServiceStorage(service: string): { [key: string]: any } {
 	const storageKey = `${MAIN_STORAGE_KEY} ${service}`;
 	const item = localStorage.getItem(storageKey);
@@ -70,6 +76,16 @@ export function updateMainStorage(key: string, value: any) {
 	const item = localStorage.getItem(MAIN_STORAGE_KEY);
 	const storage = item ? JSON.parse(item) : {};
 	storage[key] = value;
+
+	localStorage.setItem(MAIN_STORAGE_KEY, JSON.stringify(storage));
+}
+
+export function updateMainStorageTimelineViews(views: Record<string, TimelineView>) {
+	const item = localStorage.getItem(MAIN_STORAGE_KEY);
+	const storage = item ? JSON.parse(item) : {};
+
+	views['default'] = views[defaultTimelineView];
+	storage['timelineViews'] = views;
 
 	localStorage.setItem(MAIN_STORAGE_KEY, JSON.stringify(storage));
 }
@@ -391,15 +407,15 @@ function parseFullscreenInfo(fullscreen?: boolean | number | FullscreenInfoStora
 }
 
 type MainStorage = Partial<MainStorageParsed> & {
-	defaultTimelineView?: string
+	currentTimelineView?: string
 	timelineViews: { [name: string]: TimelineViewStorage }
 	fullscreen?: boolean | number | FullscreenInfoStorage
 }
 
 type MainStorageParsed = {
 	timelineIds: TimelineView['timelineIds'] | null
-	defaultTimelineView: string | null
-	timelineViews: { [name: string]: TimelineView }
+	currentTimelineView: string | null
+	timelineViews: Record<string, TimelineView>
 	fullscreen: FullscreenInfo
 	maximized: boolean
 	markAsReadLocal: boolean

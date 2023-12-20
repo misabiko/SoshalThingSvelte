@@ -1,11 +1,11 @@
 <script lang="ts">
-    import type {TimelineView} from "../timelines";
-    import {updateMainStorage} from "../storages";
+	import {defaultTimelineView, type TimelineView} from '../timelines';
+	import {updateMainStorage, updateMainStorageTimelineViews} from '../storages';
     import type {TimelineCollection} from "../timelines";
     import Dropdown from "../Dropdown.svelte";
 
-    export let timelineViews: { [name: string]: TimelineView }
-	export let timelineView: TimelineView
+    export let timelineViews: Record<string, TimelineView>
+	export let timelineViewId: string
     export let timelines: TimelineCollection
 
     let newViewName = '';
@@ -23,19 +23,19 @@
             },
         }
 
-        updateMainStorage('timelineViews', timelineViews);
+        updateMainStorageTimelineViews(timelineViews);
     }
 
     function addTimeline(view: string, timelineId: string) {
 		timelineViews[view].timelineIds.push(timelineId);
 
-        updateMainStorage('timelineViews', timelineViews);
+        updateMainStorageTimelineViews(timelineViews);
     }
 
     function removeTimeline(view: string, index: number) {
         timelineViews[view].timelineIds.splice(index, 1);
 
-        updateMainStorage('timelineViews', timelineViews);
+        updateMainStorageTimelineViews(timelineViews);
 	}
 
     function moveTimeline(view: string, index: number, up: boolean) {
@@ -45,60 +45,75 @@
         else
             timelineViews[view].timelineIds.splice(index + 1, 0, removed[0]);
 
-        updateMainStorage('timelineViews', timelineViews);
+		timelineViews = timelineViews;
+
+        updateMainStorageTimelineViews(timelineViews);
     }
 
     function replaceTimeline(view: string, index: number, newTimeline: string) {
         timelineViews[view].timelineIds.splice(index, 1, newTimeline);
 
-        updateMainStorage('timelineViews', timelineViews);
+        updateMainStorageTimelineViews(timelineViews);
     }
 
     function removeView(view: string) {
         delete timelineViews[view];
 
-        updateMainStorage('timelineViews', timelineViews);
+        updateMainStorageTimelineViews(timelineViews);
 	}
 
 	function setView(view: string) {
-		timelineView = timelineViews[view];
+		timelineViewId = view;
 
 		updateMainStorage('defaultTimelineView', view);
 	}
+
 </script>
 
-{#each Object.entries(timelineViews) as [viewName, timelineView]}
-	{@const newTimelines = Object.keys(timelines).filter(t => !timelineView.timelineIds.includes(t))}
-	<label class='field'>
-		{viewName}
-		<button on:click={() => setView(viewName)}>Set View</button>
-		<button on:click={() => removeView(viewName)}>Remove View</button>
-		{#each timelineView.timelineIds as id, index (id)}
-			<div class='buttons has-addons'>
-				<select value={id} on:input={e => replaceTimeline(viewName, index, e.detail)}>
-					<option value={id}>{id}</option>
-					{#each newTimelines as newTimeline}
-						<option value={newTimeline}>{newTimeline}</option>
+<style>
+	.timelineViewEditMenu {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+</style>
+
+<div class='timelineViewEditMenu'>
+	{#each Object.entries(timelineViews) as [viewName, view]}
+		{@const newTimelines = Object.keys(timelines).filter(t => !view.timelineIds.includes(t))}
+		<div class='timelineViewEdit'>
+			{viewName}
+			<label class='field'>
+				<button on:click={() => setView(viewName)}>Set View</button>
+				<button on:click={() => removeView(viewName)}>Remove View</button>
+			</label>
+			{#each view.timelineIds as id, index (id)}
+				<label>
+					<select value={id} on:input={e => replaceTimeline(viewName, index, e.detail)}>
+						<option value={id}>{id}</option>
+						{#each newTimelines as newTimeline}
+							<option value={newTimeline}>{newTimeline}</option>
+						{/each}
+					</select>
+					{#if view.timelineIds.length > 1}
+						<button on:click={() => moveTimeline(viewName, index, false)} disabled={index === view.timelineIds.length - 1}>↓</button>
+						<button on:click={() => moveTimeline(viewName, index, true)} disabled={index === 0}>↑</button>
+					{/if}
+					<button on:click={() => removeTimeline(viewName, index)}>Remove</button>
+				</label>
+			{/each}
+			{#if newTimelines.length}
+				<Dropdown labelText='New timeline'>
+					{#each newTimelines as id}
+						<button on:click={() => addTimeline(viewName, id)}>{id}</button>
 					{/each}
-				</select>
-				{#if timelineView.timelineIds.length > 1}
-					<button on:click={() => moveTimeline(viewName, index, false)} disabled={index === timelineView.timelineIds.length - 1}>↓</button>
-					<button on:click={() => moveTimeline(viewName, index, true)} disabled={index === 0}>↑</button>
-				{/if}
-				<button on:click={() => removeTimeline(viewName, index)}>Remove</button>
-			</div>
-		{/each}
-		{#if newTimelines.length}
-			<Dropdown labelText='New timeline'>
-				{#each newTimelines as id}
-					<button on:click={() => addTimeline(viewName, id)}>{id}</button>
-				{/each}
-			</Dropdown>
-		{/if}
-	</label>
-{/each}
-<!-- TODO Addon? -->
-<div>
-	<input bind:value={newViewName}/>
-	<button on:click={addView}>Add</button>
+				</Dropdown>
+			{/if}
+		</div>
+	{/each}
+
+	<div>
+		<input bind:value={newViewName} placeholder='Timeline View Name'/>
+		<button on:click={addView} disabled={newViewName.length === 0 || Object.hasOwn(timelineViews, newViewName)}>Add new view</button>
+	</div>
 </div>

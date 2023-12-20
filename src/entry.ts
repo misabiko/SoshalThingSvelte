@@ -15,30 +15,31 @@ import './services/misskey/endpoints/timelineEndpoint';
 
 import SoshalThing from './SoshalThing.svelte';
 import {loadMainStorage, loadTimelines} from './storages';
-import type {FullscreenInfo, TimelineView} from './timelines';
+import {defaultTimelineView, type FullscreenInfo, type TimelineView} from './timelines';
 
-const {timelineIds, fullscreen, timelineViews, defaultTimelineView} = loadMainStorage();
+const {timelineIds, fullscreen, timelineViews, currentTimelineView} = loadMainStorage();
 const timelines = loadTimelines();
 
 const searchParams = new URLSearchParams(location.search);
 
 const searchTimelineView = parseTimelineView(timelineViews, searchParams);
-const timelineView: TimelineView = searchTimelineView ??
-	(defaultTimelineView !== null ? timelineViews[defaultTimelineView]: null) ??
-	{
-	timelineIds: timelineIds ?? Object.keys(timelines),
-	fullscreen,
-};
+let timelineViewId: string = searchTimelineView ?? currentTimelineView ?? defaultTimelineView;
+if (timelineViewId === defaultTimelineView) {
+	timelineViews[defaultTimelineView] ??= {
+		timelineIds: timelineIds ?? Object.keys(timelines),
+		fullscreen,
+	};
+}
 const searchParamsFullscreen = parseFullscreen(searchParams);
 if (searchParamsFullscreen !== null)
-	timelineView.fullscreen = searchParamsFullscreen;
+	timelineViews[timelineViewId].fullscreen = searchParamsFullscreen;
 
 new SoshalThing({
 	target: document.body,
 	props: {
 		isInjected: false,
 		timelines,
-		timelineView,
+		timelineViewId,
 		timelineViews,
 	}
 });
@@ -74,7 +75,7 @@ function parseFullscreen(search: URLSearchParams): FullscreenInfo | null {
 	};
 }
 
-function parseTimelineView(timelineViews: {[name: string]: TimelineView}, search: URLSearchParams): TimelineView | null {
+function parseTimelineView(timelineViews: {[name: string]: TimelineView}, search: URLSearchParams): string | null {
 	const param = search.get('view');
 
 	if (!param?.length)
@@ -83,5 +84,5 @@ function parseTimelineView(timelineViews: {[name: string]: TimelineView}, search
 		console.error(`Couldn't find timeline view "${param}"\nAvailable views: `, timelineViews);
 		return null;
 	}else
-		return timelineViews[param];
+		return param;
 }

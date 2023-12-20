@@ -315,7 +315,6 @@
 		overflow-x: hidden;
 		flex-grow: 1;
 		height: 20%;
-		/* TODO background-color: $background; */
 	}
 
 	.noArticleText {

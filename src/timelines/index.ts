@@ -70,6 +70,8 @@ export function defaultTimeline(articles: ArticleIdPair[] = []): TimelineData {
 
 export type TimelineCollection = { [id: string]: TimelineData }
 
+//Would've wanted to use a symbol, but then we need to stringify in json anyway
+export const defaultTimelineView = 'default';
 export type TimelineView = {
 	timelineIds: string[];
 	fullscreen: FullscreenInfo;

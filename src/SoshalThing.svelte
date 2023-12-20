@@ -2,7 +2,11 @@
 	import './partialGlobal.css';
 	import {setContext} from 'svelte'
 	import Sidebar from "./sidebar/Sidebar.svelte"
-	import type {TimelineCollection, TimelineData, TimelineView} from "./timelines"
+	import {
+		defaultTimelineView,
+		type TimelineCollection,
+		type TimelineData, type TimelineView,
+	} from './timelines';
 	import TimelineContainer from "./timelines/TimelineContainer.svelte"
 	import {notifications} from './notifications/store'
 	import Notification from "./notifications/Notification.svelte";
@@ -19,15 +23,17 @@
 	};
 
 	export let timelines: TimelineCollection = {}
-	export let timelineView: TimelineView = {
-		timelineIds: [],
-		fullscreen: {
-			index: null,
-			columnCount: null,
-			container: null,
+	export let timelineViews: Record<string, TimelineView> = {
+		[defaultTimelineView]: {
+			timelineIds: [],
+			fullscreen: {
+				index: null,
+				columnCount: null,
+				container: null,
+			}
 		}
 	}
-	export let timelineViews: {[name: string]: TimelineView} = {}
+	export let timelineViewId: string = defaultTimelineView
 	export let isInjected = true
 	export let favviewerHidden = false
 	export let favviewerMaximized: boolean | null = null
@@ -48,7 +54,7 @@
 		const id = `Timeline ${idNum}`;
 		timelines[id] = data;
 		timelines = timelines;
-		timelineView.timelineIds = [...timelineView.timelineIds, id];
+		timelineViews[timelineViewId].timelineIds = [...timelineViews[timelineViewId].timelineIds, id];
 
 		updateTimelinesStorage(timelines);
 	}
@@ -56,11 +62,11 @@
 	function removeTimeline(id: string) {
 		delete timelines[id];
 		//We don't cache index since TimelineView.timelineIds might hold duplicates
-		if (timelineView.fullscreen.index === timelineView.timelineIds.indexOf(id))
-			timelineView.fullscreen.index = null;
+		if (timelineViews[timelineViewId].fullscreen.index === timelineViews[timelineViewId].timelineIds.indexOf(id))
+			timelineViews[timelineViewId].fullscreen.index = null;
 
-		timelineView.timelineIds = timelineView.timelineIds.filter(viewId => viewId !== id);
-		timelineView = timelineView;
+		timelineViews[timelineViewId].timelineIds = timelineViews[timelineViewId].timelineIds.filter(viewId => viewId !== id);
+		timelineViewId = timelineViewId;
 
 		updateTimelinesStorage(timelines);
 	}
@@ -161,7 +167,7 @@
 	{#if showSidebar}
 		<Sidebar
 			bind:batchActionFilters
-			bind:timelineView
+			bind:timelineViewId
 			bind:timelineViews
 			bind:timelines
 			{setModalTimeline}
@@ -170,7 +176,7 @@
 	{/if}
 	<TimelineContainer
 		bind:timelines
-		bind:timelineView
+		bind:timelineView={timelineViews[timelineViewId]}
 		bind:modalTimeline
 		bind:modalTimelineActive
 		bind:favviewerHidden

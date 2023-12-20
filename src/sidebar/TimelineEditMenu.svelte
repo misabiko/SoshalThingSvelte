@@ -44,7 +44,6 @@
 </script>
 
 <label class='field'>
-	Add Timeline
 	<select bind:value={timelineAddType}>
 		<option value={TimelineAddTypes.Empty}>Empty</option>
 <!--TODO <option value={TimelineAddTypes.TwitterUser}>Twitter User</option>-->

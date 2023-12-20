@@ -3,7 +3,7 @@
 	import Timeline from './Timeline.svelte'
 	import {afterUpdate, getContext, onMount} from 'svelte'
 	import {timelineEndpoints} from '../services/endpoints'
-	import {updateMainStorage, updateTimelinesStorage} from '../storages';
+	import {updateFullscreenStorage} from '../storages';
     import Modal from 'Modal.svelte';
     import type { ArticleIdPair } from 'articles';
 
@@ -137,7 +137,10 @@
 					{setModalTimeline}
 					bind:fullscreen={timelineView.fullscreen}
 					removeTimeline={() => removeTimeline(timelineView.timelineIds[timelineView.fullscreen.index])}
-					toggleFullscreen={() => {timelineView.fullscreen.index = null; updateMainStorage('fullscreen', timelineView.fullscreen)}}
+					toggleFullscreen={() => {
+						timelineView.fullscreen.index = null;
+						updateFullscreenStorage(timelineView.fullscreen);
+					}}
 				/>
 			{:else}
 				<Timeline
@@ -146,7 +149,10 @@
 					{setModalTimeline}
 					bind:fullscreen={timelineView.fullscreen}
 					removeTimeline={() => removeTimeline(timelineView.timelineIds[timelineView.fullscreen.index])}
-					toggleFullscreen={() => {timelineView.fullscreen.index = null; updateMainStorage('fullscreen', timelineView.fullscreen)}}
+					toggleFullscreen={() => {
+						timelineView.fullscreen.index = null;
+						updateFullscreenStorage(timelineView.fullscreen);
+					}}
 				/>
 			{/if}
 		{/key}
@@ -162,7 +168,7 @@
 					data={timelines[id]}
 					{setModalTimeline}
 					removeTimeline={() => removeTimeline(id)}
-					toggleFullscreen={() => {timelineView.fullscreen.index = i; updateMainStorage('fullscreen', timelineView.fullscreen)}}
+					toggleFullscreen={() => {timelineView.fullscreen.index = i; updateFullscreenStorage(timelineView.fullscreen)}}
 				/>
 			{:else}
 				<Timeline
@@ -170,7 +176,7 @@
 					data={timelines[id]}
 					{setModalTimeline}
 					removeTimeline={() => removeTimeline(id)}
-					toggleFullscreen={() => {timelineView.fullscreen.index = i; updateMainStorage('fullscreen', timelineView.fullscreen)}}
+					toggleFullscreen={() => {timelineView.fullscreen.index = i; updateFullscreenStorage(timelineView.fullscreen)}}
 				/>
 			{/if}
 		{/each}

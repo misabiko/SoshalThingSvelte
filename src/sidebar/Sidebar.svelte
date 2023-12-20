@@ -22,6 +22,7 @@
 	import type {FilterInstance} from '../filters'
 	import {faTableColumns} from "@fortawesome/free-solid-svg-icons/faTableColumns";
 	import TimelineViewEdit from "./TimelineViewEdit.svelte";
+	import {updateMainStorage} from '../storages';
 
 	enum SidebarMenu {
 		TimelineEdit,
@@ -144,7 +145,14 @@
 				</button>
 			{/each}
 			{#each Object.entries(timelineViews) as [id, view]}
-				<button class='borderless-button' title={`Set view: ${id}`} on:click='{() => timelineViewId = id}'>
+				<button
+						class='borderless-button'
+						title={`Set view: ${id}`}
+						on:click={() => {
+							timelineViewId = id;
+							updateMainStorage('currentTimelineView', timelineViewId);
+						}}
+				>
 					<Fa icon={faTableColumns} size='2x'/>
 				</button>
 			{/each}

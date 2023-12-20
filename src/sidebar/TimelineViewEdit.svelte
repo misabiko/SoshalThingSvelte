@@ -65,7 +65,7 @@
 	function setView(view: string) {
 		timelineViewId = view;
 
-		updateMainStorage('defaultTimelineView', view);
+		updateMainStorage('currentTimelineView', view);
 	}
 
 </script>

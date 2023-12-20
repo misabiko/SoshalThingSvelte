@@ -6,11 +6,13 @@
 	import TimelineContainer from "./timelines/TimelineContainer.svelte"
 	import {notifications} from './notifications/store'
 	import Notification from "./notifications/Notification.svelte";
-	import {Endpoint, refreshEndpoint, refreshEndpointName, RefreshType} from './services/endpoints';
+	import {Endpoint, endpoints, refreshEndpoint, refreshEndpointName, RefreshType} from './services/endpoints';
 	import type {FilterInstance} from './filters'
 	import {getRootArticle} from './articles'
 	import {updateTimelinesStorage} from 'storages'
 	import {get} from "svelte/store";
+	import {getServices} from './services/service';
+	import {fetchExtension} from './services/extension';
 
 	(BigInt.prototype as any).toJSON = function () {
 		return this.toString();
@@ -73,7 +75,17 @@
 		initialRefresh(modalTimeline)
 	}
 
-	function initialRefresh(...refreshingTimelines: TimelineData[]) {
+	async function initialRefresh(...refreshingTimelines: TimelineData[]) {
+		const services = new Set<string>(refreshingTimelines.flatMap(t => t.endpoints.map(e => (e.endpoint ?? get(endpoints[e.name]).constructor.service))));
+		for (const serviceName of services) {
+			const service = getServices()[serviceName];
+			if (service.tabInfo !== null && get(service.tabInfo.tabId) === null)
+				service.tabInfo.tabId.set(await fetchExtension('getTabId', {
+					url: service.tabInfo.url,
+					matchUrl: service.tabInfo.matchUrl
+				}));
+		}
+
 		const endpointNames = new Set<string>()
 		for (const timeline of refreshingTimelines)
 			for (const timelineEndpoint of timeline.endpoints.filter(e => e.refreshTypes.has(RefreshType.RefreshStart)))

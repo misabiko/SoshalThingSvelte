@@ -1,10 +1,10 @@
 import type {ArticleAuthor, ArticleRefIdPair} from '../../articles';
 import Article from '../../articles';
 import type {ArticleMedia} from '../../articles/media';
-import {TWITTER_SERVICE_NAME} from './service';
 
 export default class TwitterArticle extends Article {
-	static service = TWITTER_SERVICE_NAME;
+	//Giving up on using TwitterService.name, endpoints are safe, but too much race condition on articles
+	static service = 'Twitter';
 	deleted = false;
 
 	constructor(

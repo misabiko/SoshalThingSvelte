@@ -2,10 +2,9 @@ import type { ArticleWithRefs } from 'articles';
 import { Endpoint, RefreshType } from 'services/endpoints';
 import { parseResponse, type Instruction, type ResponseError, type AddEntriesInstruction } from 'services/twitter/pageAPI';
 import { TwitterService } from 'services/twitter/service';
-import { getCookie, getServiceStorage } from 'storages';
 
 export default abstract class APIEndpoint<Response extends APIResponse> extends Endpoint {
-	readonly service = TwitterService.name;
+	static service = TwitterService.name;
 	abstract readonly name: string;
 	abstract readonly endpointPath: string;
 

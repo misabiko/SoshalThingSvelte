@@ -1,10 +1,9 @@
 import Article from '../../articles';
 import type {ArticleAuthor} from '../../articles';
 import type {ArticleMedia} from '../../articles/media';
-import {PIXIV_SERVICE_NAME} from './service';
 
 export default class PixivArticle extends Article {
-	static service = PIXIV_SERVICE_NAME;
+	static service = 'Pixiv';
 
 	liked = false;
 

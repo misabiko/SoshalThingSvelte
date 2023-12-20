@@ -18,7 +18,7 @@ timelineEndpoints.subscribe(value => timelineEndpointsValue = value);
 
 export abstract class Endpoint {
 	abstract readonly name: string
-	abstract readonly service: string
+	static readonly service: string
 	readonly articleIdPairs: ArticleIdPair[] = [];
 	rateLimitInfo: RateLimitInfo | null = null;
 	autoRefreshId: number | null;
@@ -234,7 +234,7 @@ export async function refreshEndpoint(endpoint: Endpoint, refreshType: RefreshTy
 		)
 	);
 
-	addArticles(getServices()[endpoint.service], false, ...articles);
+	addArticles(getServices()[(endpoint.constructor as typeof Endpoint).service], false, ...articles);
 
 	if (endpoints[endpoint.name] !== undefined)
 		endpoints[endpoint.name].set(endpoint);

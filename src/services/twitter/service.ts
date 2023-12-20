@@ -10,10 +10,8 @@ import { fetchExtension } from 'services/extension';
 import {get, writable} from 'svelte/store';
 import ServiceSettings from './ServiceSettings.svelte';
 
-export const TWITTER_SERVICE_NAME = 'Twitter';
-
 export const TwitterService: Service<TwitterArticle> = {
-	...newService(TWITTER_SERVICE_NAME),
+	...newService('Twitter'),
 	articleActions: {
 		[STANDARD_ACTIONS.like.key]: {
 			...STANDARD_ACTIONS.like,

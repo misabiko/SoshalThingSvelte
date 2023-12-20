@@ -45,9 +45,9 @@
 		updateFullscreenStorage(fullscreen)
 	}
 
-	let newEndpointServices = Object.values(getServices()).filter(s => s.endpointConstructors.length > 0);
+	let newEndpointServices = Object.values(getServices()).filter(s => Object.values(s.endpointConstructors).length > 0);
 	let newEndpointService: string = newEndpointServices[0]?.name;
-	let newEndpoint: number = 0;
+	let newEndpoint: string = newEndpointServices[0]?.endpointConstructors[0]?.name;
 
 	function addEndpoint() {
 		data.endpoints.push({
@@ -243,8 +243,8 @@
 					{/each}
 				</select>
 				<select bind:value={newEndpoint}>
-					{#each getServices()[newEndpointService].endpointConstructors as endpoint, i}
-						<option value={i}>{endpoint.name}</option>
+					{#each Object.values(getServices()[newEndpointService].endpointConstructors) as endpoint}
+						<option value={endpoint.name}>{endpoint.name}</option>
 					{/each}
 				</select>
 				<button on:click={addEndpoint}>New Endpoint</button>

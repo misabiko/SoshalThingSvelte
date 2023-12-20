@@ -7,11 +7,11 @@ import PixivArticle from '../article';
 import {getCurrentPage, getEachPageURL, getUserUrl, parseThumbnail, type BookmarkData} from './index';
 import {MediaLoadType, MediaType} from '../../../articles/media';
 import {avatarHighRes} from './bookmarks';
-import {getServices} from '../../service';
+import {getServices, registerEndpointConstructor} from '../../service';
 
 export class FollowPageEndpoint extends PageEndpoint {
 	readonly name = 'Follow Endpoint';
-	readonly service = PixivService.name;
+	static service = PixivService.name;
 	readonly hostPage: number;
 
 	constructor() {
@@ -51,7 +51,7 @@ export class FollowPageEndpoint extends PageEndpoint {
 
 export class FollowAPIEndpoint extends LoadableEndpoint {
 	readonly name = 'Pixiv Follow API Endpoint';
-	readonly service = PixivService.name;
+	static service = PixivService.name;
 
 	constructor(public currentPage = 0, readonly r18 = false) {
 		super();
@@ -118,7 +118,7 @@ export class FollowAPIEndpoint extends LoadableEndpoint {
 	};
 }
 
-getServices()[PixivService.name].endpointConstructors.push(FollowAPIEndpoint.constructorInfo);
+registerEndpointConstructor(FollowAPIEndpoint);
 
 type FollowAPIResponse = {
 	error: boolean

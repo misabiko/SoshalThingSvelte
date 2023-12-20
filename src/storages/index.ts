@@ -1,16 +1,16 @@
-import type { FullscreenInfo, TimelineCollection, TimelineEndpoint, TimelineView } from '../timelines';
-import type { SvelteComponent } from 'svelte';
+import type {FullscreenInfo, TimelineCollection, TimelineEndpoint, TimelineView} from '../timelines';
+import type {SvelteComponent} from 'svelte';
 import ColumnContainer from '../containers/ColumnContainer.svelte';
 import RowContainer from '../containers/RowContainer.svelte';
 import MasonryContainer from '../containers/MasonryContainer.svelte';
 import SocialArticleView from '../articles/social/SocialArticleView.svelte';
 import GalleryArticleView from '../articles/gallery/GalleryArticleView.svelte';
-import { getServices } from '../services/service';
-import type { FilterInstance } from '../filters';
-import type { SortInfo } from '../sorting';
-import { SortMethod } from '../sorting';
-import { defaultTimeline } from '../timelines';
-import { defaultFilterInstances } from '../filters';
+import {getServices} from '../services/service';
+import type {FilterInstance} from '../filters';
+import type {SortInfo} from '../sorting';
+import {SortMethod} from '../sorting';
+import {defaultTimeline} from '../timelines';
+import {defaultFilterInstances} from '../filters';
 import {
 	addEndpoint,
 	Endpoint,
@@ -18,8 +18,8 @@ import {
 	RefreshType,
 	startAutoRefresh,
 } from '../services/endpoints';
-import type { EndpointConstructorParams } from '../services/endpoints';
-import { derived, get } from 'svelte/store';
+import type {EndpointConstructorParams} from '../services/endpoints';
+import {derived, get} from 'svelte/store';
 
 export const MAIN_STORAGE_KEY = 'SoshalThingSvelte';
 export const TIMELINE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Timelines';
@@ -79,7 +79,7 @@ export function updateMaximized(maximized: boolean) {
 }
 
 export function updateFullscreenStorage(fullscreen: FullscreenInfo) {
-	const stringified: any = { ...fullscreen };
+	const stringified: any = {...fullscreen};
 	if (stringified.container)
 		stringified.container = stringified.container.name;
 
@@ -199,7 +199,7 @@ function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | unde
 	if (!Object.hasOwn(services, storage.service)) {
 		console.error(`"${storage.service}" isn't a registered service`);
 		return undefined;
-	} else if (services[storage.service].endpointConstructors.length <= storage.endpointType) {
+	} else if (!Object.hasOwn(services[storage.service].endpointConstructors, storage.endpointType)) {
 		console.error(`"${storage.service}" doesn't have endpointType "${storage.endpointType}"`);
 		return undefined;
 	}
@@ -245,7 +245,7 @@ function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | unde
 	};
 }
 
-function parseSortInfo({ method, reversed }: TimelineStorage['sortInfo']): SortInfo {
+function parseSortInfo({method, reversed}: TimelineStorage['sortInfo']): SortInfo {
 	let sortMethod: SortMethod | null = null;
 	switch (method?.toLowerCase()) {
 		case 'id':
@@ -370,7 +370,7 @@ const DEFAULT_TIMELINE_STORAGE: TimelineStorage = {
 
 type EndpointStorage = {
 	service: string
-	endpointType: number
+	endpointType: string
 	params?: EndpointConstructorParams
 	filters?: FilterInstance[]
 	autoRefresh?: boolean

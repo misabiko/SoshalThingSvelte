@@ -8,7 +8,7 @@ test.describe('SocialArticleView', () => {
 				endpoints: [
 					{
 						service: 'Dummy',
-						endpointType: 0,
+						endpointType: 'DummyEndpoint',
 					}
 				]
 			}]
@@ -26,7 +26,7 @@ test.describe('SocialArticleView', () => {
 				endpoints: [
 					{
 						service: 'Dummy',
-						endpointType: 0,
+						endpointType: 'DummyEndpoint',
 					}
 				]
 			}]

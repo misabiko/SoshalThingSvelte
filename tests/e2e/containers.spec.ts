@@ -8,7 +8,7 @@ test.describe('masonry', () => {
 				endpoints: [
 					{
 						service: 'Dummy',
-						endpointType: 0,
+						endpointType: 'DummyEndpoint',
 					}
 				],
 				container: 'Masonry',

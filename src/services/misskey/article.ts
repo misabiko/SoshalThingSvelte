@@ -9,7 +9,7 @@ import type {MfmNode} from 'mfm-js/built/node';
 import {MisskeyService} from './service';
 
 export default class MisskeyArticle extends Article {
-	static service = MisskeyService.name;
+	static service = 'Misskey';
 
 	constructor(
 		readonly id: string,

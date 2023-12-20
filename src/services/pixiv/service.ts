@@ -11,9 +11,8 @@ import {faFaceSmile} from '@fortawesome/free-solid-svg-icons';
 import type { Filter } from 'filters';
 import ServiceSettings from './ServiceSettings.svelte';
 
-export const PIXIV_SERVICE_NAME = 'Pixiv';
 export const PixivService: PixivServiceType = {
-	...newService(PIXIV_SERVICE_NAME),
+	...newService('Pixiv'),
 	...newFetchingService(),
 	async fetchArticle(store: Writable<PixivArticle>) {
 		const article = get(store);

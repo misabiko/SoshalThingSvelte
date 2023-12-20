@@ -109,7 +109,7 @@ test.describe('autoscroll', () => {
 				endpoints: [
 					{
 						service: 'Dummy',
-						endpointType: 0,
+						endpointType: 'DummyEndpoint',
 					}
 				]
 			}]

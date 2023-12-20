@@ -1,7 +1,7 @@
 import type { Instruction } from 'services/twitter/pageAPI';
 import APIEndpoint, { type APIParams } from './APIEndpoint';
 import type { EndpointConstructorInfo } from 'services/endpoints';
-import {getServices} from '../../../service';
+import {getServices, registerEndpointConstructor} from '../../../service';
 import {TwitterService} from '../../service';
 
 export default class ListAPI extends APIEndpoint<ListLatestTweetsTimelineResponse> {
@@ -41,7 +41,7 @@ export default class ListAPI extends APIEndpoint<ListLatestTweetsTimelineRespons
 	};
 }
 
-getServices()[TwitterService.name].endpointConstructors.push(ListAPI.constructorInfo);
+registerEndpointConstructor(ListAPI);
 
 type ListLatestTweetsTimelineResponse = {
 	data: {

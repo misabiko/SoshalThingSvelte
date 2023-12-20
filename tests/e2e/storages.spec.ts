@@ -110,7 +110,7 @@ test.describe('timelines', () => {
 				container: 'Masonry',
 				endpoints: [{
 					service: 'Dummy',
-					endpointType: 0,
+					endpointType: 'DummyEndpoint',
 				}],
 			}],
 		});
@@ -141,11 +141,11 @@ test.describe('timelines', () => {
 					endpoints: [
 						{
 							service: 'Dummy',
-							endpointType: 0,
+							endpointType: 'DummyEndpoint',
 						},
 						{
 							service: 'Dummy',
-							endpointType: 1,
+							endpointType: 'DummyEndpointWithParam',
 							params: {
 								query: 'querystring'
 							}
@@ -173,22 +173,22 @@ test.describe('timelines', () => {
 						endpoints: [
 							{
 								service: 'Dummy',
-								endpointType: 0,
+								endpointType: 'DummyEndpoint',
 							},
 							{
 								service: 'Dummy',
-								endpointType: 0,
+								endpointType: 'DummyEndpoint',
 							},
 						],
 					}, {
 						endpoints: [
 							{
 								service: 'Dummy',
-								endpointType: 0,
+								endpointType: 'DummyEndpoint',
 							},
 							{
 								service: 'Dummy',
-								endpointType: 0,
+								endpointType: 'DummyEndpoint',
 							},
 						],
 					}],
@@ -219,7 +219,7 @@ test.describe('cache', () => {
 				endpoints: [
 					{
 						service: 'Dummy',
-						endpointType: 0,
+						endpointType: 'DummyEndpoint',
 					}
 				]
 			}]

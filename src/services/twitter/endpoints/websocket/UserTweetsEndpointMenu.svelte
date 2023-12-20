@@ -29,9 +29,9 @@
 			)
 		);
 
-		addArticles(getServices()[endpoint.service], false, ...articles);
+		addArticles(getServices()[endpoint.constructor.service], false, ...articles);
 
-		if (endpoints[endpoint.name] !== undefined)
+		if (!Object.hasOwn(endpoints, endpoint.name))
 			endpoints[endpoint.name].set(endpoint);
 
 			if (articles.length) {

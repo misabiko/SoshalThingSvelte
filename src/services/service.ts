@@ -16,8 +16,7 @@ const services: { [name: string]: Service<any> } = {};
 export interface Service<A extends Article = Article> {
 	readonly name: string;
 	readonly articles: { [id: string]: Writable<A> };
-	//TODO Store constructors by name
-	readonly endpointConstructors: EndpointConstructorInfo[]
+	readonly endpointConstructors: Record<string, EndpointConstructorInfo>
 	userEndpoint: ((author: ArticleAuthor) => Endpoint) | null,
 	articleActions: { [name: string]: ArticleAction<A> };
 	requestImageLoad?: (id: ArticleId, index: number) => void;
@@ -69,6 +68,11 @@ export function addArticles(service: Service<any>, ignoreRefs: boolean, ...artic
 
 export function registerService(service: Service<any>) {
 	services[service.name] = service;
+}
+
+//Kinda wack typing
+export function registerEndpointConstructor(endpoint: (new (...args: any[]) => Endpoint) & { constructorInfo: EndpointConstructorInfo, service: string }) {
+	services[endpoint.service].endpointConstructors[endpoint.constructorInfo.name] = endpoint.constructorInfo;
 }
 
 export function getServices(): Readonly<{ [name: string]: Service }> {
@@ -176,7 +180,7 @@ export function newService<A extends Article = Article>(name: string): Service<A
 	return {
 		name,
 		articles: {},
-		endpointConstructors: [],
+		endpointConstructors: {},
 		userEndpoint: null,
 		articleActions: {},
 		keepArticle() { return true; },

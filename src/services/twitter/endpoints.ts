@@ -15,7 +15,7 @@ import ListAPI from './endpoints/domainEndpoints/ListAPI';
 import TimelineAPI from './endpoints/domainEndpoints/TimelineAPI';
 
 export class TwitterHomeEndpoint extends Endpoint {
-	readonly service = TwitterService.name;
+	static service = TwitterService.name;
 	readonly name = 'Home Page';
 
 	async refresh(_refreshType: RefreshType): Promise<ArticleWithRefs[]> {

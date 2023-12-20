@@ -1,8 +1,7 @@
 import { type Instruction } from 'services/twitter/pageAPI';
 import APIEndpoint from './APIEndpoint';
 import type { EndpointConstructorInfo } from 'services/endpoints';
-import {getServices} from '../../../service';
-import {TwitterService} from '../../service';
+import {registerEndpointConstructor} from '../../../service';
 
 export default class TimelineAPI extends APIEndpoint<HomeTimelineResponse> {
 	readonly name: string;
@@ -44,7 +43,7 @@ export default class TimelineAPI extends APIEndpoint<HomeTimelineResponse> {
 	};
 }
 
-getServices()[TwitterService.name].endpointConstructors.push(TimelineAPI.constructorInfo);
+registerEndpointConstructor(TimelineAPI);
 
 export enum TimelineType {
 	ForYou,

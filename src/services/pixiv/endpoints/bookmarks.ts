@@ -4,13 +4,13 @@ import {PixivService} from '../service';
 import PixivArticle from '../article';
 import type {PixivUser} from '../article';
 import {getHiddenStorage, getMarkedAsReadStorage} from '../../../storages/serviceCache';
-import {getServices, getWritable} from '../../service';
+import {getServices, getWritable, registerEndpointConstructor} from '../../service';
 import {getEachPageURL, getUserUrl, parseThumbnail, type BookmarkData} from './index';
 import {MediaLoadType, MediaType} from '../../../articles/media';
 
 export default class BookmarkPageEndpoint extends PageEndpoint {
 	readonly name = 'Bookmark Endpoint';
-	readonly service = PixivService.name;
+	static service = PixivService.name;
 	readonly hostPage: number;
 	readonly user: PixivUser;
 	readonly private: boolean;
@@ -80,7 +80,7 @@ export default class BookmarkPageEndpoint extends PageEndpoint {
 
 export class BookmarkAPIEndpoint extends LoadableEndpoint {
 	readonly name = 'Pixiv Bookmark API Endpoint';
-	readonly service = PixivService.name;
+	static service = PixivService.name;
 
 	constructor(readonly userId: number, readonly r18: boolean, public currentPage = 0) {
 		super();
@@ -157,7 +157,7 @@ export class BookmarkAPIEndpoint extends LoadableEndpoint {
 	};
 }
 
-getServices()[PixivService.name].endpointConstructors.push(BookmarkAPIEndpoint.constructorInfo);
+registerEndpointConstructor(BookmarkAPIEndpoint);
 
 //TODO Abstract responses
 type FollowAjaxResponse = {

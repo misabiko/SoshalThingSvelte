@@ -8,7 +8,7 @@ test.describe('mark as read/hide', () => {
 				endpoints: [
 					{
 						service: 'Dummy',
-						endpointType: 0,
+						endpointType: 'DummyEndpoint',
 					}
 				],
 				filters: [

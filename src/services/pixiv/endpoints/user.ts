@@ -7,11 +7,11 @@ import {getHiddenStorage, getMarkedAsReadStorage} from '../../../storages/servic
 import {getEachPageURL, getUserUrl, parseThumbnail, type BookmarkData} from './index';
 import {MediaLoadType, MediaType} from '../../../articles/media';
 import {avatarHighRes} from './bookmarks';
-import {getServices} from '../../service';
+import {getServices, registerEndpointConstructor} from '../../service';
 
 export default class UserPageEndpoint extends PageEndpoint {
 	readonly name = 'User Endpoint';
-	readonly service = PixivService.name;
+	static service = PixivService.name;
 	readonly hostPage: number;
 	readonly user: PixivUser;
 
@@ -56,7 +56,7 @@ export default class UserPageEndpoint extends PageEndpoint {
 //TODO Mark as bookmarked
 export class UserAPIEndpoint extends LoadableEndpoint {
 	readonly name = 'Pixiv User API Endpoint';
-	readonly service = PixivService.name;
+	static service = PixivService.name;
 
 	constructor(readonly userId: number, public currentPage = 0) {
 		super();
@@ -141,7 +141,7 @@ export class UserAPIEndpoint extends LoadableEndpoint {
 	};
 }
 
-getServices()[PixivService.name].endpointConstructors.push(UserAPIEndpoint.constructorInfo);
+registerEndpointConstructor(UserAPIEndpoint);
 getServices()[PixivService.name].userEndpoint = user => new UserAPIEndpoint((user as PixivUser).id);
 
 export function getUserId() : number {

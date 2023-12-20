@@ -5,11 +5,11 @@ import type * as Misskey from 'misskey-js';
 import {fromAPI} from '../article';
 import {getHiddenStorage, getMarkedAsReadStorage} from '../../../storages/serviceCache';
 import {MisskeyService} from '../service';
-import {getServices} from '../../service';
+import {getServices, registerEndpointConstructor} from '../../service';
 
 export class TimelineEndpoint extends Endpoint {
 	readonly name = 'Timeline Endpoint';
-	readonly service = 'Misskey';
+	static service = MisskeyService.name;
 	public cli: Misskey.api.APIClient | null = null;
 
 	constructor() {
@@ -53,4 +53,4 @@ export class TimelineEndpoint extends Endpoint {
 	};
 }
 
-getServices()[MisskeyService.name].endpointConstructors.push(TimelineEndpoint.constructorInfo);
+registerEndpointConstructor(TimelineEndpoint);

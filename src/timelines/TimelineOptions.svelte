@@ -10,8 +10,9 @@
 	import type { SortMethod } from '../sorting';
 	import type {FullscreenInfo} from './index'
 	import {updateFullscreenStorage} from '../storages'
-	import {endpoints} from '../services/endpoints'
+	import {endpoints, everyRefreshType} from '../services/endpoints';
     import { get } from "svelte/store";
+	import {getServices} from '../services/service';
 
 	export let data: TimelineData;
 	export let fullscreen: FullscreenInfo | null = null;
@@ -42,6 +43,20 @@
 			fullscreen.columnCount = null
 
 		updateFullscreenStorage(fullscreen)
+	}
+
+	let newEndpointServices = Object.values(getServices()).filter(s => s.endpointConstructors.length > 0);
+	let newEndpointService: string = newEndpointServices[0]?.name;
+	let newEndpoint: number = 0;
+
+	function addEndpoint() {
+		data.endpoints.push({
+			endpoint: getServices()[newEndpointService].endpointConstructors[newEndpoint].constructor({}),
+			refreshTypes: everyRefreshType,
+			filters: [],
+		});
+
+		//TODO updateTimelinesStorage()
 	}
 </script>
 
@@ -221,6 +236,19 @@
 					</li>
 				{/each}
 			</ul>
+			{#if newEndpointServices.length > 0}
+				<select bind:value={newEndpointService}>
+					{#each newEndpointServices as service}
+						<option value={service.name}>{service.name}</option>
+					{/each}
+				</select>
+				<select bind:value={newEndpoint}>
+					{#each getServices()[newEndpointService].endpointConstructors as endpoint, i}
+						<option value={i}>{endpoint.name}</option>
+					{/each}
+				</select>
+				<button on:click={addEndpoint}>New Endpoint</button>
+			{/if}
 		</div>
 	</section>
 	<section>

@@ -27,7 +27,7 @@ export class TwitterHomeEndpoint extends Endpoint {
 		else
 			throw new Error('No Twitter tab found');
 
-		const pageResponse = await fetchExtension<any>('twitterFetch', {tabId, message: {
+		const pageResponse = await fetchExtension<any>('domainFetch', {tabId, message: {
 			soshalthing: true,
 			request: 'getPageHTML',
 		}});
@@ -59,18 +59,3 @@ export class TwitterHomeEndpoint extends Endpoint {
 		constructor: _params => new TwitterHomeEndpoint()
 	};
 }
-
-
-TwitterService.endpointConstructors.push(
-	TwitterHomeEndpoint.constructorInfo,					//0
-	TwitterUserTweetsAPIEndpoint.constructorInfo,			//1
-	TwitterForYouTimelineAPIEndpoint.constructorInfo,		//2
-	TwitterFollowingTimelineAPIEndpoint.constructorInfo,	//3
-	TwitterListAPIEndpoint.constructorInfo,					//4
-	TwitterUserMediaAPIEndpoint.constructorInfo,			//5
-	TimelineAPI.constructorInfo,							//6
-	UserTweetsAPI.constructorInfo,							//7
-	ListAPI.constructorInfo,								//8
-);
-
-TwitterService.userEndpoint = user => new UserTweetsAPI(TimelineType.Media, user.username, (user as TwitterUser).id);

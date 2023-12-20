@@ -13,6 +13,7 @@ if (loadMainStorage().useWebSocket) {
 		if (websocket === null)
 			throw new Error('Websocket not initialized');
 
+		//TODO Make service agnostic
 		console.debug('Connected Twitter service to websocket');
 		websocket.send(JSON.stringify({
 			// status: 'initService' would probably be cleaner

@@ -325,7 +325,7 @@
 	}
 </style>
 
-<div class='timeline' class:fullscreenTimeline={fullscreen !== null} style={modal ? '' : '{data.width > 1 ? `width: ${data.width * 500}px` : ""}'}>
+<div class='timeline' class:fullscreenTimeline={fullscreen !== null} style={modal ? '' : data.width > 1 ? `width: ${data.width * 500}px` : ""}>
 	<TimelineHeader
 		bind:data
 		availableRefreshTypes={$availableRefreshTypes}

@@ -7,6 +7,7 @@ import PixivArticle from '../article';
 import {getCurrentPage, getEachPageURL, getUserUrl, parseThumbnail, type BookmarkData} from './index';
 import {MediaLoadType, MediaType} from '../../../articles/media';
 import {avatarHighRes} from './bookmarks';
+import {getServices} from '../../service';
 
 export class FollowPageEndpoint extends PageEndpoint {
 	readonly name = 'Follow Endpoint';
@@ -116,6 +117,8 @@ export class FollowAPIEndpoint extends LoadableEndpoint {
 		constructor: params => new FollowAPIEndpoint(params.page as number, params.r18 as boolean)
 	};
 }
+
+getServices()[PixivService.name].endpointConstructors.push(FollowAPIEndpoint.constructorInfo);
 
 type FollowAPIResponse = {
 	error: boolean

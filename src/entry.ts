@@ -1,5 +1,18 @@
-//Add service endpoints here to include them
-import './services/twitter/endpoints';
+import './services/twitter/service';
+import './services/twitter/endpoints/domainEndpoints/TimelineAPI';
+import './services/twitter/endpoints/domainEndpoints/UserTweetsAPI';
+import './services/twitter/endpoints/domainEndpoints/ListAPI';
+
+import './services/pixiv/service';
+import './services/pixiv/endpoints/bookmarks';
+import './services/pixiv/endpoints/follow';
+import './services/pixiv/endpoints/user';
+import './services/misskey/service';
+
+import './services/misskey/endpoints/timelineEndpoint';
+
+
+
 import SoshalThing from './SoshalThing.svelte';
 import {loadMainStorage, loadTimelines} from './storages';
 import type {FullscreenInfo, TimelineView} from './timelines';

@@ -88,6 +88,7 @@
 		padding: 1rem;
 		background-color: var(--scheme-main-ter);
 		overflow-y: auto;
+		box-sizing: border-box;
 	}
 
 	.sidebarMenu::-webkit-scrollbar-thumb {

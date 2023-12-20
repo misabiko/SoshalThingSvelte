@@ -1,6 +1,9 @@
 import { type Instruction } from 'services/twitter/pageAPI';
 import APIEndpoint, { type APIParams } from './APIEndpoint';
 import type { EndpointConstructorInfo } from 'services/endpoints';
+import {getServices} from '../../../service';
+import {TwitterService} from '../../service';
+import type {TwitterUser} from '../../article';
 
 export default class UserTweetsAPI extends APIEndpoint<UserTweetsResponse> {
 	readonly name: string;
@@ -61,6 +64,9 @@ export default class UserTweetsAPI extends APIEndpoint<UserTweetsResponse> {
 		),
 	};
 }
+
+getServices()[TwitterService.name].endpointConstructors.push(UserTweetsAPI.constructorInfo);
+getServices()[TwitterService.name].userEndpoint = user => new UserTweetsAPI(TimelineType.Media, user.username, (user as TwitterUser).id);
 
 export enum TimelineType {
 	Tweets,

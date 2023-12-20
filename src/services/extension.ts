@@ -25,6 +25,7 @@ extensionContextStore.subscribe(value => {
 	extensionContext = value;
 });
 
+//TODO Rename to requestExtension
 export async function fetchExtension<T>(request: string, options: object): Promise<T> {
 	if (extensionContext.id === null)
 		throw new Error('No extension id');

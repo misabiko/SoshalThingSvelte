@@ -1,9 +1,10 @@
 import type {ArticleAuthor, ArticleRefIdPair} from '../../articles';
 import Article from '../../articles';
 import type {ArticleMedia} from '../../articles/media';
+import {TWITTER_SERVICE_NAME} from './service';
 
 export default class TwitterArticle extends Article {
-	static service: string;
+	static service = TWITTER_SERVICE_NAME;
 	deleted = false;
 
 	constructor(

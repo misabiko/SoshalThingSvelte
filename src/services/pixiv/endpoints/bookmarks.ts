@@ -4,7 +4,7 @@ import {PixivService} from '../service';
 import PixivArticle from '../article';
 import type {PixivUser} from '../article';
 import {getHiddenStorage, getMarkedAsReadStorage} from '../../../storages/serviceCache';
-import {getWritable} from '../../service';
+import {getServices, getWritable} from '../../service';
 import {getEachPageURL, getUserUrl, parseThumbnail, type BookmarkData} from './index';
 import {MediaLoadType, MediaType} from '../../../articles/media';
 
@@ -156,6 +156,8 @@ export class BookmarkAPIEndpoint extends LoadableEndpoint {
 		constructor: params => new BookmarkAPIEndpoint(params.userId as number, params.r18 as boolean, params.page as number)
 	};
 }
+
+getServices()[PixivService.name].endpointConstructors.push(BookmarkAPIEndpoint.constructorInfo);
 
 //TODO Abstract responses
 type FollowAjaxResponse = {

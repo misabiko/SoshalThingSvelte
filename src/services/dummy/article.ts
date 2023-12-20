@@ -1,7 +1,8 @@
 import Article from '../../articles';
+import {DummyService} from './service';
 
 export default class DummyArticle extends Article {
-	static service: string;
+	static service = DummyService.name;
 
 	constructor(
 		readonly id: number,

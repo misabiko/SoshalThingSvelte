@@ -4,6 +4,7 @@ import {getHiddenStorage, getMarkedAsReadStorage} from '../../storages/serviceCa
 import {Endpoint, RefreshType} from '../endpoints';
 import type {EndpointConstructorInfo} from '../endpoints';
 import type {ArticleWithRefs} from '../../articles';
+import {getServices} from '../service';
 
 export class DummyEndpoint extends Endpoint {
 	readonly name = 'DummyEndpoint';
@@ -55,7 +56,7 @@ export class DummyEndpointWithParam extends Endpoint {
 	}
 }
 
-DummyService.endpointConstructors.push(
+getServices()[DummyService.name].endpointConstructors.push(
 	DummyEndpoint.constructorInfo,
 	DummyEndpointWithParam.constructorInfo,
 );

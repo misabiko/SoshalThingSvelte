@@ -19,7 +19,6 @@ export default abstract class Article {
 	readonly medias: ArticleMedia[];
 
 	markedAsRead: boolean;
-	hidden: boolean;
 
 	readonly actualArticleRef?: ArticleRefIdPair;
 	//readonly replyRef?: ArticleIdPair
@@ -34,9 +33,7 @@ export default abstract class Article {
 		url: string,//TODO Make article url optional
 		medias: ArticleMedia[],
 		markedAsRead?: boolean,
-		hidden?: boolean,
 		markedAsReadStorage: string[],
-		hiddenStorage: string[],
 		actualArticleRef?: ArticleRefIdPair
 		//replyRef?: ArticleIdPair
 		fetched?: boolean,
@@ -47,7 +44,6 @@ export default abstract class Article {
 		this.url = params.url;
 		this.medias = params.medias || [];
 		this.markedAsRead = params.markedAsRead || params.markedAsReadStorage.includes(params.id.toString());
-		this.hidden = params.hidden || params.hiddenStorage.includes(params.id.toString());
 		this.actualArticleRef = params.actualArticleRef;
 		//this.replyRef = params.replyRef
 		this.fetched = params.fetched || false;
@@ -63,22 +59,6 @@ export default abstract class Article {
 	update(newArticle: this) {
 		if (newArticle.creationTime !== undefined)
 			(this.creationTime as Date) = newArticle.creationTime;
-	}
-
-	//TODO Replace with dynamic action buttons
-	//Currently only used to sort by likes
-	getLikeCount() {
-		return 0;
-	}
-	getLiked() {
-		return false;
-	}
-
-	getRepostCount() {
-		return 0;
-	}
-	getReposted() {
-		return false;
 	}
 }
 

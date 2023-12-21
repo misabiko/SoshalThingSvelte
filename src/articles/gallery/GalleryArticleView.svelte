@@ -11,7 +11,6 @@
 	import Dropdown from "../../Dropdown.svelte"
 	import {
 		fetchArticle,
-		toggleHide,
 		toggleMarkAsRead,
 		getServices,
 	} from "../../services/service"
@@ -85,7 +84,7 @@
 		pointer-events: auto;
 	}
 
-	/* TODO Hack */
+	/* Hack */
 	.holderBox :global(.dropdown-content) {
 		overflow-x: hidden;
 	}
@@ -186,9 +185,6 @@
 				<button class='dropdown-item' on:click={() => toggleMarkAsRead(actualArticle.idPair)}>
 					Mark as read
 				</button>
-				<button class='dropdown-item' on:click={() => toggleHide(actualArticle.idPair)}>
-					Hide
-				</button>
 				{#if actualArticle.medias.some(m => !m.loaded) }
 					<button
 						class='dropdown-item'
@@ -218,18 +214,18 @@
 		</div>
 		<div class='holderBox holderBoxBottom'>
 			{#each actions as action (action.key)}
-				{@const actionned = action.actionned(rootArticle)}
+				{@const actioned = action.actioned(rootArticle)}
 				{@const disabled = action.disabled ? action.disabled(rootArticle) : false}
-				{#if !actionned || action.togglable}
+				{#if !actioned || action.togglable}
 					<button
 						class='button'
-						class:actionned
+						class:actioned
 						title={action.name}
 						on:click={() => action.action(rootArticle.idPair)}
 						{disabled}
 					>
 						<span class='icon darkIcon'>
-							<Fa icon={action.actionnedIcon && actionned ? action.actionnedIcon : action.icon} class='is-small'/>
+							<Fa icon={action.actionnedIcon && actioned ? action.actionnedIcon : action.icon} class='is-small'/>
 						</span>
 					</button>
 				{/if}

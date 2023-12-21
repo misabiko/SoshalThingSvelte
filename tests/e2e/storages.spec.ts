@@ -241,20 +241,4 @@ test.describe('cache', () => {
 
 		await expect(articleLocator).toHaveCount(articleCount - 1);
 	});
-
-	test('hidden is properly loaded', async ({page}) => {
-		const articleLocator = page.locator('article');
-		const articleCount = await articleLocator.count();
-		expect(articleCount).toBeGreaterThan(0);
-
-		await page.locator('article .dropdown-trigger button.articleButton').first().click();
-
-		await page.locator('article button.dropdown-item >> text=Hide').first().click();
-
-		await expect(articleLocator).toHaveCount(articleCount - 1);
-
-		await page.reload();
-
-		await expect(articleLocator).toHaveCount(articleCount - 1);
-	});
 });

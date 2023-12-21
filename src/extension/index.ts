@@ -1,4 +1,4 @@
-export async function tryInject(elementQuery: () => Element | null): Promise<Element> {
+export async function tryInject(elementQuery: () => Element | null, delayMs = 500): Promise<Element> {
 	let attempts = 0;
 	let element: Element | null = null;
 	return new Promise((resolve, reject) => {
@@ -17,6 +17,6 @@ export async function tryInject(elementQuery: () => Element | null): Promise<Ele
 				clearInterval(intervalId);
 				reject("Couldn't inject after 10 attempts");
 			}
-		}, 500);
+		}, delayMs);
 	});
 }

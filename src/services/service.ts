@@ -4,7 +4,7 @@ import type { ArticleId, ArticleIdPair, ArticleWithRefs, ArticleProps } from '..
 import {articleWithRefToArray, getRootArticle} from '../articles';
 import {get, type Writable} from 'svelte/store';
 import {writable} from 'svelte/store';
-import {updateCachedArticlesStorage, updateHiddenStorage, updateMarkAsReadStorage} from '../storages/serviceCache';
+import {updateCachedArticlesStorage, updateMarkAsReadStorage} from '../storages/serviceCache';
 import type {Endpoint, EndpointConstructorInfo} from './endpoints';
 import {undoables} from '../undo';
 import type {Filter} from '../filters';
@@ -106,35 +106,6 @@ export function toggleMarkAsRead(idPair: ArticleIdPair) {
 	});
 
 	updateMarkAsReadStorage();
-}
-
-export function toggleHide(idPair: ArticleIdPair) {
-	const store = getWritable(idPair);
-	store.update(a => {
-		const oldValue = a.hidden;
-		a.hidden = !a.hidden;
-
-		undoables.addCommand({
-			undo: () => {
-				store.update(a => {
-					a.hidden = oldValue;
-					return a;
-				});
-			},
-			redo: () => {
-				store.update(a => {
-					a.hidden = !oldValue;
-					return a;
-				});
-			},
-			undid: false,
-			text: `Article ${idPair.service}/${idPair.id} was ${oldValue ? 'unhidden' : 'hidden'}`,
-			articleIdPair: idPair,
-		});
-		return a;
-	});
-
-	updateHiddenStorage();
 }
 
 export function getWritable<T extends Article = Article>(idPair: ArticleIdPair): Writable<T> {

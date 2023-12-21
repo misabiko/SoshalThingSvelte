@@ -14,7 +14,6 @@ export default class PixivArticle extends Article {
 		readonly author: PixivUser,
 		public creationTime: Date | undefined,
 		markedAsReadStorage: string[],
-		hiddenStorage: string[],
 		rawSource: any | undefined,
 		public bookmarked: boolean | null,
 	) {
@@ -23,9 +22,7 @@ export default class PixivArticle extends Article {
 			url: 'https://www.pixiv.net/en/artworks/' + id,
 			medias,
 			markedAsRead: false,
-			hidden: false,
 			markedAsReadStorage,
-			hiddenStorage,
 			text: title,
 			rawSource,
 		});

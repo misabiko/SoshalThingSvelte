@@ -2,7 +2,13 @@ import type TwitterArticle from './article';
 import {getWritable, type Service} from '../service';
 import {newService, registerService} from '../service';
 import {STANDARD_ACTIONS} from '../actions';
-import Article, {type ArticleIdPair, type ArticleWithRefs, getRootArticle} from '../../articles';
+import Article, {
+	type ArticleIdPair,
+	type ArticleWithRefs,
+	articleWithRefToArray,
+	getActualArticle,
+	getRootArticle
+} from '../../articles';
 import type {Filter} from '../../filters';
 import {type FavoriteResponse, type ResponseError, type RetweetResponse} from './pageAPI';
 import { getCookie, getServiceStorage } from 'storages';
@@ -17,7 +23,7 @@ export const TwitterService: Service<TwitterArticle> = {
 			...STANDARD_ACTIONS.like,
 			//TODO Disable actions when twitter isn't available, but also don't parse localstorage for every article
 			action: toggleLikePage,
-			actionned(article) { return article.liked; },
+			actioned(article) { return article.liked; },
 			disabled(article) { return article.deleted; },
 			count(article) { return article.likeCount; },
 		},
@@ -25,7 +31,7 @@ export const TwitterService: Service<TwitterArticle> = {
 			...STANDARD_ACTIONS.repost,
 			togglable: false,
 			action: retweetPage,
-			actionned(article) { return article.retweeted; },
+			actioned(article) { return article.retweeted; },
 			disabled(article) { return article.deleted; },
 			count(article) { return article.retweetCount; },
 		},
@@ -35,8 +41,14 @@ export const TwitterService: Service<TwitterArticle> = {
 			return true;
 
 		switch (filter.type) {
-			case 'notDeleted':
-				return !(getRootArticle(articleWithRefs) as TwitterArticle).deleted;
+			case 'deleted':
+				return (getRootArticle(articleWithRefs) as TwitterArticle).deleted;
+			case 'liked':
+				return (articleWithRefToArray(articleWithRefs) as TwitterArticle[])
+					.some(a => a.liked)
+			case 'retweeted':
+				return (articleWithRefToArray(articleWithRefs) as TwitterArticle[])
+					.some(a => a.retweeted)
 			default:
 				return true;
 		}
@@ -51,9 +63,6 @@ export const TwitterService: Service<TwitterArticle> = {
 		(init.headers as Record<string, string>)['Authorization'] = `Bearer ${bearerToken}`;
 
 		if (this.isOnDomain) {
-			if (init?.headers === undefined)
-				throw new Error('Cannot fetch on twitter service without headers');
-
 			const csrfToken = getCookie('ct0');
 			if (csrfToken === null)
 				throw new Error('Csrf token not found');
@@ -88,6 +97,40 @@ export const TwitterService: Service<TwitterArticle> = {
 		}else {
 			throw new Error('Service is not on domain and has no tab info');
 		}
+	},
+	sortMethods: {
+		likes: {
+			name: 'Likes',
+			compare(a, b) {
+				return ((getActualArticle(a) as TwitterArticle).likeCount || 0) - ((getActualArticle(b) as TwitterArticle).likeCount || 0)
+			},
+			directionLabel(reversed: boolean): string {
+				return reversed ? 'Descending' : 'Ascending'
+			}
+		},
+		retweets: {
+			name: 'Retweets',
+			compare(a, b) {
+				return ((getActualArticle(a) as TwitterArticle).retweetCount || 0) - ((getActualArticle(b) as TwitterArticle).retweetCount || 0)
+			},
+			directionLabel(reversed: boolean): string {
+				return reversed ? 'Descending' : 'Ascending'
+			}
+		}
+	},
+	filterTypes: {
+		liked: {
+			name: (inverted) => inverted ? 'Not liked' : 'Liked',
+			props: [],
+		},
+		retweeted: {
+			name: (inverted) => inverted ? 'Not retweeted' : 'Retweeted',
+			props: [],
+		},
+		deleted: {
+			name: (inverted) => inverted ? 'Not deleted' : 'Deleted',
+			props: [],
+		},
 	},
 	isOnDomain: globalThis.window?.location?.hostname === 'twitter.com'
 		|| globalThis.window?.location?.hostname === 'x.com',

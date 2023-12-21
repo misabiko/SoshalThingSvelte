@@ -1,5 +1,5 @@
 import FollowIllusts from './FollowIllusts.svelte';
-import {tryInject} from '../index';
+import {tryInject} from '../../index';
 
 tryInject(() => document.querySelector('section ul'))
 	.then(element => {

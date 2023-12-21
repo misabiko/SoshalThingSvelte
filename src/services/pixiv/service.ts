@@ -77,7 +77,7 @@ export const PixivService: PixivServiceType = {
 					return a;
 				});
 			},
-			actionned(article) { return article.liked; },
+			actioned(article) { return article.liked; },
 		},
 		bookmark: {
 			key: 'bookmark',
@@ -123,7 +123,7 @@ export const PixivService: PixivServiceType = {
 					return a;
 				});
 			},
-			actionned(article) { return article.bookmarked === true; },
+			actioned(article) { return article.bookmarked === true; },
 		}
 	},
 	isOnDomain: globalThis.window?.location?.hostname === 'pixiv.net',

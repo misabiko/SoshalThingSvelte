@@ -20,7 +20,6 @@ export default class MisskeyArticle extends Article {
 		readonly author: MisskeyUser,
 		actualArticleRef: ArticleRefIdPair | undefined,
 		markedAsReadStorage: string[],
-		hiddenStorage: string[],
 		rawSource: any
 	) {
 		super({
@@ -32,7 +31,6 @@ export default class MisskeyArticle extends Article {
 			url: `https://misskey.io/notes/${id}`,
 			actualArticleRef,
 			markedAsReadStorage,
-			hiddenStorage,
 			rawSource,
 		});
 	}
@@ -51,7 +49,6 @@ interface MisskeyUser extends ArticleAuthor {
 export function fromAPI(
 	note: Note,
 	markedAsReadStorage: string[],
-	hiddenStorage: string[],
 	_isRef = false,
 ): ArticleWithRefs {
 	let textHtml = note.text || '';
@@ -103,12 +100,11 @@ export function fromAPI(
 			author,
 			actualArticleRefIdPair,
 			markedAsReadStorage,
-			hiddenStorage,
 			note,
 		);
 
 	if (note.renote !== undefined) {
-		const renoted = fromAPI(note.renote, markedAsReadStorage, hiddenStorage, true);
+		const renoted = fromAPI(note.renote, markedAsReadStorage, true);
 
 		if (note.text !== null) {
 			actualArticleRefIdPair = {

@@ -16,7 +16,7 @@ test.describe('SocialArticleView', () => {
 
 		await page.locator('article button[title = "Like"]').first().click();
 
-		await expect(page.locator('article button[title = "Like"]').first()).toHaveClass(/actionned/);
+		await expect(page.locator('article button[title = "Like"]').first()).toHaveClass(/actioned/);
 	});
 
 	test('repost feedback', async ({page}) => {
@@ -34,6 +34,6 @@ test.describe('SocialArticleView', () => {
 
 		await page.locator('article button[title = "Repost"]').first().click();
 
-		await expect(page.locator('article button[title = "Repost"]').first()).toHaveClass(/actionned/);
+		await expect(page.locator('article button[title = "Repost"]').first()).toHaveClass(/actioned/);
 	});
 });

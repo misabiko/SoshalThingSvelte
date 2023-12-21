@@ -1,7 +1,7 @@
 import {expect, test} from '@playwright/test';
 import {loadWithLocalStorage, TIMELINE_STORAGE_KEY} from '../storagesUtils';
 
-test.describe('mark as read/hide', () => {
+test.describe('mark as read', () => {
 	test.beforeEach(async ({page}) => {
 		await loadWithLocalStorage(page, {
 			[TIMELINE_STORAGE_KEY]: {t1: {
@@ -16,10 +16,6 @@ test.describe('mark as read/hide', () => {
 						filter: {type: 'notMarkedAsRead', service: null},
 						enabled: true,
 						inverted: false,
-					}, {
-						filter: {type: 'notHidden', service: null},
-						enabled: true,
-						inverted: false,
 					},
 				]
 			}}
@@ -32,18 +28,6 @@ test.describe('mark as read/hide', () => {
 		expect(articleCount).toBeGreaterThan(0);
 
 		await page.locator('article button.articleButton[title = "Mark as read"]').first().click();
-
-		await expect(articleLocator).toHaveCount(articleCount - 1);
-	});
-
-	test('hidden', async ({page}) => {
-		const articleLocator = page.locator('article');
-		const articleCount = await articleLocator.count();
-		expect(articleCount).toBeGreaterThan(0);
-
-		await page.locator('article .dropdown-trigger button.articleButton').first().click();
-
-		await page.locator('article button.dropdown-item >> text=Hide').first().click();
 
 		await expect(articleLocator).toHaveCount(articleCount - 1);
 	});

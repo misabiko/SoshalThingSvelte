@@ -1,5 +1,3 @@
-//TODO Port to typescript
-
 import puppeteer from 'puppeteer';
 import WebSocket, { WebSocketServer } from 'ws';
 import fs from 'fs/promises';

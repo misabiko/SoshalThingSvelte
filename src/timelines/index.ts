@@ -31,12 +31,13 @@ export type TimelineData = {
 	animatedAsGifs: boolean;
 	scrollSpeed: number;
 	hideText: boolean;
-	compact: boolean;
+	compact: boolean;	//TODO Reimplement compact
 	shouldLoadMedia: boolean;
 	hideFilteredOutArticles: boolean;
 	mergeReposts: boolean;
 	showArticleCount: boolean;
 	maxMediaCount: number | null;
+	//TODO muteVideos: boolean
 }
 
 export function defaultTimeline(articles: ArticleIdPair[] = []): TimelineData {

@@ -1,7 +1,7 @@
 import {type EndpointConstructorInfo, LoadableEndpoint, PageEndpoint, RefreshType} from '../../endpoints';
 import type {ArticleWithRefs} from '../../../articles';
 import {PixivService} from '../service';
-import {getHiddenStorage, getMarkedAsReadStorage} from '../../../storages/serviceCache';
+import {getMarkedAsReadStorage} from '../../../storages/serviceCache';
 import type {PixivUser} from '../article';
 import PixivArticle from '../article';
 import {getCurrentPage, getEachPageURL, getUserUrl, parseThumbnail, type BookmarkData} from './index';
@@ -30,12 +30,11 @@ export class FollowPageEndpoint extends PageEndpoint {
 		if (!thumbnails)
 			throw "Couldn't find thumbnails";
 		const markedAsReadStorage = getMarkedAsReadStorage(PixivService);
-		const hiddenStorage = getHiddenStorage(PixivService);
 
-		return [...thumbnails].map(t => this.parseThumbnail(t, markedAsReadStorage, hiddenStorage)).filter(a => a !== null) as ArticleWithRefs[];
+		return [...thumbnails].map(t => this.parseThumbnail(t, markedAsReadStorage)).filter(a => a !== null) as ArticleWithRefs[];
 	}
 
-	parseThumbnail(element: Element, markedAsReadStorage: string[], hiddenStorage: string[]): ArticleWithRefs | null {
+	parseThumbnail(element: Element, markedAsReadStorage: string[]): ArticleWithRefs | null {
 		const userAnchor = element.querySelector('section li > div > div:nth-last-child(1) > div > a') as HTMLAnchorElement;
 		const userId = parseInt(userAnchor.getAttribute('data-gtm-value') as string);
 		const name = userAnchor.textContent as string;
@@ -46,7 +45,7 @@ export class FollowPageEndpoint extends PageEndpoint {
 			url: getUserUrl(userId)
 		};
 
-		return parseThumbnail(element, markedAsReadStorage, hiddenStorage, user);
+		return parseThumbnail(element, markedAsReadStorage, user);
 	}
 }
 
@@ -77,7 +76,6 @@ export class FollowAPIEndpoint extends LoadableEndpoint {
 		const response: FollowAPIResponse = await fetch(url.toString()).then(r => r.json());
 
 		const markedAsReadStorage = getMarkedAsReadStorage(PixivService);
-		const hiddenStorage = getHiddenStorage(PixivService);
 
 		//For now, I'm only parsing illusts, not novels
 		return response.body.thumbnails.illust.map(illust => {
@@ -103,7 +101,6 @@ export class FollowAPIEndpoint extends LoadableEndpoint {
 					},
 					new Date(illust.createDate),
 					markedAsReadStorage,
-					hiddenStorage,
 					illust,
 					bookmarked,
 				),

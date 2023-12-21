@@ -1,7 +1,7 @@
 import type {ArticleIdPair, ArticleRefIdPair, ArticleWithRefs} from '../../articles';
 import type {TwitterUser} from './article';
 import TwitterArticle from './article';
-import {getHiddenStorage, getMarkedAsReadStorage} from '../../storages/serviceCache';
+import {getMarkedAsReadStorage} from '../../storages/serviceCache';
 import {parseMedia, parseText} from './apiV1';
 import type {Entities, ExtendedEntities} from './apiV1';
 import {TwitterService} from './service';
@@ -71,7 +71,7 @@ export function parseResponse(instructions: Instruction[]): ArticleWithRefs[] {
 	}
 }
 
-function articleFromResult(result: Result): ArticleWithRefs {
+export function articleFromResult(result: Result): ArticleWithRefs {
 	const {text, textHtml} = parseText(result.legacy.full_text, result.legacy.entities, result.legacy.extended_entities);
 
 	const article = (actualArticleRef?: ArticleRefIdPair) => new TwitterArticle(
@@ -87,7 +87,6 @@ function articleFromResult(result: Result): ArticleWithRefs {
 		} as TwitterUser,
 		new Date(result.legacy.created_at),
 		getMarkedAsReadStorage(TwitterService),
-		getHiddenStorage(TwitterService),
 		actualArticleRef,
 		parseMedia(result.legacy.extended_entities),
 		result.legacy.favorited,
@@ -119,7 +118,10 @@ function articleFromResult(result: Result): ArticleWithRefs {
 				article: article(),
 			}
 		}else {
-			const quoted = articleFromResult(result.quoted_status_result.result);
+			let quote_result = result.quoted_status_result.result;
+			if (quote_result.tweet !== undefined)
+				quote_result = quote_result.tweet;
+			const quoted = articleFromResult(quote_result);
 			if (quoted.type === 'repost' || quoted.type === 'reposts')
 				throw new Error('Quoted article is a retweet itself: ' + JSON.stringify(quoted));
 
@@ -195,7 +197,7 @@ type ItemContent = {
 	}
 }
 
-type Result = {
+export type Result = {
 	legacy: Legacy;
 	core: {
 		user_results: {
@@ -208,14 +210,13 @@ type Result = {
 				is_blue_verified: boolean
 				profile_image_shape: string
 				legacy: {
-					protected: boolean
 					can_dm: boolean
 					can_media_tag: boolean
-					created_at: Date
+					created_at: string
 					default_profile: boolean
 					default_profile_image: boolean
 					description: string
-					// entities: Entities
+					entities: Entities
 					fast_followers_count: number
 					favourites_count: number
 					followers_count: number
@@ -242,7 +243,17 @@ type Result = {
 			}
 		}
 	}
-	quoted_status_result?: { result: Result };
+	quoted_status_result?: {
+		result: {
+			tweet?: never
+		} & Result
+	} | {
+		result: {
+			__typename: string
+			tweet: Result
+			limitedActionResults: {}
+		}
+	};
 }
 
 type Legacy = {

@@ -1,6 +1,6 @@
 import {DummyService} from './service';
 import DummyArticle from './article';
-import {getHiddenStorage, getMarkedAsReadStorage} from '../../storages/serviceCache';
+import {getMarkedAsReadStorage} from '../../storages/serviceCache';
 import {Endpoint, RefreshType} from '../endpoints';
 import type {EndpointConstructorInfo} from '../endpoints';
 import type {ArticleWithRefs} from '../../articles';
@@ -13,11 +13,10 @@ export class DummyEndpoint extends Endpoint {
 
 	async refresh(_refreshType: RefreshType) {
 		const markAsReadStorage = getMarkedAsReadStorage(DummyService);
-		const hiddenStorage = getHiddenStorage(DummyService);
 
 		return [...Array(10).keys()].map(i => ({
 			type: 'normal',
-			article: new DummyArticle(i, 'bleh' + i, false, false, markAsReadStorage, hiddenStorage),
+			article: new DummyArticle(i, 'bleh' + i, false, false, markAsReadStorage),
 		} as ArticleWithRefs));
 	}
 

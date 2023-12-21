@@ -86,8 +86,6 @@ export const filterTypes: Filter['type'][] = [
 	'media',
 	'animated',
 	'notMarkedAsRead',
-	'liked',
-	'reposted',
 	'noRef',
 	'repost',
 	'quote',

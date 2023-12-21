@@ -1,7 +1,7 @@
 <script lang='ts'>
 	import type {Filter, FilterInstance} from './index'
 	import Dropdown from "../Dropdown.svelte";
-	import {filterTypes, getFilterName} from "./index.js"
+	import {filterTypes, getFilterName} from "./index"
 	import {defaultFilter} from './index'
 	import {getServices, type FilterTypeInfo} from '../services/service'
 	import {updateTimelinesStorageValue} from '../storages';
@@ -24,7 +24,7 @@
 		filterTypeInfo: m[1],
 	})))
 
-	function addFilter(filterType: Filter['type'], inverted: boolean, service: string = null) {
+	function addFilter(filterType: Filter['type'], inverted: boolean, service: string | null = null) {
 		instances.push({
 			filter: defaultFilter(filterType, service),
 			enabled: true,

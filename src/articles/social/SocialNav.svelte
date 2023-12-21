@@ -8,7 +8,7 @@
 	import {toggleMarkAsRead} from "../../services/service"
 	import Article from '../../articles'
 	import type {TimelineArticleProps} from '../index'
-	import {getServices} from "../../services/service.js";
+	import {getServices} from "../../services/service";
 
 	export let article: Article
 	export let repost: Article | null = null

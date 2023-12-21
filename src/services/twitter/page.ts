@@ -54,7 +54,6 @@ export function parseHTMLArticle(article: HTMLElement): ArticleWithRefs | null {
 			},
 			time,
 			[],
-			[],
 			undefined,
 			medias,
 			false,

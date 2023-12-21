@@ -15,7 +15,6 @@ import { getCookie, getServiceStorage } from 'storages';
 import { fetchExtension } from 'services/extension';
 import {get, writable} from 'svelte/store';
 import ServiceSettings from './ServiceSettings.svelte';
-import type {GelbooruArticle} from '../../lib/services/extended-soshalthing-svelte/gelbooru/article';
 
 export const TwitterService: Service<TwitterArticle> = {
 	...newService('Twitter'),
@@ -64,9 +63,6 @@ export const TwitterService: Service<TwitterArticle> = {
 		(init.headers as Record<string, string>)['Authorization'] = `Bearer ${bearerToken}`;
 
 		if (this.isOnDomain) {
-			if (init?.headers === undefined)
-				throw new Error('Cannot fetch on twitter service without headers');
-
 			const csrfToken = getCookie('ct0');
 			if (csrfToken === null)
 				throw new Error('Csrf token not found');

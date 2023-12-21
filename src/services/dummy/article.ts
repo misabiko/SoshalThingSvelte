@@ -23,18 +23,4 @@ export default class DummyArticle extends Article {
 	get numberId() {
 		return this.id;
 	}
-
-	getLikeCount(): number {
-		return this.liked ? 1 : 0;
-	}
-	getLiked(): boolean {
-		return this.liked;
-	}
-
-	getRepostCount(): number {
-		return this.reposted ? 1 : 0;
-	}
-	getReposted(): boolean {
-		return this.reposted;
-	}
 }

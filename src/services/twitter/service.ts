@@ -2,13 +2,14 @@ import type TwitterArticle from './article';
 import {getWritable, type Service} from '../service';
 import {newService, registerService} from '../service';
 import {STANDARD_ACTIONS} from '../actions';
-import Article, {type ArticleIdPair, type ArticleWithRefs, getRootArticle} from '../../articles';
+import Article, {type ArticleIdPair, type ArticleWithRefs, getActualArticle, getRootArticle} from '../../articles';
 import type {Filter} from '../../filters';
 import {type FavoriteResponse, type ResponseError, type RetweetResponse} from './pageAPI';
 import { getCookie, getServiceStorage } from 'storages';
 import { fetchExtension } from 'services/extension';
 import {get, writable} from 'svelte/store';
 import ServiceSettings from './ServiceSettings.svelte';
+import type {GelbooruArticle} from '../../lib/services/extended-soshalthing-svelte/gelbooru/article';
 
 export const TwitterService: Service<TwitterArticle> = {
 	...newService('Twitter'),
@@ -87,6 +88,26 @@ export const TwitterService: Service<TwitterArticle> = {
 			});
 		}else {
 			throw new Error('Service is not on domain and has no tab info');
+		}
+	},
+	sortMethods: {
+		likes: {
+			name: 'Likes',
+			compare(a, b) {
+				return ((getActualArticle(a) as TwitterArticle).likeCount || 0) - ((getActualArticle(b) as TwitterArticle).likeCount || 0)
+			},
+			directionLabel(reversed: boolean): string {
+				return reversed ? 'Descending' : 'Ascending'
+			}
+		},
+		retweets: {
+			name: 'Retweets',
+			compare(a, b) {
+				return ((getActualArticle(a) as TwitterArticle).retweetCount || 0) - ((getActualArticle(b) as TwitterArticle).retweetCount || 0)
+			},
+			directionLabel(reversed: boolean): string {
+				return reversed ? 'Descending' : 'Ascending'
+			}
 		}
 	},
 	isOnDomain: globalThis.window?.location?.hostname === 'twitter.com'

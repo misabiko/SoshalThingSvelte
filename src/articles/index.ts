@@ -60,22 +60,6 @@ export default abstract class Article {
 		if (newArticle.creationTime !== undefined)
 			(this.creationTime as Date) = newArticle.creationTime;
 	}
-
-	//TODO Replace with dynamic action buttons
-	//Currently only used to sort by likes
-	getLikeCount() {
-		return 0;
-	}
-	getLiked() {
-		return false;
-	}
-
-	getRepostCount() {
-		return 0;
-	}
-	getReposted() {
-		return false;
-	}
 }
 
 export type ArticleId = string | number | bigint

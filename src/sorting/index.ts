@@ -19,16 +19,12 @@ export type SortInfo = {
 export enum SortMethod {
 	Id,
 	Date,
-	Likes,
-	Reposts,
 	Custom,
 }
 
 export const genericSortMethods = [
 	SortMethod.Id,
 	SortMethod.Date,
-	SortMethod.Likes,
-	SortMethod.Reposts,
 ];
 
 export function compare(info: SortInfo): (a: ArticleWithRefs | ArticleProps, b: ArticleWithRefs | ArticleProps) => number {
@@ -41,11 +37,6 @@ export function compare(info: SortInfo): (a: ArticleWithRefs | ArticleProps, b: 
 			}
 			case SortMethod.Date:
 				return (getRootArticle(a).creationTime?.getTime() || 0) - (getRootArticle(b).creationTime?.getTime() || 0);
-			//TODO Replace with per-service sort method
-			case SortMethod.Likes:
-				return getActualArticle(a).getLikeCount() - getActualArticle(b).getLikeCount();
-			case SortMethod.Reposts:
-				return getActualArticle(a).getRepostCount() - getActualArticle(b).getRepostCount();
 			case SortMethod.Custom: {
 				if (getRootArticle(a).idPair.service !== info?.customMethod?.service || getRootArticle(b).idPair.service !== info.customMethod.service)
 					return 0;
@@ -72,10 +63,6 @@ export function methodName(method: SortMethod): string {
 			return 'Id';
 		case SortMethod.Date:
 			return 'Date';
-		case SortMethod.Likes:
-			return 'Likes';
-		case SortMethod.Reposts:
-			return 'Reposts';
 		case SortMethod.Custom:
 			return 'Custom';
 	}

@@ -48,5 +48,3 @@ test('Add Timeline local storage', async ({page}) => {
 	expect(Object.entries(storage)).toHaveLength(1);
 	expect(storage).toHaveProperty('Timeline 0');
 });
-
-//TODO Add TimelineEditMenu component tests in tests/components folder

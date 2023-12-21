@@ -320,12 +320,6 @@ function parseSortInfo(storage: TimelineStorage['sortInfo']): SortInfo {
 			case 'date':
 				method = SortMethod.Date;
 				break;
-			case 'likes':
-				method = SortMethod.Likes;
-				break;
-			case 'reposts':
-				method = SortMethod.Reposts;
-				break;
 		}
 
 		return {
@@ -350,12 +344,6 @@ function sortInfoToStorage(sortInfo: SortInfo): TimelineStorage['sortInfo'] {
 				break;
 			case SortMethod.Date:
 				method = 'Date';
-				break;
-			case SortMethod.Likes:
-				method = 'Likes';
-				break;
-			case SortMethod.Reposts:
-				method = 'Reposts';
 				break;
 		}
 

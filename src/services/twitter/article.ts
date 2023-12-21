@@ -46,20 +46,6 @@ export default class TwitterArticle extends Article {
 
 		this.deleted ||= newArticle.deleted;
 	}
-
-	getLikeCount(): number {
-		return this.likeCount;
-	}
-	getLiked(): boolean {
-		return this.liked;
-	}
-
-	getRepostCount(): number {
-		return this.retweetCount;
-	}
-	getReposted(): boolean {
-		return this.retweeted;
-	}
 }
 
 export interface TwitterUser extends ArticleAuthor {

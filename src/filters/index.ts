@@ -154,9 +154,8 @@ function keepArticleGeneric(articleWithRefs: ArticleWithRefs, index: number, fil
 					return !articleWithRefs.article.markedAsRead && keepArticleGeneric(articleWithRefs.reposted, index, filter);
 				case 'reposts':
 					return articleWithRefs.reposts.every(a => !a.markedAsRead) && keepArticleGeneric(articleWithRefs.reposted, index, filter);
-				//TODO Only filter quote and not quoted?
 				case 'quote':
-					return !articleWithRefs.article.markedAsRead && keepArticleGeneric(articleWithRefs.quoted, index, filter);
+					return !articleWithRefs.article.markedAsRead// && keepArticleGeneric(articleWithRefs.quoted, index, filter);
 			}
 		case 'liked':
 			return getActualArticle(articleWithRefs).getLiked();

@@ -123,7 +123,7 @@ export function getMarkedAsReadStorage(service: Service<any>): string[] {
 
 export function getHiddenStorage(service: Service<any>): string[] {
 	const item = localStorage.getItem(LOCAL_CACHE_STORAGE_KEY);
-	const parsed: LocalCacheStorage | null = item !== null ? JSON.parse(item) : null;
+	const parsed: LocalCacheStorage | null = item /*!== null workaround for tests*/ ? JSON.parse(item) : null;
 	if (parsed?.services === undefined)
 		return [];
 	return parsed.services[service.name]?.hiddenArticles || [];

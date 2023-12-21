@@ -85,7 +85,7 @@
 		pointer-events: auto;
 	}
 
-	/* TODO Hack */
+	/* Hack */
 	.holderBox :global(.dropdown-content) {
 		overflow-x: hidden;
 	}

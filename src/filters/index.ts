@@ -28,6 +28,7 @@ type GenericFilter = {
 	byUsername?: string
 	service: null
 } | {
+	//TODO Test quote filter
 	type: 'quote'
 	service: null
 	byUsername?: string
@@ -162,6 +163,7 @@ function keepArticleGeneric(articleWithRefs: ArticleWithRefs, index: number, fil
 					return !articleWithRefs.article.markedAsRead && keepArticleGeneric(articleWithRefs.reposted, index, filter);
 				case 'reposts':
 					return articleWithRefs.reposts.every(a => !a.markedAsRead) && keepArticleGeneric(articleWithRefs.reposted, index, filter);
+				//TODO Only filter quote and not quoted?
 				case 'quote':
 					return !articleWithRefs.article.markedAsRead && keepArticleGeneric(articleWithRefs.quoted, index, filter);
 			}
@@ -173,6 +175,7 @@ function keepArticleGeneric(articleWithRefs: ArticleWithRefs, index: number, fil
 					return !articleWithRefs.article.hidden && keepArticleGeneric(articleWithRefs.reposted, index, filter);
 				case 'reposts':
 					return articleWithRefs.reposts.every(a => !a.hidden) && keepArticleGeneric(articleWithRefs.reposted, index, filter);
+				//TODO Only filter quote and not quoted?
 				case 'quote':
 					return !articleWithRefs.article.hidden && keepArticleGeneric(articleWithRefs.quoted, index, filter);
 			}

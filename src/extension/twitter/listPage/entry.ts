@@ -1,4 +1,4 @@
-import { tryInject } from '..';
+import { tryInject } from '../../index';
 import ListPage from './ListPage.svelte';
 
 tryInject(() => {

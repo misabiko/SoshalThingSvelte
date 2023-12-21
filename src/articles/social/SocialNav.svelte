@@ -61,7 +61,7 @@
 		color: var(--primary);
 	}
 
-	:global(button.articleButton.borderless-button.actionned > span > svg) {
+	:global(button.articleButton.borderless-button.actioned > span > svg) {
 		color: var(--primary);
 	}
 
@@ -75,26 +75,26 @@
 		{#each actions as action (action.key)}
 			{@const count = action.count ? action.count(article) : 0}
 			{@const disabled = action.disabled ? action.disabled(article) : false}
-			{@const actionned = action.actionned(article)}
+			{@const actioned = action.actioned(article)}
 			{@const isHovered = hoveredActions.has(action.key)}
 			<!-- svelte-ignore a11y-mouse-events-have-key-events -->
 			<button
 				class='articleButton borderless-button'
-				class:actionned
+				class:actioned
 				title={action.name}
 				on:click={() => action.action(article.idPair)}
-				disabled={disabled || (actionned && !action.togglable)}
+				disabled={disabled || (actioned && !action.togglable)}
 				on:mouseover={() => updateActionHover(action.key, true)}
 				on:mouseout={() => updateActionHover(action.key, false)}
 			>
 				<span class='icon'>
 					<Fa
-						icon={action.actionnedIcon && actionned ? action.actionnedIcon : action.icon}
-						color={!disabled && (actionned || isHovered) ? action.color : undefined}
+						icon={action.actionnedIcon && actioned ? action.actionnedIcon : action.icon}
+						color={!disabled && (actioned || isHovered) ? action.color : undefined}
 					/>
 				</span>
 				{#if count}
-					<span style:color={!disabled && (actionned || isHovered) ? action.color : 'inherit'}>{count}</span>
+					<span style:color={!disabled && (actioned || isHovered) ? action.color : 'inherit'}>{count}</span>
 				{/if}
 			</button>
 		{/each}

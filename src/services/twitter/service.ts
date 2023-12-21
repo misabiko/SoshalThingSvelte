@@ -24,7 +24,7 @@ export const TwitterService: Service<TwitterArticle> = {
 			...STANDARD_ACTIONS.like,
 			//TODO Disable actions when twitter isn't available, but also don't parse localstorage for every article
 			action: toggleLikePage,
-			actionned(article) { return article.liked; },
+			actioned(article) { return article.liked; },
 			disabled(article) { return article.deleted; },
 			count(article) { return article.likeCount; },
 		},
@@ -32,7 +32,7 @@ export const TwitterService: Service<TwitterArticle> = {
 			...STANDARD_ACTIONS.repost,
 			togglable: false,
 			action: retweetPage,
-			actionned(article) { return article.retweeted; },
+			actioned(article) { return article.retweeted; },
 			disabled(article) { return article.deleted; },
 			count(article) { return article.retweetCount; },
 		},

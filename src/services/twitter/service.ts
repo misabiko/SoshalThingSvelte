@@ -2,7 +2,13 @@ import type TwitterArticle from './article';
 import {getWritable, type Service} from '../service';
 import {newService, registerService} from '../service';
 import {STANDARD_ACTIONS} from '../actions';
-import Article, {type ArticleIdPair, type ArticleWithRefs, getActualArticle, getRootArticle} from '../../articles';
+import Article, {
+	type ArticleIdPair,
+	type ArticleWithRefs,
+	articleWithRefToArray,
+	getActualArticle,
+	getRootArticle
+} from '../../articles';
 import type {Filter} from '../../filters';
 import {type FavoriteResponse, type ResponseError, type RetweetResponse} from './pageAPI';
 import { getCookie, getServiceStorage } from 'storages';
@@ -36,8 +42,14 @@ export const TwitterService: Service<TwitterArticle> = {
 			return true;
 
 		switch (filter.type) {
-			case 'notDeleted':
-				return !(getRootArticle(articleWithRefs) as TwitterArticle).deleted;
+			case 'deleted':
+				return (getRootArticle(articleWithRefs) as TwitterArticle).deleted;
+			case 'liked':
+				return (articleWithRefToArray(articleWithRefs) as TwitterArticle[])
+					.some(a => a.liked)
+			case 'retweeted':
+				return (articleWithRefToArray(articleWithRefs) as TwitterArticle[])
+					.some(a => a.retweeted)
 			default:
 				return true;
 		}
@@ -109,6 +121,20 @@ export const TwitterService: Service<TwitterArticle> = {
 				return reversed ? 'Descending' : 'Ascending'
 			}
 		}
+	},
+	filterTypes: {
+		liked: {
+			name: (inverted) => inverted ? 'Not liked' : 'Liked',
+			props: [],
+		},
+		retweeted: {
+			name: (inverted) => inverted ? 'Not retweeted' : 'Retweeted',
+			props: [],
+		},
+		deleted: {
+			name: (inverted) => inverted ? 'Not deleted' : 'Deleted',
+			props: [],
+		},
 	},
 	isOnDomain: globalThis.window?.location?.hostname === 'twitter.com'
 		|| globalThis.window?.location?.hostname === 'x.com',

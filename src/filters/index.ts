@@ -1,9 +1,5 @@
 import type { ArticleWithRefs } from '../articles';
-import {
-	articleWithRefToArray,
-	getActualArticle,
-
-} from '../articles';
+import {articleWithRefToArray} from '../articles';
 import {getServices} from '../services/service';
 import {type ArticleMedia, MediaType} from '../articles/media';
 
@@ -21,7 +17,7 @@ export type Filter = {
 } | GenericFilter
 
 type GenericFilter = {
-	type: 'media' | 'animated' | 'notMarkedAsRead' | 'liked' | 'reposted' | 'noRef' | 'selfRepost' | 'selfQuote'
+	type: 'media' | 'animated' | 'notMarkedAsRead' | 'noRef' | 'selfRepost' | 'selfQuote'
 	service: null
 } | {
 	type: 'repost'
@@ -49,10 +45,6 @@ export function getFilterName(filterType: GenericFilter['type'], inverted: boole
 				return 'Not Animated';
 			case 'notMarkedAsRead':
 				return 'Marked as read';
-			case 'liked':
-				return 'Not liked';
-			case 'reposted':
-				return 'Not reposted';
 			case 'noRef':
 				return 'References other articles';
 			case 'repost':
@@ -74,10 +66,6 @@ export function getFilterName(filterType: GenericFilter['type'], inverted: boole
 				return 'Animated';
 			case 'notMarkedAsRead':
 				return 'Not marked as read';
-			case 'liked':
-				return 'Liked';
-			case 'reposted':
-				return 'Reposted';
 			case 'noRef':
 				return "Doesn't references other articles";
 			case 'repost':
@@ -157,10 +145,6 @@ function keepArticleGeneric(articleWithRefs: ArticleWithRefs, index: number, fil
 				case 'quote':
 					return !articleWithRefs.article.markedAsRead// && keepArticleGeneric(articleWithRefs.quoted, index, filter);
 			}
-		case 'liked':
-			return getActualArticle(articleWithRefs).getLiked();
-		case 'reposted':
-			return getActualArticle(articleWithRefs).getReposted();
 		case 'noRef':
 			return articleWithRefs.type === 'normal';
 		case 'repost':

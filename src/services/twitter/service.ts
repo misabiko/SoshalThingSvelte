@@ -16,6 +16,7 @@ import { fetchExtension } from 'services/extension';
 import {get, writable} from 'svelte/store';
 import ServiceSettings from './ServiceSettings.svelte';
 
+//TODO Add TwitterNotificationService
 export const TwitterService: Service<TwitterArticle> = {
 	...newService('Twitter'),
 	articleActions: {

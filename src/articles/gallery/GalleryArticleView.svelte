@@ -225,7 +225,7 @@
 						{disabled}
 					>
 						<span class='icon darkIcon'>
-							<Fa icon={action.actionnedIcon && actioned ? action.actionnedIcon : action.icon} class='is-small'/>
+							<Fa icon={action.actionedIcon && actioned ? action.actionedIcon : action.icon} class='is-small'/>
 						</span>
 					</button>
 				{/if}

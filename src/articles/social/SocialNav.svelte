@@ -89,7 +89,7 @@
 			>
 				<span class='icon'>
 					<Fa
-						icon={action.actionnedIcon && actioned ? action.actionnedIcon : action.icon}
+						icon={action.actionedIcon && actioned ? action.actionedIcon : action.icon}
 						color={!disabled && (actioned || isHovered) ? action.color : undefined}
 					/>
 				</span>

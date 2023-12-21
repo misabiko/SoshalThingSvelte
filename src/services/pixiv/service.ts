@@ -43,7 +43,7 @@ export const PixivService: PixivServiceType = {
 		[STANDARD_ACTIONS.like.key]: {
 			...STANDARD_ACTIONS.like,
 			icon: faFaceSmile,
-			actionnedIcon: undefined,
+			actionedIcon: undefined,
 			color: undefined,
 			togglable: false,
 			async action(idPair: ArticleIdPair) {
@@ -84,7 +84,7 @@ export const PixivService: PixivServiceType = {
 			name: 'Bookmark',
 			color: STANDARD_ACTIONS.like.color,
 			icon: STANDARD_ACTIONS.like.icon,
-			actionnedIcon: STANDARD_ACTIONS.like.actionnedIcon,
+			actionedIcon: STANDARD_ACTIONS.like.actionedIcon,
 			togglable: false,
 			index: 1,
 			async action(idPair) {
@@ -145,6 +145,7 @@ export const PixivService: PixivServiceType = {
 		},
 	},
 	settings: ServiceSettings,
+	//TODO Pixiv tabInfo
 };
 
 registerService(PixivService);

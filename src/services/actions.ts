@@ -1,5 +1,5 @@
 import type {ArticleIdPair} from '../articles';
-import {getServices, toggleHide, toggleMarkAsRead} from './service';
+import {getServices, toggleMarkAsRead} from './service';
 import type {IconDefinition} from '@fortawesome/free-solid-svg-icons';
 import {faHeart as faHeartReg} from '@fortawesome/free-regular-svg-icons';
 import {faEye, faEyeSlash, faHeart, faRetweet} from '@fortawesome/free-solid-svg-icons';
@@ -55,21 +55,12 @@ export const STANDARD_ACTIONS: { [key: string]: StandardAction } = {
 		togglable: true,
 		index: 3,
 	},
-	hide: {
-		key: 'hide',
-		name: 'Hide',
-		togglable: true,
-		index: 4,
-	},
 };
 
 export function articleAction(action: string, idPair: ArticleIdPair) {
 	switch (action) {
 		case STANDARD_ACTIONS.markAsRead.key:
 			toggleMarkAsRead(idPair);
-			break;
-		case STANDARD_ACTIONS.hide.key:
-			toggleHide(idPair);
 			break;
 		default:
 			if (Object.hasOwn(getServices()[idPair.service].articleActions, action))

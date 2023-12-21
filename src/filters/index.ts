@@ -21,7 +21,7 @@ export type Filter = {
 } | GenericFilter
 
 type GenericFilter = {
-	type: 'media' | 'animated' | 'notMarkedAsRead' | 'notHidden' | 'liked' | 'reposted' | 'noRef' | 'selfRepost' | 'selfQuote'
+	type: 'media' | 'animated' | 'notMarkedAsRead' | 'liked' | 'reposted' | 'noRef' | 'selfRepost' | 'selfQuote'
 	service: null
 } | {
 	type: 'repost'
@@ -49,8 +49,6 @@ export function getFilterName(filterType: GenericFilter['type'], inverted: boole
 				return 'Not Animated';
 			case 'notMarkedAsRead':
 				return 'Marked as read';
-			case 'notHidden':
-				return 'Hidden';
 			case 'liked':
 				return 'Not liked';
 			case 'reposted':
@@ -76,8 +74,6 @@ export function getFilterName(filterType: GenericFilter['type'], inverted: boole
 				return 'Animated';
 			case 'notMarkedAsRead':
 				return 'Not marked as read';
-			case 'notHidden':
-				return 'Not hidden';
 			case 'liked':
 				return 'Liked';
 			case 'reposted':
@@ -102,7 +98,6 @@ export const filterTypes: Filter['type'][] = [
 	'media',
 	'animated',
 	'notMarkedAsRead',
-	'notHidden',
 	'liked',
 	'reposted',
 	'noRef',
@@ -135,10 +130,6 @@ export const defaultFilterInstances: FilterInstance[] = [
 		filter: {type: 'notMarkedAsRead', service: null},
 		enabled: true,
 		inverted: false,
-	}, {
-		filter: {type: 'notHidden', service: null},
-		enabled: true,
-		inverted: false,
 	},
 ];
 
@@ -166,18 +157,6 @@ function keepArticleGeneric(articleWithRefs: ArticleWithRefs, index: number, fil
 				//TODO Only filter quote and not quoted?
 				case 'quote':
 					return !articleWithRefs.article.markedAsRead && keepArticleGeneric(articleWithRefs.quoted, index, filter);
-			}
-		case 'notHidden':
-			switch (articleWithRefs.type) {
-				case 'normal':
-					return !articleWithRefs.article.hidden;
-				case 'repost':
-					return !articleWithRefs.article.hidden && keepArticleGeneric(articleWithRefs.reposted, index, filter);
-				case 'reposts':
-					return articleWithRefs.reposts.every(a => !a.hidden) && keepArticleGeneric(articleWithRefs.reposted, index, filter);
-				//TODO Only filter quote and not quoted?
-				case 'quote':
-					return !articleWithRefs.article.hidden && keepArticleGeneric(articleWithRefs.quoted, index, filter);
 			}
 		case 'liked':
 			return getActualArticle(articleWithRefs).getLiked();

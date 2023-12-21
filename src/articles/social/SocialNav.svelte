@@ -5,7 +5,7 @@
 		faEllipsisH, faExpandAlt, faEye, faSpinner,
 	} from '@fortawesome/free-solid-svg-icons'
 	import Dropdown from '../../Dropdown.svelte'
-	import {toggleMarkAsRead, toggleHide} from "../../services/service"
+	import {toggleMarkAsRead} from "../../services/service"
 	import Article from '../../articles'
 	import type {TimelineArticleProps} from '../index'
 	import {getServices} from "../../services/service.js";
@@ -125,9 +125,6 @@
 
 			<button class='dropdown-item' on:click={() => toggleMarkAsRead(article.idPair)}>
 				Mark as read
-			</button>
-			<button class='dropdown-item' on:click={() => toggleHide(article.idPair)}>
-				Hide
 			</button>
 			<button class='dropdown-item' on:click={() => timelineProps.compact = !timelineProps.compact}>
 				{ timelineProps.compact ? 'Show expanded' : 'Show compact' }

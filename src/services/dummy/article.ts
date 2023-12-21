@@ -9,16 +9,14 @@ export default class DummyArticle extends Article {
 		public liked: boolean,
 		public reposted: boolean,
 		markedAsReadStorage: string[],
-		hiddenStorage: string[],) {
+	) {
 		super({
 			id,
 			text,
 			url: 'https://github.com/misabiko/SoshalThingSvelte',
 			medias: [],
 			markedAsRead: false,
-			hidden: false,
 			markedAsReadStorage,
-			hiddenStorage,
 		});
 	}
 

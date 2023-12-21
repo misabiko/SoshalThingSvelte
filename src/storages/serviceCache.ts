@@ -16,11 +16,10 @@ type SessionCacheStorage = {
 	}
 }
 
+//Might be redundant now that markAsHidden has been removed
 type LocalCacheStorage = {
 	services: {
-		[name: string]: {
-			hiddenArticles: string[],
-		}
+		[name: string]: {}
 	}
 }
 
@@ -53,34 +52,6 @@ export function updateMarkAsReadStorage() {
 	}
 
 	storageType.setItem(MAIN_STORAGE_KEY, JSON.stringify(storage));
-}
-
-export function updateHiddenStorage() {
-	const item = localStorage.getItem(LOCAL_CACHE_STORAGE_KEY);
-	let storage : LocalCacheStorage | null = item !== null ? JSON.parse(item) : null;
-	if (storage === null)
-		storage = {services: {}};
-	else if (storage.services === undefined)
-		storage.services = {};
-
-	for (const service of Object.values(getServices())) {
-		const hiddenArticles = new Set(storage.services[service.name]?.hiddenArticles || []);
-		for (const article of getServiceArticles(service)) {
-			if (article.hidden)
-				hiddenArticles.add(article.idPair.id.toString());
-			else
-				hiddenArticles.delete(article.idPair.id.toString());
-		}
-
-		if (Object.hasOwn(storage.services, service.name))
-			storage.services[service.name].hiddenArticles = [...hiddenArticles];
-		else
-			storage.services[service.name] = {
-				hiddenArticles:  [...hiddenArticles],
-			};
-	}
-
-	localStorage.setItem(LOCAL_CACHE_STORAGE_KEY, JSON.stringify(storage));
 }
 
 export function updateCachedArticlesStorage() {
@@ -119,14 +90,6 @@ export function getMarkedAsReadStorage(service: Service<any>): string[] {
 	if (parsed?.services === undefined)
 		return [];
 	return parsed.services[service.name]?.articlesMarkedAsRead || [];
-}
-
-export function getHiddenStorage(service: Service<any>): string[] {
-	const item = localStorage.getItem(LOCAL_CACHE_STORAGE_KEY);
-	const parsed: LocalCacheStorage | null = item /*!== null workaround for tests*/ ? JSON.parse(item) : null;
-	if (parsed?.services === undefined)
-		return [];
-	return parsed.services[service.name]?.hiddenArticles || [];
 }
 
 export function getCachedArticlesStorage(service: Service<any>): { [id: string]: object } {

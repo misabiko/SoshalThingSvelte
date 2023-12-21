@@ -3,7 +3,7 @@ import type {ArticleWithRefs} from '../../../articles';
 import {PixivService} from '../service';
 import PixivArticle from '../article';
 import type {PixivUser} from '../article';
-import {getHiddenStorage, getMarkedAsReadStorage} from '../../../storages/serviceCache';
+import {getMarkedAsReadStorage} from '../../../storages/serviceCache';
 import {getEachPageURL, getUserUrl, parseThumbnail, type BookmarkData} from './index';
 import {MediaLoadType, MediaType} from '../../../articles/media';
 import {avatarHighRes} from './bookmarks';
@@ -44,13 +44,12 @@ export default class UserPageEndpoint extends PageEndpoint {
 		if (!thumbnails)
 			throw "Couldn't find thumbnails";
 		const markedAsReadStorage = getMarkedAsReadStorage(PixivService);
-		const hiddenStorage = getHiddenStorage(PixivService);
 
-		return [...thumbnails].map(t => this.parseThumbnail(t, markedAsReadStorage, hiddenStorage)).filter(a => a !== null) as ArticleWithRefs[];
+		return [...thumbnails].map(t => this.parseThumbnail(t, markedAsReadStorage)).filter(a => a !== null) as ArticleWithRefs[];
 	}
 
-	parseThumbnail(element: Element, markedAsReadStorage: string[], hiddenStorage: string[]): ArticleWithRefs | null {
-		return parseThumbnail(element, markedAsReadStorage, hiddenStorage, this.user);
+	parseThumbnail(element: Element, markedAsReadStorage: string[]): ArticleWithRefs | null {
+		return parseThumbnail(element, markedAsReadStorage, this.user);
 	}
 }
 
@@ -100,7 +99,6 @@ export class UserAPIEndpoint extends LoadableEndpoint {
 		}
 
 		const markedAsReadStorage = getMarkedAsReadStorage(PixivService);
-		const hiddenStorage = getHiddenStorage(PixivService);
 
 		//For now, I'm only parsing illusts, not novels
 		return Object.values(response.body.works).map(illust => {
@@ -126,7 +124,6 @@ export class UserAPIEndpoint extends LoadableEndpoint {
 					},
 					new Date(illust.createDate),
 					markedAsReadStorage,
-					hiddenStorage,
 					illust,
 					bookmarked,
 				),

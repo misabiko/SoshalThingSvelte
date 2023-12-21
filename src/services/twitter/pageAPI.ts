@@ -1,7 +1,7 @@
 import type {ArticleIdPair, ArticleRefIdPair, ArticleWithRefs} from '../../articles';
 import type {TwitterUser} from './article';
 import TwitterArticle from './article';
-import {getHiddenStorage, getMarkedAsReadStorage} from '../../storages/serviceCache';
+import {getMarkedAsReadStorage} from '../../storages/serviceCache';
 import {parseMedia, parseText} from './apiV1';
 import type {Entities, ExtendedEntities} from './apiV1';
 import {TwitterService} from './service';
@@ -87,7 +87,6 @@ export function articleFromResult(result: Result): ArticleWithRefs {
 		} as TwitterUser,
 		new Date(result.legacy.created_at),
 		getMarkedAsReadStorage(TwitterService),
-		getHiddenStorage(TwitterService),
 		actualArticleRef,
 		parseMedia(result.legacy.extended_entities),
 		result.legacy.favorited,

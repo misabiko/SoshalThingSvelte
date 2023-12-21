@@ -3,7 +3,7 @@ import {Endpoint, RefreshType} from '../../endpoints';
 import type {ArticleWithRefs} from '../../../articles';
 import type * as Misskey from 'misskey-js';
 import {fromAPI} from '../article';
-import {getHiddenStorage, getMarkedAsReadStorage} from '../../../storages/serviceCache';
+import {getMarkedAsReadStorage} from '../../../storages/serviceCache';
 import {MisskeyService} from '../service';
 import {registerEndpointConstructor} from '../../service';
 
@@ -41,10 +41,9 @@ export class TimelineEndpoint extends Endpoint {
 		});
 
 		const markedAsReadStorage = getMarkedAsReadStorage(MisskeyService);
-		const hiddenStorage = getHiddenStorage(MisskeyService);
 
 		console.log(notes);
-		return notes.map(n => fromAPI(n, markedAsReadStorage, hiddenStorage));
+		return notes.map(n => fromAPI(n, markedAsReadStorage));
 	}
 
 	static readonly constructorInfo: EndpointConstructorInfo = {

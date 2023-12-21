@@ -11,7 +11,6 @@
 	import Dropdown from "../../Dropdown.svelte"
 	import {
 		fetchArticle,
-		toggleHide,
 		toggleMarkAsRead,
 		getServices,
 	} from "../../services/service"
@@ -185,9 +184,6 @@
 				</span>
 				<button class='dropdown-item' on:click={() => toggleMarkAsRead(actualArticle.idPair)}>
 					Mark as read
-				</button>
-				<button class='dropdown-item' on:click={() => toggleHide(actualArticle.idPair)}>
-					Hide
 				</button>
 				{#if actualArticle.medias.some(m => !m.loaded) }
 					<button

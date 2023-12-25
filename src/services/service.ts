@@ -25,14 +25,35 @@ export interface Service<A extends Article = Article> {
 	defaultFilter(filterType: string): Filter
 	filterTypes: { [name: string]: FilterTypeInfo }
 	sortMethods: { [name: string]: SortMethodInfo }
+	//Might have to move to per-endpoint
+	fetchInfo: FetchInfo,
 	fetch: (url: RequestInfo | URL, init?: RequestInit) => Promise<any>
+	isOnDomain: boolean | null
+	settings: ConstructorOfATypedSvelteComponent | null	//TODO Try retyping other components to ConstructorOfATypedSvelteComponent
+}
+
+export type FetchInfo =
+| {
+	type: FetchType.OnDomainOnly
+	tabInfo?: never
+}
+| {
+	type: FetchType.Extension
+	tabInfo?: never
+}
+| {
+	type: FetchType.Tab
 	tabInfo: {
 		tabId: Writable<number | null>,
 		url: string,
 		matchUrl: string[],
-	} | null
-	isOnDomain: boolean | null
-	settings: ConstructorOfATypedSvelteComponent | null	//TODO Try retyping other components to ConstructorOfATypedSvelteComponent
+	}
+}
+
+export enum FetchType {
+	OnDomainOnly,
+	Extension,
+	Tab,
 }
 
 export type SortMethodInfo = {
@@ -158,16 +179,25 @@ export function newService<A extends Article = Article>(name: string): Service<A
 		defaultFilter(filterType: string) { return {type:filterType, service: name};},
 		filterTypes: {},
 		sortMethods: {},
+		fetchInfo: { type: FetchType.OnDomainOnly },
 		async fetch(url, init) {
 			if (this.isOnDomain) {
 				const response = await fetch(url, init);
 				return await response.json();
-			}else if (this.tabInfo) {
-				let tabId = get(this.tabInfo.tabId);
+			}else if (this.fetchInfo.type === FetchType.Extension) {
+				return await fetchExtension('extensionFetch', {
+					soshalthing: true,
+					//TODO Use Content-Type to determine fetchJson or fetchText
+					// request: 'fetchText',
+					fetch: url,
+					fetchOptions: init
+				}).then(r => JSON.parse(r as string));
+			}else if (this.fetchInfo.type === FetchType.Tab) {
+				let tabId = get(this.fetchInfo.tabInfo.tabId);
 				if (tabId === null) {
-					this.tabInfo.tabId.set(tabId = await fetchExtension('getTabId', {
-						url: this.tabInfo.url,
-						matchUrl: this.tabInfo.matchUrl
+					this.fetchInfo.tabInfo.tabId.set(tabId = await fetchExtension('getTabId', {
+						url: this.fetchInfo.tabInfo.url,
+						matchUrl: this.fetchInfo.tabInfo.matchUrl
 					}));
 				}
 
@@ -184,7 +214,6 @@ export function newService<A extends Article = Article>(name: string): Service<A
 				throw new Error('Service is not on domain and has no tab info');
 			}
 		},
-		tabInfo: null,
 		isOnDomain: null,
 		settings: null,
 	};

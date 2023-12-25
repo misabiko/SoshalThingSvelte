@@ -1,14 +1,20 @@
 import type PixivArticle from './article';
-import type {FetchingService, Service} from '../service';
-import {getWritable, newFetchingService, newService, registerService} from '../service';
-import type {Writable} from 'svelte/store';
-import {get} from 'svelte/store';
-import Article, {articleWithRefToArray, type ArticleIdPair, getRootArticle, type ArticleWithRefs} from '../../articles';
+import {
+	type FetchingService,
+	FetchType, getServices,
+	getWritable,
+	newFetchingService,
+	newService,
+	registerService,
+	type Service
+} from '../service';
+import {get, type Writable} from 'svelte/store';
+import Article, {type ArticleIdPair, type ArticleWithRefs, articleWithRefToArray, getRootArticle} from '../../articles';
 import {STANDARD_ACTIONS} from '../actions';
 import {getServiceStorage} from '../../storages';
 import {getRatio, MediaLoadType, MediaType} from '../../articles/media';
 import {faFaceSmile} from '@fortawesome/free-solid-svg-icons';
-import type { Filter } from 'filters';
+import type {Filter} from 'filters';
 import ServiceSettings from './ServiceSettings.svelte';
 
 export const PixivService: PixivServiceType = {
@@ -16,7 +22,7 @@ export const PixivService: PixivServiceType = {
 	...newFetchingService(),
 	async fetchArticle(store: Writable<PixivArticle>) {
 		const article = get(store);
-		const json: PagesResponse = await fetch(`https://www.pixiv.net/ajax/illust/${article.id}/pages`).then(r => r.json());
+		const json: PagesResponse = await this.fetch(`https://www.pixiv.net/ajax/illust/${article.id}/pages`).then(r => r.json());
 
 		store.update(a => {
 			for (let i = 0; i < a.medias.length; ++i) {
@@ -51,7 +57,7 @@ export const PixivService: PixivServiceType = {
 				if (!csrfToken)
 					throw new Error('No CSRF token');
 
-				const response : LikeResponse = await fetch('https://www.pixiv.net/ajax/illusts/like', {
+				const response : LikeResponse = await getServices()['Pixiv'].fetch('https://www.pixiv.net/ajax/illusts/like', {
 					method: 'POST',
 					credentials: 'same-origin',
 					cache: 'no-cache',
@@ -95,7 +101,7 @@ export const PixivService: PixivServiceType = {
 
 				const privateBookmark = (storage['privateBookmark'] as boolean | undefined) ?? false;
 
-				const response : BookmarkResponse = await fetch('https://www.pixiv.net/ajax/illusts/bookmarks/add', {
+				const response : BookmarkResponse = await getServices()['Pixiv'].fetch('https://www.pixiv.net/ajax/illusts/bookmarks/add', {
 					method: 'POST',
 					credentials: 'same-origin',
 					cache: 'no-cache',
@@ -145,7 +151,10 @@ export const PixivService: PixivServiceType = {
 		},
 	},
 	settings: ServiceSettings,
-	//TODO Pixiv tabInfo
+	fetchInfo: {
+		//Pixiv's images don't allow CORS
+		type: FetchType.OnDomainOnly,
+	}
 };
 
 registerService(PixivService);

@@ -1,21 +1,17 @@
 <script lang='ts'>
 	import './partialGlobal.css';
-	import {setContext} from 'svelte'
-	import Sidebar from "./sidebar/Sidebar.svelte"
-	import {
-		defaultTimelineView,
-		type TimelineCollection,
-		type TimelineData, type TimelineView,
-	} from './timelines';
-	import TimelineContainer from "./timelines/TimelineContainer.svelte"
-	import {notifications} from './notifications/store'
-	import Notification from "./notifications/Notification.svelte";
+	import {setContext} from 'svelte';
+	import Sidebar from './sidebar/Sidebar.svelte';
+	import {defaultTimelineView, type TimelineCollection, type TimelineData, type TimelineView,} from './timelines';
+	import TimelineContainer from './timelines/TimelineContainer.svelte';
+	import {notifications} from './notifications/store';
+	import Notification from './notifications/Notification.svelte';
 	import {Endpoint, endpoints, refreshEndpoint, refreshEndpointName, RefreshType} from './services/endpoints';
-	import type {FilterInstance} from './filters'
-	import {getRootArticle} from './articles'
-	import {updateTimelinesStorage} from 'storages'
-	import {get} from "svelte/store";
-	import {getServices} from './services/service';
+	import type {FilterInstance} from './filters';
+	import {getRootArticle} from './articles';
+	import {updateTimelinesStorage} from 'storages';
+	import {get} from 'svelte/store';
+	import {FetchType, getServices} from './services/service';
 	import {fetchExtension} from './services/extension';
 
 	(BigInt.prototype as any).toJSON = function () {
@@ -96,10 +92,10 @@
 		);
 		for (const serviceName of services) {
 			const service = getServices()[serviceName];
-			if (service.tabInfo !== null && get(service.tabInfo.tabId) === null)
-				service.tabInfo.tabId.set(await fetchExtension('getTabId', {
-					url: service.tabInfo.url,
-					matchUrl: service.tabInfo.matchUrl
+			if (service.fetchInfo.type === FetchType.Tab && get(service.fetchInfo.tabInfo.tabId) === null)
+				service.fetchInfo.tabInfo.tabId.set(await fetchExtension('getTabId', {
+					url: service.fetchInfo.tabInfo.url,
+					matchUrl: service.fetchInfo.tabInfo.matchUrl
 				}));
 		}
 

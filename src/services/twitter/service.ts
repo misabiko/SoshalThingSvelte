@@ -1,6 +1,5 @@
 import type TwitterArticle from './article';
-import {getWritable, type Service} from '../service';
-import {newService, registerService} from '../service';
+import {FetchType, getWritable, newService, registerService, type Service} from '../service';
 import {STANDARD_ACTIONS} from '../actions';
 import Article, {
 	type ArticleIdPair,
@@ -11,8 +10,8 @@ import Article, {
 } from '../../articles';
 import type {Filter} from '../../filters';
 import {type FavoriteResponse, type ResponseError, type RetweetResponse} from './pageAPI';
-import { getCookie, getServiceStorage } from 'storages';
-import { fetchExtension } from 'services/extension';
+import {getCookie, getServiceStorage} from 'storages';
+import {fetchExtension} from 'services/extension';
 import {get, writable} from 'svelte/store';
 import ServiceSettings from './ServiceSettings.svelte';
 
@@ -71,12 +70,12 @@ export const TwitterService: Service<TwitterArticle> = {
 
 			const response = await fetch(url, init);
 			return await response.json();
-		}else if (this.tabInfo) {
-			let tabId = get(this.tabInfo.tabId);
+		}else if (this.fetchInfo.tabInfo) {
+			let tabId = get(this.fetchInfo.tabInfo.tabId);
 			if (tabId === null) {
-				this.tabInfo.tabId.set(tabId = await fetchExtension('getTabId', {
-					url: this.tabInfo.url,
-					matchUrl: this.tabInfo.matchUrl
+				this.fetchInfo.tabInfo.tabId.set(tabId = await fetchExtension('getTabId', {
+					url: this.fetchInfo.tabInfo.url,
+					matchUrl: this.fetchInfo.tabInfo.matchUrl
 				}));
 			}
 
@@ -135,10 +134,13 @@ export const TwitterService: Service<TwitterArticle> = {
 	},
 	isOnDomain: globalThis.window?.location?.hostname === 'twitter.com'
 		|| globalThis.window?.location?.hostname === 'x.com',
-	tabInfo: {
-		url: 'https://twitter.com',
-		matchUrl: ['*://twitter.com/*'],
-		tabId: writable(null),
+	fetchInfo: {
+		type: FetchType.Tab,
+		tabInfo: {
+			url: 'https://twitter.com',
+			matchUrl: ['*://twitter.com/*'],
+			tabId: writable(null),
+		}
 	},
 	settings: ServiceSettings,
 };

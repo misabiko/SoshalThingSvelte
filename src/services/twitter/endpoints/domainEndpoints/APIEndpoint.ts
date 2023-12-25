@@ -153,3 +153,5 @@ export type APIParams = {
 		responsive_web_enhance_cards_enabled: boolean
 	}
 }
+
+//TODO LikesEndpoint

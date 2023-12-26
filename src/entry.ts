@@ -2,6 +2,7 @@ import './services/twitter/service';
 import './services/twitter/endpoints/domainEndpoints/TimelineAPI';
 import './services/twitter/endpoints/domainEndpoints/UserTweetsAPI';
 import './services/twitter/endpoints/domainEndpoints/ListAPI';
+import './services/twitter/endpoints/domainEndpoints/SearchAPI';
 
 import './services/pixiv/service';
 import './services/pixiv/endpoints/bookmarks';

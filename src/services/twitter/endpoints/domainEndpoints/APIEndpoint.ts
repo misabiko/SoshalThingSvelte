@@ -39,7 +39,7 @@ export default abstract class APIEndpoint<Response extends APIResponse> extends 
 		const data: Response | ResponseError = await TwitterService.fetch(`https://twitter.com/i/api/graphql/${this.endpointPath}${params}`, {});
 
 		if ('errors' in data)
-			throw new Error('Error fetching tweets: ' + data.errors.map(e => e.message).join('\n'));
+			throw new Error('Error fetching tweets:\n' + data.errors.map(e => e.message).join('\n'));
 
 		const instructions = this.getInstructions(data);
 
@@ -151,6 +151,9 @@ export type APIParams = {
 		longform_notetweets_inline_media_enabled: boolean
 		responsive_web_media_download_video_enabled: boolean
 		responsive_web_enhance_cards_enabled: boolean
+
+		//SearchTimeline
+		rweb_video_timestamps_enabled?: boolean
 	}
 }
 

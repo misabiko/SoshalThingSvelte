@@ -132,7 +132,7 @@ export const PixivService: PixivServiceType = {
 			actioned(article) { return article.bookmarked === true; },
 		}
 	},
-	isOnDomain: globalThis.window?.location?.hostname === 'pixiv.net',
+	isOnDomain: globalThis.window?.location?.hostname.endsWith('pixiv.net'),
 	keepArticle(articleWithRefs: ArticleWithRefs, index: number, filter: Filter): boolean {
 		if ((getRootArticle(articleWithRefs).constructor as typeof Article).service !== this.name)
 			return true;

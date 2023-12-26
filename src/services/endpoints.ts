@@ -220,7 +220,14 @@ export async function refreshEndpoint(endpoint: Endpoint, refreshType: RefreshTy
 		startAutoRefreshEndpoint(endpoint);
 	}
 
-	const articles = await endpoint.refresh(refreshType);
+	let articles;
+	try {
+		articles = await endpoint.refresh(refreshType);
+	}catch (e) {
+		console.error(`Error refreshing ${endpoint.name}`, e);
+		return [];
+	}
+
 	if (!articles.length)
 		return [];
 

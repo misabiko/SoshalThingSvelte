@@ -15,7 +15,7 @@ export default abstract class Article {
 	readonly textHtml?: string;
 	readonly author?: ArticleAuthor;
 	readonly creationTime?: Date;
-	readonly url: string;
+	readonly url: string | null;
 	readonly medias: ArticleMedia[];
 
 	markedAsRead: boolean;
@@ -30,8 +30,9 @@ export default abstract class Article {
 		id: ArticleId,
 		text?: string,
 		textHtml?: string,
-		url: string,//TODO Make article url optional
+		url?: string,
 		medias: ArticleMedia[],
+		//TODO Remove markedAsRead from Article
 		markedAsRead?: boolean,
 		markedAsReadStorage: string[],
 		actualArticleRef?: ArticleRefIdPair
@@ -41,7 +42,7 @@ export default abstract class Article {
 	}) {
 		this.text = params.text;
 		this.textHtml = params.textHtml;
-		this.url = params.url;
+		this.url = params.url ?? null;
 		this.medias = params.medias || [];
 		this.markedAsRead = params.markedAsRead || params.markedAsReadStorage.includes(params.id.toString());
 		this.actualArticleRef = params.actualArticleRef;

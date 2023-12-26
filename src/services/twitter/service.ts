@@ -15,7 +15,6 @@ import {fetchExtension} from 'services/extension';
 import {get, writable} from 'svelte/store';
 import ServiceSettings from './ServiceSettings.svelte';
 
-//TODO Add TwitterNotificationService
 export const TwitterService: Service<TwitterArticle> = {
 	...newService('Twitter'),
 	articleActions: {
@@ -53,51 +52,7 @@ export const TwitterService: Service<TwitterArticle> = {
 				return true;
 		}
 	},
-	async fetch(url, init = {}) {
-		const bearerToken = getServiceStorage(this.name).bearerToken;
-		if (!bearerToken)
-			throw new Error('Bearer token not found');
-
-		if (init.headers === undefined)
-			init.headers = {};
-		(init.headers as Record<string, string>)['Authorization'] = `Bearer ${bearerToken}`;
-
-		if (this.isOnDomain) {
-			const csrfToken = getCookie('ct0');
-			if (csrfToken === null)
-				throw new Error('Csrf token not found');
-			(init.headers as Record<string, string>)['X-Csrf-Token'] = csrfToken;
-
-			const response = await fetch(url, init);
-			return await response.json();
-		}else if (this.fetchInfo.tabInfo) {
-			let tabId = get(this.fetchInfo.tabInfo.tabId);
-			if (tabId === null) {
-				this.fetchInfo.tabInfo.tabId.set(tabId = await fetchExtension('getTabId', {
-					url: this.fetchInfo.tabInfo.url,
-					matchUrl: this.fetchInfo.tabInfo.matchUrl
-				}));
-			}
-
-			return await fetchExtension('domainFetch', {
-				tabId,
-				message: {
-					soshalthing: true,
-					request: 'fetch',
-					fetch: url,
-					fetchOptions: {
-						...init,
-						headers: {
-							'Authorization': 'Bearer ' + bearerToken,
-							...((init as any).headers ?? {}),
-						},
-					}
-				}
-			});
-		}else {
-			throw new Error('Service is not on domain and has no tab info');
-		}
-	},
+	fetch: twitterFetch,
 	sortMethods: {
 		likes: {
 			name: 'Likes',
@@ -246,4 +201,50 @@ async function pageRequest<T>(queryId: string, endpoint: string, tweetId: string
 			}
 		})
 	});
+}
+
+export async function twitterFetch(url: RequestInfo | URL, init?: RequestInit = {}) {
+	const bearerToken = getServiceStorage(TwitterService.name).bearerToken;
+	if (!bearerToken)
+		throw new Error('Bearer token not found');
+
+	if (init.headers === undefined)
+		init.headers = {};
+	(init.headers as Record<string, string>)['Authorization'] = `Bearer ${bearerToken}`;
+
+	if (TwitterService.isOnDomain) {
+		const csrfToken = getCookie('ct0');
+		if (csrfToken === null)
+			throw new Error('Csrf token not found');
+		(init.headers as Record<string, string>)['X-Csrf-Token'] = csrfToken;
+
+		const response = await fetch(url, init);
+		return await response.json();
+	}else if (TwitterService.fetchInfo.tabInfo) {
+		let tabId = get(TwitterService.fetchInfo.tabInfo.tabId);
+		if (tabId === null) {
+			TwitterService.fetchInfo.tabInfo.tabId.set(tabId = await fetchExtension('getTabId', {
+				url: TwitterService.fetchInfo.tabInfo.url,
+				matchUrl: TwitterService.fetchInfo.tabInfo.matchUrl
+			}));
+		}
+
+		return await fetchExtension('domainFetch', {
+			tabId,
+			message: {
+				soshalthing: true,
+				request: 'fetch',
+				fetch: url,
+				fetchOptions: {
+					...init,
+					headers: {
+						'Authorization': 'Bearer ' + bearerToken,
+						...((init as any).headers ?? {}),
+					},
+				}
+			}
+		});
+	}else {
+		throw new Error('Service is not on domain and has no tab info');
+	}
 }

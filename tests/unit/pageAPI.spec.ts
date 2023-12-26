@@ -771,20 +771,20 @@ test('result.tweet', () => {
 	} as unknown as Result;
 
 	globalThis.localStorage = {
-		getItem(key: string) { return null; },
-		setItem(key: string, value: string) {},
-		removeItem(key: string) {},
+		getItem(_key: string) { return null; },
+		setItem(_key: string, _value: string) {},
+		removeItem(_key: string) {},
 		clear() {},
 		length: 0,
 		key(index: number) { return null; },
 	}
 	globalThis.sessionStorage = {
-		getItem(key: string) { return null; },
-		setItem(key: string, value: string) {},
-		removeItem(key: string) {},
+		getItem(_key: string) { return null; },
+		setItem(_key: string, _value: string) {},
+		removeItem(_key: string) {},
 		clear() {},
 		length: 0,
-		key(index: number) { return null; },
+		key(_index: number) { return null; },
 	}
 	articleFromResult(tweet);
 })

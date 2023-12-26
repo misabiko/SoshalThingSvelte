@@ -5,6 +5,9 @@ import './services/twitter/endpoints/domainEndpoints/ListAPI';
 import './services/twitter/endpoints/domainEndpoints/SearchAPI';
 import './services/twitter/endpoints/domainEndpoints/LikesAPI';
 
+import './services/twitter/notifications/service';
+import './services/twitter/notifications/NotificationAPIEndpoint';
+
 import './services/pixiv/service';
 import './services/pixiv/endpoints/bookmarks';
 import './services/pixiv/endpoints/follow';

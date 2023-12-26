@@ -1,4 +1,4 @@
-import {expect, test} from '@playwright/test';
+import {test} from '@playwright/test';
 import {articleFromResult, type Result} from '../../src/services/twitter/pageAPI';
 
 test('result.tweet', () => {
@@ -776,7 +776,7 @@ test('result.tweet', () => {
 		removeItem(_key: string) {},
 		clear() {},
 		length: 0,
-		key(index: number) { return null; },
+		key(_index: number) { return null; },
 	}
 	globalThis.sessionStorage = {
 		getItem(_key: string) { return null; },

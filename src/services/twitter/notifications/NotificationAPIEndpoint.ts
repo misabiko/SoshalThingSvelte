@@ -1,7 +1,7 @@
 import {Endpoint, RefreshType} from '../../endpoints';
 import type {ArticleWithRefs} from '../../../articles';
 import {TwitterNotificationService} from './service';
-import TwitterNotificationArticle from './article';
+import TwitterNotificationArticle, {NotificationType} from './article';
 import {getMarkedAsReadStorage} from '../../../storages/serviceCache';
 import {registerEndpointConstructor} from '../../service';
 import type {TwitterUser} from '../article';
@@ -31,10 +31,10 @@ export default class NotificationAPIEndpoint extends Endpoint {
 				break;
 		}
 
-		const data: NotificationResponse = await TwitterNotificationService.fetch('https://twitter.com/i/api/2/notifications/all.json');
+		const data: NotificationResponse = await TwitterNotificationService.fetch('https://twitter.com/i/api/2/notifications/all.json' + (cursor ? '?cursor=' + cursor : ''));
 		const markedAsReads = getMarkedAsReadStorage(TwitterNotificationService);
 
-		const entriesInstructions: NotificationInstruction[] | undefined = data.timeline.instructions.find(i => i.addEntries?.entries);
+		const entriesInstructions: NotificationInstruction | undefined = data.timeline.instructions.find(i => i.addEntries?.entries);
 		const articles: ArticleWithRefs[] = [];
 
 		if (!entriesInstructions)
@@ -43,14 +43,14 @@ export default class NotificationAPIEndpoint extends Endpoint {
 			let foundTopCursor = false;
 			let foundBottomCursor = false;
 			for (const entry of entriesInstructions.addEntries!.entries) {
-				if (entry.entryId.startsWith('cursor-top')) {
+				if (entry.content.operation?.cursor.cursorType === 'Top') {
 					this.topCursor = entry.content.operation.cursor.value;
 					this.refreshTypes.update(rt => {
 						rt.add(RefreshType.LoadTop);
 						return rt;
 					});
 					foundTopCursor = true;
-				}else if (entry.entryId.startsWith('cursor-bottom')) {
+				}else if (entry.content.operation?.cursor.cursorType === 'Bottom') {
 					this.bottomCursor = entry.content.operation.cursor.value;
 					this.refreshTypes.update(rt => {
 						rt.add(RefreshType.LoadBottom);
@@ -58,6 +58,9 @@ export default class NotificationAPIEndpoint extends Endpoint {
 					});
 					foundBottomCursor = true;
 				}else {
+					if (!entry.content.item)
+						throw new Error('Notification entry has no item');
+
 					const id = entry.content.item.content.notification.id;
 					const notification = data.globalObjects.notifications[id];
 					const firstUserId = notification.template.aggregateUserActionsV1.fromUsers[0].user.id;
@@ -76,6 +79,7 @@ export default class NotificationAPIEndpoint extends Endpoint {
 							id,
 							new Date(parseInt(notification.timestampMs)),
 							notification.message.text,
+							entry.content.item.clientEventInfo.element as NotificationType,
 							user,
 							false,
 							markedAsReads,
@@ -225,6 +229,7 @@ type NotificationResponse = {
 type NotificationInstruction =
 | {
 	clearCache: {}
+	addEntries?: never
 }
 | {
 	addEntries: {
@@ -233,11 +238,13 @@ type NotificationInstruction =
 }
 | {
 	clearEntriesUnreadState: {}
+	addEntries?: never
 }
 | {
 	markEntriesUnreadGreaterThanSortIndex: {
 		sortIndex: string
 	}
+	addEntries?: never
 };
 
 type NotificationEntry =
@@ -257,7 +264,11 @@ type NotificationEntry =
 			}
 			clientEventInfo: {
 				component: string	//'urt'
-				element: string	//'users_liked_your_retweet'
+				element:
+					| 'user_liked_multiple_tweets'
+					| 'users_liked_your_retweet'
+					| 'users_retweeted_your_retweet'
+					| string
 				details: {
 					notificationDetails: {
 						impressionId: string
@@ -266,6 +277,7 @@ type NotificationEntry =
 				}
 			}
 		}
+		operation?: never
 	}
 }
 | {
@@ -278,6 +290,7 @@ type NotificationEntry =
 				cursorType: 'Top' | 'Bottom'
 			}
 		}
+		item?: never
 	}
 };
 

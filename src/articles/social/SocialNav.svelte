@@ -129,10 +129,12 @@
 			<button class='dropdown-item' on:click={() => timelineProps.compact = !timelineProps.compact}>
 				{ timelineProps.compact ? 'Show expanded' : 'Show compact' }
 			</button>
-			<a class='dropdown-item' href={ article.url } target='_blank' rel='noreferrer'>
-				External Link
-			</a>
-			{#if repost}
+			{#if article.url}
+				<a class='dropdown-item' href={ article.url } target='_blank' rel='noreferrer'>
+					External Link
+				</a>
+			{/if}
+			{#if repost?.url}
 				<a class='dropdown-item' href={ repost.url } target='_blank' rel='noreferrer'>
 					Repost's external Link
 				</a>

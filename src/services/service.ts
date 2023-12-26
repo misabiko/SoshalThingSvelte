@@ -21,6 +21,7 @@ export interface Service<A extends Article = Article> {
 	articleActions: { [name: string]: ArticleAction<A> };
 	requestImageLoad?: (id: ArticleId, index: number) => void;
 	getCachedArticles?: () => {[id: string]: object}
+	//TODO Add keepArticle and filterTypes in one object
 	keepArticle(articleWithRefs: ArticleWithRefs | ArticleProps, index: number, filter: Filter): boolean
 	defaultFilter(filterType: string): Filter
 	filterTypes: { [name: string]: FilterTypeInfo }

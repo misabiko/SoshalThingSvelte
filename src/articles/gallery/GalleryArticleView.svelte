@@ -197,12 +197,14 @@
 						Load Media
 					</button>
 				{/if}
-				<a
-					class='dropdown-item'
-					href={ actualArticle.url }
-				>
-					External Link
-				</a>
+				{#if actualArticle.url}
+					<a
+						class='dropdown-item'
+						href={ actualArticle.url }
+					>
+						External Link
+					</a>
+				{/if}
 				<button class='dropdown-item' on:click={onLogData}>
 					Log Data
 				</button>

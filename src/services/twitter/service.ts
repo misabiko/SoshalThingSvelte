@@ -203,7 +203,7 @@ async function pageRequest<T>(queryId: string, endpoint: string, tweetId: string
 	});
 }
 
-export async function twitterFetch(url: RequestInfo | URL, init?: RequestInit = {}) {
+export async function twitterFetch(url: RequestInfo | URL, init: RequestInit = {}) {
 	const bearerToken = getServiceStorage(TwitterService.name).bearerToken;
 	if (!bearerToken)
 		throw new Error('Bearer token not found');

@@ -142,6 +142,8 @@ function keepArticleGeneric(articleWithRefs: ArticleWithRefs, index: number, fil
 					return articleWithRefs.reposts.every(a => !a.markedAsRead) && keepArticleGeneric(articleWithRefs.reposted, index, filter);
 				case 'quote':
 					return !articleWithRefs.article.markedAsRead// && keepArticleGeneric(articleWithRefs.quoted, index, filter);
+				default:
+					throw new Error(`Unknown article type: ${(articleWithRefs as unknown as any).type}`);
 			}
 		case 'noRef':
 			return articleWithRefs.type === 'normal';

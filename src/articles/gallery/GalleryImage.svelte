@@ -33,6 +33,7 @@
 
 {#if cropped}
 	<div class="articleMediaCrop" style:aspect-ratio={`${media.cropRatio}`}>
+		<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 		<img
 			alt={`${actualArticle.idPair.id}/${mediaIndex}`}
 			class='articleMedia'
@@ -56,6 +57,7 @@
 		{/if}
 	</div>
 {:else}
+	<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 	<img
 		alt={`${actualArticle.idPair.id}/${mediaIndex}`}
 		class='articleMedia'

@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import Article from '../../articles';
+	import type Article from '../../articles';
 	import type {ArticleIdPair} from '../index'
 	import type {ArticleProps, TimelineArticleProps} from '../index'
 	import {shortTimestamp} from "../index";

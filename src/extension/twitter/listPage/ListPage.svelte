@@ -8,7 +8,6 @@
 	import {defaultTimeline} from '../../../timelines'
 	import MasonryContainer from '../../../containers/MasonryContainer.svelte'
 	import {loadMainStorage} from '../../../storages'
-    import TimelineAPI, { TimelineType } from "services/twitter/endpoints/domainEndpoints/TimelineAPI";
     import { everyRefreshType } from "services/endpoints";
     import { SortMethod } from "sorting";
     import SidebarActivator from "../SidebarActivator.svelte";

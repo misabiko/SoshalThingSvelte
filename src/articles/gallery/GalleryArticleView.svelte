@@ -64,10 +64,14 @@
 		position: absolute;
 		height: 56px;
 		width: 100%;
-		opacity: 0.5;
 		display: none;
 		direction: ltr;
 		pointer-events: none;
+		z-index: 1;
+	}
+
+	.holderBox > .button, :global(.holderBox .dropdown-trigger .button) {
+		opacity: 0.5;
 	}
 
 	.holderBox > * {

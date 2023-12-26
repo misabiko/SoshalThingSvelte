@@ -9,7 +9,6 @@
 	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number;
 
 	const cropped = !!(media.thumbnail?.offsetX || media.thumbnail?.offsetY);
-	const hasThumbnail = !!media.thumbnail;
 </script>
 
 <style>
@@ -31,9 +30,10 @@
 	}
 </style>
 
-{#if hasThumbnail}
+{#if media.thumbnail}
 	{#if cropped}
 		<div class="articleMediaCrop" style:aspect-ratio={`${media.thumbnail.cropRatio}`}>
+			<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 			<img
 				alt={`${actualArticle.idPair.id}/${mediaIndex} thumbnail`}
 				class='articleThumb articleMedia'
@@ -46,6 +46,7 @@
 			/>
 		</div>
 	{:else}
+		<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 		<img
 			alt={`${actualArticle.idPair.id}/${mediaIndex} thumbnail`}
 			class='articleThumb articleMedia'

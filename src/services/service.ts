@@ -185,13 +185,18 @@ export function newService<A extends Article = Article>(name: string): Service<A
 				const response = await fetch(url, init);
 				return await response.json();
 			}else if (this.fetchInfo.type === FetchType.Extension) {
-				return await fetchExtension('extensionFetch', {
+				const response = await fetchExtension('extensionFetch', {
 					soshalthing: true,
 					//TODO Use Content-Type to determine fetchJson or fetchText
 					// request: 'fetchText',
 					fetch: url,
 					fetchOptions: init
-				}).then(r => JSON.parse(r as string));
+				});
+
+				if (init?.headers && (init.headers as Record<string, string>)['Accept'] === 'application/json')
+					return JSON.parse(response as string);
+				else
+					return response;
 			}else if (this.fetchInfo.type === FetchType.Tab) {
 				let tabId = get(this.fetchInfo.tabInfo.tabId);
 				if (tabId === null) {

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import {defaultTimelineView, type TimelineView} from '../timelines';
+	import {type TimelineView} from '../timelines';
 	import {updateMainStorage, updateMainStorageTimelineViews} from '../storages';
     import type {TimelineCollection} from "../timelines";
     import Dropdown from "../Dropdown.svelte";
@@ -89,7 +89,7 @@
 			</label>
 			{#each view.timelineIds as id, index (id)}
 				<label>
-					<select value={id} on:input={e => replaceTimeline(viewName, index, e.detail)}>
+					<select value={id} on:change={e => replaceTimeline(viewName, index, e.currentTarget.value)}>
 						<option value={id}>{id}</option>
 						{#each newTimelines as newTimeline}
 							<option value={newTimeline}>{newTimeline}</option>

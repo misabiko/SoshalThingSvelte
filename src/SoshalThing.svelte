@@ -139,6 +139,9 @@
 		bottom: 0;
 		padding: 15px;
 		z-index: 1;
+		gap: 1px;
+		display: flex;
+		flex-direction: column;
 	}
 
 	/* TODO Confirm that all variables are defined */

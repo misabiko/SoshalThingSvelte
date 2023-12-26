@@ -1,7 +1,7 @@
 <script lang='ts'>
 	import ArticleComponent from "../articles/ArticleComponent.svelte";
 	import type {ContainerProps} from './index'
-	import {articlesWithUniqueKeys} from "./index.js";
+	import {articlesWithUniqueKeys} from "./index";
 
 	export let props: ContainerProps;
 	export let containerRef = null;

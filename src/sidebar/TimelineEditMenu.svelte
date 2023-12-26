@@ -1,6 +1,7 @@
 <script lang='ts'>
-	import {defaultTimeline} from '../timelines'
+	import {defaultTimeline, newUserTimeline} from '../timelines';
 	import type {TimelineData} from '../timelines'
+	import {getServices} from '../services/service';
 
 	export let setModalTimeline: (data: TimelineData, width?: number) => void
 	export let addTimeline: (data: TimelineData) => void
@@ -8,15 +9,20 @@
 	enum TimelineAddTypes {
 		Empty,
 		//TODO Get timeline templates from services (like TwitterUserMedia)
+		User,
 	}
 
 	let timelineAddType = TimelineAddTypes.Empty;
 	let addDisabled = false
 	$: {
 		switch (timelineAddType) {
-			//TODO case TimelineAddTypes.TwitterUser:
-			// 	addDisabled = !username.length;
-			// 	break;
+			case TimelineAddTypes.User:
+				try {
+					addDisabled = !username.length || !JSON.parse(username)?.name?.length
+				} catch (e) {
+					addDisabled = true;
+				}
+				break;
 			default:
 				addDisabled = false;
 				break;
@@ -25,6 +31,8 @@
 
 	let title = ''
 	let username = ''
+	let userServices = Object.entries(getServices()).filter(([_, s]) => s.userEndpoint !== null)
+	let userService = userServices[0][0]
 
 	function getTimelineData() {
 		switch (timelineAddType) {
@@ -33,26 +41,27 @@
 					...defaultTimeline(),
 					title,
 				};
-			//TODO case TimelineAddTypes.TwitterUser:
-			// 	return userTimeline();
+			case TimelineAddTypes.User:
+				return newUserTimeline(userService, JSON.parse(username));
 		}
 	}
-
-	// function userTimeline() {
-	// 	return newUserTimeline(TwitterService.name, {username, name: username, url: ''})
-	// }
 </script>
 
 <label class='field'>
 	<select bind:value={timelineAddType}>
 		<option value={TimelineAddTypes.Empty}>Empty</option>
-<!--TODO <option value={TimelineAddTypes.TwitterUser}>Twitter User</option>-->
+		<option value={TimelineAddTypes.User}>User</option>
 	</select>
 
 	{#if timelineAddType === TimelineAddTypes.Empty}
 		<input bind:value={title} name='title'/>
-	<!--TODO {:else if timelineAddType === TimelineAddTypes.TwitterUser}-->
-	<!--	<input bind:value={username} name='username'/>-->
+	{:else if timelineAddType === TimelineAddTypes.User}
+		<select bind:value={userService}>
+			{#each userServices as [service, _]}
+				<option value={service}>{service}</option>
+			{/each}
+		</select>
+		<input bind:value={username} name='username'/>
 	{/if}
 	<button
 		on:click={() => {const data = getTimelineData(); if (data) setModalTimeline(data)}}

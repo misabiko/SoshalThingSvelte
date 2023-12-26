@@ -64,10 +64,14 @@
 		position: absolute;
 		height: 56px;
 		width: 100%;
-		opacity: 0.5;
 		display: none;
 		direction: ltr;
 		pointer-events: none;
+		z-index: 1;
+	}
+
+	.holderBox > .button, :global(.holderBox .dropdown-trigger .button) {
+		opacity: 0.5;
 	}
 
 	.holderBox > * {
@@ -193,12 +197,14 @@
 						Load Media
 					</button>
 				{/if}
-				<a
-					class='dropdown-item'
-					href={ actualArticle.url }
-				>
-					External Link
-				</a>
+				{#if actualArticle.url}
+					<a
+						class='dropdown-item'
+						href={ actualArticle.url }
+					>
+						External Link
+					</a>
+				{/if}
 				<button class='dropdown-item' on:click={onLogData}>
 					Log Data
 				</button>
@@ -225,7 +231,7 @@
 						{disabled}
 					>
 						<span class='icon darkIcon'>
-							<Fa icon={action.actionnedIcon && actioned ? action.actionnedIcon : action.icon} class='is-small'/>
+							<Fa icon={action.actionedIcon && actioned ? action.actionedIcon : action.icon} class='is-small'/>
 						</span>
 					</button>
 				{/if}

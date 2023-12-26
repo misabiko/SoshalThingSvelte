@@ -1,17 +1,17 @@
 <script lang='ts'>
-	import type {Service} from '../services/service';
+	import {FetchType, type Service} from '../services/service';
 	import {fetchExtension} from '../services/extension';
 
 	export let service: Service;
-	let tabId = service.tabInfo?.tabId;
+	let tabId = service.fetchInfo.tabInfo?.tabId;
 
 	async function getTabId() {
-		if (!service.tabInfo)
+		if (service.fetchInfo.type !== FetchType.Tab)
 			throw new Error(service.name + ' does not have tab info');
 
-		service.tabInfo.tabId.set(await fetchExtension('getTabId', {
-			url: service.tabInfo.url,
-			matchUrl: service.tabInfo.matchUrl,
+		service.fetchInfo.tabInfo.tabId.set(await fetchExtension('getTabId', {
+			url: service.fetchInfo.tabInfo.url,
+			matchUrl: service.fetchInfo.tabInfo.matchUrl,
 		}));
 	}
 </script>
@@ -24,7 +24,7 @@
 
 <h1>{service.name}</h1>
 
-{#if service.tabInfo}
+{#if service.fetchInfo.tabInfo}
 	Tab Id: {$tabId}
 	<br/>
 	<button on:click={getTabId}>

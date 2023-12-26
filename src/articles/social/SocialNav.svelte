@@ -8,7 +8,7 @@
 	import {toggleMarkAsRead} from "../../services/service"
 	import Article from '../../articles'
 	import type {TimelineArticleProps} from '../index'
-	import {getServices} from "../../services/service.js";
+	import {getServices} from "../../services/service";
 
 	export let article: Article
 	export let repost: Article | null = null
@@ -89,7 +89,7 @@
 			>
 				<span class='icon'>
 					<Fa
-						icon={action.actionnedIcon && actioned ? action.actionnedIcon : action.icon}
+						icon={action.actionedIcon && actioned ? action.actionedIcon : action.icon}
 						color={!disabled && (actioned || isHovered) ? action.color : undefined}
 					/>
 				</span>
@@ -129,10 +129,12 @@
 			<button class='dropdown-item' on:click={() => timelineProps.compact = !timelineProps.compact}>
 				{ timelineProps.compact ? 'Show expanded' : 'Show compact' }
 			</button>
-			<a class='dropdown-item' href={ article.url } target='_blank' rel='noreferrer'>
-				External Link
-			</a>
-			{#if repost}
+			{#if article.url}
+				<a class='dropdown-item' href={ article.url } target='_blank' rel='noreferrer'>
+					External Link
+				</a>
+			{/if}
+			{#if repost?.url}
 				<a class='dropdown-item' href={ repost.url } target='_blank' rel='noreferrer'>
 					Repost's external Link
 				</a>

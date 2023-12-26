@@ -1,4 +1,3 @@
-import {getActualArticle} from '../articles';
 import type {ArticleProps, ArticleWithRefs} from '../articles';
 import {getRootArticle} from '../articles';
 import {getServices} from '../services/service';

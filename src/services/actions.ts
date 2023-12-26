@@ -13,7 +13,7 @@ export type ArticleAction<A extends Article = Article> = {
 	disabled?: (article: A) => boolean
 	togglable: boolean
 	icon?: IconDefinition
-	actionnedIcon?: IconDefinition
+	actionedIcon?: IconDefinition
 	color?: string
 	count?: ((article: A) => number)
 	index: number
@@ -24,7 +24,7 @@ type StandardAction = {
 	name: string
 	togglable: ArticleAction['togglable']
 	icon?: IconDefinition
-	actionnedIcon?: IconDefinition
+	actionedIcon?: IconDefinition
 	color?: string
 	index: number
 }
@@ -36,7 +36,7 @@ export const STANDARD_ACTIONS: { [key: string]: StandardAction } = {
 		icon: faHeartReg,
 		color: '#e0245e',
 		togglable: true,
-		actionnedIcon: faHeart,
+		actionedIcon: faHeart,
 		index: 2,
 	},
 	repost: {
@@ -51,7 +51,7 @@ export const STANDARD_ACTIONS: { [key: string]: StandardAction } = {
 		key: 'markAsRead',
 		name: 'Mark as read',
 		icon: faEyeSlash,
-		actionnedIcon: faEye,
+		actionedIcon: faEye,
 		togglable: true,
 		index: 3,
 	},

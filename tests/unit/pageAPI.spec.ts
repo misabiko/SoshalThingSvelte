@@ -1,7 +1,7 @@
 import {expect, test} from '@playwright/test';
 import {articleFromResult, type Result} from '../../src/services/twitter/pageAPI';
 
-test.only('result.tweet', () => {
+test('result.tweet', () => {
 	const tweet = {
 		"__typename": "Tweet",
 		"rest_id": "1737739942057615723",

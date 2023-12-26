@@ -3,6 +3,7 @@ import './services/twitter/endpoints/domainEndpoints/TimelineAPI';
 import './services/twitter/endpoints/domainEndpoints/UserTweetsAPI';
 import './services/twitter/endpoints/domainEndpoints/ListAPI';
 import './services/twitter/endpoints/domainEndpoints/SearchAPI';
+import './services/twitter/endpoints/domainEndpoints/LikesAPI';
 
 import './services/pixiv/service';
 import './services/pixiv/endpoints/bookmarks';

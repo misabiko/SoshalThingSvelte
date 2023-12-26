@@ -156,5 +156,3 @@ export type APIParams = {
 		rweb_video_timestamps_enabled?: boolean
 	}
 }
-
-//TODO LikesEndpoint

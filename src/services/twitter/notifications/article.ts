@@ -9,6 +9,7 @@ export default class TwitterNotificationArticle extends Article {
 		readonly id: string,
 		readonly creationTime: Date,
 		text: string,
+		textHtml: string | undefined,
 		readonly type: NotificationType,
 		//TODO Support multiple users (especially in SocialArticleView)
 		readonly author: TwitterUser,
@@ -19,6 +20,7 @@ export default class TwitterNotificationArticle extends Article {
 		super({
 			id,
 			text,
+			textHtml,
 			medias: [],
 			markedAsRead,
 			markedAsReadStorage,
@@ -27,12 +29,14 @@ export default class TwitterNotificationArticle extends Article {
 
 		//temp
 		switch (type) {
+			case NotificationType.UsersLikedYourTweet:
 			case NotificationType.UsersRetweetedYourTweet:
 			case NotificationType.UserLikedMultipleTweets:
 			case NotificationType.UsersRetweetedMultipleTweet:
 			case NotificationType.UsersLikedYourRetweet:
 			case NotificationType.UsersRetweetedYourRetweet:
 			case NotificationType.UsersFollowedYou:
+			case NotificationType.UserRepliedToYourTweet:
 				break;
 			default:
 				console.warn('Unknown notification type', type);
@@ -43,17 +47,19 @@ export default class TwitterNotificationArticle extends Article {
 		}
 	}
 
-	//TODO See if we can make this optional
+	//TODO Use sortIndex
 	get numberId() {
 		return 0;
 	}
 }
 
 export enum NotificationType {
+	UsersLikedYourTweet = 'users_liked_your_tweet',
 	UsersRetweetedYourTweet = 'users_retweeted_your_tweet',
 	UserLikedMultipleTweets = 'user_liked_multiple_tweets',
 	UsersRetweetedMultipleTweet = 'user_retweeted_multiple_tweets',
 	UsersLikedYourRetweet = 'users_liked_your_retweet',
 	UsersRetweetedYourRetweet = 'users_retweeted_your_retweet',
 	UsersFollowedYou = 'users_followed_you',
+	UserRepliedToYourTweet = 'user_replied_to_your_tweet',
 }

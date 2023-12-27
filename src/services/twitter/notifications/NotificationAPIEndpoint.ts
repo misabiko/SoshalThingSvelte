@@ -5,6 +5,7 @@ import TwitterNotificationArticle, {NotificationType} from './article';
 import {getMarkedAsReadStorage} from '../../../storages/serviceCache';
 import {registerEndpointConstructor} from '../../service';
 import type {TwitterUser} from '../article';
+import {type Entities, type ExtendedEntities, parseText} from '../apiV1';
 
 export default class NotificationAPIEndpoint extends Endpoint {
 	static service = 'TwitterNotification';
@@ -59,36 +60,74 @@ export default class NotificationAPIEndpoint extends Endpoint {
 					foundBottomCursor = true;
 				}else {
 					if (!entry.content.item)
-						throw new Error('Notification entry has no item');
+						throw new Error('Unknown notification entry type');
 
-					const id = entry.content.item.content.notification.id;
-					const notification = data.globalObjects.notifications[id];
-					const firstUserId = notification.template.aggregateUserActionsV1.fromUsers[0].user.id;
-					const firstUser = data.globalObjects.users[firstUserId];
-					const user: TwitterUser = {
-						username: firstUser.screen_name,
-						name: firstUser.name,
-						id: firstUserId,
-						avatarUrl: firstUser.profile_image_url_https,
-						url: `https://twitter.com/${firstUser.screen_name}`,
-					};
+					let id;
+					if (entry.content.item.content.notification) {
+						id = entry.content.item.content.notification.id;
 
-					articles.push({
-						type: 'normal',
-						article: new TwitterNotificationArticle(
-							id,
-							new Date(parseInt(notification.timestampMs)),
-							notification.message.text,
-							entry.content.item.clientEventInfo.element as NotificationType,
-							user,
-							false,
-							markedAsReads,
-							{
-								entry,
-								notification,
-							}
-						)
-					});
+						const notification = data.globalObjects.notifications[id];
+						const firstUserId = notification.template.aggregateUserActionsV1.fromUsers[0].user.id;
+						const firstUser = data.globalObjects.users[firstUserId];
+						const user: TwitterUser = {
+							username: firstUser.screen_name,
+							name: firstUser.name,
+							id: firstUserId,
+							avatarUrl: firstUser.profile_image_url_https,
+							url: `https://twitter.com/${firstUser.screen_name}`,
+						};
+
+						articles.push({
+							type: 'normal',
+							article: new TwitterNotificationArticle(
+								id,
+								new Date(parseInt(notification.timestampMs)),
+								notification.message.text,
+								undefined,
+								entry.content.item.clientEventInfo.element as NotificationType,
+								user,
+								false,
+								markedAsReads,
+								{
+									entry,
+									notification,
+								}
+							)
+						});
+					}else {
+						id = entry.entryId.replace('notification-', '');
+
+						const tweet = data.globalObjects.tweets[entry.content.item.content.tweet.id];
+						const userId = tweet.user_id_str;
+						const globalUser = data.globalObjects.users[userId];
+						const user: TwitterUser = {
+							username: globalUser.screen_name,
+							name: globalUser.name,
+							id: userId,
+							avatarUrl: globalUser.profile_image_url_https,
+							url: `https://twitter.com/${globalUser.screen_name}`,
+						};
+
+						const { text, textHtml } = parseText(tweet.full_text ?? tweet.text ?? '', tweet.entities, tweet.extended_entities)
+
+						articles.push({
+							type: 'normal',
+							article: new TwitterNotificationArticle(
+								id,
+								new Date(tweet.created_at),
+								text,
+								textHtml,
+								entry.content.item.clientEventInfo.element as NotificationType,
+								user,
+								false,
+								markedAsReads,
+								{
+									entry,
+									tweet,
+								}
+							)
+						});
+					}
 				}
 			}
 
@@ -183,7 +222,36 @@ type NotificationResponse = {
 			// ext_highlighted_label: {}
 		}>
 		tweets: Record<string, {
-
+			created_at: string
+			id: number
+			id_str: string
+			text?: string
+			full_text?: string
+			truncated: boolean
+			display_text_range: [number, number]
+			entities: Entities
+			extended_entities?: ExtendedEntities
+			source: string
+			in_reply_to_status_id: number
+			in_reply_to_status_id_str: string
+			in_reply_to_user_id: number
+			in_reply_to_user_id_str: string
+			in_reply_to_screen_name: string
+			user_id: number
+			user_id_str: string
+			geo: null
+			coordinates: null
+			place: null
+			contributors: null
+			is_quote_status: boolean
+			retweet_count: number
+			favorite_count: number
+			conversation_id: number
+			conversation_id_str: string
+			conversation_muted: boolean
+			favorited: boolean
+			retweeted: boolean
+			lang: string
 		}>
 		notifications: Record<string, {
 			id: string
@@ -202,7 +270,7 @@ type NotificationResponse = {
 						}
 					}
 				}[],
-				rtl: false
+				rtl: boolean
 			},
 			template: {
 				aggregateUserActionsV1: {
@@ -253,7 +321,8 @@ type NotificationEntry =
 	sortIndex: string
 	content: {
 		item: {
-			content: {
+			content:
+			| {
 				notification: {
 					id: string
 					url: {
@@ -261,6 +330,14 @@ type NotificationEntry =
 						url: string
 					}
 				}
+				tweet?: never
+			}
+			| {
+				tweet: {
+					id: string
+					displayType: string	//'Tweet'
+				}
+				notification?: never
 			}
 			clientEventInfo: {
 				component: string	//'urt'

@@ -92,7 +92,7 @@
 		);
 		for (const serviceName of services) {
 			const service = getServices()[serviceName];
-			if (service.fetchInfo.type === FetchType.Tab && get(service.fetchInfo.tabInfo.tabId) === null)
+			if (!service.isOnDomain &&  service.fetchInfo.type === FetchType.Tab && get(service.fetchInfo.tabInfo.tabId) === null)
 				service.fetchInfo.tabInfo.tabId.set(await fetchExtension('getTabId', {
 					url: service.fetchInfo.tabInfo.url,
 					matchUrl: service.fetchInfo.tabInfo.matchUrl

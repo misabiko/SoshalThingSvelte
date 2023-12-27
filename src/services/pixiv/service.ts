@@ -22,7 +22,7 @@ export const PixivService: PixivServiceType = {
 	...newFetchingService(),
 	async fetchArticle(store: Writable<PixivArticle>) {
 		const article = get(store);
-		const json: PagesResponse = await this.fetch(`https://www.pixiv.net/ajax/illust/${article.id}/pages`).then(r => r.json());
+		const json: PagesResponse = await this.fetch(`https://www.pixiv.net/ajax/illust/${article.id}/pages`, {headers: {'Accept': 'application/json'}});
 
 		store.update(a => {
 			for (let i = 0; i < a.medias.length; ++i) {

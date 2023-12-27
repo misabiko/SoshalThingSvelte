@@ -21,6 +21,15 @@
 			console.error(`Failed to load article "${articleId}"`, e);
 		}
 	}
+
+	let timelineProps = {
+		animatedAsGifs: false,
+		compact: false,
+		hideText: false,
+		shouldLoadMedia: false,
+		maxMediaCount: 4,
+		setModalTimeline: () => {},
+	};
 </script>
 
 <style>
@@ -47,13 +56,6 @@
 				...article,
 				filteredOut: false,
 			}}
-			timelineProps={{
-				animatedAsGifs: false,
-				compact: false,
-				hideText: false,
-				shouldLoadMedia: false,
-				maxMediaCount: 4,
-				setModalTimeline: () => {},
-			}}
+			bind:timelineProps
 	/>
 {/if}

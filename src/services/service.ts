@@ -186,7 +186,11 @@ export function newService<A extends Article = Article>(name: string): Service<A
 		async fetch(url, init) {
 			if (this.isOnDomain) {
 				const response = await fetch(url, init);
-				return await response.json();
+
+				if (init?.headers && (init.headers as Record<string, string>)['Accept'] === 'application/json')
+					return await response.json();
+				else
+					return await response.text();
 			}else if (this.fetchInfo.type === FetchType.Extension) {
 				const response = await fetchExtension('extensionFetch', {
 					soshalthing: true,

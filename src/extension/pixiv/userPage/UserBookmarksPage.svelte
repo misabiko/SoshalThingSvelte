@@ -30,6 +30,7 @@
 				customMethod: null,
 				reversed: false,
 			},
+			compact: true,
 		}
 	}
 

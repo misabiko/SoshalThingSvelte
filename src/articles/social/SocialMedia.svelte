@@ -17,6 +17,8 @@
 	export let mediaRefs: (HTMLImageElement | HTMLVideoElement)[] = [];
 	export let loadingStates: LoadingState[] | null = null;
 
+	export let compact: boolean | null;
+
 	afterUpdate(() => {
 		const articleMediaEls = divRef?.querySelectorAll('.articleMedia')
 		if (articleMediaEls) {
@@ -39,6 +41,11 @@
 		margin-top: 1rem;
 	}
 
+	.socialMedia.socialMediaCompact {
+		display: flex;
+		flex-wrap: wrap;
+	}
+
 	.socialMedia video {
 		 width: 100%;
 		 border-radius: 8px;
@@ -49,6 +56,15 @@
 		display: flex;
 		justify-content: center;
 		border-radius: 8px;
+	}
+
+	.socialMediaCompact .imagesHolder, .socialMediaCompact video.articleMedia {
+		width: 50%;
+		aspect-ratio: 1;
+	}
+
+	.socialMediaCompact .imagesHolder:only-child, .socialMediaCompact video.articleMedia:only-child {
+		width: unset;
 	}
 
 	.imagesHolder:not(:last-child) {
@@ -67,6 +83,7 @@
 
 	.moreMedia {
 		display: flex;
+		width: 100%;
 	}
 	.moreMedia > button {
 		margin-left: auto;
@@ -75,7 +92,7 @@
 	}
 </style>
 
-<div class='socialMedia' bind:this={divRef}>
+<div class='socialMedia' class:socialMediaCompact={compact ?? timelineProps.compact} bind:this={divRef}>
 	{#each article.medias.slice(0, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined) as media, index (index)}
 		{@const isLoading = loadingStates && loadingStates[index] === LoadingState.Loading}
 		{#if loadingStates && loadingStates[index] === LoadingState.NotLoaded}

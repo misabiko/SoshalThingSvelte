@@ -31,7 +31,7 @@ export type TimelineData = {
 	animatedAsGifs: boolean;
 	scrollSpeed: number;
 	hideText: boolean;
-	compact: boolean;	//TODO Reimplement compact
+	compact: boolean;
 	shouldLoadMedia: boolean;
 	hideFilteredOutArticles: boolean;
 	mergeReposts: boolean;

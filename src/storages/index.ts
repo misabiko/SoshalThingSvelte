@@ -141,6 +141,7 @@ export function loadTimelines(): TimelineCollection {
 			filters: defaulted.filters,
 			sortInfo: parseSortInfo(defaulted.sortInfo),
 			animatedAsGifs: defaulted.animatedAsGifs ?? false,
+			muteVideos: defaulted.muteVideos ?? false,
 			scrollSpeed: defaulted.scrollSpeed ?? 3,
 			hideText: defaulted.hideText ?? false,
 			compact: defaulted.compact ?? false,
@@ -166,6 +167,7 @@ export function updateTimelinesStorage(timelines: TimelineCollection) {
 		sortInfo: sortInfoToStorage(t.sortInfo),
 		compact: t.compact,
 		animatedAsGifs: t.animatedAsGifs,
+		muteVideos: t.muteVideos,
 		hideText: t.hideText,
 		section: t.section,
 	} satisfies Partial<TimelineStorage>]));
@@ -445,6 +447,7 @@ type TimelineStorage = {
 		reversed: boolean
 	},
 	animatedAsGifs?: boolean
+	muteVideos?: boolean
 	scrollSpeed?: number
 	hideText?: boolean
 	compact?: boolean

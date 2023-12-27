@@ -2,7 +2,7 @@
 	import {getServices, type Service} from '../services/service';
 	import ArticleComponent from '../articles/ArticleComponent.svelte';
 	import SocialArticleView from '../articles/social/SocialArticleView.svelte';
-	import type {ArticleWithRefs} from '../articles';
+	import type {ArticleWithRefs, TimelineArticleProps} from '../articles';
 
 	type LoadArticleService = Service & {loadArticle: Exclude<Service['loadArticle'], null>};
 	let services = Object.entries(getServices()).filter(([_, s]) => s.loadArticle !== null) as [string, LoadArticleService][];
@@ -22,8 +22,9 @@
 		}
 	}
 
-	let timelineProps = {
+	let timelineProps: TimelineArticleProps = {
 		animatedAsGifs: false,
+		muteVideos: false,
 		compact: false,
 		hideText: false,
 		shouldLoadMedia: false,

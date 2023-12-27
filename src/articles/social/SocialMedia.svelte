@@ -126,6 +126,7 @@
 					class='articleMedia'
 					controls
 					preload='auto'
+					muted={timelineProps.muteVideos}
 					on:click|preventDefault={() => onMediaClick(index)}
 					bind:this={mediaRefs[index]}
 			>

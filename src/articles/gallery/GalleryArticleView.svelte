@@ -138,6 +138,7 @@
 					class='articleMedia'
 					controls
 					preload='auto'
+					muted={timelineProps.muteVideos}
 					on:click|preventDefault={() => onMediaClick(actualArticle.idPair, i)}
 					on:loadeddata={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
 					on:load={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}

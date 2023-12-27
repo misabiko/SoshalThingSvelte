@@ -35,6 +35,7 @@ type GenericFilter = {
 	offset: number
 	includeOffset: boolean
 }
+//TODO Number of medias (with equal, less than, greater than, etc)
 
 export function getFilterName(filterType: GenericFilter['type'], inverted: boolean): string {
 	if (inverted) {

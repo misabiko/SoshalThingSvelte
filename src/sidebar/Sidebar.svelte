@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import Fa from 'svelte-fa'
-	import type {IconDefinition} from '@fortawesome/free-solid-svg-icons'
+	import {faNewspaper, type IconDefinition} from '@fortawesome/free-solid-svg-icons';
 	import {
 		faAngleDoubleLeft,
 		faB,
@@ -23,6 +23,7 @@
 	import {faTableColumns} from "@fortawesome/free-solid-svg-icons/faTableColumns";
 	import TimelineViewEdit from "./TimelineViewEdit.svelte";
 	import {updateMainStorage} from '../storages';
+	import LoadArticle from './LoadArticle.svelte';
 
 	enum SidebarMenu {
 		TimelineEdit,
@@ -46,6 +47,7 @@
 	const buttons: {icon: IconDefinition, menu: (new (...args: any[]) => SvelteComponent) | SidebarMenu, title: string}[] = [
 		{icon: faPlus, menu: SidebarMenu.TimelineEdit, title: 'Add new timeline'},
 		{icon: faBarsProgress, menu: Endpoints, title: 'Endpoints'},
+		{icon: faNewspaper, menu: LoadArticle, title: 'Load article'},
 		{icon: faRotateLeft, menu: SidebarMenu.Undoables, title: 'Undoables'},
 		{icon: faSpinner, menu: MediaLoader, title: 'Loading medias'},
 		{icon: faB, menu: SidebarMenu.BatchActions, title: 'Batch actions'},

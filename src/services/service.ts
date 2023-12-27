@@ -18,6 +18,7 @@ export interface Service<A extends Article = Article> {
 	readonly articles: { [id: string]: Writable<A> };
 	readonly endpointConstructors: Record<string, EndpointConstructorInfo>
 	userEndpoint: ((author: ArticleAuthor) => Endpoint) | null,
+	loadArticle: ((id: string) => Promise<ArticleWithRefs | null>) | null,
 	articleActions: { [name: string]: ArticleAction<A> };
 	requestImageLoad?: (id: ArticleId, index: number) => void;
 	getCachedArticles?: () => {[id: string]: object}
@@ -175,6 +176,7 @@ export function newService<A extends Article = Article>(name: string): Service<A
 		articles: {},
 		endpointConstructors: {},
 		userEndpoint: null,
+		loadArticle: null,
 		articleActions: {},
 		keepArticle() { return true; },
 		defaultFilter(filterType: string) { return {type:filterType, service: name};},

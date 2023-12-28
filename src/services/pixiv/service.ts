@@ -68,7 +68,7 @@ export const PixivService: PixivServiceType = {
 						'X-CSRF-TOKEN': csrfToken,
 					},
 					body: JSON.stringify({illust_id: idPair.id}),
-				}).then(r => r.json());
+				});
 
 				if (response.error)
 					throw new Error('Error during like: ' + response.message);
@@ -117,7 +117,7 @@ export const PixivService: PixivServiceType = {
 						comment: '',
 						tags: [],
 					}),
-				}).then(r => r.json());
+				});
 
 				if (response.error)
 					throw new Error('Error during bookmark: ' + response.message);

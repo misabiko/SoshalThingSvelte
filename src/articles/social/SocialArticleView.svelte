@@ -28,6 +28,8 @@
 	let minimized = false
 	const isArticleRepost = articleProps.type === 'reposts'
 
+	let compact: boolean | null = null;
+
 	function onUsernameClick(clickedArticle: Article) {
 		if (!clickedArticle.author)
 			return
@@ -243,6 +245,7 @@
 							article={quoted}
 							{timelineProps}
 							onMediaClick={index => onMediaClick(actualArticle.idPair, index)}
+							{compact}
 						/>
 					{/if}
 					<SocialNav
@@ -252,6 +255,7 @@
 						{modal}
 						{onLogData}
 						{onLogJSON}
+						{compact}
 					/>
 				</div>
 			{/if}
@@ -262,6 +266,7 @@
 				repost={isArticleRepost ? rootArticle : undefined}
 				{onLogData}
 				{onLogJSON}
+				bind:compact
 			/>
 		</div>
 	</div>
@@ -274,6 +279,7 @@
 			bind:divRef
 			bind:mediaRefs
 			bind:loadingStates
+			{compact}
 		/>
 	{/if}
 </div>

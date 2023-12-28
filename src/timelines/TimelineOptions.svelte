@@ -233,6 +233,15 @@
 		<div class='field'>
 			<label>
 				<input type='checkbox'
+					   bind:checked={data.muteVideos}
+					   on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'muteVideos', data.muteVideos)}
+				/>
+				Mute videos
+			</label>
+		</div>
+		<div class='field'>
+			<label>
+				<input type='checkbox'
 					   bind:checked={data.hideFilteredOutArticles}
 					   on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'hideFilteredOutArticles', data.hideFilteredOutArticles)}
 				/>

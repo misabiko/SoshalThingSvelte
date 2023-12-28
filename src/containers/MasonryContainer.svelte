@@ -90,7 +90,9 @@
 	}
 
 	function getRatio(article: ArticleProps): number {
-		return 1 + getActualArticle(article).medias.reduce((acc, curr) => acc + (curr.ratio ?? 1), 0)
+		return 1 + getActualArticle(article).medias
+			.slice(0, props.timelineArticleProps.maxMediaCount ?? undefined)
+			.reduce((acc, curr) => acc + (curr.ratio ?? 1), 0)
 	}
 </script>
 

@@ -155,6 +155,7 @@
 		articles: $filteredArticles,
 		timelineArticleProps: {
 			animatedAsGifs: data.animatedAsGifs,
+			muteVideos: data.muteVideos,
 			compact: data.compact,
 			hideText: data.hideText,
 			shouldLoadMedia: data.shouldLoadMedia,

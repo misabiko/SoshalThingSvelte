@@ -396,7 +396,7 @@ export type ResponseError = {
 	data: object;
 };
 
-type ResponseSingleError = {
+export type ResponseSingleError = {
 	name: string;
 	source: string;
 	code: number;

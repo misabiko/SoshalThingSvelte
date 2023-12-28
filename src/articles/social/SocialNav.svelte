@@ -18,6 +18,8 @@
 	export let onLogData: () => void
 	export let onLogJSON: () => void
 
+	export let compact: boolean | null;
+
 	let actions = Object.values(getServices()[article.idPair.service].articleActions)
 		.filter(a => a.icon !== undefined)
 		.sort((a, b) => a.index - b.index)
@@ -126,7 +128,7 @@
 			<button class='dropdown-item' on:click={() => toggleMarkAsRead(article.idPair)}>
 				Mark as read
 			</button>
-			<button class='dropdown-item' on:click={() => timelineProps.compact = !timelineProps.compact}>
+			<button class='dropdown-item' on:click={() => compact = !compact}>
 				{ timelineProps.compact ? 'Show expanded' : 'Show compact' }
 			</button>
 			{#if article.url}

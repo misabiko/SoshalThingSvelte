@@ -35,6 +35,7 @@
 			loadingStates.push(loadingStore.getLoadingState(actualArticle.idPair, mediaIndex, timelineProps.shouldLoadMedia))
 	}
 
+	//TODO Properly test media loading
 	afterUpdate(() => {
 		//TODO Use mediaRefs?
 		const articleMediaEls = divRef?.querySelectorAll('.articleMedia')

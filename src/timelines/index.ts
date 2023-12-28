@@ -29,15 +29,15 @@ export type TimelineData = {
 	filters: FilterInstance[];
 	sortInfo: SortInfo;
 	animatedAsGifs: boolean;
+	muteVideos: boolean;
 	scrollSpeed: number;
 	hideText: boolean;
-	compact: boolean;	//TODO Reimplement compact
+	compact: boolean;
 	shouldLoadMedia: boolean;
 	hideFilteredOutArticles: boolean;
 	mergeReposts: boolean;
 	showArticleCount: boolean;
 	maxMediaCount: number | null;
-	//TODO muteVideos: boolean
 }
 
 export function defaultTimeline(articles: ArticleIdPair[] = []): TimelineData {
@@ -67,6 +67,7 @@ export function defaultTimeline(articles: ArticleIdPair[] = []): TimelineData {
 		mergeReposts: true,
 		showArticleCount: false,
 		maxMediaCount: 4,
+		muteVideos: false,
 	};
 }
 

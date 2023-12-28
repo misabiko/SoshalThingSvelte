@@ -31,6 +31,7 @@
 				customMethod: null,
 				reversed: true,
 			},
+			compact: true,
 		}
 	}
 

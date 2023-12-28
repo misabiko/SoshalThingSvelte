@@ -233,6 +233,7 @@ export function getDerivedArticleWithRefs(a: DerivedArticleWithRefs): ArticleWit
 //Props for every article in the timeline
 export type TimelineArticleProps = {
 	animatedAsGifs: boolean;
+	muteVideos: boolean;
 	compact: boolean;
 	hideText: boolean;
 	shouldLoadMedia: boolean;

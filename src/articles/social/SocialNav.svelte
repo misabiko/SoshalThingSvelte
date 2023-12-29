@@ -128,8 +128,8 @@
 			<button class='dropdown-item' on:click={() => toggleMarkAsRead(article.idPair)}>
 				Mark as read
 			</button>
-			<button class='dropdown-item' on:click={() => compact = !compact}>
-				{ timelineProps.compact ? 'Show expanded' : 'Show compact' }
+			<button class='dropdown-item' on:click={() => compact = !(compact ?? timelineProps.compact)}>
+				{ compact ?? timelineProps.compact ? 'Show expanded' : 'Show compact' }
 			</button>
 			{#if article.url}
 				<a class='dropdown-item' href={ article.url } target='_blank' rel='noreferrer'>

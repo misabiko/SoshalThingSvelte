@@ -29,6 +29,7 @@
 	const isArticleRepost = articleProps.type === 'reposts'
 
 	let compact: boolean | null = null;
+	let quoteCompact: boolean | null = null;
 
 	function onUsernameClick(clickedArticle: Article) {
 		if (!clickedArticle.author)
@@ -245,7 +246,7 @@
 							article={quoted}
 							{timelineProps}
 							onMediaClick={index => onMediaClick(actualArticle.idPair, index)}
-							{compact}
+							compact={quoteCompact}
 						/>
 					{/if}
 					<SocialNav
@@ -255,7 +256,7 @@
 						{modal}
 						{onLogData}
 						{onLogJSON}
-						{compact}
+						bind:quoteCompact
 					/>
 				</div>
 			{/if}

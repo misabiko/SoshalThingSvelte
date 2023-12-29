@@ -35,15 +35,12 @@
 			loadingStates.push(loadingStore.getLoadingState(actualArticle.idPair, mediaIndex, timelineProps.shouldLoadMedia))
 	}
 
-	//TODO Properly test media loading
 	afterUpdate(() => {
-		//TODO Use mediaRefs?
-		const articleMediaEls = divRef?.querySelectorAll('.articleMedia')
-		if (articleMediaEls) {
+		{
 			const modifiedMedias: [number, number][] = []
-			for (let i = 0; i < actualArticle.medias.length; ++i)
+			for (let i = 0; i < mediaRefs.length; ++i)
 				if (actualArticle.medias[i].ratio === null)
-					modifiedMedias.push([i, articleMediaEls[i].clientHeight / articleMediaEls[i].clientWidth])
+					modifiedMedias.push([i, mediaRefs[i].clientHeight / mediaRefs[i].clientWidth])
 
 			getWritable(actualArticle.idPair).update(a => {
 				for (const [i, ratio] of modifiedMedias)

@@ -1,5 +1,5 @@
 import UserArtworksPage from './UserArtworksPage.svelte';
-import {tryInject} from '../../index';
+import {tryInject} from '~/services/extension';
 import UserBookmarksPage from './UserBookmarksPage.svelte';
 
 const path = window.location.pathname.split('/');

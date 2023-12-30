@@ -14,6 +14,7 @@ export type FilterInstance = {
 export type Filter = {
 	type: string
 	service: string
+	props: Record<string, any>
 } | GenericFilter
 
 type GenericFilter = {

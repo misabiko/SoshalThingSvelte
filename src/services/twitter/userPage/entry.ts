@@ -1,4 +1,4 @@
-import { tryInject } from '../../index';
+import { tryInject } from '~/services/extension';
 import UserPage from './UserPage.svelte';
 
 tryInject(() => document.querySelector('nav[aria-label="Profile timelines"]')?.parentElement?.querySelector('section') ?? null, 2000)

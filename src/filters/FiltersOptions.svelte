@@ -65,7 +65,7 @@
 			<div class="field has-addons">
 				<label>
 					{prop}
-					<input bind:value={instance.filter[prop]}/>
+					<input bind:value={instance.filter.props[prop]}/>
 				</label>
 			</div>
 		{/each}

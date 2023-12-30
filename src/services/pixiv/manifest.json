@@ -1,0 +1,13 @@
+{
+	"userPage": {
+		"matches": [
+			"https://*.pixiv.net/*/users/*"
+		]
+	},
+	"followIllusts": {
+		"matches": [
+			"https://*.pixiv.net/bookmark_new_illust.php*",
+			"https://*.pixiv.net/bookmark_new_illust_r18.php*"
+		]
+	}
+}

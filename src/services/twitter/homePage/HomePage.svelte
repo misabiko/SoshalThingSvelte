@@ -3,32 +3,45 @@
 	import {
 		defaultTimelineView,
 		type TimelineCollection,
-		type TimelineView,
+		type TimelineView
 	} from '~/timelines';
 	import {defaultTimeline} from '~/timelines'
 	import MasonryContainer from '~/containers/MasonryContainer.svelte'
 	import {loadMainStorage} from '~/storages'
-    import { everyRefreshType } from "services/endpoints";
-    import { SortMethod } from "sorting";
+    import TimelineAPI, { TimelineType } from "~/services/twitter/endpoints/domainEndpoints/TimelineAPI.endpoint";
+    import { everyRefreshType } from "~/services/endpoints";
+    import { SortMethod } from "~/sorting";
     import SidebarActivator from "../SidebarActivator.svelte";
-    import ListAPI from "services/twitter/endpoints/domainEndpoints/ListAPI.endpoint";
 
-	const listId = location.pathname.split('/')[3];
+	let currentTimeline: TimelineType | null;
+	switch (document.querySelector('div[role="presentation"] > a[aria-selected="true"] span')!.textContent) {
+		case 'For you':
+			currentTimeline = TimelineType.ForYou;
+			break;
+		case 'Following':
+			currentTimeline = TimelineType.Following;
+			break;
+		default:
+			currentTimeline = null;
+			break;
+	}
+
+	const endpoints = currentTimeline === null ? [] : [{
+		endpoint: new TimelineAPI(currentTimeline),
+		refreshTypes: everyRefreshType,
+		filters: [],
+	}];
 
 	const mainStorage = loadMainStorage();
 
-	let favviewerHidden = false;
+	let favviewerHidden = currentTimeline === null;
 	let favviewerMaximized = mainStorage.maximized;
 
 	const timelines: TimelineCollection = {
-		'List': {
+		'Home': {
 			...defaultTimeline(),
-			title: 'List',
-			endpoints: [{
-				endpoint: new ListAPI(listId),
-				refreshTypes: everyRefreshType,
-				filters: [],
-			}],
+			title: 'Home',
+			endpoints,
 			container: MasonryContainer,
 			columnCount: favviewerMaximized ? 4 : 2,
 			animatedAsGifs: true,
@@ -70,7 +83,7 @@
 				height: 100vh;
 			}
 
-			header[role="banner"], div[aria-label="Home timeline"] > div:first-child {
+			header[role="banner"] {
 				z-index: unset;
 			}
 

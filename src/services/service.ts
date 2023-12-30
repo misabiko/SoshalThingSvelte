@@ -180,7 +180,13 @@ export function newService<A extends Article = Article>(name: string): Service<A
 		loadArticle: null,
 		articleActions: {},
 		keepArticle() { return true; },
-		defaultFilter(filterType: string) { return {type:filterType, service: name};},
+		defaultFilter(filterType: string) {
+			return {
+				type: filterType,
+				service: name,
+				props: {},
+			};
+		},
 		filterTypes: {},
 		sortMethods: {},
 		fetchInfo: { type: FetchType.OnDomainOnly },

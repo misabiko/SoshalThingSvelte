@@ -1,8 +1,8 @@
 import {Endpoint, RefreshType} from '../../endpoints';
-import type {ArticleWithRefs} from '../../../articles';
+import type {ArticleWithRefs} from '~/articles';
 import {TwitterNotificationService} from './service';
 import TwitterNotificationArticle, {NotificationType} from './article';
-import {getMarkedAsReadStorage} from '../../../storages/serviceCache';
+import {getMarkedAsReadStorage} from '~/storages/serviceCache';
 import {registerEndpointConstructor} from '../../service';
 import type {TwitterUser} from '../article';
 import {type Entities, type ExtendedEntities, parseText} from '../apiV1';

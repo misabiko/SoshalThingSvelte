@@ -1,13 +1,13 @@
 <script lang='ts'>
-	import SoshalThing from "../../../SoshalThing.svelte"
+	import SoshalThing from "~/SoshalThing.svelte"
 	import {
 		defaultTimelineView,
 		type TimelineCollection,
 		type TimelineView
-	} from '../../../timelines';
-	import {defaultTimeline} from '../../../timelines'
-	import MasonryContainer from '../../../containers/MasonryContainer.svelte'
-	import {loadMainStorage} from '../../../storages'
+	} from '~/timelines';
+	import {defaultTimeline} from '~/timelines'
+	import MasonryContainer from '~/containers/MasonryContainer.svelte'
+	import {loadMainStorage} from '~/storages'
     import TimelineAPI, { TimelineType } from "services/twitter/endpoints/domainEndpoints/TimelineAPI.endpoint";
     import { everyRefreshType } from "services/endpoints";
     import { SortMethod } from "sorting";

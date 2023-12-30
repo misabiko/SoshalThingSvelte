@@ -1,9 +1,9 @@
 import {DummyService} from './service';
 import DummyArticle from './article';
-import {getMarkedAsReadStorage} from '../../storages/serviceCache';
+import {getMarkedAsReadStorage} from '~/storages/serviceCache';
 import {Endpoint, RefreshType} from '../endpoints';
 import type {EndpointConstructorInfo} from '../endpoints';
-import type {ArticleWithRefs} from '../../articles';
+import type {ArticleWithRefs} from '~/articles';
 import {registerEndpointConstructor} from '../service';
 
 export class DummyEndpoint extends Endpoint {

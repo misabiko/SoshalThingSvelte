@@ -1,4 +1,4 @@
-import Article from '../../articles';
+import Article from '~/articles';
 
 export default class DummyArticle extends Article {
 	static service = 'Dummy';

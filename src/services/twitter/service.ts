@@ -1,14 +1,15 @@
 import type TwitterArticle from './article';
-import {addArticles, FetchType, getWritable, newService, registerService, type Service} from '../service';
-import {STANDARD_ACTIONS} from '../actions';
+import {addArticles, FetchType, getWritable, type Service} from '~/services/service';
+import {newService, registerService} from '~/services/service';
+import {STANDARD_ACTIONS} from '~/services/actions';
 import Article, {
 	type ArticleIdPair,
 	type ArticleWithRefs,
 	articleWithRefToArray,
 	getActualArticle,
 	getRootArticle
-} from '../../articles';
-import type {Filter} from '../../filters';
+} from '~/articles';
+import type {Filter} from '~/filters';
 import {
 	type FavoriteResponse,
 	type Instruction,
@@ -16,8 +17,8 @@ import {
 	type ResponseError, type ResponseSingleError,
 	type RetweetResponse
 } from './pageAPI';
-import {getCookie, getServiceStorage} from 'storages';
-import {fetchExtension} from 'services/extension';
+import {getCookie, getServiceStorage} from '~/storages';
+import {fetchExtension} from '~/services/extension';
 import {get, writable} from 'svelte/store';
 import ServiceSettings from './ServiceSettings.svelte';
 

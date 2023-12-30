@@ -1,14 +1,14 @@
 <script lang='ts'>
-	import type Article from '../../articles';
+	import type Article from '~/articles';
 	import type {ArticleIdPair} from '../index'
 	import type {ArticleProps, TimelineArticleProps} from '../index'
 	import {shortTimestamp} from "../index";
 	import SocialMedia from "./SocialMedia.svelte";
 	import SocialNav from "./SocialNav.svelte";
 	import Timestamp from "./Timestamp.svelte";
-	import {newUserTimeline} from '../../timelines'
-	import {LoadingState} from '../../bufferedMediaLoading';
-	import {getWritable} from '../../services/service';
+	import {newUserTimeline} from '~/timelines'
+	import {LoadingState} from '~/bufferedMediaLoading';
+	import {getWritable} from '~/services/service';
 	import {get} from 'svelte/store';
 
 	export let timelineProps: TimelineArticleProps

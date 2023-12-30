@@ -1,15 +1,16 @@
-import type Article from '../articles';
-import type { ArticleAuthor } from '../articles';
-import type { ArticleId, ArticleIdPair, ArticleWithRefs, ArticleProps } from '../articles';
-import {articleWithRefToArray, getRootArticle} from '../articles';
+import type Article from '~/articles';
+import type { ArticleAuthor } from '~/articles';
+import type { ArticleId, ArticleIdPair, ArticleWithRefs, ArticleProps } from '~/articles';
+import {articleWithRefToArray, getRootArticle} from '~/articles';
 import {get, type Writable} from 'svelte/store';
 import {writable} from 'svelte/store';
-import {updateCachedArticlesStorage, updateMarkAsReadStorage} from '../storages/serviceCache';
+import {updateCachedArticlesStorage, updateMarkAsReadStorage} from '~/storages/serviceCache';
 import type {Endpoint, EndpointConstructorInfo} from './endpoints';
-import {undoables} from '../undo';
-import type {Filter} from '../filters';
+import {undoables} from '~/undo';
+import type {Filter} from '~/filters';
 import type {ArticleAction} from './actions';
 import {fetchExtension} from './extension';
+import type {ComponentType} from 'svelte';
 
 const services: { [name: string]: Service<any> } = {};
 
@@ -31,7 +32,7 @@ export interface Service<A extends Article = Article> {
 	fetchInfo: FetchInfo,
 	fetch: (url: RequestInfo | URL, init?: RequestInit) => Promise<any>
 	isOnDomain: boolean | null
-	settings: ConstructorOfATypedSvelteComponent | null	//TODO Try retyping other components to ConstructorOfATypedSvelteComponent
+	settings: ComponentType | null	//TODO Try retyping other components to ConstructorOfATypedSvelteComponent
 }
 
 export type FetchInfo =

@@ -2,10 +2,10 @@
 	import type {TimelineCollection, TimelineData, TimelineView} from './index'
 	import Timeline from './Timeline.svelte'
 	import {afterUpdate, getContext, onMount} from 'svelte'
-	import {timelineEndpoints} from '../services/endpoints'
-	import {updateFullscreenStorage} from '../storages';
-    import Modal from 'Modal.svelte';
-    import type { ArticleIdPair } from 'articles';
+	import {timelineEndpoints} from '~/services/endpoints'
+    import Modal from '~/Modal.svelte';
+    import type { ArticleIdPair } from '~/articles';
+	import {updateFullscreenStorage} from '~/storages';
 
 	export let timelines: TimelineCollection = {}
 	export let modalTimeline: TimelineData | null;

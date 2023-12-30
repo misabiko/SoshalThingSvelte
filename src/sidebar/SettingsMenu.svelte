@@ -1,9 +1,9 @@
 <script lang='ts'>
-	import {extensionCheck, extensionContextStore} from "../services/extension";
-	import {loadMainStorage} from "../storages"
-	import {updateMainStorage} from "../storages";
-	import {getServices} from '../services/service';
-	import ServiceSettings from './ServiceSettings.svelte';
+	import {extensionCheck, extensionContextStore} from '~/services/extension.js';
+	import {loadMainStorage} from '~/storages';
+	import {updateMainStorage} from '~/storages';
+	import {getServices} from '~/services/service';
+	import ServiceSettings from '~/sidebar/ServiceSettings.svelte';
 
 	const mainStorage = loadMainStorage();
 </script>

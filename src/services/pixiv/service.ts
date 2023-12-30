@@ -9,12 +9,12 @@ import {
 	type Service
 } from '../service';
 import {get, type Writable} from 'svelte/store';
-import Article, {type ArticleIdPair, type ArticleWithRefs, articleWithRefToArray, getRootArticle} from '../../articles';
+import Article, {type ArticleIdPair, type ArticleWithRefs, articleWithRefToArray, getRootArticle} from '~/articles';
 import {STANDARD_ACTIONS} from '../actions';
-import {getServiceStorage} from '../../storages';
-import {getRatio, MediaLoadType, MediaType} from '../../articles/media';
+import {getServiceStorage} from '~/storages';
+import {getRatio, MediaLoadType, MediaType} from '~/articles/media';
 import {faFaceSmile} from '@fortawesome/free-solid-svg-icons';
-import type {Filter} from 'filters';
+import type {Filter} from '~/filters';
 import ServiceSettings from './ServiceSettings.svelte';
 
 export const PixivService: PixivServiceType = {

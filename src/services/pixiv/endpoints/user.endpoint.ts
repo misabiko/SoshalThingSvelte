@@ -1,11 +1,11 @@
 import {type EndpointConstructorInfo, LoadableEndpoint, PageEndpoint, RefreshType} from '../../endpoints';
-import type {ArticleWithRefs} from '../../../articles';
+import type {ArticleWithRefs} from '~/articles';
 import {PixivService} from '../service';
 import PixivArticle from '../article';
 import type {PixivUser} from '../article';
-import {getMarkedAsReadStorage} from '../../../storages/serviceCache';
+import {getMarkedAsReadStorage} from '~/storages/serviceCache';
 import {getEachPageURL, getUserUrl, parseThumbnail, type BookmarkData} from './index';
-import {MediaLoadType, MediaType} from '../../../articles/media';
+import {MediaLoadType, MediaType} from '~/articles/media';
 import {avatarHighRes} from './bookmarks.endpoint';
 import {getServices, registerEndpointConstructor} from '../../service';
 

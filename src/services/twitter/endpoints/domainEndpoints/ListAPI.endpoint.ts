@@ -1,7 +1,7 @@
-import type { Instruction } from 'services/twitter/pageAPI';
+import type { Instruction } from '~/services/twitter/pageAPI';
 import APIEndpoint, { type APIParams } from './APIEndpoint';
-import type { EndpointConstructorInfo } from 'services/endpoints';
-import {registerEndpointConstructor} from '../../../service';
+import type { EndpointConstructorInfo } from '~/services/endpoints';
+import {registerEndpointConstructor} from '~/services/service';
 import {TwitterService} from '../../service';
 
 export default class ListAPI extends APIEndpoint<ListLatestTweetsTimelineResponse> {

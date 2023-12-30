@@ -1,16 +1,16 @@
 <script lang='ts'>
-	import ColumnContainer from '../containers/ColumnContainer.svelte';
-	import RowContainer from '../containers/RowContainer.svelte';
-	import MasonryContainer from '../containers/MasonryContainer.svelte';
-	import SocialArticleView from '../articles/social/SocialArticleView.svelte';
-	import GalleryArticleView from '../articles/gallery/GalleryArticleView.svelte';
-	import type {TimelineData} from './index';
-	import FiltersOptions from '../filters/FiltersOptions.svelte';
-	import SortOptions from '../sorting/SortOptions.svelte';
-	import type {SortMethod} from '../sorting';
-	import type {FullscreenInfo} from './index';
-	import {updateFullscreenStorage, updateTimelinesStorageValue} from '../storages';
-	import EndpointOptions from './EndpointOptions.svelte';
+	import ColumnContainer from "~/containers/ColumnContainer.svelte"
+	import RowContainer from "~/containers/RowContainer.svelte"
+	import MasonryContainer from "~/containers/MasonryContainer.svelte"
+	import SocialArticleView from "~/articles/social/SocialArticleView.svelte"
+	import GalleryArticleView from "~/articles/gallery/GalleryArticleView.svelte"
+	import type {TimelineData} from './index'
+	import FiltersOptions from "~/filters/FiltersOptions.svelte"
+	import SortOptions from "~/sorting/SortOptions.svelte"
+	import type { SortMethod } from '~/sorting';
+	import type {FullscreenInfo} from './index'
+	import {updateFullscreenStorage, updateTimelinesStorageValue} from '~/storages';
+	import EndpointOptions from '~/timelines/EndpointOptions.svelte';
 
 	export let timelineId: string | null;
 	export let data: TimelineData;

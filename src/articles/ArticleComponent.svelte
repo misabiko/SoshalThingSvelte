@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import type {ArticleIdPair} from "./index"
-	import {getWritable, toggleMarkAsRead} from '../services/service';
+	import {getWritable, toggleMarkAsRead} from '~/services/service';
 	import Article, {getActualArticle} from '../articles'
 	import type {ArticleProps, TimelineArticleProps} from './index'
 	import {afterUpdate, type SvelteComponent} from 'svelte';
@@ -8,7 +8,7 @@
 	import {getRootArticle} from './index'
 	import Modal from '../Modal.svelte'
 	import {MediaLoadType} from './media';
-	import {LoadingState, loadingStore} from '../bufferedMediaLoading';
+	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
 
 	export let articleProps: ArticleProps
 	export let timelineProps: TimelineArticleProps

@@ -1,4 +1,4 @@
-import type { EndpointConstructorInfo } from 'services/endpoints';
+import type { EndpointConstructorInfo } from '~/services/endpoints';
 import UserTweetsEndpointMenu from './UserTweetsEndpointMenu.svelte';
 import { parseResponse, type Instruction } from '../../pageAPI';
 import WebSocketPageEndpoint from './WebSocketPageEndpoint';

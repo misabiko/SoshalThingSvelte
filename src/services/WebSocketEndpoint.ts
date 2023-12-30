@@ -1,4 +1,4 @@
-import { getRootArticle, type ArticleWithRefs } from 'articles';
+import { getRootArticle, type ArticleWithRefs } from '~/articles';
 import { Endpoint, RefreshType, addEndpointArticlesToTimeline, endpoints } from './endpoints';
 import { addArticles, getServices } from './service';
 

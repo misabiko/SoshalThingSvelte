@@ -7,19 +7,18 @@
 		faExternalLinkAlt,
 		faEllipsisH, faImages,
 	} from '@fortawesome/free-solid-svg-icons'
-	import {LoadingState, loadingStore} from '../../bufferedMediaLoading'
-	import Dropdown from "../../Dropdown.svelte"
+	import {LoadingState, loadingStore} from '~/bufferedMediaLoading'
+	import Dropdown from "~/Dropdown.svelte"
 	import {
 		fetchArticle,
-		toggleMarkAsRead,
 		getServices,
-	} from "../../services/service"
+	} from '~/services/service';
 	import type {TimelineArticleProps} from '../index'
 	import type {ArticleProps} from '../index'
 	import {MediaType} from '../media'
 	import GalleryThumbnail from "./GalleryThumbnail.svelte";
 	import GalleryImage from "./GalleryImage.svelte";
-	import {type ArticleAction, getUniversalActions} from '../../services/actions';
+	import {type ArticleAction, getUniversalActions} from '~/services/actions';
 
 	export let timelineProps: TimelineArticleProps
 	export let articleProps: ArticleProps; articleProps;

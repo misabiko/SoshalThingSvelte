@@ -1,9 +1,9 @@
-import type {ArticleAuthor, ArticleWithRefs} from '../../articles';
-import Article, {getRootArticle} from '../../articles';
-import type {ArticleRefIdPair} from '../../articles';
+import type {ArticleAuthor, ArticleWithRefs} from '~/articles';
+import Article, {getRootArticle} from '~/articles';
+import type {ArticleRefIdPair} from '~/articles';
 import type {Note, User} from 'misskey-js/built/entities';
-import type {ArticleMedia} from '../../articles/media';
-import {getRatio, MediaLoadType, MediaType} from '../../articles/media';
+import type {ArticleMedia} from '~/articles/media';
+import {getRatio, MediaLoadType, MediaType} from '~/articles/media';
 import * as mfm from 'mfm-js';
 import type {MfmNode} from 'mfm-js/built/node';
 import {MisskeyService} from './service';

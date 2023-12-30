@@ -18,11 +18,11 @@
 	import SettingsMenu from "./SettingsMenu.svelte"
 	import TimelineEditMenu from "./TimelineEditMenu.svelte";
 	import BatchActions from "./BatchActions.svelte";
-	import type {TimelineCollection, TimelineData, TimelineView} from '../timelines';
-	import type {FilterInstance} from '../filters'
+	import type {TimelineCollection, TimelineData, TimelineView} from '~/timelines';
+	import type {FilterInstance} from '~/filters';
 	import {faTableColumns} from "@fortawesome/free-solid-svg-icons/faTableColumns";
 	import TimelineViewEdit from "./TimelineViewEdit.svelte";
-	import {updateMainStorage} from '../storages';
+	import {updateMainStorage} from '~/storages';
 	import LoadArticle from './LoadArticle.svelte';
 
 	enum SidebarMenu {

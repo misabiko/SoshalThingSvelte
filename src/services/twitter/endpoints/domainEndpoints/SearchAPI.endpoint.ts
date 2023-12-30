@@ -1,6 +1,6 @@
-import type { Instruction } from 'services/twitter/pageAPI';
+import type { Instruction } from '~/services/twitter/pageAPI';
 import APIEndpoint, { type APIParams } from './APIEndpoint';
-import type { EndpointConstructorInfo } from 'services/endpoints';
+import type { EndpointConstructorInfo } from '~/services/endpoints';
 import {registerEndpointConstructor} from '../../../service';
 import {TwitterService} from '../../service';
 

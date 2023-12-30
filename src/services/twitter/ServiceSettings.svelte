@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import {TwitterService} from './service';
-	import {getServiceStorage, updateServiceStorage} from '../../storages';
+	import {getServiceStorage, updateServiceStorage} from '~/storages';
 
 	const twitterStorage = getServiceStorage(TwitterService.name) ?? {};
 </script>

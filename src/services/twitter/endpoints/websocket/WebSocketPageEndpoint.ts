@@ -1,7 +1,6 @@
-import type { ArticleWithRefs } from 'articles';
-import WebSocketEndpoint, { type SetupData } from 'services/WebSocketEndpoint';
-import { RefreshType } from 'services/endpoints';
-import {TwitterService} from '../../service';
+import type { ArticleWithRefs } from '~/articles';
+import WebSocketEndpoint, { type SetupData } from '~/services/WebSocketEndpoint';
+import { RefreshType } from '~/services/endpoints';
 
 export default abstract class WebSocketPageEndpoint extends WebSocketEndpoint {
 	constructor(setupData: SetupData) {

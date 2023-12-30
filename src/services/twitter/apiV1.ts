@@ -1,4 +1,4 @@
-import { type ArticleMedia, getRatio, MediaLoadType, MediaType } from '../../articles/media';
+import { type ArticleMedia, getRatio, MediaLoadType, MediaType } from '~/articles/media';
 
 export function parseText(rawText: string, entities: Entities, extendedEntities?: ExtendedEntities): { text: string, textHtml: string } {
 	let trimmedText = rawText;

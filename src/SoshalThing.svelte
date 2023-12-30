@@ -9,7 +9,7 @@
 	import {Endpoint, endpoints, refreshEndpoint, refreshEndpointName, RefreshType} from './services/endpoints';
 	import type {FilterInstance} from './filters';
 	import {getRootArticle} from './articles';
-	import {updateTimelinesStorage} from 'storages';
+	import {updateTimelinesStorage} from '~/storages';
 	import {get} from 'svelte/store';
 	import {FetchType, getServices} from './services/service';
 	import {fetchExtension} from './services/extension';

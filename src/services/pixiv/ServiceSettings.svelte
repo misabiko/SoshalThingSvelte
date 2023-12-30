@@ -1,6 +1,6 @@
 <script>
 	import {PixivService} from './service';
-	import {getServiceStorage, updateServiceStorage} from '../../storages';
+	import {getServiceStorage, updateServiceStorage} from '~/storages';
 
 	const pixivStorage = getServiceStorage(PixivService.name) ?? '';
 </script>

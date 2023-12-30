@@ -1,13 +1,13 @@
-import type {ArticleIdPair, ArticleRefIdPair, ArticleWithRefs} from '../../articles';
+import type { ArticleIdPair, ArticleRefIdPair, ArticleWithRefs } from '~/articles';
 import type {TwitterUser} from './article';
 import TwitterArticle from './article';
-import {getMarkedAsReadStorage} from '../../storages/serviceCache';
+import { getMarkedAsReadStorage } from '~/storages/serviceCache';
 import {parseMedia, parseText} from './apiV1';
 import type {Entities, ExtendedEntities} from './apiV1';
 import {TwitterService} from './service';
-import {getWritable} from 'services/service';
+import { getWritable } from '~/services/service';
 import {get} from 'svelte/store';
-import {sendRequest} from 'services/remotePage';
+import { sendRequest } from '~/services/remotePage';
 
 export function parseResponse(instructions: Instruction[]): ArticleWithRefs[] {
 	// if (instructions.filter(i => i.type === 'TimelineAddEntries').length !== 1)

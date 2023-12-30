@@ -1,17 +1,17 @@
 <script lang='ts'>
-	import SoshalThing from "../../../SoshalThing.svelte"
+	import SoshalThing from "~/SoshalThing.svelte"
 	import {
 		defaultTimelineView,
 		type TimelineCollection,
 		type TimelineView,
-	} from '../../../timelines';
-	import {defaultTimeline} from '../../../timelines'
-	import MasonryContainer from '../../../containers/MasonryContainer.svelte'
-	import {loadMainStorage} from '../../../storages'
-	import {getUserId, UserAPIEndpoint} from '../../../services/pixiv/endpoints/user.endpoint'
-	import {everyRefreshType} from '../../../services/endpoints'
-	import portal from '../../../usePortal'
-	import {SortMethod} from '../../../sorting'
+	} from '~/timelines';
+	import {defaultTimeline} from '~/timelines'
+	import MasonryContainer from '~/containers/MasonryContainer.svelte'
+	import {loadMainStorage} from '~/storages'
+	import {getUserId, UserAPIEndpoint} from '~/services/pixiv/endpoints/user.endpoint'
+	import {everyRefreshType} from '~/services/endpoints'
+	import portal from '~/usePortal'
+	import {SortMethod} from '~/sorting'
 
 	const timelines: TimelineCollection = {
 		'User': {

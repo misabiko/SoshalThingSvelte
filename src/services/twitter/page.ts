@@ -1,7 +1,7 @@
-import { MediaLoadType, MediaType } from 'articles/media';
-import type { ArticleMedia } from 'articles/media';
+import { MediaLoadType, MediaType } from '~/articles/media';
+import type { ArticleMedia } from '~/articles/media';
 import TwitterArticle from './article';
-import type { ArticleWithRefs } from 'articles';
+import type { ArticleWithRefs } from '~/articles';
 
 export function parseHTMLArticle(article: HTMLElement): ArticleWithRefs | null {
 	for (const span of article.getElementsByTagName('span')) {
@@ -36,6 +36,9 @@ export function parseHTMLArticle(article: HTMLElement): ArticleWithRefs | null {
 				ratio: null,
 				queueLoadInfo: MediaLoadType.DirectLoad,
 				mediaType: MediaType.Image,
+				offsetX: null,
+				offsetY: null,
+				cropRatio: null,
 			};
 		});
 	return {

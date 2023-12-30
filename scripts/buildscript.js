@@ -1,10 +1,10 @@
 import fs from 'fs';
 import esbuild from 'esbuild';
 import * as svelte from 'svelte/compiler';
-import svelteConfig from '../svelte.config.js';
 import sveltePreprocess from 'svelte-preprocess';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
+import EsbuildPluginImportGlob from 'esbuild-plugin-import-glob';
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
@@ -39,7 +39,6 @@ const SveltePlugin = {
 			try {
 				let { js, warnings } = svelte.compile(preprocessed, {
 					filename,
-					...svelteConfig,
 					dev: process.env.NODE_ENV === 'development',
 				});
 				const contents = js.code + '//# sourceMappingURL=' + js.map.toUrl();
@@ -84,7 +83,10 @@ export const buildOptions = {
 	write: true,
 	format: 'esm',
 	// watch: process.argv.includes('--watch'),
-	plugins: [SveltePlugin],
+	plugins: [
+		SveltePlugin,
+		EsbuildPluginImportGlob.default(),
+	],
 };
 
 export const errorHandler = (error, location) => {
@@ -92,7 +94,7 @@ export const errorHandler = (error, location) => {
 	process.exit(1);
 };
 
-//make sure the directoy exists before stuff gets put into it
+//make sure the directory exists before stuff gets put into it
 if (!fs.existsSync(outdir))
 	fs.mkdirSync(outdir);
 

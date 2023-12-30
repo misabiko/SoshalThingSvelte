@@ -1,4 +1,4 @@
-import { type ArticleMedia, getRatio, MediaLoadType, MediaType } from '../../articles/media';
+import { type ArticleMedia, getRatio, MediaLoadType, MediaType } from '~/articles/media';
 
 export function parseText(rawText: string, entities: Entities, extendedEntities?: ExtendedEntities): { text: string, textHtml: string } {
 	let trimmedText = rawText;
@@ -64,6 +64,9 @@ export function parseMedia(extendedEntities?: ExtendedEntities): ArticleMedia[] 
 					src: media.media_url_https,
 					ratio: getRatio(media.sizes.large.w, media.sizes.large.h),
 					queueLoadInfo: MediaLoadType.DirectLoad,
+					offsetX: null,
+					offsetY: null,
+					cropRatio: null,
 				};
 			case 'video':
 				return getMP4(media.video_info, MediaType.Video);
@@ -83,6 +86,9 @@ function getMP4(videoInfo: VideoInfo, mediaType: MediaType): ArticleMedia {
 		src: variant.url,
 		ratio: getRatio(videoInfo.aspect_ratio[0], videoInfo.aspect_ratio[1]),
 		queueLoadInfo: MediaLoadType.DirectLoad,
+		offsetX: null,
+		offsetY: null,
+		cropRatio: null,
 	};
 }
 

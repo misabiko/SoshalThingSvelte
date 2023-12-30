@@ -1,28 +1,32 @@
-export type ArticleMedia = ({
+export type ArticleMedia = (
+| {
 	src: string;
 	ratio: ValidRatio | null;
 	queueLoadInfo: MediaLoadType.DirectLoad | MediaLoadType.Thumbnail;
 	mediaType: MediaType;
-	thumbnail?: undefined;
-	loaded?: undefined;
+	thumbnail?: never;
+	loaded?: never;
 } | {
 	src: string;
 	ratio: ValidRatio | null;
 	queueLoadInfo: MediaLoadType.LazyLoad;
 	mediaType: MediaType;
-	thumbnail?: {
-		src: string
-		offsetX?: string
-		offsetY?: string
-		ratio?: ValidRatio;
-		cropRatio?: ValidRatio;
-	};
+	thumbnail: ArticleThumbnail | null;
 	loaded: boolean;
-}) & {
-	cropRatio?: ValidRatio;
-	offsetX?: string
-	offsetY?: string
 }
+) & {
+	cropRatio: ValidRatio | null;
+	offsetX: string | null
+	offsetY: string | null
+};
+
+export type ArticleThumbnail = {
+	src: string
+	offsetX: string | null;
+	offsetY: string | null;
+	ratio: ValidRatio | null;
+	cropRatio: ValidRatio | null;
+};
 
 type ValidRatio = number;
 

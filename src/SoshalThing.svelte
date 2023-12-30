@@ -9,7 +9,7 @@
 	import {Endpoint, endpoints, refreshEndpoint, refreshEndpointName, RefreshType} from './services/endpoints';
 	import type {FilterInstance} from './filters';
 	import {getRootArticle} from './articles';
-	import {updateTimelinesStorage} from 'storages';
+	import {updateTimelinesStorage} from '~/storages';
 	import {get} from 'svelte/store';
 	import {FetchType, getServices} from './services/service';
 	import {fetchExtension} from './services/extension';
@@ -18,7 +18,7 @@
 		return this.toString();
 	};
 
-	export let timelines: TimelineCollection = {}
+	export let timelines: TimelineCollection = {};
 	export let timelineViews: Record<string, TimelineView> = {
 		[defaultTimelineView]: {
 			timelineIds: [],
@@ -36,22 +36,22 @@
 	}
 	}
 
-	export let timelineViewId: string = defaultTimelineView
-	export let isInjected = true
-	export let favviewerHidden = false
-	export let favviewerMaximized: boolean | null = null
+	export let timelineViewId: string = defaultTimelineView;
+	export let isInjected = true;
+	export let favviewerHidden = false;
+	export let favviewerMaximized: boolean | null = null;
 
-	let modalTimeline: TimelineData | null = null
-	let modalTimelineActive = false
+	let modalTimeline: TimelineData | null = null;
+	let modalTimelineActive = false;
 
-	let batchActionFilters: FilterInstance[] = []
+	let batchActionFilters: FilterInstance[] = [];
 
-	setContext('isInjected', isInjected)
-	let showSidebar = !isInjected && favviewerMaximized !== true
+	setContext('isInjected', isInjected);
+	let showSidebar = !isInjected && favviewerMaximized !== true;
 
 	function addTimeline(data: TimelineData) {
 		let idNum = 0;
-		while (timelines.hasOwnProperty(`Timeline ${idNum}`))
+		while (Object.hasOwn(timelines, `Timeline ${idNum}`))
 			idNum += 1;
 
 		const id = `Timeline ${idNum}`;
@@ -78,10 +78,10 @@
 		modalTimeline = {
 			...data,
 			width,
-		}
-		modalTimelineActive = true
+		};
+		modalTimelineActive = true;
 
-		initialRefresh(modalTimeline)
+		initialRefresh(modalTimeline);
 	}
 
 	async function initialRefresh(...refreshingTimelines: TimelineData[]) {
@@ -99,29 +99,30 @@
 				}));
 		}
 
-		const endpointNames = new Set<string>()
+		const endpointNames = new Set<string>();
 		for (const timeline of refreshingTimelines)
 			for (const timelineEndpoint of timeline.endpoints.filter(e => e.refreshTypes.has(RefreshType.RefreshStart)))
 				if (timelineEndpoint.name !== undefined)
-					endpointNames.add(timelineEndpoint.name)
+					endpointNames.add(timelineEndpoint.name);
 				else if (timelineEndpoint.endpoint?.refreshTypes && get(timelineEndpoint.endpoint.refreshTypes).has(RefreshType.RefreshStart))
 					refreshEndpoint(timelineEndpoint.endpoint as Endpoint, RefreshType.RefreshStart)
 						.then(articles => {
 							if (articles.length) {
-								const newAddedIdPairs = articles.map(a => getRootArticle(a).idPair)
+								const newAddedIdPairs = articles.map(a => getRootArticle(a).idPair);
 								timeline.addedIdPairs.update(idPairs => {
-									idPairs.push(...newAddedIdPairs)
-									return idPairs
-								})
+									idPairs.push(...newAddedIdPairs);
+									return idPairs;
+								});
 								timeline.articles.update(idPairs => {
-									idPairs.push(...newAddedIdPairs)
-									return idPairs
-								})
+									idPairs.push(...newAddedIdPairs);
+									return idPairs;
+								});
 							}
-						})
+						});
 
+		//Purposefully not awaiting
 		for (const endpointName of endpointNames.values())
-			refreshEndpointName(endpointName, RefreshType.RefreshStart)
+			refreshEndpointName(endpointName, RefreshType.RefreshStart);
 	}
 </script>
 

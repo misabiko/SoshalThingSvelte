@@ -1,40 +1,78 @@
 <script lang='ts'>
-	import Fa from 'svelte-fa'
+	import Fa from 'svelte-fa';
 	import {
-		faEyeSlash,
-		faEllipsisH, faExpandAlt, faEye, faSpinner,
-	} from '@fortawesome/free-solid-svg-icons'
-	import Dropdown from '../../Dropdown.svelte'
-	import {toggleMarkAsRead} from "../../services/service"
-	import Article from '../../articles'
-	import type {TimelineArticleProps} from '../index'
-	import {getServices} from "../../services/service";
+		faEllipsisH, faExpandAlt, faSpinner, faGripVertical, faEllipsisVertical, faUpRightFromSquare,
+	} from '@fortawesome/free-solid-svg-icons';
+	import Dropdown from '../../Dropdown.svelte';
+	import Article from '../../articles';
+	import type {TimelineArticleProps} from '../index';
+	import {getServices} from '~/services/service';
+	import {type ArticleAction, getUniversalActions} from '~/services/actions';
 
-	export let article: Article
-	export let repost: Article | null = null
-	export let isQuoted = false
-	export let modal: boolean
-	export let timelineProps: TimelineArticleProps
-	export let onLogData: () => void
-	export let onLogJSON: () => void
+	export let article: Article;
+	export let repost: Article | null = null;
+	export let isQuoted = false;
+	export let modal: boolean;
+	export let timelineProps: TimelineArticleProps;
+	export let onLogData: () => void;
+	export let onLogJSON: () => void;
 
 	export let compact: boolean | null;
 
-	let actions = Object.values(getServices()[article.idPair.service].articleActions)
-		.filter(a => a.icon !== undefined)
-		.sort((a, b) => a.index - b.index)
+	const universalActions = getUniversalActions(article);
+	universalActions.push({
+		action: () => compact = !(compact ?? timelineProps.compact),
+		actionedName: 'Show expanded',
+		actioned: () => compact ?? timelineProps.compact,
+		togglable: true,
+		actionedIcon: faEllipsisVertical,
+		key: 'toggleCompact',
+		name: 'Show compact',
+		disabled: null,
+		icon: faGripVertical,
+		color: null,
+		count: null,
+		index: 5,
+		listAsIcon: false,
+		listAsDropdown: true,
+	});
 
-	let hoveredActions = new Set<string>()
+	if (repost?.url)
+		universalActions.push({
+			href: repost.url,
+			key: 'repostExternalLink',
+			name: "Repost's external Link",
+			icon: faUpRightFromSquare,
+			color: null,
+			count: null,
+			index: 7,
+			listAsIcon: true,
+			listAsDropdown: false,
+		});
+
+	//TODO Have option to move icon actions to dropdown
+	let actions: [ArticleAction[], ArticleAction[]] = [...Object.values(getServices()[article.idPair.service].articleActions), ...universalActions]
+		.filter(a => a.icon !== null)
+		.sort((a, b) => a.index - b.index)
+		.reduce(([icons, dropdown], action) => {
+			if (action.listAsIcon)
+				icons.push(action);
+			if (action.listAsDropdown)
+				dropdown.push(action);
+			return [icons, dropdown];
+		}, [[], []] as [ArticleAction[], ArticleAction[]]);
+
+	let hoveredActions = new Set<string>();
 	function updateActionHover(key: string, hovered: boolean) {
 		if (hovered)
-			hoveredActions.add(key)
+			hoveredActions.add(key);
 		else
-			hoveredActions.delete(key)
+			hoveredActions.delete(key);
 
-		hoveredActions = hoveredActions
+		hoveredActions = hoveredActions;
 	}
 
-	let status: string | null = null
+	let status: string | null = null;
 </script>
 
 <style>
@@ -74,41 +112,56 @@
 
 <nav>
 	<div>
-		{#each actions as action (action.key)}
-			{@const count = action.count ? action.count(article) : 0}
-			{@const disabled = action.disabled ? action.disabled(article) : false}
-			{@const actioned = action.actioned(article)}
-			{@const isHovered = hoveredActions.has(action.key)}
-			<!-- svelte-ignore a11y-mouse-events-have-key-events -->
-			<button
-				class='articleButton borderless-button'
-				class:actioned
-				title={action.name}
-				on:click={() => action.action(article.idPair)}
-				disabled={disabled || (actioned && !action.togglable)}
-				on:mouseover={() => updateActionHover(action.key, true)}
-				on:mouseout={() => updateActionHover(action.key, false)}
-			>
-				<span class='icon'>
-					<Fa
-						icon={action.actionedIcon && actioned ? action.actionedIcon : action.icon}
-						color={!disabled && (actioned || isHovered) ? action.color : undefined}
-					/>
-				</span>
-				{#if count}
-					<span style:color={!disabled && (actioned || isHovered) ? action.color : 'inherit'}>{count}</span>
-				{/if}
-			</button>
+		{#each actions[0] as action (action.key)}
+			{#if action.action}
+				{@const actionFunc = action.action}
+				{@const count = action.count ? action.count(article) : 0}
+				{@const disabled = action.disabled ? action.disabled(article) : false}
+				{@const actioned = action.actioned(article)}
+				{@const isHovered = hoveredActions.has(action.key)}
+				<!-- svelte-ignore a11y-mouse-events-have-key-events -->
+				<button
+					class='articleButton borderless-button'
+					class:actioned
+					title={action.name}
+					on:click={() => actionFunc(article.idPair)}
+					disabled={disabled || (actioned && !action.togglable)}
+					on:mouseover={() => updateActionHover(action.key, true)}
+					on:mouseout={() => updateActionHover(action.key, false)}
+				>
+					<span class='icon'>
+						<Fa
+							icon={action.actionedIcon && actioned ? action.actionedIcon : action.icon}
+							color={!disabled && (actioned || isHovered) ? action.color : undefined}
+						/>
+					</span>
+					{#if count}
+						<span style:color={!disabled && (actioned || isHovered) ? action.color : 'inherit'}>{count}</span>
+					{/if}
+				</button>
+			{:else}
+				{@const count = action.count ? action.count(article) : 0}
+				{@const isHovered = hoveredActions.has(action.key)}
+				<!-- svelte-ignore a11y-mouse-events-have-key-events -->
+				<a
+						class='articleButton borderless-button'
+						title={action.name}
+						href={action.href}
+						on:mouseover={() => updateActionHover(action.key, true)}
+						on:mouseout={() => updateActionHover(action.key, false)}
+				>
+					<span class='icon'>
+						<Fa
+								icon={action.icon}
+								color={isHovered ? action.color ?? undefined : undefined}
+						/>
+					</span>
+					{#if count}
+						<span style:color={isHovered ? action.color ?? undefined : 'inherit'}>{count}</span>
+					{/if}
+				</a>
+			{/if}
 		{/each}
-		<button
-			class='articleButton borderless-button'
-			title='Mark as read'
-			on:click={() => toggleMarkAsRead(article.idPair)}
-		>
-			<span class='icon'>
-				<Fa icon={article.markedAsRead ? faEye : faEyeSlash}/>
-			</span>
-		</button>
 		{#if !isQuoted && !modal}
 			<button
 				class='articleButton borderless-button'
@@ -125,22 +178,37 @@
 				<Fa icon={faEllipsisH}/>
 			</span>
 
-			<button class='dropdown-item' on:click={() => toggleMarkAsRead(article.idPair)}>
-				Mark as read
-			</button>
-			<button class='dropdown-item' on:click={() => compact = !compact}>
-				{ timelineProps.compact ? 'Show expanded' : 'Show compact' }
-			</button>
-			{#if article.url}
-				<a class='dropdown-item' href={ article.url } target='_blank' rel='noreferrer'>
-					External Link
-				</a>
-			{/if}
-			{#if repost?.url}
-				<a class='dropdown-item' href={ repost.url } target='_blank' rel='noreferrer'>
-					Repost's external Link
-				</a>
-			{/if}
+			{#each actions[1] as action (action.key)}
+				{#if action.action}
+					{@const actionFunc = action.action}
+					{@const count = action.count ? action.count(article) : 0}
+					{@const disabled = action.disabled ? action.disabled(article) : false}
+					{@const actioned = action.actioned(article)}
+					<button
+							class='dropdown-item'
+							on:click={() => actionFunc(article.idPair)}
+							disabled={disabled || (actioned && !action.togglable)}
+					>
+						{#if action.actionedName && actioned}
+							{action.actionedName}
+						{:else}
+							{action.name}
+						{/if}
+						{#if count}
+							<span>{count}</span>
+						{/if}
+					</button>
+				{:else}
+					<a
+						class='dropdown-item'
+						href={action.href}
+						target='_blank'
+						rel='noreferrer'
+					>
+						{action.name}
+					</a>
+				{/if}
+			{/each}
 			{#if !isQuoted}
 				<button class='dropdown-item' on:click={onLogData}>
 					Log Data

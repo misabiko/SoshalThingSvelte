@@ -1,6 +1,6 @@
-import type {ArticleAuthor, ArticleRefIdPair} from '../../articles';
-import Article from '../../articles';
-import type {ArticleMedia} from '../../articles/media';
+import type {ArticleAuthor, ArticleRefIdPair} from '~/articles';
+import Article from '~/articles';
+import type {ArticleMedia} from '~/articles/media';
 
 export default class TwitterArticle extends Article {
 	//Giving up on using TwitterService.name, endpoints are safe, but too much race condition on articles

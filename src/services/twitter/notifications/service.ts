@@ -2,8 +2,8 @@ import {FetchType, newService, registerService, type Service} from '../../servic
 import TwitterNotificationArticle, {NotificationType} from './article';
 import {twitterFetch} from '../service';
 import {writable} from 'svelte/store';
-import Article, {type ArticleWithRefs, getRootArticle} from '../../../articles';
-import type {Filter} from '../../../filters';
+import Article, {type ArticleWithRefs, getRootArticle} from '~/articles';
+import type {Filter} from '~/filters';
 
 export const TwitterNotificationService: Service<TwitterNotificationArticle> = {
 	...newService('TwitterNotification'),
@@ -42,6 +42,6 @@ export const TwitterNotificationService: Service<TwitterNotificationArticle> = {
 				return true;
 		}
 	},
-}
+};
 
 registerService(TwitterNotificationService);

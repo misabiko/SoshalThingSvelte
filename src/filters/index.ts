@@ -1,7 +1,7 @@
-import type { ArticleWithRefs } from '../articles';
-import {articleWithRefToArray} from '../articles';
-import {getServices} from '../services/service';
-import {type ArticleMedia, MediaType} from '../articles/media';
+import type { ArticleWithRefs } from '~/articles';
+import {articleWithRefToArray} from '~/articles';
+import {getServices} from '~/services/service';
+import {type ArticleMedia, MediaType} from '~/articles/media';
 
 //TODO Filter groups and boolean filters
 
@@ -14,26 +14,34 @@ export type FilterInstance = {
 export type Filter = {
 	type: string
 	service: string
+	props: Record<string, any>
 } | GenericFilter
 
 type GenericFilter = {
 	type: 'media' | 'animated' | 'notMarkedAsRead' | 'noRef' | 'selfRepost' | 'selfQuote'
 	service: null
+	props: Record<string, never>
 } | {
 	type: 'repost'
-	byUsername?: string
 	service: null
+	props: {
+		byUsername: string
+	}
 } | {
 	//TODO Test quote filter
 	type: 'quote'
 	service: null
-	byUsername?: string
+	props: {
+		byUsername: string
+	}
 } | {
 	type: 'interval'
 	service: null
-	interval: number
-	offset: number
-	includeOffset: boolean
+	props: {
+		interval: number
+		offset: number
+		includeOffset: boolean
+	}
 }
 //TODO Number of medias (with equal, less than, greater than, etc)
 
@@ -83,7 +91,7 @@ export function getFilterName(filterType: GenericFilter['type'], inverted: boole
 	}
 }
 
-export const filterTypes: Filter['type'][] = [
+export const filterTypes: GenericFilter['type'][] = [
 	'media',
 	'animated',
 	'notMarkedAsRead',
@@ -102,9 +110,11 @@ export function defaultFilter(filterType: string, service: string | null): Filte
 		case 'interval':
 			return {
 				type: filterType,
-				interval: 3,
-				offset: 0,
-				includeOffset: false,
+				props: {
+					interval: 3,
+					offset: 0,
+					includeOffset: false,
+				},
 				service: null,
 			};
 		default:
@@ -114,7 +124,7 @@ export function defaultFilter(filterType: string, service: string | null): Filte
 
 export const defaultFilterInstances: FilterInstance[] = [
 	{
-		filter: {type: 'notMarkedAsRead', service: null},
+		filter: {type: 'notMarkedAsRead', service: null, props: {}},
 		enabled: true,
 		inverted: false,
 	},
@@ -142,7 +152,7 @@ function keepArticleGeneric(articleWithRefs: ArticleWithRefs, index: number, fil
 				case 'reposts':
 					return articleWithRefs.reposts.every(a => !a.markedAsRead) && keepArticleGeneric(articleWithRefs.reposted, index, filter);
 				case 'quote':
-					return !articleWithRefs.article.markedAsRead// && keepArticleGeneric(articleWithRefs.quoted, index, filter);
+					return !articleWithRefs.article.markedAsRead;// && keepArticleGeneric(articleWithRefs.quoted, index, filter);
 				default:
 					throw new Error(`Unknown article type: ${(articleWithRefs as unknown as any).type}`);
 			}
@@ -150,8 +160,8 @@ function keepArticleGeneric(articleWithRefs: ArticleWithRefs, index: number, fil
 			return articleWithRefs.type === 'normal';
 		case 'repost':
 			if (articleWithRefs.type === 'repost') {
-				if (filter.byUsername) {
-					return articleWithRefs.article.author?.username === filter.byUsername;
+				if (filter.props.byUsername?.length) {
+					return articleWithRefs.article.author?.username === filter.props.byUsername;
 				}else
 					return true;
 			}
@@ -159,8 +169,8 @@ function keepArticleGeneric(articleWithRefs: ArticleWithRefs, index: number, fil
 			return false;
 		case 'quote':
 			if (articleWithRefs.type === 'quote') {
-				if (filter.byUsername)
-					return articleWithRefs.article.author?.username === filter.byUsername;
+				if (filter.props.byUsername?.length)
+					return articleWithRefs.article.author?.username === filter.props.byUsername;
 				else
 					return true;
 			}
@@ -177,10 +187,10 @@ function keepArticleGeneric(articleWithRefs: ArticleWithRefs, index: number, fil
 
 			return false;
 		case 'interval':
-			if (index < filter.offset)
-				return filter.includeOffset;
+			if (index < filter.props.offset)
+				return filter.props.includeOffset;
 			else
-				return (index - filter.offset) % filter.interval === filter.interval - 1;
+				return (index - filter.props.offset) % filter.props.interval === filter.props.interval - 1;
 	}
 }
 

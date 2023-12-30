@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import Fa from 'svelte-fa'
+	import Fa from 'svelte-fa';
 	import {
 		faArrowDown,
 		faArrowUp, faColumns,
@@ -9,26 +9,26 @@
 		faScaleBalanced,
 		faScroll,
 		faSyncAlt,
-	} from "@fortawesome/free-solid-svg-icons"
-	import MasonryContainer from "../containers/MasonryContainer.svelte"
-	import type {FullscreenInfo, TimelineData} from './index'
-	import {RefreshType} from '../services/endpoints'
-	import {updateMaximized} from "../storages";
+	} from '@fortawesome/free-solid-svg-icons';
+	import MasonryContainer from '../containers/MasonryContainer.svelte';
+	import type {FullscreenInfo, TimelineData} from './index';
+	import {RefreshType} from '~/services/endpoints';
+	import {updateMaximized} from '~/storages';
 
-	export let data: TimelineData
-	export let favviewerButtons: boolean
-	export let favviewerHidden: boolean
-	export let favviewerMaximized: boolean | null = null
-	export let fullscreen: FullscreenInfo | null = null
-	export let articleCountLabel: string
-	export let availableRefreshTypes: Readonly<Set<RefreshType>>
-	export let containerRebalance: boolean
-	export let showSidebar: boolean
-	export let showOptions: boolean
-	export let toggleFullscreen: (() => void) | null = null
-	export let shuffle: () => void
-	export let autoscroll: () => void
-	export let refresh: (refreshType: RefreshType) => void
+	export let data: TimelineData;
+	export let favviewerButtons: boolean;
+	export let favviewerHidden: boolean;
+	export let favviewerMaximized: boolean | null = null;
+	export let fullscreen: FullscreenInfo | null = null;
+	export let articleCountLabel: string;
+	export let availableRefreshTypes: Readonly<Set<RefreshType>>;
+	export let containerRebalance: boolean;
+	export let showSidebar: boolean;
+	export let showOptions: boolean;
+	export let toggleFullscreen: (() => void) | null = null;
+	export let shuffle: () => void;
+	export let autoscroll: () => void;
+	export let refresh: (refreshType: RefreshType) => void;
 </script>
 
 <style>
@@ -78,7 +78,10 @@
 				{#if favviewerMaximized !== null}
 					<button class='borderless-button'
 							title={favviewerMaximized ? 'Minimize SoshalThing' : 'Maximize SoshalThing'}
-							on:click={() => {favviewerMaximized = !favviewerMaximized; updateMaximized(favviewerMaximized)}}
+							on:click={() => {
+								favviewerMaximized = !favviewerMaximized;
+								updateMaximized(favviewerMaximized);
+							}}
 					>
 						<Fa icon={favviewerMaximized ? faMinimize : faMaximize} size='large'/>
 					</button>

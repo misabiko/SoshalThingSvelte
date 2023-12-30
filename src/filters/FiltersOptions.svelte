@@ -1,10 +1,10 @@
 <script lang='ts'>
-	import type {Filter, FilterInstance} from './index'
-	import Dropdown from "../Dropdown.svelte";
-	import {filterTypes, getFilterName} from "./index"
-	import {defaultFilter} from './index'
-	import {getServices, type FilterTypeInfo} from '../services/service'
-	import {updateTimelinesStorageValue} from '../storages';
+	import type {Filter, FilterInstance} from './index';
+	import Dropdown from '../Dropdown.svelte';
+	import {filterTypes, getFilterName} from './index';
+	import {defaultFilter} from './index';
+	import {getServices, type FilterTypeInfo} from '~/services/service';
+	import {updateTimelinesStorageValue} from '~/storages';
 
 	export let timelineId: string | null;
 	export let instances: FilterInstance[];
@@ -22,20 +22,20 @@
 		service: s.name,
 		filter: m[0],
 		filterTypeInfo: m[1],
-	})))
+	})));
 
 	function addFilter(filterType: Filter['type'], inverted: boolean, service: string | null = null) {
 		instances.push({
 			filter: defaultFilter(filterType, service),
 			enabled: true,
 			inverted
-		})
-		instances = instances
+		});
+		instances = instances;
 	}
 
 	function removeFilter(index: number) {
-		instances.splice(index, 1)
-		instances = instances
+		instances.splice(index, 1);
+		instances = instances;
 	}
 </script>
 
@@ -65,7 +65,7 @@
 			<div class="field has-addons">
 				<label>
 					{prop}
-					<input bind:value={instance.filter[prop]}/>
+					<input bind:value={instance.filter.props[prop]}/>
 				</label>
 			</div>
 		{/each}
@@ -75,25 +75,25 @@
 		<div class="field has-addons">
 			<label>
 				Username
-				<input bind:value={instance.filter.byUsername}/>
+				<input bind:value={instance.filter.props.byUsername}/>
 			</label>
 		</div>
 	{:else if instance.filter.type === 'interval'}
 		<div class='field has-addons'>
 			<label>
 				Interval
-				<input type='number' class='input' bind:value={instance.filter.interval} min={1}/>
+				<input type='number' class='input' bind:value={instance.filter.props.interval} min={1}/>
 			</label>
 		</div>
 		<div class='field has-addons'>
 			<label>
 				Offset
-				<input type='number' class='input' bind:value={instance.filter.offset} min={0}/>
+				<input type='number' class='input' bind:value={instance.filter.props.offset} min={0}/>
 			</label>
 		</div>
 		<div class='field has-addons'>
 			<label>
-				<input type='checkbox' bind:checked={instance.filter.includeOffset}/>
+				<input type='checkbox' bind:checked={instance.filter.props.includeOffset}/>
 				Include Offset
 			</label>
 		</div>

@@ -1,39 +1,50 @@
 <script lang='ts'>
-	import type {TimelineArticleProps} from '../index'
-	import Article from "../index";
-	import {afterUpdate} from 'svelte'
-	import {getWritable} from '../../services/service'
-	import Fa from 'svelte-fa'
-	import {faImages} from "@fortawesome/free-solid-svg-icons";
-	import {MediaType} from '../media'
-	import {LoadingState} from '../../bufferedMediaLoading';
+	import type {TimelineArticleProps} from '../index';
+	import Article from '../index';
+	import {afterUpdate} from 'svelte';
+	import {getWritable} from '~/services/service';
+	import Fa from 'svelte-fa';
+	import {faImages} from '@fortawesome/free-solid-svg-icons';
+	import {MediaType} from '../media';
+	import {LoadingState} from '~/bufferedMediaLoading';
 
-	export let article: Article
-	export let timelineProps: TimelineArticleProps
+	export let article: Article;
+	export let timelineProps: TimelineArticleProps;
 	export let showAllMedia: boolean;
-	export let onMediaClick: (index: number) => void
+	export let onMediaClick: (index: number) => void;
 
 	export let divRef: HTMLDivElement | null = null;
 	export let mediaRefs: (HTMLImageElement | HTMLVideoElement)[] = [];
 	export let loadingStates: LoadingState[] | null = null;
 
 	export let compact: boolean | null;
+	//TODO Add option for full first (n) media and compact rest
 
 	afterUpdate(() => {
-		const articleMediaEls = divRef?.querySelectorAll('.articleMedia')
+		const articleMediaEls = divRef?.querySelectorAll('.articleMedia:not(.articleThumbnail)');
 		if (articleMediaEls) {
-			const modifiedMedias: [number, number][] = []
+			const modifiedMedias: [number, number][] = [];
 			for (let i = 0; i < article.medias.length; ++i)
 				if (article.medias[i].ratio === null && articleMediaEls[i] !== undefined)
-					modifiedMedias.push([i, articleMediaEls[i].clientHeight / articleMediaEls[i].clientWidth])
+					modifiedMedias.push([i, articleMediaEls[i].clientHeight / articleMediaEls[i].clientWidth]);
 
 			getWritable(article.idPair).update(a => {
 				for (const [i, ratio] of modifiedMedias)
-					a.medias[i].ratio = ratio
-				return a
-			})
+					a.medias[i].ratio = ratio;
+				return a;
+			});
 		}
-	})
+	});
+
+	//Sloppy to make sure landscape single images aren't forced to square aspect ratio
+	let aspectRatio: number | undefined;
+	$: if ((compact ?? timelineProps.compact) && article.medias.length === 1 && (article.medias[0].ratio ?? 1) < 1) {
+		aspectRatio = 1 / (article.medias[0]?.ratio ?? 1);
+	}
+	let aspectRatioThumbnail: number | undefined;
+	$: if ((compact ?? timelineProps.compact) && article.medias.length === 1 && (article.medias[0].thumbnail?.ratio ?? 1) < 1) {
+		aspectRatioThumbnail = 1 / (article.medias[0]?.thumbnail?.ratio ?? 1);
+	}
 </script>
 
 <style>
@@ -47,9 +58,9 @@
 	}
 
 	.socialMedia video {
-		 width: 100%;
-		 border-radius: 8px;
-	 }
+		width: 100%;
+		border-radius: 8px;
+	}
 
 	.imagesHolder {
 		overflow: hidden;
@@ -64,7 +75,7 @@
 	}
 
 	.socialMediaCompact .imagesHolder:only-child, .socialMediaCompact video.articleMedia:only-child {
-		width: unset;
+		width: 100%;
 	}
 
 	.imagesHolder:not(:last-child) {
@@ -77,9 +88,9 @@
 	}
 
 	.imgPlaceHolder {
-	  width: 100%;
-	  background-color: grey;
-  }
+		width: 100%;
+		background-color: grey;
+	}
 
 	.moreMedia {
 		display: flex;
@@ -94,14 +105,14 @@
 
 <div class='socialMedia' class:socialMediaCompact={compact ?? timelineProps.compact} bind:this={divRef}>
 	{#each article.medias.slice(0, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined) as media, index (index)}
-		{@const isLoading = loadingStates && loadingStates[index] === LoadingState.Loading}
+		<!--{@const isLoading = loadingStates && loadingStates[index] === LoadingState.Loading}-->
 		{#if loadingStates && loadingStates[index] === LoadingState.NotLoaded}
-			<div class='imagesHolder'>
+			<div class='imagesHolder' style:aspect-ratio={aspectRatioThumbnail}>
 				<div class='imgPlaceHolder' style:aspect-ratio={1 / (media.ratio ?? 1)} style:display='none'></div>
 				<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 				{#if media.thumbnail}
 					<img
-							class='articleMedia'
+							class='articleMedia articleThumbnail'
 							alt={`${article.idPairStr}/${index}`}
 							src={media.thumbnail.src}
 							on:click={() => onMediaClick(index)}
@@ -109,7 +120,7 @@
 				{/if}
 			</div>
 		{:else if media.mediaType === MediaType.Image || media.mediaType === MediaType.Gif}
-			<div class='imagesHolder'>
+			<div class='imagesHolder' style:aspect-ratio={aspectRatio}>
 				<div class='imgPlaceHolder' style:aspect-ratio={1 / (media.ratio ?? 1)} style:display='none'></div>
 				<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 				<img
@@ -121,7 +132,6 @@
 				/>
 			</div>
 		{:else if !timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
-			<!-- svelte-ignore a11y-media-has-caption -->
 			<video
 					class='articleMedia'
 					controls
@@ -133,7 +143,6 @@
 				<source src={media.src} type='video/mp4'/>
 			</video>
 		{:else if media.mediaType === MediaType.VideoGif || timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
-			<!-- svelte-ignore a11y-media-has-caption -->
 			<video
 					class='articleMedia'
 					controls

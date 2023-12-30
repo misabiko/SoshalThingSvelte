@@ -1,10 +1,10 @@
 import {loadMainStorage, MAIN_STORAGE_KEY} from './index';
 import {derived, get} from 'svelte/store';
-import type {Service} from '../services/service';
-import {getServices} from '../services/service';
+import type {Service} from '~/services/service';
+import {getServices} from '~/services/service';
 import type Article from '../articles';
 
-const LOCAL_CACHE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Cache';
+// const LOCAL_CACHE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Cache';
 
 type SessionCacheStorage = {
 	services: {
@@ -17,11 +17,11 @@ type SessionCacheStorage = {
 }
 
 //Might be redundant now that markAsHidden has been removed
-type LocalCacheStorage = {
-	services: {
-		[name: string]: {}
-	}
-}
+// type LocalCacheStorage = {
+// 	services: {
+// 		[name: string]: {}
+// 	}
+// }
 
 export function updateMarkAsReadStorage() {
 	const {markAsReadLocal} = loadMainStorage();

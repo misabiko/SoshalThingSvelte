@@ -4,27 +4,27 @@ import {
 	type TimelineCollection,
 	type TimelineEndpoint,
 	type TimelineView,
-} from '../timelines';
-import type {SvelteComponent} from 'svelte';
-import ColumnContainer from '../containers/ColumnContainer.svelte';
-import RowContainer from '../containers/RowContainer.svelte';
-import MasonryContainer from '../containers/MasonryContainer.svelte';
-import SocialArticleView from '../articles/social/SocialArticleView.svelte';
-import GalleryArticleView from '../articles/gallery/GalleryArticleView.svelte';
-import {getServices} from '../services/service';
-import type {FilterInstance} from '../filters';
-import type {SortInfo} from '../sorting';
-import {SortMethod} from '../sorting';
-import {defaultTimeline} from '../timelines';
-import {defaultFilterInstances} from '../filters';
+} from '~/timelines';
+import type {ComponentType} from 'svelte';
+import ColumnContainer from '~/containers/ColumnContainer.svelte';
+import RowContainer from '~/containers/RowContainer.svelte';
+import MasonryContainer from '~/containers/MasonryContainer.svelte';
+import SocialArticleView from '~/articles/social/SocialArticleView.svelte';
+import GalleryArticleView from '~/articles/gallery/GalleryArticleView.svelte';
+import {getServices} from '~/services/service';
+import type {FilterInstance} from '~/filters';
+import type {SortInfo} from '~/sorting';
+import {SortMethod} from '~/sorting';
+import {defaultTimeline} from '~/timelines';
+import {defaultFilterInstances} from '~/filters';
 import {
 	addEndpoint,
 	Endpoint,
 	endpoints,
 	RefreshType,
 	startAutoRefresh,
-} from '../services/endpoints';
-import type {EndpointConstructorParams} from '../services/endpoints';
+} from '~/services/endpoints';
+import type {EndpointConstructorParams} from '~/services/endpoints';
 import {derived, get} from 'svelte/store';
 
 export const MAIN_STORAGE_KEY = 'SoshalThingSvelte';
@@ -203,7 +203,7 @@ export function getCookie(name: string): string | null {
 		return null;
 }
 
-function parseContainer(container: string | undefined): new (...args: any[]) => SvelteComponent {
+function parseContainer(container: string | undefined): ComponentType {
 	switch (container) {
 		case 'Row':
 		case 'RowContainer':
@@ -218,7 +218,7 @@ function parseContainer(container: string | undefined): new (...args: any[]) => 
 	}
 }
 
-function parseArticleView(articleView: string | undefined): new (...args: any[]) => SvelteComponent {
+function parseArticleView(articleView: string | undefined): ComponentType {
 	switch (articleView) {
 		case 'Gallery':
 		case 'GalleryArticle':
@@ -301,7 +301,7 @@ function endpointsToStorage(timelineEndpoints: TimelineEndpoint[]): EndpointStor
 			onRefresh: refreshTypes.has(RefreshType.Refresh),
 			loadTop: refreshTypes.has(RefreshType.LoadTop),
 			loadBottom: refreshTypes.has(RefreshType.LoadBottom),
-		}))
+		}));
 }
 
 function parseSortInfo(storage: TimelineStorage['sortInfo']): SortInfo {

@@ -9,12 +9,12 @@ import {
 	type Service
 } from '../service';
 import {get, type Writable} from 'svelte/store';
-import Article, {type ArticleIdPair, type ArticleWithRefs, articleWithRefToArray, getRootArticle} from '../../articles';
+import Article, {type ArticleIdPair, type ArticleWithRefs, articleWithRefToArray, getRootArticle} from '~/articles';
 import {STANDARD_ACTIONS} from '../actions';
-import {getServiceStorage} from '../../storages';
-import {getRatio, MediaLoadType, MediaType} from '../../articles/media';
+import {getServiceStorage} from '~/storages';
+import {getRatio, MediaLoadType, MediaType} from '~/articles/media';
 import {faFaceSmile} from '@fortawesome/free-solid-svg-icons';
-import type {Filter} from 'filters';
+import type {Filter} from '~/filters';
 import ServiceSettings from './ServiceSettings.svelte';
 
 export const PixivService: PixivServiceType = {
@@ -33,9 +33,16 @@ export const PixivService: PixivServiceType = {
 					queueLoadInfo: MediaLoadType.LazyLoad,
 					mediaType: MediaType.Image,
 					thumbnail: a.medias[i].queueLoadInfo === MediaLoadType.Thumbnail ? {
-						src: a.medias[i].src
-					}: undefined,
-					loaded: false
+						src: a.medias[i].src,
+						ratio: null,
+						offsetX: null,
+						offsetY: null,
+						cropRatio: null,
+					} : null,
+					loaded: false,
+					offsetX: null,
+					offsetY: null,
+					cropRatio: null,
 				};
 			}
 
@@ -49,8 +56,8 @@ export const PixivService: PixivServiceType = {
 		[STANDARD_ACTIONS.like.key]: {
 			...STANDARD_ACTIONS.like,
 			icon: faFaceSmile,
-			actionedIcon: undefined,
-			color: undefined,
+			actionedIcon: null,
+			color: null,
 			togglable: false,
 			async action(idPair: ArticleIdPair) {
 				const csrfToken = getServiceStorage(PixivService.name)['csrfToken'] as string | undefined;
@@ -83,15 +90,20 @@ export const PixivService: PixivServiceType = {
 					return a;
 				});
 			},
-			actioned(article) { return article.liked; },
+			actioned(article: PixivArticle) { return article.liked; },
 		},
 		bookmark: {
 			key: 'bookmark',
 			name: 'Bookmark',
-			color: STANDARD_ACTIONS.like.color,
+			actionedName: null,
+			listAsDropdown: false,
 			icon: STANDARD_ACTIONS.like.icon,
 			actionedIcon: STANDARD_ACTIONS.like.actionedIcon,
+			listAsIcon: true,
+			color: STANDARD_ACTIONS.like.color,
 			togglable: false,
+			disabled: null,
+			count: null,
 			index: 1,
 			async action(idPair) {
 				const storage = getServiceStorage(PixivService.name);

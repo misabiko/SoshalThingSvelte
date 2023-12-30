@@ -1,10 +1,10 @@
 <script lang='ts'>
-	import {defaultTimeline, newUserTimeline} from '../timelines';
-	import type {TimelineData} from '../timelines'
-	import {getServices} from '../services/service';
+	import {defaultTimeline, newUserTimeline} from '~/timelines';
+	import type {TimelineData} from '~/timelines';
+	import {getServices} from '~/services/service';
 
-	export let setModalTimeline: (data: TimelineData, width?: number) => void
-	export let addTimeline: (data: TimelineData) => void
+	export let setModalTimeline: (data: TimelineData, width?: number) => void;
+	export let addTimeline: (data: TimelineData) => void;
 
 	enum TimelineAddTypes {
 		Empty,
@@ -13,12 +13,12 @@
 	}
 
 	let timelineAddType = TimelineAddTypes.Empty;
-	let addDisabled = false
+	let addDisabled = false;
 	$: {
 		switch (timelineAddType) {
 			case TimelineAddTypes.User:
 				try {
-					addDisabled = !username.length || !JSON.parse(username)?.name?.length
+					addDisabled = !username.length || !JSON.parse(username)?.name?.length;
 				} catch (e) {
 					addDisabled = true;
 				}
@@ -29,10 +29,10 @@
 		}
 	}
 
-	let title = ''
-	let username = ''
-	let userServices = Object.entries(getServices()).filter(([_, s]) => s.userEndpoint !== null)
-	let userService = userServices[0][0]
+	let title = '';
+	let username = '';
+	let userServices = Object.entries(getServices()).filter(([_, s]) => s.userEndpoint !== null);
+	let userService = userServices[0][0];
 
 	function getTimelineData() {
 		switch (timelineAddType) {
@@ -64,13 +64,13 @@
 		<input bind:value={username} name='username'/>
 	{/if}
 	<button
-		on:click={() => {const data = getTimelineData(); if (data) setModalTimeline(data)}}
+		on:click={() => {const data = getTimelineData(); if (data) setModalTimeline(data);}}
 		disabled={addDisabled}
 	>
 		Add Modal Timeline
 	</button>
 	<button
-		on:click={() => {const data = getTimelineData(); if (data) addTimeline(data)}}
+		on:click={() => {const data = getTimelineData(); if (data) addTimeline(data);}}
 		disabled={addDisabled}
 	>
 		Add Timeline

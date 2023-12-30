@@ -36,6 +36,8 @@
 	--primary: var(--blue);
 	--light: var(--grey-light);
 
+	--button-color: var(--primary);
+
 	--text: var(--white-bis);
 	--text-light: var(--white);
 	--text-strong: var(--white-ter);
@@ -90,10 +92,7 @@
 	color: var(--grey-darker);
 	cursor: pointer;
 	justify-content: center;
-	padding-bottom: calc(0.5em - 1px);
-	padding-left: 1em;
-	padding-right: 1em;
-	padding-top: calc(0.5em - 1px);
+	padding: calc(0.5em - 1px) 1em;
 	text-align: center;
 	white-space: nowrap;
 	border-radius: 4px;

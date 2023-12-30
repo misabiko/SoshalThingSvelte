@@ -1,6 +1,6 @@
 import {expect, test} from '@playwright/test';
-import {parseText} from '../../src/services/twitter/apiV1';
-import {generateId, notifications} from '../../src/notifications/store';
+import {parseText} from '~/services/twitter/apiV1';
+import {generateId, notifications} from '~/notifications/store';
 
 test('twitter V1 parseText', () => {
 	//1549147268195966979
@@ -120,215 +120,215 @@ test('twitter V1 parseText', () => {
 test('twitter just one media parseText', () => {
 	//1737271493179183261
 	const raw: any = {
-		"bookmark_count": 2389,
-		"bookmarked": false,
-		"created_at": "Wed Dec 20 00:39:35 +0000 2023",
-		"conversation_id_str": "1737271493179183261",
-		"display_text_range": [
+		'bookmark_count': 2389,
+		'bookmarked': false,
+		'created_at': 'Wed Dec 20 00:39:35 +0000 2023',
+		'conversation_id_str': '1737271493179183261',
+		'display_text_range': [
 			0,
 			0
 		],
-		"entities": {
-			"media": [
+		'entities': {
+			'media': [
 				{
-					"display_url": "pic.twitter.com/4FeQgZhfjP",
-					"expanded_url": "https://twitter.com/ninomaeinanis/status/1737271493179183261/photo/1",
-					"id_str": "1737271435629072384",
-					"indices": [
+					'display_url': 'pic.twitter.com/4FeQgZhfjP',
+					'expanded_url': 'https://twitter.com/ninomaeinanis/status/1737271493179183261/photo/1',
+					'id_str': '1737271435629072384',
+					'indices': [
 						0,
 						23
 					],
-					"media_key": "3_1737271435629072384",
-					"media_url_https": "https://pbs.twimg.com/media/GBwHKo8akAAvcfP.jpg",
-					"type": "photo",
-					"url": "https://t.co/4FeQgZhfjP",
-					"ext_media_availability": {
-						"status": "Available"
+					'media_key': '3_1737271435629072384',
+					'media_url_https': 'https://pbs.twimg.com/media/GBwHKo8akAAvcfP.jpg',
+					'type': 'photo',
+					'url': 'https://t.co/4FeQgZhfjP',
+					'ext_media_availability': {
+						'status': 'Available'
 					},
-					"features": {
-						"large": {
-							"faces": []
+					'features': {
+						'large': {
+							'faces': []
 						},
-						"medium": {
-							"faces": []
+						'medium': {
+							'faces': []
 						},
-						"small": {
-							"faces": []
+						'small': {
+							'faces': []
 						},
-						"orig": {
-							"faces": []
+						'orig': {
+							'faces': []
 						}
 					},
-					"sizes": {
-						"large": {
-							"h": 1076,
-							"w": 1920,
-							"resize": "fit"
+					'sizes': {
+						'large': {
+							'h': 1076,
+							'w': 1920,
+							'resize': 'fit'
 						},
-						"medium": {
-							"h": 673,
-							"w": 1200,
-							"resize": "fit"
+						'medium': {
+							'h': 673,
+							'w': 1200,
+							'resize': 'fit'
 						},
-						"small": {
-							"h": 381,
-							"w": 680,
-							"resize": "fit"
+						'small': {
+							'h': 381,
+							'w': 680,
+							'resize': 'fit'
 						},
-						"thumb": {
-							"h": 150,
-							"w": 150,
-							"resize": "crop"
+						'thumb': {
+							'h': 150,
+							'w': 150,
+							'resize': 'crop'
 						}
 					},
-					"original_info": {
-						"height": 1076,
-						"width": 1920,
-						"focus_rects": [
+					'original_info': {
+						'height': 1076,
+						'width': 1920,
+						'focus_rects': [
 							{
-								"x": 0,
-								"y": 0,
-								"w": 1920,
-								"h": 1075
+								'x': 0,
+								'y': 0,
+								'w': 1920,
+								'h': 1075
 							},
 							{
-								"x": 844,
-								"y": 0,
-								"w": 1076,
-								"h": 1076
+								'x': 844,
+								'y': 0,
+								'w': 1076,
+								'h': 1076
 							},
 							{
-								"x": 920,
-								"y": 0,
-								"w": 944,
-								"h": 1076
+								'x': 920,
+								'y': 0,
+								'w': 944,
+								'h': 1076
 							},
 							{
-								"x": 1123,
-								"y": 0,
-								"w": 538,
-								"h": 1076
+								'x': 1123,
+								'y': 0,
+								'w': 538,
+								'h': 1076
 							},
 							{
-								"x": 0,
-								"y": 0,
-								"w": 1920,
-								"h": 1076
+								'x': 0,
+								'y': 0,
+								'w': 1920,
+								'h': 1076
 							}
 						]
 					}
 				}
 			],
-			"user_mentions": [],
-			"urls": [],
-			"hashtags": [],
-			"symbols": []
+			'user_mentions': [],
+			'urls': [],
+			'hashtags': [],
+			'symbols': []
 		},
-		"extended_entities": {
-			"media": [
+		'extended_entities': {
+			'media': [
 				{
-					"display_url": "pic.twitter.com/4FeQgZhfjP",
-					"expanded_url": "https://twitter.com/ninomaeinanis/status/1737271493179183261/photo/1",
-					"id_str": "1737271435629072384",
-					"indices": [
+					'display_url': 'pic.twitter.com/4FeQgZhfjP',
+					'expanded_url': 'https://twitter.com/ninomaeinanis/status/1737271493179183261/photo/1',
+					'id_str': '1737271435629072384',
+					'indices': [
 						0,
 						23
 					],
-					"media_key": "3_1737271435629072384",
-					"media_url_https": "https://pbs.twimg.com/media/GBwHKo8akAAvcfP.jpg",
-					"type": "photo",
-					"url": "https://t.co/4FeQgZhfjP",
-					"ext_media_availability": {
-						"status": "Available"
+					'media_key': '3_1737271435629072384',
+					'media_url_https': 'https://pbs.twimg.com/media/GBwHKo8akAAvcfP.jpg',
+					'type': 'photo',
+					'url': 'https://t.co/4FeQgZhfjP',
+					'ext_media_availability': {
+						'status': 'Available'
 					},
-					"features": {
-						"large": {
-							"faces": []
+					'features': {
+						'large': {
+							'faces': []
 						},
-						"medium": {
-							"faces": []
+						'medium': {
+							'faces': []
 						},
-						"small": {
-							"faces": []
+						'small': {
+							'faces': []
 						},
-						"orig": {
-							"faces": []
+						'orig': {
+							'faces': []
 						}
 					},
-					"sizes": {
-						"large": {
-							"h": 1076,
-							"w": 1920,
-							"resize": "fit"
+					'sizes': {
+						'large': {
+							'h': 1076,
+							'w': 1920,
+							'resize': 'fit'
 						},
-						"medium": {
-							"h": 673,
-							"w": 1200,
-							"resize": "fit"
+						'medium': {
+							'h': 673,
+							'w': 1200,
+							'resize': 'fit'
 						},
-						"small": {
-							"h": 381,
-							"w": 680,
-							"resize": "fit"
+						'small': {
+							'h': 381,
+							'w': 680,
+							'resize': 'fit'
 						},
-						"thumb": {
-							"h": 150,
-							"w": 150,
-							"resize": "crop"
+						'thumb': {
+							'h': 150,
+							'w': 150,
+							'resize': 'crop'
 						}
 					},
-					"original_info": {
-						"height": 1076,
-						"width": 1920,
-						"focus_rects": [
+					'original_info': {
+						'height': 1076,
+						'width': 1920,
+						'focus_rects': [
 							{
-								"x": 0,
-								"y": 0,
-								"w": 1920,
-								"h": 1075
+								'x': 0,
+								'y': 0,
+								'w': 1920,
+								'h': 1075
 							},
 							{
-								"x": 844,
-								"y": 0,
-								"w": 1076,
-								"h": 1076
+								'x': 844,
+								'y': 0,
+								'w': 1076,
+								'h': 1076
 							},
 							{
-								"x": 920,
-								"y": 0,
-								"w": 944,
-								"h": 1076
+								'x': 920,
+								'y': 0,
+								'w': 944,
+								'h': 1076
 							},
 							{
-								"x": 1123,
-								"y": 0,
-								"w": 538,
-								"h": 1076
+								'x': 1123,
+								'y': 0,
+								'w': 538,
+								'h': 1076
 							},
 							{
-								"x": 0,
-								"y": 0,
-								"w": 1920,
-								"h": 1076
+								'x': 0,
+								'y': 0,
+								'w': 1920,
+								'h': 1076
 							}
 						]
 					}
 				}
 			]
 		},
-		"favorite_count": 45041,
-		"favorited": true,
-		"full_text": "https://t.co/4FeQgZhfjP",
-		"is_quote_status": false,
-		"lang": "zxx",
-		"possibly_sensitive": false,
-		"possibly_sensitive_editable": true,
-		"quote_count": 46,
-		"reply_count": 250,
-		"retweet_count": 8306,
-		"retweeted": false,
-		"user_id_str": "1283650008835743744",
-		"id_str": "1737271493179183261"
+		'favorite_count': 45041,
+		'favorited': true,
+		'full_text': 'https://t.co/4FeQgZhfjP',
+		'is_quote_status': false,
+		'lang': 'zxx',
+		'possibly_sensitive': false,
+		'possibly_sensitive_editable': true,
+		'quote_count': 46,
+		'reply_count': 250,
+		'retweet_count': 8306,
+		'retweeted': false,
+		'user_id_str': '1283650008835743744',
+		'id_str': '1737271493179183261'
 	};
 
 	const {text, textHtml} = parseText(raw.full_text, raw.entities, raw.extended_entities);

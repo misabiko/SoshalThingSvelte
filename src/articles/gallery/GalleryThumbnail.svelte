@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type {ArticleMedia} from "../media";
-	import type {ArticleIdPair} from "../index";
-	import Article from "../index";
+	import type {ArticleMedia} from '../media';
+	import type {ArticleIdPair} from '../index';
+	import Article from '../index';
 
 	export let actualArticle: Readonly<Article>;
 	export let mediaIndex: number;

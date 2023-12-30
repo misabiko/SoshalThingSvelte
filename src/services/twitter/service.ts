@@ -1,14 +1,15 @@
 import type TwitterArticle from './article';
-import {addArticles, FetchType, getWritable, newService, registerService, type Service} from '../service';
-import {STANDARD_ACTIONS} from '../actions';
+import {addArticles, FetchType, getWritable, type Service} from '~/services/service';
+import {newService, registerService} from '~/services/service';
+import {STANDARD_ACTIONS} from '~/services/actions';
 import Article, {
 	type ArticleIdPair,
 	type ArticleWithRefs,
 	articleWithRefToArray,
 	getActualArticle,
 	getRootArticle
-} from '../../articles';
-import type {Filter} from '../../filters';
+} from '~/articles';
+import type {Filter} from '~/filters';
 import {
 	type FavoriteResponse,
 	type Instruction,
@@ -16,8 +17,8 @@ import {
 	type ResponseError, type ResponseSingleError,
 	type RetweetResponse
 } from './pageAPI';
-import {getCookie, getServiceStorage} from 'storages';
-import {fetchExtension} from 'services/extension';
+import {getCookie, getServiceStorage} from '~/storages';
+import {fetchExtension} from '~/services/extension';
 import {get, writable} from 'svelte/store';
 import ServiceSettings from './ServiceSettings.svelte';
 
@@ -52,10 +53,10 @@ export const TwitterService: Service<TwitterArticle> = {
 				return (getRootArticle(articleWithRefs) as TwitterArticle).deleted;
 			case 'liked':
 				return (articleWithRefToArray(articleWithRefs) as TwitterArticle[])
-					.some(a => a.liked)
+					.some(a => a.liked);
 			case 'retweeted':
 				return (articleWithRefToArray(articleWithRefs) as TwitterArticle[])
-					.some(a => a.retweeted)
+					.some(a => a.retweeted);
 			default:
 				return true;
 		}
@@ -65,19 +66,19 @@ export const TwitterService: Service<TwitterArticle> = {
 		likes: {
 			name: 'Likes',
 			compare(a, b) {
-				return ((getActualArticle(a) as TwitterArticle).likeCount || 0) - ((getActualArticle(b) as TwitterArticle).likeCount || 0)
+				return ((getActualArticle(a) as TwitterArticle).likeCount || 0) - ((getActualArticle(b) as TwitterArticle).likeCount || 0);
 			},
 			directionLabel(reversed: boolean): string {
-				return reversed ? 'Descending' : 'Ascending'
+				return reversed ? 'Descending' : 'Ascending';
 			}
 		},
 		retweets: {
 			name: 'Retweets',
 			compare(a, b) {
-				return ((getActualArticle(a) as TwitterArticle).retweetCount || 0) - ((getActualArticle(b) as TwitterArticle).retweetCount || 0)
+				return ((getActualArticle(a) as TwitterArticle).retweetCount || 0) - ((getActualArticle(b) as TwitterArticle).retweetCount || 0);
 			},
 			directionLabel(reversed: boolean): string {
-				return reversed ? 'Descending' : 'Ascending'
+				return reversed ? 'Descending' : 'Ascending';
 			}
 		}
 	},
@@ -293,7 +294,7 @@ export async function loadArticle(id: string): Promise<ArticleWithRefs | null> {
 	};
 	const fieldToggles = {
 		withArticleRichContentState: false,
-	}
+	};
 
 	const url = new URL('https://twitter.com/i/api/graphql/-H4B_lJDEA-O_7_qWaRiyg/TweetDetail');
 	url.searchParams.set('variables', JSON.stringify(variables));

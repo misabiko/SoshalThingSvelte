@@ -1,12 +1,12 @@
-import type {ArticleWithRefs, ArticleProps, TimelineArticleProps} from '../articles';
-import type {SvelteComponent} from 'svelte';
-import {getRootArticle} from '../articles';
+import type {ArticleWithRefs, ArticleProps, TimelineArticleProps} from '~/articles';
+import type {ComponentType} from 'svelte';
+import {getRootArticle} from '~/articles';
 
 export type ContainerProps = {
 	articles: ArticleProps[];
 	columnCount: number;
 	rtl: boolean;
-	articleView: new (...args: any[]) => SvelteComponent;
+	articleView: ComponentType;
 	timelineArticleProps: TimelineArticleProps;
 	rebalanceTrigger: boolean;
 }

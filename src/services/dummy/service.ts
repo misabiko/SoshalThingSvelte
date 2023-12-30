@@ -1,7 +1,7 @@
 import {get} from 'svelte/store';
 import {getWritable, newService, registerService, type Service} from '../service';
 import type DummyArticle from './article';
-import type {ArticleIdPair} from '../../articles';
+import type {ArticleIdPair} from '~/articles';
 import {STANDARD_ACTIONS} from '../actions';
 
 export const DummyService: Service<DummyArticle> = {
@@ -14,7 +14,6 @@ export const DummyService: Service<DummyArticle> = {
 		},
 		[STANDARD_ACTIONS.repost.key]: {
 			...STANDARD_ACTIONS.repost,
-			togglable: false,
 			action: repost,
 			actioned(article) { return article.reposted; },
 		},

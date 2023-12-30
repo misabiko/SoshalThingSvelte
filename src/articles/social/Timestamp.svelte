@@ -1,7 +1,7 @@
 <script lang='ts'>
-	import {shortTimestamp} from "../index";
+	import {shortTimestamp} from '../index';
 
-	export let date: Date
+	export let date: Date;
 </script>
 
 <style>

@@ -1,9 +1,9 @@
 <script lang='ts'>
-	import {Endpoint} from '../services/endpoints'
-	import {startAutoRefresh, stopAutoRefresh} from "../services/endpoints"
-	import type {Writable} from 'svelte/store'
+	import {Endpoint} from '~/services/endpoints';
+	import {startAutoRefresh, stopAutoRefresh} from '~/services/endpoints';
+	import type {Writable} from 'svelte/store';
 
-	export let endpoint: Writable<Endpoint>
+	export let endpoint: Writable<Endpoint>;
 </script>
 
 <div class='block endpointOptions'>

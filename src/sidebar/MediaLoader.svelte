@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import {loadingStore} from "../bufferedMediaLoading"
+	import {loadingStore} from '~/bufferedMediaLoading';
 </script>
 
 <button on:click={loadingStore.clearLoadings}>Clear loadings</button>

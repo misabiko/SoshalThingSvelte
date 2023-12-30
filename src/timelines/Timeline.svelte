@@ -1,156 +1,156 @@
 <script lang='ts'>
-	import type {Readable, Writable} from 'svelte/store'
-	import {derived, get} from 'svelte/store'
-	import type {ArticleIdPair, ArticleProps, ArticleWithRefs} from '../articles'
+	import type {Readable, Writable} from 'svelte/store';
+	import {derived, get} from 'svelte/store';
+	import type {ArticleIdPair, ArticleProps, ArticleWithRefs} from '~/articles';
 	import Article, {
 		articleWithRefToArray,
 		deriveArticleRefs,
 		getActualArticle, getDerivedArticleWithRefs, getRootArticle, idPairEqual,
-	} from '../articles'
-	import {fetchArticle, getWritable} from '../services/service'
-	import type {FullscreenInfo, TimelineData} from './index'
-	import {keepArticle} from '../filters'
-	import {compare, SortMethod} from '../sorting'
-	import type {ContainerProps} from '../containers'
-	import TimelineHeader from "./TimelineHeader.svelte"
-	import TimelineOptions from "./TimelineOptions.svelte"
-	import {endpoints, refreshEndpoint, refreshEndpointName, RefreshType} from '../services/endpoints'
-	import {loadingStore} from '../bufferedMediaLoading'
+	} from '../articles';
+	import {fetchArticle, getWritable} from '~/services/service';
+	import type {FullscreenInfo, TimelineData} from './index';
+	import {keepArticle} from '~/filters';
+	import {compare, SortMethod} from '~/sorting';
+	import type {ContainerProps} from '~/containers';
+	import TimelineHeader from './TimelineHeader.svelte';
+	import TimelineOptions from './TimelineOptions.svelte';
+	import {endpoints, refreshEndpoint, refreshEndpointName, RefreshType} from '~/services/endpoints';
+	import {loadingStore} from '~/bufferedMediaLoading';
 
 	export let timelineId: string | null;
-	export let data: TimelineData
+	export let data: TimelineData;
 	//Would like to make this immutable https://github.com/sveltejs/svelte/issues/5572
-	export let fullscreen: FullscreenInfo | null = null
-	export let toggleFullscreen: (() => void) | null = null
-	export let removeTimeline: () => void
-	export let setModalTimeline: (data: TimelineData, width?: number) => void
+	export let fullscreen: FullscreenInfo | null = null;
+	export let toggleFullscreen: (() => void) | null = null;
+	export let removeTimeline: () => void;
+	export let setModalTimeline: (data: TimelineData, width?: number) => void;
 	export let modal = false;
 
-	export let favviewerButtons = false
-	export let favviewerHidden = false
-	export let favviewerMaximized: boolean | null = null
-	export let showSidebar = true
+	export let favviewerButtons = false;
+	export let favviewerHidden = false;
+	export let favviewerMaximized: boolean | null = null;
+	export let showSidebar = true;
 
-	let showOptions = false
-	let containerRef: HTMLElement | null = null
+	let showOptions = false;
+	let containerRef: HTMLElement | null = null;
 	let containerRebalance = false;
 
-	let articleIdPairs: Writable<ArticleIdPair[]> = data.articles
+	let articleIdPairs: Writable<ArticleIdPair[]> = data.articles;
 
 	let articles: Readable<Article[]>;
-	$: articles = derived($articleIdPairs.map(getWritable), a => a)
+	$: articles = derived($articleIdPairs.map(getWritable), a => a);
 
-	let articlesWithRefs: Readable<ArticleWithRefs[]>
-	$: articlesWithRefs = derived($articles.map(deriveArticleRefs), a => a.map(getDerivedArticleWithRefs))
+	let articlesWithRefs: Readable<ArticleWithRefs[]>;
+	$: articlesWithRefs = derived($articles.map(deriveArticleRefs), a => a.map(getDerivedArticleWithRefs));
 
-	let filteredArticles: Readable<ArticleProps[]>
+	let filteredArticles: Readable<ArticleProps[]>;
 	$: filteredArticles = derived(articlesWithRefs, stores => {
 		let articleProps: ArticleProps[] = stores
-			.map((articleWithRefs, i) => addProps(articleWithRefs, i))
+			.map((articleWithRefs, i) => addProps(articleWithRefs, i));
 
 		if (data.hideFilteredOutArticles)
-			articleProps = articleProps.filter(a => !a.filteredOut)
+			articleProps = articleProps.filter(a => !a.filteredOut);
 
 		if (data.mergeReposts) {
-			let merged: ArticleProps[] = []
+			let merged: ArticleProps[] = [];
 			for (const a of articleProps) {
 				if (a.type === 'reposts') {
-					const aIdPair = getRootArticle(a.reposted).idPair
+					const aIdPair = getRootArticle(a.reposted).idPair;
 
 					//Checking if the reposted article is already in merged
 					const plainIndex = merged.findIndex(m =>
 						idPairEqual(getRootArticle(m).idPair, aIdPair)
-					)
+					);
 					if (plainIndex > -1) {
 						//Replacing it with the repost
-						merged[plainIndex] = a
-						continue
+						merged[plainIndex] = a;
+						continue;
 					}
 
 					//Checking if a duplicate repost is in merged
 					const index = merged.findIndex(m =>
 						m.type === 'reposts' &&
 						idPairEqual(getRootArticle(m.reposted).idPair, aIdPair)
-					)
+					);
 
 					if (index > -1)
-						(merged[index] as any).reposts.push(...a.reposts)
+						(merged[index] as any).reposts.push(...a.reposts);
 					else
-						merged.push(a)
+						merged.push(a);
 				}else
-					merged.push(a)
+					merged.push(a);
 			}
 
-			articleProps = merged
+			articleProps = merged;
 
 			//TODO Sort reposts
 		}
 
 		if (data.sortInfo.method !== null)
-			articleProps.sort(compare(data.sortInfo))
+			articleProps.sort(compare(data.sortInfo));
 		if (data.sortInfo.reversed)
-			articleProps.reverse()
+			articleProps.reverse();
 
 		if (data.section.useSection)
-			articleProps = articleProps.slice(0, data.section.count)
+			articleProps = articleProps.slice(0, data.section.count);
 
-		return articleProps
-	})
+		return articleProps;
+	});
 
 	function addProps(articleWithRefs: ArticleWithRefs, index: number): ArticleProps {
-		const filteredOut = !data.filters.every(f => !f.enabled || (keepArticle(articleWithRefs, index, f.filter) !== f.inverted))
+		const filteredOut = !data.filters.every(f => !f.enabled || (keepArticle(articleWithRefs, index, f.filter) !== f.inverted));
 		switch (articleWithRefs.type) {
 			case 'normal':
 				return {
 					...articleWithRefs,
 					filteredOut
-				}
+				};
 			case 'repost':
 				return {
 					type: 'reposts',
 					reposts: [articleWithRefs.article],
 					filteredOut,
 					reposted: addProps(articleWithRefs.reposted, index)
-				} as ArticleProps
+				} as ArticleProps;
 			case 'quote':
 				return {
 					...articleWithRefs,
 					filteredOut,
 					quoted: addProps(articleWithRefs.quoted, index)
-				} as ArticleProps
+				} as ArticleProps;
 			default:
-				throw new Error('Unknown article type: ' + articleWithRefs.type)
+				throw new Error('Unknown article type: ' + articleWithRefs.type);
 		}
 	}
 
-	let articleCountLabel: string
+	let articleCountLabel: string;
 	$: if ($filteredArticles.length)
-		articleCountLabel = `${$filteredArticles.length} articles shown, ${$articles.length - $filteredArticles.length} hidden.`
+		articleCountLabel = `${$filteredArticles.length} articles shown, ${$articles.length - $filteredArticles.length} hidden.`;
 	else if ($articles.length)
-		articleCountLabel = `${$articles.length} hidden articles`
+		articleCountLabel = `${$articles.length} hidden articles`;
 	else
-		articleCountLabel = 'No articles listed.'
+		articleCountLabel = 'No articles listed.';
 
 	$: if (data.shouldLoadMedia && $filteredArticles.length) {
 		for (const articleProps of $filteredArticles) {
-			const actualArticle = getActualArticle(articleProps)
+			const actualArticle = getActualArticle(articleProps);
 			if (!actualArticle.fetched)
-				fetchArticle(actualArticle.idPair)
+				fetchArticle(actualArticle.idPair);
 			if (data.shouldLoadMedia)
 				for (const article of articleWithRefToArray(articleProps))
 					for (let i = 0; i < article.medias.length; ++i)
 						if (article.medias[i].loaded === false)
-							loadingStore.requestLoad(article.idPair, i)
+							loadingStore.requestLoad(article.idPair, i);
 		}
 	}
 
-	let availableRefreshTypes: Readable<Set<RefreshType>>
+	let availableRefreshTypes: Readable<Set<RefreshType>>;
 	$: availableRefreshTypes = derived(data.endpoints.flatMap(e => {
 		const endpoint = e.name !== undefined ? get(endpoints[e.name]) : e.endpoint;
 		return derived(endpoint.refreshTypes, rt => [...rt.values()]);
 	}), rts => new Set(rts.flatMap(rt => rt)));
 
-	let containerProps: ContainerProps
+	let containerProps: ContainerProps;
 	$: containerProps = {
 		articles: $filteredArticles,
 		timelineArticleProps: {
@@ -166,7 +166,7 @@
 		columnCount: fullscreen?.columnCount ?? data.columnCount,
 		rtl: data.rtl,
 		rebalanceTrigger: containerRebalance,
-	}
+	};
 
 	enum ScrollDirection {
 		Up,
@@ -179,7 +179,7 @@
 		scrollRequestId?: number,
 	} = {
 		direction: ScrollDirection.Down,
-	}
+	};
 
 	function shuffle() {
 		data.articles.update(idPairs => {
@@ -197,10 +197,10 @@
 					idPairs[randomIndex], idPairs[currentIndex]];
 			}
 
-			data.sortInfo.method = null
-			containerRebalance = !containerRebalance
-			return idPairs
-		})
+			data.sortInfo.method = null;
+			containerRebalance = !containerRebalance;
+			return idPairs;
+		});
 	}
 
 	function autoscroll() {
@@ -210,12 +210,12 @@
 
 			if ((autoscrollInfo.direction === ScrollDirection.Down && containerRef.scrollTop < containerRef.scrollHeight - containerRef.clientHeight) ||
 				(autoscrollInfo.direction === ScrollDirection.Up && containerRef.scrollTop > 0))
-				containerRef.scrollBy(0, autoscrollInfo.direction === ScrollDirection.Down ? data.scrollSpeed : -data.scrollSpeed)
+				containerRef.scrollBy(0, autoscrollInfo.direction === ScrollDirection.Down ? data.scrollSpeed : -data.scrollSpeed);
 			else
-				autoscrollInfo.direction = autoscrollInfo.direction === ScrollDirection.Down ? ScrollDirection.Up : ScrollDirection.Down
-			autoscrollInfo.scrollRequestId = window.requestAnimationFrame(scrollStep)
-		}
-		autoscrollInfo.scrollRequestId = window.requestAnimationFrame(scrollStep)
+				autoscrollInfo.direction = autoscrollInfo.direction === ScrollDirection.Down ? ScrollDirection.Up : ScrollDirection.Down;
+			autoscrollInfo.scrollRequestId = window.requestAnimationFrame(scrollStep);
+		};
+		autoscrollInfo.scrollRequestId = window.requestAnimationFrame(scrollStep);
 
 		window.addEventListener(
 			'mousedown',
@@ -226,49 +226,49 @@
 
 	function stopScroll(e: MouseEvent) {
 		if (autoscrollInfo.scrollRequestId === undefined)
-			return
+			return;
 
-		window.cancelAnimationFrame(autoscrollInfo.scrollRequestId)
-		autoscrollInfo.scrollRequestId = undefined
+		window.cancelAnimationFrame(autoscrollInfo.scrollRequestId);
+		autoscrollInfo.scrollRequestId = undefined;
 
 		if ((e.target as HTMLElement).matches('.timelineAutoscroll, .timelineAutoscroll *'))
 			autoscrollInfo.direction = autoscrollInfo.direction === ScrollDirection.Down
 				? ScrollDirection.Up
-				: ScrollDirection.Down
+				: ScrollDirection.Down;
 		else
-			autoscrollInfo.direction = ScrollDirection.Down
+			autoscrollInfo.direction = ScrollDirection.Down;
 	}
 
 	function refresh(refreshType: RefreshType) {
 		for (const timelineEndpoint of data.endpoints)
 			if (timelineEndpoint.name !== undefined)
-				refreshEndpointName(timelineEndpoint.name, refreshType)
+				refreshEndpointName(timelineEndpoint.name, refreshType);
 			else
 				refreshEndpoint(timelineEndpoint.endpoint, refreshType)
 					.then(articles => {
 						if (articles.length) {
 							data.addedIdPairs.update(addedIdPairs => {
-								const newAddedIdPairs: ArticleIdPair[] = []
+								const newAddedIdPairs: ArticleIdPair[] = [];
 								for (const idPair of articles.map(a => getRootArticle(a).idPair))
 									if (!addedIdPairs.some(idp => idPairEqual(idPair, idp))) {
-										addedIdPairs.push(idPair)
-										newAddedIdPairs.push(idPair)
+										addedIdPairs.push(idPair);
+										newAddedIdPairs.push(idPair);
 									}
 								data.articles.update(actualIdPairs => {
-									actualIdPairs.push(...newAddedIdPairs)
-									return actualIdPairs
-								})
-								return addedIdPairs
-							})
+									actualIdPairs.push(...newAddedIdPairs);
+									return actualIdPairs;
+								});
+								return addedIdPairs;
+							});
 						}
-					})
+					});
 	}
 
 	function sortOnce(method: SortMethod, reversed: boolean) {
-		const sorted = get(articlesWithRefs).sort(compare({method, reversed, customMethod: null}))
+		const sorted = get(articlesWithRefs).sort(compare({method, reversed, customMethod: null}));
 		if (reversed)
-			sorted.reverse()
-		data.articles.set(sorted.map(a => getRootArticle(a).idPair))
+			sorted.reverse();
+		data.articles.set(sorted.map(a => getRootArticle(a).idPair));
 	}
 
 	function removeFiltered() {
@@ -281,7 +281,7 @@
 					)
 				)
 				.map(a => getRootArticle(a).idPair)
-		)
+		);
 	}
 </script>
 
@@ -325,7 +325,7 @@
 	}
 </style>
 
-<div class='timeline' class:fullscreenTimeline={fullscreen !== null} style={modal ? '' : data.width > 1 ? `width: ${data.width * 500}px` : ""}>
+<div class='timeline' class:fullscreenTimeline={fullscreen !== null} style={modal ? '' : data.width > 1 ? `width: ${data.width * 500}px` : ''}>
 	<TimelineHeader
 		bind:data
 		availableRefreshTypes={$availableRefreshTypes}

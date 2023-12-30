@@ -1,43 +1,50 @@
 <script lang='ts'>
-	import Article from '../index'
-	import type {ArticleIdPair} from '../index'
-	import Fa from 'svelte-fa'
+	import Article from '../index';
+	import type {ArticleIdPair} from '../index';
+	import Fa from 'svelte-fa';
 	import {
 		faExpandArrowsAlt,
 		faExternalLinkAlt,
 		faEllipsisH, faImages,
-	} from '@fortawesome/free-solid-svg-icons'
-	import {LoadingState, loadingStore} from '../../bufferedMediaLoading'
-	import Dropdown from "../../Dropdown.svelte"
+	} from '@fortawesome/free-solid-svg-icons';
+	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
+	import Dropdown from '~/Dropdown.svelte';
 	import {
 		fetchArticle,
-		toggleMarkAsRead,
 		getServices,
-	} from "../../services/service"
-	import type {TimelineArticleProps} from '../index'
-	import type {ArticleProps} from '../index'
-	import {MediaType} from '../media'
-	import GalleryThumbnail from "./GalleryThumbnail.svelte";
-	import GalleryImage from "./GalleryImage.svelte";
+	} from '~/services/service';
+	import type {TimelineArticleProps} from '../index';
+	import type {ArticleProps} from '../index';
+	import {MediaType} from '../media';
+	import GalleryThumbnail from './GalleryThumbnail.svelte';
+	import GalleryImage from './GalleryImage.svelte';
+	import {type ArticleAction, getUniversalActions} from '~/services/actions';
 
-	export let timelineProps: TimelineArticleProps
+	export let timelineProps: TimelineArticleProps;
 	export let articleProps: ArticleProps; articleProps;
 	export let style = ''; style;
 	export let modal: boolean; modal;
 	export let showAllMedia: boolean;
 	export let rootArticle: Readonly<Article>; rootArticle;
-	export let actualArticle: Readonly<Article>
-	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number
-	export let onLogData: () => void
-	export let onLogJSON: () => void
+	export let actualArticle: Readonly<Article>;
+	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number;
+	export let onLogData: () => void;
+	export let onLogJSON: () => void;
 
 	export let divRef: HTMLDivElement | null;
 	export let mediaRefs: HTMLImageElement[];
 	export let loadingStates: LoadingState[];
 
-	let actions = Object.values(getServices()[rootArticle.idPair.service].articleActions)
-		.filter(a => a.icon !== undefined)
+	let actions: [ArticleAction[], ArticleAction[]] = [...Object.values(getServices()[rootArticle.idPair.service].articleActions), ...getUniversalActions(rootArticle)]
+		.filter(a => a.icon !== null)
 		.sort((a, b) => a.index - b.index)
+		.reduce(([icons, dropdown], action) => {
+			if (action.listAsIcon)
+				icons.push(action);
+			if (action.listAsDropdown)
+				dropdown.push(action);
+			return [icons, dropdown];
+		}, [[], []] as [ArticleAction[], ArticleAction[]]);
 </script>
 
 <style>
@@ -133,7 +140,6 @@
 						ref={mediaRefs[i]}
 				/>
 			{:else if !timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
-				<!-- svelte-ignore a11y-media-has-caption -->
 				<video
 					class='articleMedia'
 					controls
@@ -183,17 +189,45 @@
 			{/if}
 
 			<Dropdown isRight={true} labelClasses='articleButton'>
-				<!--on_expanded_change={ctx.link().callback(Msg::SetDrawOnTop)}-->
 				<span slot='triggerIcon' class='icon darkIcon'>
 					<Fa icon={faEllipsisH} class='level-item'/>
 				</span>
-				<button class='dropdown-item' on:click={() => toggleMarkAsRead(actualArticle.idPair)}>
-					Mark as read
-				</button>
+
+				{#each actions[1] as action (action.key)}
+					{#if action.action}
+						{@const actionFunc = action.action}
+						{@const count = action.count ? action.count(rootArticle) : 0}
+						{@const disabled = action.disabled ? action.disabled(rootArticle) : false}
+						{@const actioned = action.actioned(rootArticle)}
+						<button
+								class='dropdown-item'
+								on:click={() => actionFunc(rootArticle.idPair)}
+								disabled={disabled || (actioned && !action.togglable)}
+						>
+							{#if action.actionedName && actioned}
+								{action.actionedName}
+							{:else}
+								{action.name}
+							{/if}
+							{#if count}
+								<span>{count}</span>
+							{/if}
+						</button>
+					{:else}
+						<a
+								class='dropdown-item'
+								href={action.href}
+								target='_blank'
+								rel='noreferrer'
+						>
+							{action.name}
+						</a>
+					{/if}
+				{/each}
 				{#if actualArticle.medias.some(m => !m.loaded) }
 					<button
 						class='dropdown-item'
-						on:click={() => {for (let i = 0; i < actualArticle.medias.length; ++i) loadingStore.forceLoading(actualArticle, i)}}
+						on:click={() => {for (let i = 0; i < actualArticle.medias.length; ++i) loadingStore.forceLoading(actualArticle, i);}}
 					>
 						Load Media
 					</button>
@@ -220,21 +254,34 @@
 			</Dropdown>
 		</div>
 		<div class='holderBox holderBoxBottom'>
-			{#each actions as action (action.key)}
-				{@const actioned = action.actioned(rootArticle)}
-				{@const disabled = action.disabled ? action.disabled(rootArticle) : false}
-				{#if !actioned || action.togglable}
-					<button
+			{#each actions[0] as action (action.key)}
+				{#if action.action}
+					{@const actionFunc = action.action}
+					{@const actioned = action.actioned(rootArticle)}
+					{@const disabled = action.disabled ? action.disabled(rootArticle) : false}
+					{#if !actioned || action.togglable}
+						<button
+							class='button'
+							class:actioned
+							title={action.name}
+							on:click={() => actionFunc(rootArticle.idPair)}
+							{disabled}
+						>
+							<span class='icon darkIcon'>
+								<Fa icon={action.actionedIcon && actioned ? action.actionedIcon : action.icon} class='is-small'/>
+							</span>
+						</button>
+					{/if}
+				{:else}
+					<a
 						class='button'
-						class:actioned
 						title={action.name}
-						on:click={() => action.action(rootArticle.idPair)}
-						{disabled}
+						href={action.href}
 					>
 						<span class='icon darkIcon'>
-							<Fa icon={action.actionedIcon && actioned ? action.actionedIcon : action.icon} class='is-small'/>
+							<Fa icon={action.icon} class='is-small'/>
 						</span>
-					</button>
+					</a>
 				{/if}
 			{/each}
 		</div>

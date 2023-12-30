@@ -1,8 +1,0 @@
-[{
-    "id": 1,
-    "priority": 1,
-    "action": { "type": "allowAllRequests" },
-    "condition": {
-        "resourceTypes": ["main_frame"]
-    }
-}]

@@ -1,44 +1,44 @@
 <script lang='ts'>
-	import type Article from '../../articles';
-	import type {ArticleIdPair} from '../index'
-	import type {ArticleProps, TimelineArticleProps} from '../index'
-	import {shortTimestamp} from "../index";
-	import SocialMedia from "./SocialMedia.svelte";
-	import SocialNav from "./SocialNav.svelte";
-	import Timestamp from "./Timestamp.svelte";
-	import {newUserTimeline} from '../../timelines'
-	import {LoadingState} from '../../bufferedMediaLoading';
-	import {getWritable} from '../../services/service';
+	import type Article from '~/articles';
+	import type {ArticleIdPair} from '../index';
+	import type {ArticleProps, TimelineArticleProps} from '../index';
+	import {shortTimestamp} from '../index';
+	import SocialMedia from './SocialMedia.svelte';
+	import SocialNav from './SocialNav.svelte';
+	import Timestamp from './Timestamp.svelte';
+	import {newUserTimeline} from '~/timelines';
+	import {LoadingState} from '~/bufferedMediaLoading';
+	import {getWritable} from '~/services/service';
 	import {get} from 'svelte/store';
 
-	export let timelineProps: TimelineArticleProps
-	export let articleProps: ArticleProps
+	export let timelineProps: TimelineArticleProps;
+	export let articleProps: ArticleProps;
 	export let modal: boolean; modal;
 	export let showAllMedia: boolean;
-	export let rootArticle: Readonly<Article>
-	export let actualArticle: Readonly<Article>
-	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number
-	export let onLogData: () => void
-	export let onLogJSON: () => void
+	export let rootArticle: Readonly<Article>;
+	export let actualArticle: Readonly<Article>;
+	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number;
+	export let onLogData: () => void;
+	export let onLogJSON: () => void;
 
 	export let divRef: HTMLDivElement | null;
 	export let mediaRefs: HTMLImageElement[];
 	export let loadingStates: LoadingState[];
 
-	let minimized = false
-	const isArticleRepost = articleProps.type === 'reposts'
+	let minimized = false;
 
 	let compact: boolean | null = null;
+	let quoteCompact: boolean | null = null;
 
 	function onUsernameClick(clickedArticle: Article) {
 		if (!clickedArticle.author)
-			return
+			return;
 
-		const data = newUserTimeline(clickedArticle.idPair.service, clickedArticle.author)
+		const data = newUserTimeline(clickedArticle.idPair.service, clickedArticle.author);
 		if (!data)
-			return
+			return;
 
-		timelineProps.setModalTimeline(data)
+		timelineProps.setModalTimeline(data);
 	}
 </script>
 
@@ -171,12 +171,13 @@
 
 <div class='socialArticle'>
 	<div class='repostLabel'>
-		{#if isArticleRepost && rootArticle.author}
+		{#if articleProps.type === 'reposts' && rootArticle.author}
+			{@const timestamp = rootArticle.creationTime && (' - ' + shortTimestamp(rootArticle.creationTime))}
 			<a href={rootArticle.author.url} target='_blank' rel='noreferrer' on:click|preventDefault={() => onUsernameClick(rootArticle)}>
 				{#if articleProps.reposts.length > 1}
-					{articleProps.reposts.map(r => r.author.name).join(', ')} reposted - {shortTimestamp(rootArticle.creationTime)}
+					{articleProps.reposts.map(r => r.author?.name).filter(n => n).join(', ')} reposted{timestamp}
 				{:else}
-					{rootArticle.author.name} reposted - {shortTimestamp(rootArticle.creationTime)}
+					{rootArticle.author.name} reposted{timestamp}
 				{/if}
 			</a>
 		{/if}
@@ -184,8 +185,8 @@
 	<!--{ self.view_reply_label(ctx) }-->
 	<div class='media'>
 		{#if actualArticle.author?.avatarUrl}
-			<figure class='avatar' class:sharedAvatar={isArticleRepost}>
-				{#if isArticleRepost}
+			<figure class='avatar' class:sharedAvatar={articleProps.type === 'reposts'}>
+				{#if articleProps.type === 'reposts' && rootArticle.author}
 					<img src={actualArticle.author.avatarUrl} alt={`${actualArticle.author.username}'s avatar`}/>
 					<img src={rootArticle.author.avatarUrl} alt={`${rootArticle.author.username}'s avatar`}/>
 				{:else}
@@ -213,6 +214,7 @@
 				{#if !timelineProps.hideText && !minimized}
 					<p class='articleParagraph'>
 						{#if actualArticle.textHtml !== undefined}
+							<!--eslint-disable-next-line svelte/no-at-html-tags-->
 							{@html actualArticle.textHtml}
 						{:else if actualArticle.text !== undefined}
 							{actualArticle.text}
@@ -224,16 +226,21 @@
 				{@const quoted = get(getWritable(actualArticle.actualArticleRef.quoted))}
 				<div class='quotedPost'>
 					<div class='articleHeader'>
-						<a class='names' href={quoted.author.url} target='_blank' rel='noreferrer'>
-							<strong>{ quoted.author.name }</strong>
-							<small>{ `@${quoted.author.username}` }</small>
-						</a>
-						<Timestamp date={quoted.creationTime}/>
+						{#if quoted.author}
+							<a class='names' href={quoted.author.url} target='_blank' rel='noreferrer'>
+								<strong>{ quoted.author.name }</strong>
+								<small>{ `@${quoted.author.username}` }</small>
+							</a>
+						{/if}
+						{#if quoted.creationTime !== undefined}
+							<Timestamp date={quoted.creationTime}/>
+						{/if}
 					</div>
 					{#if !minimized}<!--&& !actualArticleProps.quoted.filteredOut-->
 						{#if !timelineProps.hideText}
 							<p class='refArticleParagraph'>
 								{#if quoted.textHtml !== undefined}
+									<!--eslint-disable-next-line svelte/no-at-html-tags-->
 									{@html quoted.textHtml}
 								{:else if quoted.text !== undefined}
 									{quoted.text}
@@ -245,7 +252,7 @@
 							article={quoted}
 							{timelineProps}
 							onMediaClick={index => onMediaClick(actualArticle.idPair, index)}
-							{compact}
+							compact={quoteCompact}
 						/>
 					{/if}
 					<SocialNav
@@ -255,7 +262,7 @@
 						{modal}
 						{onLogData}
 						{onLogJSON}
-						{compact}
+						bind:compact={quoteCompact}
 					/>
 				</div>
 			{/if}
@@ -263,7 +270,7 @@
 				article={actualArticle}
 				bind:modal
 				{timelineProps}
-				repost={isArticleRepost ? rootArticle : undefined}
+				repost={articleProps.type === 'reposts' ? rootArticle : undefined}
 				{onLogData}
 				{onLogJSON}
 				bind:compact

@@ -1,7 +1,7 @@
-import type {ArticleWithRefs} from '../../../articles';
+import type {ArticleWithRefs} from '~/articles';
 import type {PixivUser} from '../article';
 import PixivArticle from '../article';
-import {type ArticleMedia, MediaLoadType, MediaType} from '../../../articles/media';
+import {type ArticleMedia, MediaLoadType, MediaType} from '~/articles/media';
 
 export function parseThumbnail(element: Element, markedAsReadStorage: string[], user: PixivUser): ArticleWithRefs | null {
 	const anchors = element.querySelectorAll('a');
@@ -32,6 +32,9 @@ export function parseThumbnail(element: Element, markedAsReadStorage: string[], 
 			src,
 			ratio: null,
 			queueLoadInfo: MediaLoadType.Thumbnail,
+			offsetX: null,
+			offsetY: null,
+			cropRatio: null,
 		}));
 
 	const title = anchors[1]?.textContent;

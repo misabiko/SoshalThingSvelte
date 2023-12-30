@@ -1,7 +1,7 @@
-import type { ArticleWithRefs } from 'articles';
-import { Endpoint, RefreshType } from 'services/endpoints';
-import { parseResponse, type Instruction, type ResponseError, type AddEntriesInstruction } from 'services/twitter/pageAPI';
-import { TwitterService } from 'services/twitter/service';
+import type { ArticleWithRefs } from '~/articles';
+import { Endpoint, RefreshType } from '~/services/endpoints';
+import { parseResponse, type Instruction, type ResponseError, type AddEntriesInstruction } from '~/services/twitter/pageAPI';
+import { TwitterService } from '~/services/twitter/service';
 
 export default abstract class APIEndpoint<Response extends APIResponse> extends Endpoint {
 	abstract readonly name: string;

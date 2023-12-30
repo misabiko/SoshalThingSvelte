@@ -1,12 +1,12 @@
 <script lang="ts">
-	import {type TimelineView} from '../timelines';
-	import {updateMainStorage, updateMainStorageTimelineViews} from '../storages';
-    import type {TimelineCollection} from "../timelines";
-    import Dropdown from "../Dropdown.svelte";
+	import {type TimelineView} from '~/timelines';
+	import {updateMainStorage, updateMainStorageTimelineViews} from '~/storages';
+    import type {TimelineCollection} from '~/timelines';
+    import Dropdown from '../Dropdown.svelte';
 
-    export let timelineViews: Record<string, TimelineView>
-	export let timelineViewId: string
-    export let timelines: TimelineCollection
+    export let timelineViews: Record<string, TimelineView>;
+	export let timelineViewId: string;
+    export let timelines: TimelineCollection;
 
     let newViewName = '';
 
@@ -21,7 +21,7 @@
                 columnCount: null,
                 container: null,
             },
-        }
+        };
 
         updateMainStorageTimelineViews(timelineViews);
     }

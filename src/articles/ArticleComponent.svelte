@@ -1,68 +1,62 @@
 <script lang='ts'>
-	import type {ArticleIdPair} from "./index"
-	import {getWritable, toggleMarkAsRead} from '../services/service';
-	import Article, {getActualArticle} from '../articles'
-	import type {ArticleProps, TimelineArticleProps} from './index'
-	import {afterUpdate, type SvelteComponent} from 'svelte';
-	import {getContext} from 'svelte'
-	import {getRootArticle} from './index'
-	import Modal from '../Modal.svelte'
+	import type {ArticleIdPair} from './index';
+	import {getWritable, toggleMarkAsRead} from '~/services/service';
+	import Article, {getActualArticle} from '../articles';
+	import type {ArticleProps, TimelineArticleProps} from './index';
+	import {afterUpdate, type ComponentType} from 'svelte';
+	import {getRootArticle} from './index';
+	import Modal from '../Modal.svelte';
 	import {MediaLoadType} from './media';
-	import {LoadingState, loadingStore} from '../bufferedMediaLoading';
+	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
 
-	export let articleProps: ArticleProps
-	export let timelineProps: TimelineArticleProps
-	export let view: new (...args: any[]) => SvelteComponent;
+	export let articleProps: ArticleProps;
+	export let timelineProps: TimelineArticleProps;
+	export let view: ComponentType;
 	export let style = ''; style;
-	let modal = false
-	let showAllMedia = false
+	let modal = false;
+	let showAllMedia = false;
 
-	const isInjected = getContext('isInjected') as boolean
-
-	let rootArticle: Readonly<Article>
-	let actualArticle: Readonly<Article>
+	let rootArticle: Readonly<Article>;
+	let actualArticle: Readonly<Article>;
 	$: {
-		rootArticle = getRootArticle(articleProps)
-		actualArticle = getActualArticle(articleProps)
+		rootArticle = getRootArticle(articleProps);
+		actualArticle = getActualArticle(articleProps);
 	}
 
 	let divRef: HTMLDivElement | null = null;
 	let mediaRefs: HTMLImageElement[] = [];
-	let loadingStates: LoadingState[] = []
+	let loadingStates: LoadingState[] = [];
 	$: {
-		loadingStates = []
+		loadingStates = [];
 		for (let mediaIndex = 0; mediaIndex < actualArticle.medias.length; ++mediaIndex)
-			loadingStates.push(loadingStore.getLoadingState(actualArticle.idPair, mediaIndex, timelineProps.shouldLoadMedia))
+			loadingStates.push(loadingStore.getLoadingState(actualArticle.idPair, mediaIndex, timelineProps.shouldLoadMedia));
 	}
 
-	//TODO Properly test media loading
 	afterUpdate(() => {
-		//TODO Use mediaRefs?
-		const articleMediaEls = divRef?.querySelectorAll('.articleMedia')
-		if (articleMediaEls) {
-			const modifiedMedias: [number, number][] = []
-			for (let i = 0; i < actualArticle.medias.length; ++i)
+		{
+			const modifiedMedias: [number, number][] = [];
+			for (let i = 0; i < mediaRefs.length; ++i)
 				if (actualArticle.medias[i].ratio === null)
-					modifiedMedias.push([i, articleMediaEls[i].clientHeight / articleMediaEls[i].clientWidth])
+					modifiedMedias.push([i, mediaRefs[i].clientHeight / mediaRefs[i].clientWidth]);
 
 			getWritable(actualArticle.idPair).update(a => {
 				for (const [i, ratio] of modifiedMedias)
-					a.medias[i].ratio = ratio
-				return a
-			})
+					a.medias[i].ratio = ratio;
+				return a;
+			});
 		}
 
-		const count = actualArticle.medias.length
+		const count = actualArticle.medias.length;
 		for (let i = 0; i < count; ++i) {
 			if (actualArticle.medias[i].queueLoadInfo === MediaLoadType.LazyLoad && !actualArticle.medias[i].loaded) {
 				if (mediaRefs[i]?.complete)
-					loadingStore.mediaLoaded(actualArticle.idPair, i)
+					loadingStore.mediaLoaded(actualArticle.idPair, i);
 			}
 		}
-	})
+	});
 
 	function onLogData() {
-		console.dir(articleProps)
+		console.dir(articleProps);
 	}
 
 	function onLogJSON() {
@@ -71,25 +65,25 @@
 				console.dir({
 					...articleProps,
 					article: articleProps.article.rawSource,
-				})
+				});
 				break;
 			case 'reposts':
 				console.dir({
 					...articleProps,
 					reposted: getRootArticle(articleProps.reposted).rawSource
-				})
+				});
 				break;
 			case 'quote':
 				console.dir({
 					article: getRootArticle(articleProps).rawSource,
 					quoted: getRootArticle(articleProps.quoted).rawSource
-				})
+				});
 				break;
 		}
 	}
 
 	function onMediaClick(idPair: ArticleIdPair, _index: number) {
-		toggleMarkAsRead(idPair)
+		toggleMarkAsRead(idPair);
 	}
 </script>
 

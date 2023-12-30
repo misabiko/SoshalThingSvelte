@@ -1,6 +1,6 @@
-import Article from '../../../articles';
+import Article from '~/articles';
 import type {TwitterUser} from '../article';
-import {notifications} from '../../../notifications/store';
+import {notifications} from '~/notifications/store';
 
 export default class TwitterNotificationArticle extends Article {
 	static service = 'TwitterNotification';

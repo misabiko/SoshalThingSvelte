@@ -90,6 +90,9 @@ export class FollowAPIEndpoint extends LoadableEndpoint {
 						src,
 						ratio: null,
 						queueLoadInfo: MediaLoadType.Thumbnail,
+						offsetX: null,
+						offsetY: null,
+						cropRatio: null,
 					})),
 					illust.title,
 					{

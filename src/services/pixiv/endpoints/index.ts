@@ -32,6 +32,9 @@ export function parseThumbnail(element: Element, markedAsReadStorage: string[], 
 			src,
 			ratio: null,
 			queueLoadInfo: MediaLoadType.Thumbnail,
+			offsetX: null,
+			offsetY: null,
+			cropRatio: null,
 		}));
 
 	const title = anchors[1]?.textContent;

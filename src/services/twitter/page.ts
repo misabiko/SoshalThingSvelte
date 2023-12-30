@@ -36,6 +36,9 @@ export function parseHTMLArticle(article: HTMLElement): ArticleWithRefs | null {
 				ratio: null,
 				queueLoadInfo: MediaLoadType.DirectLoad,
 				mediaType: MediaType.Image,
+				offsetX: null,
+				offsetY: null,
+				cropRatio: null,
 			};
 		});
 	return {

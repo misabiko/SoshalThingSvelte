@@ -79,6 +79,9 @@ export function fromAPI(
 			queueLoadInfo: MediaLoadType.DirectLoad,
 			mediaType,
 			loaded: undefined,
+			offsetX: null,
+			offsetY: null,
+			cropRatio: null,
 		};
 	});
 

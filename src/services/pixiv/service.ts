@@ -33,9 +33,16 @@ export const PixivService: PixivServiceType = {
 					queueLoadInfo: MediaLoadType.LazyLoad,
 					mediaType: MediaType.Image,
 					thumbnail: a.medias[i].queueLoadInfo === MediaLoadType.Thumbnail ? {
-						src: a.medias[i].src
-					}: undefined,
-					loaded: false
+						src: a.medias[i].src,
+						ratio: null,
+						offsetX: null,
+						offsetY: null,
+						cropRatio: null,
+					} : null,
+					loaded: false,
+					offsetX: null,
+					offsetY: null,
+					cropRatio: null,
 				};
 			}
 

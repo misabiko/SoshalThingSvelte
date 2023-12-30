@@ -70,16 +70,38 @@
 			<label>
 				{propName}
 				{#if propType.type === 'boolean'}
-					<input type='checkbox' bind:checked={instance.filter.props[propName]}/>
+					<input
+						type='checkbox'
+						bind:checked={instance.filter.props[propName]}
+						indeterminate={propType.optional}
+						required={!propType.optional}
+					/>
 				{:else if propType.type === 'number'}
 					<input
 						type='number'
-						bind:value={instance.filter.props[propName]}
+						value={instance.filter.props[propName] ?? ''}
+						on:change={e => {
+							if (propType.optional && e.currentTarget.value === '')
+								delete instance.filter.props[propName];
+							else
+								instance.filter.props[propName] = Number(e.currentTarget.value);
+						}}
 						min={propType.min}
 						max={propType.max}
+						required={!propType.optional}
 					/>
 				{:else}
-					<input bind:value={instance.filter.props[propName]}/>
+					<!--TODO Enforce required-->
+					<input
+						value={instance.filter.props[propName] ?? ''}
+						on:change={e => {
+							if (propType.optional && e.currentTarget.value === '')
+								delete instance.filter.props[propName];
+							else
+								instance.filter.props[propName] = e.currentTarget.value;
+						}}
+						required={!propType.optional}
+					/>
 				{/if}
 			<!--	TODO Add string array type-->
 			</label>

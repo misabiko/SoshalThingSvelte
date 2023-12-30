@@ -32,6 +32,7 @@ type GenericFilter =
 	//TODO Test quote filter
 	| 'quote'
 	| 'interval'
+	| 'section'
 //TODO Number of medias (with equal, less than, greater than, etc)
 
 export type FilterInfo<S extends string = string> = {
@@ -47,13 +48,15 @@ export function getFilterName(filter: FilterInfo, inversed: boolean): string {
 }
 
 export type PropType =
-| {
+(| {
 	type: 'string' | 'boolean' | 'string[]'
 }
 | {
 	type: 'number'
 	min?: number
 	max?: number
+}) & {
+	optional: boolean
 }
 
 export const genericFilterTypes: Record<GenericFilter, FilterInfo<GenericFilter>> = {
@@ -88,6 +91,7 @@ export const genericFilterTypes: Record<GenericFilter, FilterInfo<GenericFilter>
 		props: {
 			byUsername: {
 				type: 'string',
+				optional: true,
 			},
 		},
 	},
@@ -98,6 +102,7 @@ export const genericFilterTypes: Record<GenericFilter, FilterInfo<GenericFilter>
 		props: {
 			byUsername: {
 				type: 'string',
+				optional: false,
 			},
 		},
 	},
@@ -120,14 +125,32 @@ export const genericFilterTypes: Record<GenericFilter, FilterInfo<GenericFilter>
 		props: {
 			interval: {
 				type: 'number',
+				optional: false,
 				min: 1,
 			},
 			offset: {
 				type: 'number',
+				optional: false,
 				min: 0,
 			},
 			includeOffset: {
-				type: 'boolean'
+				type: 'boolean',
+				optional: false,
+			},
+		},
+	},
+	section: {
+		type: 'section',
+		name: 'In section',
+		invertedName: 'Not in section',
+		props: {
+			start: {
+				type: 'number',
+				optional: true,
+			},
+			end: {
+				type: 'number',
+				optional: true,
 			},
 		},
 	},
@@ -226,6 +249,13 @@ function keepArticleGeneric(articleWithRefs: ArticleWithRefs, index: number, fil
 				return filter.props.includeOffset;
 			else
 				return (index - filter.props.offset) % filter.props.interval === filter.props.interval - 1;
+		case 'section':
+			if (filter.props.start !== undefined && index < filter.props.start)
+				return false;
+			if (filter.props.end !== undefined && index > filter.props.end)
+				return false;
+
+			return true;
 	}
 }
 

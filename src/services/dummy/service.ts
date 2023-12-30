@@ -14,7 +14,6 @@ export const DummyService: Service<DummyArticle> = {
 		},
 		[STANDARD_ACTIONS.repost.key]: {
 			...STANDARD_ACTIONS.repost,
-			togglable: false,
 			action: repost,
 			actioned(article) { return article.reposted; },
 		},

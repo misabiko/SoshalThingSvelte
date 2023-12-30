@@ -18,6 +18,7 @@
 	export let loadingStates: LoadingState[] | null = null;
 
 	export let compact: boolean | null;
+	//TODO Add option for full first (n) media and compact rest
 
 	afterUpdate(() => {
 		const articleMediaEls = divRef?.querySelectorAll('.articleMedia')
@@ -33,7 +34,7 @@
 				return a
 			})
 		}
-	})
+	});
 </script>
 
 <style>

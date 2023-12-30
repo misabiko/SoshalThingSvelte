@@ -1,7 +1,7 @@
 <script lang='ts'>
 	import type {Filter, FilterInstance} from './index';
 	import Dropdown from '../Dropdown.svelte';
-	import {filterTypes, getFilterName} from './index';
+	import {genericFilterTypes, getFilterName} from './index';
 	import {defaultFilter} from './index';
 	import {getServices, type FilterTypeInfo} from '~/services/service';
 	import {updateTimelinesStorageValue} from '~/storages';
@@ -40,7 +40,6 @@
 </script>
 
 {#each instances as instance, index (`${JSON.stringify(instance)}/${index}`)}
-	<!-- TODO Add has-addons' merged buttons -->
 	<div class="field has-addons">
 		<label>
 			{
@@ -101,7 +100,7 @@
 {/each}
 
 <Dropdown labelText='New Filter'>
-	{#each filterTypes as filterType}
+	{#each genericFilterTypes as filterType}
 		<button class='dropdown-item' on:click={() => addFilter(filterType, false)}>
 			{ getFilterName(filterType, false) }
 		</button>
@@ -113,7 +112,7 @@
 	{/each}
 </Dropdown>
 <Dropdown labelText='New Inverted Filter'>
-	{#each filterTypes as filterType}
+	{#each genericFilterTypes as filterType}
 		<button class="dropdown-item" on:click={() => addFilter(filterType, true)}>
 			{ getFilterName(filterType, true) }
 		</button>

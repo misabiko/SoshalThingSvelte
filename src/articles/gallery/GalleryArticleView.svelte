@@ -18,7 +18,7 @@
 	import {MediaType} from '../media';
 	import GalleryThumbnail from './GalleryThumbnail.svelte';
 	import GalleryImage from './GalleryImage.svelte';
-	import {type ArticleAction, getUniversalActions} from '~/services/actions';
+	import {type ArticleAction, getGenericActions} from '~/services/actions';
 
 	export let timelineProps: TimelineArticleProps;
 	export let articleProps: ArticleProps; articleProps;
@@ -35,7 +35,7 @@
 	export let mediaRefs: HTMLImageElement[];
 	export let loadingStates: LoadingState[];
 
-	let actions: [ArticleAction[], ArticleAction[]] = [...Object.values(getServices()[rootArticle.idPair.service].articleActions), ...getUniversalActions(rootArticle)]
+	let actions: [ArticleAction[], ArticleAction[]] = [...Object.values(getServices()[rootArticle.idPair.service].articleActions), ...getGenericActions(rootArticle)]
 		.filter(a => a.icon !== null)
 		.sort((a, b) => a.index - b.index)
 		.reduce(([icons, dropdown], action) => {

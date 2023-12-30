@@ -96,8 +96,8 @@ export function getArticleAction(action: string, service: string) {
 	return getServices()[service].articleActions[action];
 }
 
-export function getUniversalActions(article: Article): ArticleAction[] {
-	const universalActions: ArticleAction[] = [
+export function getGenericActions(article: Article): ArticleAction[] {
+	const genericActions: ArticleAction[] = [
 		{
 			action: (idPair: ArticleIdPair) => toggleMarkAsRead(idPair),
 			actionedName: 'Mark as unread',
@@ -116,7 +116,7 @@ export function getUniversalActions(article: Article): ArticleAction[] {
 		},
 	];
 	if (article.url)
-		universalActions.push({
+		genericActions.push({
 			href: article.url,
 			key: 'externalLink',
 			name: 'External Link',
@@ -128,5 +128,5 @@ export function getUniversalActions(article: Article): ArticleAction[] {
 			listAsDropdown: false,
 		});
 
-	return universalActions;
+	return genericActions;
 }

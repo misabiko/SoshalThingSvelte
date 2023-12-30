@@ -91,7 +91,7 @@ export function getFilterName(filterType: GenericFilter['type'], inverted: boole
 	}
 }
 
-export const filterTypes: GenericFilter['type'][] = [
+export const genericFilterTypes: GenericFilter['type'][] = [
 	'media',
 	'animated',
 	'notMarkedAsRead',

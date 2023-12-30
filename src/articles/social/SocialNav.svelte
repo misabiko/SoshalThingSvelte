@@ -7,7 +7,7 @@
 	import Article from '../../articles';
 	import type {TimelineArticleProps} from '../index';
 	import {getServices} from '~/services/service';
-	import {type ArticleAction, getUniversalActions} from '~/services/actions';
+	import {type ArticleAction, getGenericActions} from '~/services/actions';
 
 	export let article: Article;
 	export let repost: Article | null = null;
@@ -19,8 +19,8 @@
 
 	export let compact: boolean | null;
 
-	const universalActions = getUniversalActions(article);
-	universalActions.push({
+	const genericActions = getGenericActions(article);
+	genericActions.push({
 		action: () => compact = !(compact ?? timelineProps.compact),
 		actionedName: 'Show expanded',
 		actioned: () => compact ?? timelineProps.compact,
@@ -38,7 +38,7 @@
 	});
 
 	if (repost?.url)
-		universalActions.push({
+		genericActions.push({
 			href: repost.url,
 			key: 'repostExternalLink',
 			name: "Repost's external Link",
@@ -51,7 +51,7 @@
 		});
 
 	//TODO Have option to move icon actions to dropdown
-	let actions: [ArticleAction[], ArticleAction[]] = [...Object.values(getServices()[article.idPair.service].articleActions), ...universalActions]
+	let actions: [ArticleAction[], ArticleAction[]] = [...Object.values(getServices()[article.idPair.service].articleActions), ...genericActions]
 		.filter(a => a.icon !== null)
 		.sort((a, b) => a.index - b.index)
 		.reduce(([icons, dropdown], action) => {

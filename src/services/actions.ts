@@ -1,8 +1,6 @@
-import type {ArticleIdPair} from '../articles';
+import type {ArticleIdPair} from '~/articles';
 import {getServices, toggleMarkAsRead} from './service';
 import {
-	faEllipsisVertical,
-	faGripVertical,
 	faUpRightFromSquare,
 	type IconDefinition
 } from '@fortawesome/free-solid-svg-icons';

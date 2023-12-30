@@ -1,9 +1,9 @@
 <script lang='ts'>
 	import {get} from 'svelte/store';
-	import {getServices} from '../services/service';
+	import {getServices} from '~/services/service';
 	import type {TimelineData} from './index';
-	import {endpoints, everyRefreshType, RefreshType} from '../services/endpoints';
-	import {updateTimelinesStorageEndpoints} from '../storages';
+	import {endpoints, everyRefreshType, RefreshType} from '~/services/endpoints';
+	import {updateTimelinesStorageEndpoints} from '~/storages';
 
 	export let timelineId: string | null;
 	export let data: TimelineData;

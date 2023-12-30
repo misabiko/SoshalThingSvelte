@@ -1,7 +1,7 @@
-import type {TimelineEndpoint} from '../timelines';
-import type {ArticleIdPair, ArticleWithRefs} from '../articles';
-import {getRootArticle} from '../articles';
-import {useFilters} from '../filters';
+import type {TimelineEndpoint} from '~/timelines';
+import type {ArticleIdPair, ArticleWithRefs} from '~/articles';
+import {getRootArticle} from '~/articles';
+import {useFilters} from '~/filters';
 import {addArticles, getServices} from './service';
 import {get, writable} from 'svelte/store';
 import type {Writable} from 'svelte/store';

@@ -214,6 +214,7 @@
 				{#if !timelineProps.hideText && !minimized}
 					<p class='articleParagraph'>
 						{#if actualArticle.textHtml !== undefined}
+							<!--eslint-disable-next-line svelte/no-at-html-tags-->
 							{@html actualArticle.textHtml}
 						{:else if actualArticle.text !== undefined}
 							{actualArticle.text}
@@ -239,6 +240,7 @@
 						{#if !timelineProps.hideText}
 							<p class='refArticleParagraph'>
 								{#if quoted.textHtml !== undefined}
+									<!--eslint-disable-next-line svelte/no-at-html-tags-->
 									{@html quoted.textHtml}
 								{:else if quoted.text !== undefined}
 									{quoted.text}

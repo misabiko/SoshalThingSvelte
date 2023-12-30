@@ -63,7 +63,7 @@
 
 	:global(.dropdown-item:hover) {
 		color: var(--white);
-    	background-color: var(--primary);
+		background-color: var(--primary);
 	}
 
 	:global(button.dropdown-item) {

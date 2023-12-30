@@ -4,7 +4,6 @@
 	import Article, {getActualArticle} from '../articles';
 	import type {ArticleProps, TimelineArticleProps} from './index';
 	import {afterUpdate, type ComponentType} from 'svelte';
-	import {getContext} from 'svelte';
 	import {getRootArticle} from './index';
 	import Modal from '../Modal.svelte';
 	import {MediaLoadType} from './media';
@@ -16,8 +15,6 @@
 	export let style = ''; style;
 	let modal = false;
 	let showAllMedia = false;
-
-	const isInjected = getContext('isInjected') as boolean;
 
 	let rootArticle: Readonly<Article>;
 	let actualArticle: Readonly<Article>;

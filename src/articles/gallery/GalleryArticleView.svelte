@@ -140,7 +140,6 @@
 						ref={mediaRefs[i]}
 				/>
 			{:else if !timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
-				<!-- svelte-ignore a11y-media-has-caption -->
 				<video
 					class='articleMedia'
 					controls
@@ -200,7 +199,6 @@
 						{@const count = action.count ? action.count(rootArticle) : 0}
 						{@const disabled = action.disabled ? action.disabled(rootArticle) : false}
 						{@const actioned = action.actioned(rootArticle)}
-						<!-- svelte-ignore a11y-mouse-events-have-key-events -->
 						<button
 								class='dropdown-item'
 								on:click={() => actionFunc(rootArticle.idPair)}

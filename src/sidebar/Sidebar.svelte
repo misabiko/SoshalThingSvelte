@@ -146,7 +146,7 @@
 					<Fa icon={icon} size='2x'/>
 				</button>
 			{/each}
-			{#each Object.entries(timelineViews) as [id, view]}
+			{#each Object.entries(timelineViews) as [id, _]}
 				<button
 						class='borderless-button'
 						title={`Set view: ${id}`}

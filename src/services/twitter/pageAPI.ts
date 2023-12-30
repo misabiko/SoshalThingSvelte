@@ -251,7 +251,7 @@ export type Result = {
 		result: {
 			__typename: string
 			tweet: Result
-			limitedActionResults: {}
+			limitedActionResults: object
 		}
 	};
 }

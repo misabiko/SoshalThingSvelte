@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import {defaultTimeline, newUserTimeline} from '~/timelines';
-	import type {TimelineData} from '../timelines';
+	import type {TimelineData} from '~/timelines';
 	import {getServices} from '~/services/service';
 
 	export let setModalTimeline: (data: TimelineData, width?: number) => void;

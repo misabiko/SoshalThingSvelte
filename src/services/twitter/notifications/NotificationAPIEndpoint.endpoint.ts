@@ -296,7 +296,7 @@ type NotificationResponse = {
 
 type NotificationInstruction =
 | {
-	clearCache: {}
+	clearCache: object
 	addEntries?: never
 }
 | {
@@ -305,7 +305,7 @@ type NotificationInstruction =
 	}
 }
 | {
-	clearEntriesUnreadState: {}
+	clearEntriesUnreadState: object
 	addEntries?: never
 }
 | {

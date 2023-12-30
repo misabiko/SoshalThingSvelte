@@ -58,9 +58,9 @@
 	}
 
 	.socialMedia video {
-		 width: 100%;
-		 border-radius: 8px;
-	 }
+		width: 100%;
+		border-radius: 8px;
+	}
 
 	.imagesHolder {
 		overflow: hidden;
@@ -88,9 +88,9 @@
 	}
 
 	.imgPlaceHolder {
-	  width: 100%;
-	  background-color: grey;
-  }
+		width: 100%;
+		background-color: grey;
+	}
 
 	.moreMedia {
 		display: flex;
@@ -105,7 +105,7 @@
 
 <div class='socialMedia' class:socialMediaCompact={compact ?? timelineProps.compact} bind:this={divRef}>
 	{#each article.medias.slice(0, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined) as media, index (index)}
-		{@const isLoading = loadingStates && loadingStates[index] === LoadingState.Loading}
+		<!--{@const isLoading = loadingStates && loadingStates[index] === LoadingState.Loading}-->
 		{#if loadingStates && loadingStates[index] === LoadingState.NotLoaded}
 			<div class='imagesHolder' style:aspect-ratio={aspectRatioThumbnail}>
 				<div class='imgPlaceHolder' style:aspect-ratio={1 / (media.ratio ?? 1)} style:display='none'></div>
@@ -132,7 +132,6 @@
 				/>
 			</div>
 		{:else if !timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
-			<!-- svelte-ignore a11y-media-has-caption -->
 			<video
 					class='articleMedia'
 					controls
@@ -144,7 +143,6 @@
 				<source src={media.src} type='video/mp4'/>
 			</video>
 		{:else if media.mediaType === MediaType.VideoGif || timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
-			<!-- svelte-ignore a11y-media-has-caption -->
 			<video
 					class='articleMedia'
 					controls

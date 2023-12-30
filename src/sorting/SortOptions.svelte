@@ -2,7 +2,7 @@
 	import {methodName, type SortInfo, SortMethod} from './index';
 	import Dropdown from '../Dropdown.svelte';
 	import {directionLabel, genericSortMethods} from './index';
-	import {getServices, type SortMethodInfo} from '../services/service';
+	import {getServices, type SortMethodInfo} from '~/services/service';
 	import {updateTimelinesStorageSortInfo} from '~/storages';
 
 	export let timelineId: string | null;

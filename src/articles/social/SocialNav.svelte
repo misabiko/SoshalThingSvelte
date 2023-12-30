@@ -6,7 +6,7 @@
 	import Dropdown from '../../Dropdown.svelte';
 	import Article from '../../articles';
 	import type {TimelineArticleProps} from '../index';
-	import {getServices} from '../../services/service';
+	import {getServices} from '~/services/service';
 	import {type ArticleAction, getUniversalActions} from '~/services/actions';
 
 	export let article: Article;
@@ -184,7 +184,6 @@
 					{@const count = action.count ? action.count(article) : 0}
 					{@const disabled = action.disabled ? action.disabled(article) : false}
 					{@const actioned = action.actioned(article)}
-					<!-- svelte-ignore a11y-mouse-events-have-key-events -->
 					<button
 							class='dropdown-item'
 							on:click={() => actionFunc(article.idPair)}

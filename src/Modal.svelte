@@ -57,9 +57,8 @@
 	}
 </style>
 
-<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 <div class="modal" class:active={active} bind:this={modal}>
-	<!-- svelte-ignore a11y-no-static-element-interactions -->
+	<!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
 	<div class='modal-background' on:click={close}/>
 	<div class='modal-content'>
 		<slot/>

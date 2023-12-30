@@ -1,5 +1,5 @@
 import {test} from '@playwright/test';
-import {articleFromResult, type Result} from '../../src/services/twitter/pageAPI';
+import {articleFromResult, type Result} from '~/services/twitter/pageAPI';
 
 test('result.tweet', () => {
 	const tweet = {

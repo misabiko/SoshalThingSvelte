@@ -1,6 +1,6 @@
 <script lang='ts'>
-	import {Endpoint} from '../services/endpoints';
-	import {startAutoRefresh, stopAutoRefresh} from '../services/endpoints';
+	import {Endpoint} from '~/services/endpoints';
+	import {startAutoRefresh, stopAutoRefresh} from '~/services/endpoints';
 	import type {Writable} from 'svelte/store';
 
 	export let endpoint: Writable<Endpoint>;

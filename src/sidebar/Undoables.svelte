@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import {undoables} from '~/undo';
-	import {defaultTimeline, type TimelineData} from '../timelines';
+	import {defaultTimeline, type TimelineData} from '~/timelines';
 	import {get} from 'svelte/store';
 
 	export let setModalTimeline: (data: TimelineData, width?: number) => void;

@@ -1,7 +1,7 @@
 <script lang="ts">
-	import {type TimelineView} from '../timelines';
-	import {updateMainStorage, updateMainStorageTimelineViews} from '../storages';
-    import type {TimelineCollection} from '../timelines';
+	import {type TimelineView} from '~/timelines';
+	import {updateMainStorage, updateMainStorageTimelineViews} from '~/storages';
+    import type {TimelineCollection} from '~/timelines';
     import Dropdown from '../Dropdown.svelte';
 
     export let timelineViews: Record<string, TimelineView>;

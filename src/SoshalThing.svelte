@@ -120,6 +120,7 @@
 							}
 						});
 
+		//Purposefully not awaiting
 		for (const endpointName of endpointNames.values())
 			refreshEndpointName(endpointName, RefreshType.RefreshStart);
 	}

@@ -1,21 +1,21 @@
 <script lang='ts'>
 	import type {Readable, Writable} from 'svelte/store';
 	import {derived, get} from 'svelte/store';
-	import type {ArticleIdPair, ArticleProps, ArticleWithRefs} from '../articles';
+	import type {ArticleIdPair, ArticleProps, ArticleWithRefs} from '~/articles';
 	import Article, {
 		articleWithRefToArray,
 		deriveArticleRefs,
 		getActualArticle, getDerivedArticleWithRefs, getRootArticle, idPairEqual,
 	} from '../articles';
-	import {fetchArticle, getWritable} from '../services/service';
+	import {fetchArticle, getWritable} from '~/services/service';
 	import type {FullscreenInfo, TimelineData} from './index';
-	import {keepArticle} from '../filters';
-	import {compare, SortMethod} from '../sorting';
-	import type {ContainerProps} from '../containers';
+	import {keepArticle} from '~/filters';
+	import {compare, SortMethod} from '~/sorting';
+	import type {ContainerProps} from '~/containers';
 	import TimelineHeader from './TimelineHeader.svelte';
 	import TimelineOptions from './TimelineOptions.svelte';
-	import {endpoints, refreshEndpoint, refreshEndpointName, RefreshType} from '../services/endpoints';
-	import {loadingStore} from '../bufferedMediaLoading';
+	import {endpoints, refreshEndpoint, refreshEndpointName, RefreshType} from '~/services/endpoints';
+	import {loadingStore} from '~/bufferedMediaLoading';
 
 	export let timelineId: string | null;
 	export let data: TimelineData;

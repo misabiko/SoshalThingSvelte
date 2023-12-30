@@ -3,7 +3,7 @@
 	import Dropdown from '../Dropdown.svelte';
 	import {filterTypes, getFilterName} from './index';
 	import {defaultFilter} from './index';
-	import {getServices, type FilterTypeInfo} from '../services/service';
+	import {getServices, type FilterTypeInfo} from '~/services/service';
 	import {updateTimelinesStorageValue} from '~/storages';
 
 	export let timelineId: string | null;

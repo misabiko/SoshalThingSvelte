@@ -313,7 +313,7 @@
 
 	:global(.articlesContainer) {
 		overflow-y: auto;
-		overflow-x: hidden;
+		overflow-x: auto;
 		flex-grow: 1;
 		height: 20%;
 	}

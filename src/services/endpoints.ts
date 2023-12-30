@@ -18,7 +18,7 @@ timelineEndpoints.subscribe(value => timelineEndpointsValue = value);
 
 export abstract class Endpoint {
 	abstract readonly name: string
-	static readonly service: string
+	static readonly service: string;
 	readonly articleIdPairs: ArticleIdPair[] = [];
 	rateLimitInfo: RateLimitInfo | null = null;
 	autoRefreshId: number | null;

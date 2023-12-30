@@ -1,28 +1,28 @@
 <script lang="ts">
 	// noinspection ES6UnusedImports
-	import Fa from 'svelte-fa'
-	import { faAngleDown } from '@fortawesome/free-solid-svg-icons'
-	import {onMount} from 'svelte'
+	import Fa from 'svelte-fa';
+	import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
+	import {onMount} from 'svelte';
 
-	export let isActive = false
-	export let isRight = false
-	export let triggerClasses = ''
-	export let labelClasses = ''
-	export let labelText = ''
+	export let isActive = false;
+	export let isRight = false;
+	export let triggerClasses = '';
+	export let labelClasses = '';
+	export let labelText = '';
 
-	let triggerRef: HTMLButtonElement | null = null
+	let triggerRef: HTMLButtonElement | null = null;
 
 	function close(e: MouseEvent) {
 		if (e.button !== 2 && !triggerRef?.contains(e.target as Node))
-			isActive = false
+			isActive = false;
 	}
 
 	$: if (isActive)
-		document.addEventListener('click', close)
+		document.addEventListener('click', close);
 	else
-		document.removeEventListener('click', close)
+		document.removeEventListener('click', close);
 
-	onMount(() => () => document.removeEventListener('click', close))
+	onMount(() => () => document.removeEventListener('click', close));
 </script>
 
 <style>

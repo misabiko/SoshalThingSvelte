@@ -1,44 +1,44 @@
 <script lang='ts'>
 	import type Article from '~/articles';
-	import type {ArticleIdPair} from '../index'
-	import type {ArticleProps, TimelineArticleProps} from '../index'
-	import {shortTimestamp} from "../index";
-	import SocialMedia from "./SocialMedia.svelte";
-	import SocialNav from "./SocialNav.svelte";
-	import Timestamp from "./Timestamp.svelte";
-	import {newUserTimeline} from '~/timelines'
+	import type {ArticleIdPair} from '../index';
+	import type {ArticleProps, TimelineArticleProps} from '../index';
+	import {shortTimestamp} from '../index';
+	import SocialMedia from './SocialMedia.svelte';
+	import SocialNav from './SocialNav.svelte';
+	import Timestamp from './Timestamp.svelte';
+	import {newUserTimeline} from '~/timelines';
 	import {LoadingState} from '~/bufferedMediaLoading';
 	import {getWritable} from '~/services/service';
 	import {get} from 'svelte/store';
 
-	export let timelineProps: TimelineArticleProps
-	export let articleProps: ArticleProps
+	export let timelineProps: TimelineArticleProps;
+	export let articleProps: ArticleProps;
 	export let modal: boolean; modal;
 	export let showAllMedia: boolean;
-	export let rootArticle: Readonly<Article>
-	export let actualArticle: Readonly<Article>
-	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number
-	export let onLogData: () => void
-	export let onLogJSON: () => void
+	export let rootArticle: Readonly<Article>;
+	export let actualArticle: Readonly<Article>;
+	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number;
+	export let onLogData: () => void;
+	export let onLogJSON: () => void;
 
 	export let divRef: HTMLDivElement | null;
 	export let mediaRefs: HTMLImageElement[];
 	export let loadingStates: LoadingState[];
 
-	let minimized = false
+	let minimized = false;
 
 	let compact: boolean | null = null;
 	let quoteCompact: boolean | null = null;
 
 	function onUsernameClick(clickedArticle: Article) {
 		if (!clickedArticle.author)
-			return
+			return;
 
-		const data = newUserTimeline(clickedArticle.idPair.service, clickedArticle.author)
+		const data = newUserTimeline(clickedArticle.idPair.service, clickedArticle.author);
 		if (!data)
-			return
+			return;
 
-		timelineProps.setModalTimeline(data)
+		timelineProps.setModalTimeline(data);
 	}
 </script>
 

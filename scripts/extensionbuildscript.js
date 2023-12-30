@@ -55,7 +55,7 @@ esbuild
 			const servicePath = serviceSplit.slice(0, -1).join('/');
 
 			contentScripts.push(Object.entries(serviceManifest).map(([entry, contentScript]) => {
-				const entryPath = servicePath + '/' + entry + '/entry'
+				const entryPath = servicePath + '/' + entry + '/entry';
 				return {
 					matches: contentScript.matches,
 					exclude_matches: contentScript.exclude_matches,

@@ -1,10 +1,10 @@
 <script lang='ts'>
-	import type {Filter, FilterInstance} from './index'
-	import Dropdown from "../Dropdown.svelte";
-	import {filterTypes, getFilterName} from "./index"
-	import {defaultFilter} from './index'
-	import {getServices, type FilterTypeInfo} from '../services/service'
-	import {updateTimelinesStorageValue} from '../storages';
+	import type {Filter, FilterInstance} from './index';
+	import Dropdown from '../Dropdown.svelte';
+	import {filterTypes, getFilterName} from './index';
+	import {defaultFilter} from './index';
+	import {getServices, type FilterTypeInfo} from '../services/service';
+	import {updateTimelinesStorageValue} from '~/storages';
 
 	export let timelineId: string | null;
 	export let instances: FilterInstance[];
@@ -22,20 +22,20 @@
 		service: s.name,
 		filter: m[0],
 		filterTypeInfo: m[1],
-	})))
+	})));
 
 	function addFilter(filterType: Filter['type'], inverted: boolean, service: string | null = null) {
 		instances.push({
 			filter: defaultFilter(filterType, service),
 			enabled: true,
 			inverted
-		})
-		instances = instances
+		});
+		instances = instances;
 	}
 
 	function removeFilter(index: number) {
-		instances.splice(index, 1)
-		instances = instances
+		instances.splice(index, 1);
+		instances = instances;
 	}
 </script>
 

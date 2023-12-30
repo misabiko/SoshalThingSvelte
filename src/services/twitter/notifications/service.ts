@@ -42,6 +42,6 @@ export const TwitterNotificationService: Service<TwitterNotificationArticle> = {
 				return true;
 		}
 	},
-}
+};
 
 registerService(TwitterNotificationService);

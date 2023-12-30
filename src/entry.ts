@@ -1,5 +1,5 @@
 import './services/**/service.ts';
-import './services/**/*.endpoint.ts'
+import './services/**/*.endpoint.ts';
 
 import {getServices} from './services/service';
 console.debug('Loaded services and endpoints:', Object.fromEntries(Object.values(getServices()).map(service => [service.name, Object.keys(service.endpointConstructors)])));
@@ -14,7 +14,7 @@ const timelines = loadTimelines();
 const searchParams = new URLSearchParams(location.search);
 
 const searchTimelineView = parseTimelineView(timelineViews, searchParams);
-let timelineViewId: string = searchTimelineView ?? currentTimelineView ?? defaultTimelineView;
+const timelineViewId: string = searchTimelineView ?? currentTimelineView ?? defaultTimelineView;
 if (timelineViewId === defaultTimelineView) {
 	timelineViews[defaultTimelineView] ??= {
 		timelineIds: timelineIds ?? Object.keys(timelines),

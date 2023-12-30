@@ -1,13 +1,13 @@
 <script lang="ts">
-	import type {TimelineCollection, TimelineData, TimelineView} from './index'
-	import Timeline from './Timeline.svelte'
-	import {afterUpdate, getContext, onMount} from 'svelte'
-	import {timelineEndpoints} from '~/services/endpoints'
+	import type {TimelineCollection, TimelineData, TimelineView} from './index';
+	import Timeline from './Timeline.svelte';
+	import {afterUpdate, getContext, onMount} from 'svelte';
+	import {timelineEndpoints} from '~/services/endpoints';
     import Modal from '~/Modal.svelte';
     import type { ArticleIdPair } from '~/articles';
 	import {updateFullscreenStorage} from '~/storages';
 
-	export let timelines: TimelineCollection = {}
+	export let timelines: TimelineCollection = {};
 	export let modalTimeline: TimelineData | null;
 	export let timelineView: TimelineView = {
 		timelineIds: [],
@@ -16,23 +16,23 @@
 			columnCount: null,
 			container: null,
 		},
-	}
+	};
 
-	export let setModalTimeline: (data: TimelineData, width?: number) => void
-	export let removeTimeline: (id: string) => void
-	export let initialRefresh: (...refreshingTimelines: TimelineData[]) => void
+	export let setModalTimeline: (data: TimelineData, width?: number) => void;
+	export let removeTimeline: (id: string) => void;
+	export let initialRefresh: (...refreshingTimelines: TimelineData[]) => void;
 
 	export let favviewerHidden: boolean;
 	export let favviewerMaximized: boolean | null = null;
 	export let showSidebar: boolean;
-	export let modalTimelineActive: boolean
+	export let modalTimelineActive: boolean;
 
 	const isInjected = getContext('isInjected');
 
 	$: {
 		for (const id of timelineView.timelineIds)
-			if (!timelines.hasOwnProperty(id))
-				console.error(`Timeline with id "${id}" not found.\nTimeline ids: `, Object.keys(timelines), '\nTimeline View: ', timelineView)
+			if (!Object.hasOwn(timelines, id))
+				console.error(`Timeline with id "${id}" not found.\nTimeline ids: `, Object.keys(timelines), '\nTimeline View: ', timelineView);
 	}
 
 	$: {
@@ -41,20 +41,20 @@
 			addArticles(newIdPairs: ArticleIdPair[]) {
 				if (newIdPairs.length)
 					timelines[id].addedIdPairs.update(addedIdPairs => {
-						const newAddedIdPairs: ArticleIdPair[] = []
+						const newAddedIdPairs: ArticleIdPair[] = [];
 						for (const idPair of newIdPairs)
 							if (!addedIdPairs.some(idp => idp.service === idPair.service && idp.id === idPair.id)) {
-								addedIdPairs.push(idPair)
-								newAddedIdPairs.push(idPair)
+								addedIdPairs.push(idPair);
+								newAddedIdPairs.push(idPair);
 							}
 						timelines[id].articles.update(actualIdPairs => {
-							actualIdPairs.push(...newAddedIdPairs)
-							return actualIdPairs
-						})
-						return addedIdPairs
-					})
+							actualIdPairs.push(...newAddedIdPairs);
+							return actualIdPairs;
+						});
+						return addedIdPairs;
+					});
 			}
-		}))
+		}));
 
 		if (modalTimeline)
 			newTimelineEndpoints.push({
@@ -68,37 +68,37 @@
 							if (modalTimeline === null)
 								throw new Error('modalTimeline is null');
 
-							const newAddedIdPairs: ArticleIdPair[] = []
+							const newAddedIdPairs: ArticleIdPair[] = [];
 							for (const idPair of newIdPairs)
 								if (!addedIdPairs.some(idp => idp.service === idPair.service && idp.id === idPair.id)) {
-									addedIdPairs.push(idPair)
-									newAddedIdPairs.push(idPair)
+									addedIdPairs.push(idPair);
+									newAddedIdPairs.push(idPair);
 								}
 							modalTimeline.articles.update(actualIdPairs => {
-								actualIdPairs.push(...newAddedIdPairs)
-								return actualIdPairs
-							})
-							return addedIdPairs
-						})
+								actualIdPairs.push(...newAddedIdPairs);
+								return actualIdPairs;
+							});
+							return addedIdPairs;
+						});
 				}
-			})
+			});
 
-		timelineEndpoints.set(newTimelineEndpoints)
+		timelineEndpoints.set(newTimelineEndpoints);
 	}
 
 	afterUpdate(() => {
 		//Workaround for https://github.com/sveltejs/svelte/issues/5268
 		//During Modal's close transition, the child Timeline still calls reactive statements for modalTimeline
 		if (!modalTimelineActive)
-			modalTimeline = null
-	})
+			modalTimeline = null;
+	});
 
 	onMount(() => {
 		initialRefresh(...[
 			...timelineView.timelineIds.map(id => timelines[id]),
 			...(modalTimeline === null ? [] : [modalTimeline])
-		])
-	})
+		]);
+	});
 </script>
 
 <style>
@@ -168,7 +168,7 @@
 					data={timelines[id]}
 					{setModalTimeline}
 					removeTimeline={() => removeTimeline(id)}
-					toggleFullscreen={() => {timelineView.fullscreen.index = i; updateFullscreenStorage(timelineView.fullscreen)}}
+					toggleFullscreen={() => {timelineView.fullscreen.index = i; updateFullscreenStorage(timelineView.fullscreen);}}
 				/>
 			{:else}
 				<Timeline
@@ -176,7 +176,7 @@
 					data={timelines[id]}
 					{setModalTimeline}
 					removeTimeline={() => removeTimeline(id)}
-					toggleFullscreen={() => {timelineView.fullscreen.index = i; updateFullscreenStorage(timelineView.fullscreen)}}
+					toggleFullscreen={() => {timelineView.fullscreen.index = i; updateFullscreenStorage(timelineView.fullscreen);}}
 				/>
 			{/if}
 		{/each}

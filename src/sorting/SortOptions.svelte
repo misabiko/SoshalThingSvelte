@@ -1,9 +1,9 @@
 <script lang='ts'>
-	import {methodName, type SortInfo, SortMethod} from './index'
-	import Dropdown from "../Dropdown.svelte"
-	import {directionLabel, genericSortMethods} from "./index"
-	import {getServices, type SortMethodInfo} from '../services/service'
-	import {updateTimelinesStorageSortInfo} from '../storages';
+	import {methodName, type SortInfo, SortMethod} from './index';
+	import Dropdown from '../Dropdown.svelte';
+	import {directionLabel, genericSortMethods} from './index';
+	import {getServices, type SortMethodInfo} from '../services/service';
+	import {updateTimelinesStorageSortInfo} from '~/storages';
 
 	export let timelineId: string | null;
 	export let sortInfo: SortInfo;
@@ -11,7 +11,7 @@
 		if (timelineId !== null)
 			updateTimelinesStorageSortInfo(timelineId, sortInfo);
 	}
-	export let sortOnce: (method: SortMethod, reversed: boolean) => void
+	export let sortOnce: (method: SortMethod, reversed: boolean) => void;
 
 	//[ServiceName, MethodName, MethodInfo][]
 	const serviceSortMethods: {
@@ -24,7 +24,7 @@
 		methodInfo: m[1]
 	})));
 
-	let currentMethodName: string
+	let currentMethodName: string;
 	$: {
 		switch (sortInfo.method) {
 			case null:
@@ -34,7 +34,7 @@
 			case SortMethod.Custom:
 				if (sortInfo.customMethod === null)
 					throw new Error('Custom sort method is null');
-				currentMethodName = `${sortInfo.customMethod.service} - ${getServices()[sortInfo.customMethod.service].sortMethods[sortInfo.customMethod.method].name}`
+				currentMethodName = `${sortInfo.customMethod.service} - ${getServices()[sortInfo.customMethod.service].sortMethods[sortInfo.customMethod.method].name}`;
 				break;
 			default:
 				currentMethodName = methodName(sortInfo.method);
@@ -50,7 +50,7 @@
 				{#each [false, true] as reversed}
 					<button
 						class='dropdown-item'
-						on:click={() => {sortInfo.method = method; sortInfo.customMethod = null; sortInfo.reversed = reversed}}
+						on:click={() => {sortInfo.method = method; sortInfo.customMethod = null; sortInfo.reversed = reversed;}}
 					>
 						{ `${methodName(method)} - ${directionLabel(method, reversed)}` }
 					</button>

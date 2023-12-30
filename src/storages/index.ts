@@ -301,7 +301,7 @@ function endpointsToStorage(timelineEndpoints: TimelineEndpoint[]): EndpointStor
 			onRefresh: refreshTypes.has(RefreshType.Refresh),
 			loadTop: refreshTypes.has(RefreshType.LoadTop),
 			loadBottom: refreshTypes.has(RefreshType.LoadBottom),
-		}))
+		}));
 }
 
 function parseSortInfo(storage: TimelineStorage['sortInfo']): SortInfo {

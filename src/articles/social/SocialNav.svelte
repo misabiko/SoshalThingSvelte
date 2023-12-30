@@ -1,21 +1,21 @@
 <script lang='ts'>
-	import Fa from 'svelte-fa'
+	import Fa from 'svelte-fa';
 	import {
 		faEllipsisH, faExpandAlt, faSpinner, faGripVertical, faEllipsisVertical, faUpRightFromSquare,
 	} from '@fortawesome/free-solid-svg-icons';
-	import Dropdown from '../../Dropdown.svelte'
+	import Dropdown from '../../Dropdown.svelte';
 	import Article from '../../articles';
-	import type {TimelineArticleProps} from '../index'
-	import {getServices} from "../../services/service";
-	import {type ArticleAction, getUniversalActions} from '../../services/actions';
+	import type {TimelineArticleProps} from '../index';
+	import {getServices} from '../../services/service';
+	import {type ArticleAction, getUniversalActions} from '~/services/actions';
 
-	export let article: Article
-	export let repost: Article | null = null
-	export let isQuoted = false
-	export let modal: boolean
-	export let timelineProps: TimelineArticleProps
-	export let onLogData: () => void
-	export let onLogJSON: () => void
+	export let article: Article;
+	export let repost: Article | null = null;
+	export let isQuoted = false;
+	export let modal: boolean;
+	export let timelineProps: TimelineArticleProps;
+	export let onLogData: () => void;
+	export let onLogJSON: () => void;
 
 	export let compact: boolean | null;
 
@@ -62,17 +62,17 @@
 			return [icons, dropdown];
 		}, [[], []] as [ArticleAction[], ArticleAction[]]);
 
-	let hoveredActions = new Set<string>()
+	let hoveredActions = new Set<string>();
 	function updateActionHover(key: string, hovered: boolean) {
 		if (hovered)
-			hoveredActions.add(key)
+			hoveredActions.add(key);
 		else
-			hoveredActions.delete(key)
+			hoveredActions.delete(key);
 
-		hoveredActions = hoveredActions
+		hoveredActions = hoveredActions;
 	}
 
-	let status: string | null = null
+	let status: string | null = null;
 </script>
 
 <style>

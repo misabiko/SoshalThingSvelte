@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import Fa from 'svelte-fa'
+	import Fa from 'svelte-fa';
 	import {faNewspaper, type IconDefinition} from '@fortawesome/free-solid-svg-icons';
 	import {
 		faAngleDoubleLeft,
@@ -9,19 +9,19 @@
 		faPlus,
 		faRotateLeft,
 		faSpinner,
-	} from '@fortawesome/free-solid-svg-icons'
-	import {faGithub} from '@fortawesome/free-brands-svg-icons'
-	import MediaLoader from "./MediaLoader.svelte"
-	import Undoables from "./Undoables.svelte"
-	import Endpoints from "./Endpoints.svelte"
+	} from '@fortawesome/free-solid-svg-icons';
+	import {faGithub} from '@fortawesome/free-brands-svg-icons';
+	import MediaLoader from './MediaLoader.svelte';
+	import Undoables from './Undoables.svelte';
+	import Endpoints from './Endpoints.svelte';
 	import type {ComponentType} from 'svelte';
-	import SettingsMenu from "./SettingsMenu.svelte"
-	import TimelineEditMenu from "./TimelineEditMenu.svelte";
-	import BatchActions from "./BatchActions.svelte";
+	import SettingsMenu from './SettingsMenu.svelte';
+	import TimelineEditMenu from './TimelineEditMenu.svelte';
+	import BatchActions from './BatchActions.svelte';
 	import type {TimelineCollection, TimelineData, TimelineView} from '~/timelines';
 	import type {FilterInstance} from '~/filters';
-	import {faTableColumns} from "@fortawesome/free-solid-svg-icons/faTableColumns";
-	import TimelineViewEdit from "./TimelineViewEdit.svelte";
+	import {faTableColumns} from '@fortawesome/free-solid-svg-icons/faTableColumns';
+	import TimelineViewEdit from './TimelineViewEdit.svelte';
 	import {updateMainStorage} from '~/storages';
 	import LoadArticle from './LoadArticle.svelte';
 
@@ -33,12 +33,12 @@
 
 	let menu: ComponentType | SidebarMenu | null = null;
 
-	export let setModalTimeline: (data: TimelineData, width?: number) => void
-	export let addTimeline: (data: TimelineData) => void
-	export let timelines: TimelineCollection
-	export let batchActionFilters: FilterInstance[]
-	export let timelineViews: Record<string, TimelineView>
-	export let timelineViewId: string
+	export let setModalTimeline: (data: TimelineData, width?: number) => void;
+	export let addTimeline: (data: TimelineData) => void;
+	export let timelines: TimelineCollection;
+	export let batchActionFilters: FilterInstance[];
+	export let timelineViews: Record<string, TimelineView>;
+	export let timelineViewId: string;
 
 	function toggleSidebarMenu(newMenu: ComponentType | SidebarMenu) {
 		menu = menu === newMenu ? null : newMenu;
@@ -51,7 +51,7 @@
 		{icon: faRotateLeft, menu: SidebarMenu.Undoables, title: 'Undoables'},
 		{icon: faSpinner, menu: MediaLoader, title: 'Loading medias'},
 		{icon: faB, menu: SidebarMenu.BatchActions, title: 'Batch actions'},
-	]
+	];
 
 	//TODO Add article list menu
 </script>

@@ -1,16 +1,16 @@
 <script lang='ts'>
-	import {undoables} from "../undo";
-	import {defaultTimeline, type TimelineData} from '../timelines'
-	import {get} from 'svelte/store'
+	import {undoables} from '~/undo';
+	import {defaultTimeline, type TimelineData} from '../timelines';
+	import {get} from 'svelte/store';
 
-	export let setModalTimeline: (data: TimelineData, width?: number) => void
+	export let setModalTimeline: (data: TimelineData, width?: number) => void;
 
 	function modalTimeline() {
 		setModalTimeline({
 			...defaultTimeline(get(undoables).map(u => u.articleIdPair)),
 			title: 'Undoables',
 			filters: [],
-		})
+		});
 	}
 </script>
 

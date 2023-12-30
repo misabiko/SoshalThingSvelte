@@ -8,7 +8,7 @@
 
 	$: {
 		if (modal && active && mountElement) {
-			mountElement.appendChild(modal)
+			mountElement.appendChild(modal);
 		}
 	}
 

@@ -1,17 +1,17 @@
 <script lang='ts'>
-	import SoshalThing from "~/SoshalThing.svelte"
+	import SoshalThing from '~/SoshalThing.svelte';
 	import {
 		defaultTimelineView,
 		type TimelineCollection,
 		type TimelineView,
 	} from '~/timelines';
-	import {defaultTimeline} from '~/timelines'
-	import MasonryContainer from '~/containers/MasonryContainer.svelte'
-	import {loadMainStorage} from '~/storages'
-    import { everyRefreshType } from "~/services/endpoints";
-    import { SortMethod } from "~/sorting";
-    import SidebarActivator from "../SidebarActivator.svelte";
-    import ListAPI from "~/services/twitter/endpoints/domainEndpoints/ListAPI.endpoint";
+	import {defaultTimeline} from '~/timelines';
+	import MasonryContainer from '~/containers/MasonryContainer.svelte';
+	import {loadMainStorage} from '~/storages';
+    import { everyRefreshType } from '~/services/endpoints';
+    import { SortMethod } from '~/sorting';
+    import SidebarActivator from '../SidebarActivator.svelte';
+    import ListAPI from '~/services/twitter/endpoints/domainEndpoints/ListAPI.endpoint';
 
 	const listId = location.pathname.split('/')[3];
 

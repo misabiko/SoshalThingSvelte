@@ -1,5 +1,5 @@
-import '~/services/twitter/**/service.ts';
-import '~/services/twitter/**/*.endpoint.ts'
+import '~/services/twitter/service.ts';
+import '~/services/twitter/endpoints/domainEndpoints/UserTweetsAPI.endpoint';
 
 import { tryInject } from '~/services/extension';
 import UserPage from './UserPage.svelte';

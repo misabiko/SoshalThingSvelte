@@ -1,18 +1,18 @@
 <script lang='ts'>
-	import SoshalThing from "~/SoshalThing.svelte"
+	import SoshalThing from '~/SoshalThing.svelte';
 	import {
 		defaultTimelineView,
 		type TimelineCollection,
 		type TimelineView,
 	} from '~/timelines';
-	import {defaultTimeline} from '~/timelines'
-	import MasonryContainer from '~/containers/MasonryContainer.svelte'
-	import {loadMainStorage} from '~/storages'
-	import {everyRefreshType} from '~/services/endpoints'
-	import portal from '~/usePortal'
-	import {SortMethod} from '~/sorting'
-	import {FollowAPIEndpoint} from '~/services/pixiv/endpoints/follow.endpoint'
-	import {getCurrentPage} from '~/services/pixiv/endpoints'
+	import {defaultTimeline} from '~/timelines';
+	import MasonryContainer from '~/containers/MasonryContainer.svelte';
+	import {loadMainStorage} from '~/storages';
+	import {everyRefreshType} from '~/services/endpoints';
+	import portal from '~/usePortal';
+	import {SortMethod} from '~/sorting';
+	import {FollowAPIEndpoint} from '~/services/pixiv/endpoints/follow.endpoint';
+	import {getCurrentPage} from '~/services/pixiv/endpoints';
 
 	const timelines: TimelineCollection = {
 		'Follows': {
@@ -33,12 +33,12 @@
 			},
 			compact: true,
 		}
-	}
+	};
 
-	const mainStorage = loadMainStorage()
+	const mainStorage = loadMainStorage();
 
-	let favviewerHidden = false
-	let favviewerMaximized = mainStorage.maximized
+	let favviewerHidden = false;
+	let favviewerMaximized = mainStorage.maximized;
 	const activatorMount = document.querySelector('nav');
 	if (activatorMount === null)
 		throw new Error('Could not find activator mount');
@@ -51,7 +51,7 @@
 				index: 0
 			}
 		}
-	}
+	};
 </script>
 
 <svelte:head>

@@ -1,18 +1,18 @@
 <script lang="ts">
-    import { faCrow } from "@fortawesome/free-solid-svg-icons";
-	import portal from "../../usePortal";
+    import { faCrow } from '@fortawesome/free-solid-svg-icons';
+	import portal from '../../usePortal';
 	import Fa from 'svelte-fa';
 
 	export let favviewerHidden: boolean;
 
 	const activatorMount = document.querySelector('nav[aria-label="Primary"]');
 	if (activatorMount === null)
-		throw new Error("Could not find activator mount");
+		throw new Error('Could not find activator mount');
 	const sidebarMenuButton = document.querySelector(
 		'div[data-testid="AppTabBar_More_Menu"]'
 	);
 	if (sidebarMenuButton === null)
-		throw new Error("Could not find sidebar menu button");
+		throw new Error('Could not find sidebar menu button');
 
 	let hovered = false;
 
@@ -36,8 +36,8 @@
 	id="favvieweractivator"
 	class={sampleMenuItem.className}
 	on:click={() => (favviewerHidden = !favviewerHidden)}
-	on:mouseenter={() => {hovered = true}}
-	on:mouseleave={() => {hovered = false}}
+	on:mouseenter={() => {hovered = true;}}
+	on:mouseleave={() => {hovered = false;}}
 >
 	<div
 		class={sampleMenuItem?.firstElementChild?.className}

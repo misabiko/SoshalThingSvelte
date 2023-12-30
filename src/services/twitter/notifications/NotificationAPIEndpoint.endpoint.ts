@@ -108,7 +108,7 @@ export default class NotificationAPIEndpoint extends Endpoint {
 							url: `https://twitter.com/${globalUser.screen_name}`,
 						};
 
-						const { text, textHtml } = parseText(tweet.full_text ?? tweet.text ?? '', tweet.entities, tweet.extended_entities)
+						const { text, textHtml } = parseText(tweet.full_text ?? tweet.text ?? '', tweet.entities, tweet.extended_entities);
 
 						articles.push({
 							type: 'normal',

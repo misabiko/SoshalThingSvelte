@@ -13,7 +13,7 @@ export function parseResponse(instructions: Instruction[]): ArticleWithRefs[] {
 	// if (instructions.filter(i => i.type === 'TimelineAddEntries').length !== 1)
 	// 	console.warn('Unhandled multiple AddEntries instructions', instructions);
 
-	let entries =
+	const entries =
 		((instructions.find(i => i.type === 'TimelineAddToModule') as AddToModuleInstruction | undefined)?.moduleItems) ??
 		(instructions.find(i => i.type === 'TimelineAddEntries') as AddEntriesInstruction | undefined)?.entries;
 
@@ -116,7 +116,7 @@ export function articleFromResult(result: Result): ArticleWithRefs {
 			return {
 				type: 'normal',
 				article: article(),
-			}
+			};
 		}else {
 			let quote_result = result.quoted_status_result.result;
 			if (quote_result.tweet !== undefined)

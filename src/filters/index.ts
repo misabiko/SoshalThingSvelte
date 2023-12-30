@@ -20,7 +20,7 @@ export type Filter = {
 type GenericFilter = {
 	type: 'media' | 'animated' | 'notMarkedAsRead' | 'noRef' | 'selfRepost' | 'selfQuote'
 	service: null
-	props: {}
+	props: Record<string, never>
 } | {
 	type: 'repost'
 	service: null
@@ -152,7 +152,7 @@ function keepArticleGeneric(articleWithRefs: ArticleWithRefs, index: number, fil
 				case 'reposts':
 					return articleWithRefs.reposts.every(a => !a.markedAsRead) && keepArticleGeneric(articleWithRefs.reposted, index, filter);
 				case 'quote':
-					return !articleWithRefs.article.markedAsRead// && keepArticleGeneric(articleWithRefs.quoted, index, filter);
+					return !articleWithRefs.article.markedAsRead;// && keepArticleGeneric(articleWithRefs.quoted, index, filter);
 				default:
 					throw new Error(`Unknown article type: ${(articleWithRefs as unknown as any).type}`);
 			}

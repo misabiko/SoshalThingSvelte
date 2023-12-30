@@ -35,7 +35,7 @@ export default class TimelineAPI extends APIEndpoint<HomeTimelineResponse> {
 		if (params.following !== undefined) {
 			return params.following === (this.timelineType === TimelineType.Following);
 		}else {
-			return false
+			return false;
 		}
 	}
 

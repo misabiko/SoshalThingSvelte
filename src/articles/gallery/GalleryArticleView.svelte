@@ -1,35 +1,35 @@
 <script lang='ts'>
-	import Article from '../index'
-	import type {ArticleIdPair} from '../index'
-	import Fa from 'svelte-fa'
+	import Article from '../index';
+	import type {ArticleIdPair} from '../index';
+	import Fa from 'svelte-fa';
 	import {
 		faExpandArrowsAlt,
 		faExternalLinkAlt,
 		faEllipsisH, faImages,
-	} from '@fortawesome/free-solid-svg-icons'
-	import {LoadingState, loadingStore} from '~/bufferedMediaLoading'
-	import Dropdown from "~/Dropdown.svelte"
+	} from '@fortawesome/free-solid-svg-icons';
+	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
+	import Dropdown from '~/Dropdown.svelte';
 	import {
 		fetchArticle,
 		getServices,
 	} from '~/services/service';
-	import type {TimelineArticleProps} from '../index'
-	import type {ArticleProps} from '../index'
-	import {MediaType} from '../media'
-	import GalleryThumbnail from "./GalleryThumbnail.svelte";
-	import GalleryImage from "./GalleryImage.svelte";
+	import type {TimelineArticleProps} from '../index';
+	import type {ArticleProps} from '../index';
+	import {MediaType} from '../media';
+	import GalleryThumbnail from './GalleryThumbnail.svelte';
+	import GalleryImage from './GalleryImage.svelte';
 	import {type ArticleAction, getUniversalActions} from '~/services/actions';
 
-	export let timelineProps: TimelineArticleProps
+	export let timelineProps: TimelineArticleProps;
 	export let articleProps: ArticleProps; articleProps;
 	export let style = ''; style;
 	export let modal: boolean; modal;
 	export let showAllMedia: boolean;
 	export let rootArticle: Readonly<Article>; rootArticle;
-	export let actualArticle: Readonly<Article>
-	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number
-	export let onLogData: () => void
-	export let onLogJSON: () => void
+	export let actualArticle: Readonly<Article>;
+	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number;
+	export let onLogData: () => void;
+	export let onLogJSON: () => void;
 
 	export let divRef: HTMLDivElement | null;
 	export let mediaRefs: HTMLImageElement[];
@@ -229,7 +229,7 @@
 				{#if actualArticle.medias.some(m => !m.loaded) }
 					<button
 						class='dropdown-item'
-						on:click={() => {for (let i = 0; i < actualArticle.medias.length; ++i) loadingStore.forceLoading(actualArticle, i)}}
+						on:click={() => {for (let i = 0; i < actualArticle.medias.length; ++i) loadingStore.forceLoading(actualArticle, i);}}
 					>
 						Load Media
 					</button>

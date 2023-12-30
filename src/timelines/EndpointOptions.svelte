@@ -59,7 +59,7 @@
 		[RefreshType.Refresh]: 'Refresh',
 		[RefreshType.LoadTop]: 'Load Top',
 		[RefreshType.LoadBottom]: 'Load Bottom',
-	}
+	};
 
 	//TODO Add auto refresh option
 </script>

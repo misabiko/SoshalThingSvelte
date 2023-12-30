@@ -96,7 +96,7 @@ export class BookmarkAPIEndpoint extends LoadableEndpoint {
 			userId,
 			r18,
 			page: currentPage,
-		}
+		};
 	}
 
 	async _refresh(_refreshType: RefreshType): Promise<ArticleWithRefs[]> {
@@ -108,7 +108,7 @@ export class BookmarkAPIEndpoint extends LoadableEndpoint {
 		url.searchParams.set('rest', this.r18 ? 'hide' : 'show');
 		url.searchParams.set('lang', 'en');
 
-		const response: FollowAjaxResponse = await PixivService.fetch(url.toString(), {headers: {'Accept': 'application/json'}})
+		const response: FollowAjaxResponse = await PixivService.fetch(url.toString(), {headers: {'Accept': 'application/json'}});
 		if (response.error) {
 			console.error('Failed to fetch', response);
 			return [];

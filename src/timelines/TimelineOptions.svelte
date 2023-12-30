@@ -1,14 +1,14 @@
 <script lang='ts'>
-	import ColumnContainer from "~/containers/ColumnContainer.svelte"
-	import RowContainer from "~/containers/RowContainer.svelte"
-	import MasonryContainer from "~/containers/MasonryContainer.svelte"
-	import SocialArticleView from "~/articles/social/SocialArticleView.svelte"
-	import GalleryArticleView from "~/articles/gallery/GalleryArticleView.svelte"
-	import type {TimelineData} from './index'
-	import FiltersOptions from "~/filters/FiltersOptions.svelte"
-	import SortOptions from "~/sorting/SortOptions.svelte"
+	import ColumnContainer from '~/containers/ColumnContainer.svelte';
+	import RowContainer from '~/containers/RowContainer.svelte';
+	import MasonryContainer from '~/containers/MasonryContainer.svelte';
+	import SocialArticleView from '~/articles/social/SocialArticleView.svelte';
+	import GalleryArticleView from '~/articles/gallery/GalleryArticleView.svelte';
+	import type {TimelineData} from './index';
+	import FiltersOptions from '~/filters/FiltersOptions.svelte';
+	import SortOptions from '~/sorting/SortOptions.svelte';
 	import type { SortMethod } from '~/sorting';
-	import type {FullscreenInfo} from './index'
+	import type {FullscreenInfo} from './index';
 	import {updateFullscreenStorage, updateTimelinesStorageValue} from '~/storages';
 	import EndpointOptions from '~/timelines/EndpointOptions.svelte';
 
@@ -73,8 +73,8 @@
 		<label class='field'>
 			Title
 			<input type='text'
-				   bind:value={data.title}
-				   on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'title', data.title)}
+					bind:value={data.title}
+					on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'title', data.title)}
 			/>
 		</label>
 		<p>{articleCountLabel}</p>
@@ -101,7 +101,7 @@
 		{#if fullscreen !== null}
 			<label class='field'>
 				<input type='checkbox' checked={!!fullscreen.container}
-					   on:change={e => setFullscreenContainer(e.currentTarget.checked)}/>
+						on:change={e => setFullscreenContainer(e.currentTarget.checked)}/>
 				Fullscreen Container
 				{#if fullscreen.container}
 					<select
@@ -151,7 +151,7 @@
 			{#if fullscreen !== null}
 				<label class='field'>
 					<input type='checkbox' checked={fullscreen.columnCount !== null}
-						   on:change={e => setFullscreenColumnCount(e.currentTarget.checked)}/>
+							on:change={e => setFullscreenColumnCount(e.currentTarget.checked)}/>
 					Fullscreen Column Count
 					{#if fullscreen.columnCount !== null}
 						<input
@@ -159,13 +159,17 @@
 								type='number'
 								min={1}
 								value={fullscreen.columnCount}
-								on:change={e => {if (fullscreen && e.currentTarget.value) fullscreen.columnCount = parseInt(e.currentTarget.value)}}
-								on:change={() => fullscreen && updateFullscreenStorage(fullscreen)}
+								on:change={e => {
+									if (fullscreen && e.currentTarget.value) {
+										fullscreen.columnCount = parseInt(e.currentTarget.value);
+										updateFullscreenStorage(fullscreen);
+									}
+								}}
 						/>
 						<button on:click={() => {
 							if (fullscreen?.columnCount) {
 								fullscreen.columnCount++;
-								updateFullscreenStorage(fullscreen)
+								updateFullscreenStorage(fullscreen);
 							}
 						}}>
 							+
@@ -173,7 +177,7 @@
 						<button on:click={() => {
 							if (fullscreen?.columnCount && fullscreen?.columnCount > 1) {
 								fullscreen.columnCount--;
-								updateFullscreenStorage(fullscreen)
+								updateFullscreenStorage(fullscreen);
 							}
 						}}>
 							-
@@ -206,8 +210,8 @@
 			Section
 			<label>
 				<input type='checkbox'
-					   bind:checked={data.section.useSection}
-					   on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'section', data.section)}
+						bind:checked={data.section.useSection}
+						on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'section', data.section)}
 				/>
 				Section articles
 			</label>
@@ -234,8 +238,8 @@
 		<div class='field'>
 			<label>
 				<input type='checkbox'
-					   bind:checked={data.animatedAsGifs}
-					   on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'animatedAsGifs', data.animatedAsGifs)}
+						bind:checked={data.animatedAsGifs}
+						on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'animatedAsGifs', data.animatedAsGifs)}
 				/>
 				Show all animated as gifs
 			</label>
@@ -243,8 +247,8 @@
 		<div class='field'>
 			<label>
 				<input type='checkbox'
-					   bind:checked={data.muteVideos}
-					   on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'muteVideos', data.muteVideos)}
+						bind:checked={data.muteVideos}
+						on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'muteVideos', data.muteVideos)}
 				/>
 				Mute videos
 			</label>
@@ -252,8 +256,8 @@
 		<div class='field'>
 			<label>
 				<input type='checkbox'
-					   bind:checked={data.hideFilteredOutArticles}
-					   on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'hideFilteredOutArticles', data.hideFilteredOutArticles)}
+						bind:checked={data.hideFilteredOutArticles}
+						on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'hideFilteredOutArticles', data.hideFilteredOutArticles)}
 				/>
 				Hide filtered out articles
 			</label>
@@ -261,7 +265,7 @@
 		<div class='field'>
 			<label>
 				<input type='checkbox' bind:checked={data.mergeReposts}
-					   on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'mergeReposts', data.mergeReposts)}
+						on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'mergeReposts', data.mergeReposts)}
 				/>
 				Merge duplicate reposts
 			</label>
@@ -270,8 +274,8 @@
 			<div class='field'>
 				<label>
 					<input type='checkbox'
-						   bind:checked={data.compact}
-						   on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'compact', data.compact)}
+							bind:checked={data.compact}
+							on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'compact', data.compact)}
 					/>
 					Compact articles
 				</label>
@@ -279,8 +283,8 @@
 			<div class='field'>
 				<label>
 					<input type='checkbox'
-						   bind:checked={data.hideText}
-						   on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'hideText', data.hideText)}
+							bind:checked={data.hideText}
+							on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'hideText', data.hideText)}
 					/>
 					Hide text
 				</label>

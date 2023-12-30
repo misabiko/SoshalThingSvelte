@@ -1,17 +1,17 @@
 <script lang='ts'>
-	import type {TimelineArticleProps} from '../index'
-	import Article from "../index";
-	import {afterUpdate} from 'svelte'
-	import {getWritable} from '~/services/service'
-	import Fa from 'svelte-fa'
-	import {faImages} from "@fortawesome/free-solid-svg-icons";
-	import {MediaType} from '../media'
+	import type {TimelineArticleProps} from '../index';
+	import Article from '../index';
+	import {afterUpdate} from 'svelte';
+	import {getWritable} from '~/services/service';
+	import Fa from 'svelte-fa';
+	import {faImages} from '@fortawesome/free-solid-svg-icons';
+	import {MediaType} from '../media';
 	import {LoadingState} from '~/bufferedMediaLoading';
 
-	export let article: Article
-	export let timelineProps: TimelineArticleProps
+	export let article: Article;
+	export let timelineProps: TimelineArticleProps;
 	export let showAllMedia: boolean;
-	export let onMediaClick: (index: number) => void
+	export let onMediaClick: (index: number) => void;
 
 	export let divRef: HTMLDivElement | null = null;
 	export let mediaRefs: (HTMLImageElement | HTMLVideoElement)[] = [];
@@ -21,18 +21,18 @@
 	//TODO Add option for full first (n) media and compact rest
 
 	afterUpdate(() => {
-		const articleMediaEls = divRef?.querySelectorAll('.articleMedia:not(.articleThumbnail)')
+		const articleMediaEls = divRef?.querySelectorAll('.articleMedia:not(.articleThumbnail)');
 		if (articleMediaEls) {
-			const modifiedMedias: [number, number][] = []
+			const modifiedMedias: [number, number][] = [];
 			for (let i = 0; i < article.medias.length; ++i)
 				if (article.medias[i].ratio === null && articleMediaEls[i] !== undefined)
-					modifiedMedias.push([i, articleMediaEls[i].clientHeight / articleMediaEls[i].clientWidth])
+					modifiedMedias.push([i, articleMediaEls[i].clientHeight / articleMediaEls[i].clientWidth]);
 
 			getWritable(article.idPair).update(a => {
 				for (const [i, ratio] of modifiedMedias)
-					a.medias[i].ratio = ratio
-				return a
-			})
+					a.medias[i].ratio = ratio;
+				return a;
+			});
 		}
 	});
 

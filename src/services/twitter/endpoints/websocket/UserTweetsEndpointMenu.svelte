@@ -1,9 +1,9 @@
 <script lang='ts'>
-    import { getRootArticle, type ArticleWithRefs } from "articles";
-    import { endpoints, type Endpoint } from "services/endpoints";
-    import { addArticles, getServices } from "services/service";
-    import { parseResponse } from "services/twitter/pageAPI";
-    import type { TimelineData } from "timelines";
+    import { getRootArticle, type ArticleWithRefs } from 'articles';
+    import { endpoints, type Endpoint } from 'services/endpoints';
+    import { addArticles, getServices } from 'services/service';
+    import { parseResponse } from 'services/twitter/pageAPI';
+    import type { TimelineData } from 'timelines';
 
 	export let timeline: TimelineData;
 	export let endpoint: Endpoint;
@@ -35,15 +35,15 @@
 			endpoints[endpoint.name].set(endpoint);
 
 			if (articles.length) {
-			const newAddedIdPairs = articles.map(a => getRootArticle(a).idPair)
+			const newAddedIdPairs = articles.map(a => getRootArticle(a).idPair);
 			timeline.addedIdPairs.update(idPairs => {
-				idPairs.push(...newAddedIdPairs)
-				return idPairs
-			})
+				idPairs.push(...newAddedIdPairs);
+				return idPairs;
+			});
 			timeline.articles.update(idPairs => {
-				idPairs.push(...newAddedIdPairs)
-				return idPairs
-			})
+				idPairs.push(...newAddedIdPairs);
+				return idPairs;
+			});
 		}
 	}
 </script>

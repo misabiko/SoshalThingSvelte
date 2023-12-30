@@ -40,7 +40,7 @@ const SveltePlugin = {
 			try {
 				let { js, warnings } = svelte.compile(preprocessed, {
 					filename,
-					...svelteConfig,
+					// ...svelteConfig,
 					dev: process.env.NODE_ENV === 'development',
 				});
 				const contents = js.code + '//# sourceMappingURL=' + js.map.toUrl();

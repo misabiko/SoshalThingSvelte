@@ -11,7 +11,7 @@
 	import {everyRefreshType} from '../../../services/endpoints'
 	import portal from '../../../usePortal'
 	import {SortMethod} from '../../../sorting'
-	import {FollowAPIEndpoint} from '../../../services/pixiv/endpoints/follow'
+	import {FollowAPIEndpoint} from '../../../services/pixiv/endpoints/follow.endpoint'
 	import {getCurrentPage} from '../../../services/pixiv/endpoints'
 
 	const timelines: TimelineCollection = {

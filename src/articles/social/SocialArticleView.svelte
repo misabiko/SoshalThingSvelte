@@ -256,7 +256,7 @@
 						{modal}
 						{onLogData}
 						{onLogJSON}
-						bind:quoteCompact
+						bind:compact={quoteCompact}
 					/>
 				</div>
 			{/if}

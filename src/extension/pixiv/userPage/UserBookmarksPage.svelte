@@ -10,8 +10,8 @@
 	import {loadMainStorage} from '../../../storages'
 	import {everyRefreshType} from '../../../services/endpoints'
 	import portal from '../../../usePortal'
-	import {BookmarkAPIEndpoint} from '../../../services/pixiv/endpoints/bookmarks'
-	import {getUserId} from '../../../services/pixiv/endpoints/user'
+	import {BookmarkAPIEndpoint} from '../../../services/pixiv/endpoints/bookmarks.endpoint'
+	import {getUserId} from '../../../services/pixiv/endpoints/user.endpoint'
 
 	const timelines: TimelineCollection = {
 		'Bookmarks': {

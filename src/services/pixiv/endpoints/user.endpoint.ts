@@ -6,7 +6,7 @@ import type {PixivUser} from '../article';
 import {getMarkedAsReadStorage} from '../../../storages/serviceCache';
 import {getEachPageURL, getUserUrl, parseThumbnail, type BookmarkData} from './index';
 import {MediaLoadType, MediaType} from '../../../articles/media';
-import {avatarHighRes} from './bookmarks';
+import {avatarHighRes} from './bookmarks.endpoint';
 import {getServices, registerEndpointConstructor} from '../../service';
 
 export default class UserPageEndpoint extends PageEndpoint {

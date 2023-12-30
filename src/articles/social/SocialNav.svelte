@@ -1,12 +1,10 @@
 <script lang='ts'>
 	import Fa from 'svelte-fa'
 	import {
-		faEyeSlash,
-		faEllipsisH, faExpandAlt, faEye, faSpinner, faGripVertical, faEllipsisVertical, faUpRightFromSquare,
+		faEllipsisH, faExpandAlt, faSpinner, faGripVertical, faEllipsisVertical, faUpRightFromSquare,
 	} from '@fortawesome/free-solid-svg-icons';
 	import Dropdown from '../../Dropdown.svelte'
-	import {toggleMarkAsRead} from "../../services/service"
-	import Article, {type ArticleIdPair} from '../../articles';
+	import Article from '../../articles';
 	import type {TimelineArticleProps} from '../index'
 	import {getServices} from "../../services/service";
 	import {type ArticleAction, getUniversalActions} from '../../services/actions';

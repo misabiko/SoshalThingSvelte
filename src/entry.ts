@@ -1,22 +1,8 @@
-import './services/twitter/service';
-import './services/twitter/endpoints/domainEndpoints/TimelineAPI';
-import './services/twitter/endpoints/domainEndpoints/UserTweetsAPI';
-import './services/twitter/endpoints/domainEndpoints/ListAPI';
-import './services/twitter/endpoints/domainEndpoints/SearchAPI';
-import './services/twitter/endpoints/domainEndpoints/LikesAPI';
+import './services/**/service.ts';
+import './services/**/*.endpoint.ts'
 
-import './services/twitter/notifications/service';
-import './services/twitter/notifications/NotificationAPIEndpoint';
-
-import './services/pixiv/service';
-import './services/pixiv/endpoints/bookmarks';
-import './services/pixiv/endpoints/follow';
-import './services/pixiv/endpoints/user';
-import './services/misskey/service';
-
-import './services/misskey/endpoints/timelineEndpoint';
-
-
+import {getServices} from './services/service';
+console.debug('Loaded services and endpoints:', Object.fromEntries(Object.values(getServices()).map(service => [service.name, Object.keys(service.endpointConstructors)])));
 
 import SoshalThing from './SoshalThing.svelte';
 import {loadMainStorage, loadTimelines} from './storages';

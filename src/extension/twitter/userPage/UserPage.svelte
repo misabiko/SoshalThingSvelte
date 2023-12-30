@@ -9,7 +9,7 @@
 	import MasonryContainer from '../../../containers/MasonryContainer.svelte'
 	import {loadMainStorage} from '../../../storages'
     import { everyRefreshType } from "services/endpoints";
-    import UserTweetsAPI, { TimelineType } from "services/twitter/endpoints/domainEndpoints/UserTweetsAPI";
+    import UserTweetsAPI, { TimelineType } from "services/twitter/endpoints/domainEndpoints/UserTweetsAPI.endpoint";
     import ColumnContainer from "containers/ColumnContainer.svelte";
     import { SortMethod } from "sorting";
     import SidebarActivator from "../SidebarActivator.svelte";

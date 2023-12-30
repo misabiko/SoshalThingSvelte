@@ -11,7 +11,7 @@
     import { everyRefreshType } from "services/endpoints";
     import { SortMethod } from "sorting";
     import SidebarActivator from "../SidebarActivator.svelte";
-    import ListAPI from "services/twitter/endpoints/domainEndpoints/ListAPI";
+    import ListAPI from "services/twitter/endpoints/domainEndpoints/ListAPI.endpoint";
 
 	const listId = location.pathname.split('/')[3];
 

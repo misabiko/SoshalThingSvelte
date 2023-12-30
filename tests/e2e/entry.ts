@@ -1,4 +1,4 @@
-import '../../src/services/dummy/endpoints';
+import '../../src/services/dummy/endpoints.endpoint';
 import '../../src/entry';
 
 //TODO Prevent from commiting tests tagged as 'only'

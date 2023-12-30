@@ -84,16 +84,22 @@ export const TwitterService: Service<TwitterArticle> = {
 	},
 	filterTypes: {
 		liked: {
-			name: (inverted) => inverted ? 'Not liked' : 'Liked',
-			props: [],
+			type: 'liked',
+			name: 'Liked',
+			invertedName: 'Not liked',
+			props: {},
 		},
 		retweeted: {
-			name: (inverted) => inverted ? 'Not retweeted' : 'Retweeted',
-			props: [],
+			type: 'retweeted',
+			name: 'Retweeted',
+			invertedName: 'Not retweeted',
+			props: {},
 		},
 		deleted: {
-			name: (inverted) => inverted ? 'Not deleted' : 'Deleted',
-			props: [],
+			type: 'deleted',
+			name: 'Deleted',
+			invertedName: 'Not deleted',
+			props: {},
 		},
 	},
 	isOnDomain: globalThis.window?.location?.hostname === 'twitter.com'

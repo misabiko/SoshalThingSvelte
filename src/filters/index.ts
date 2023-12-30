@@ -11,96 +11,127 @@ export type FilterInstance = {
 	inverted: boolean
 }
 
-export type Filter = {
+export type Filter = ({
 	type: string
 	service: string
+} | {
+	type: GenericFilter
+	service: null
+}) & {
 	props: Record<string, any>
-} | GenericFilter
-
-type GenericFilter = {
-	type: 'media' | 'animated' | 'notMarkedAsRead' | 'noRef' | 'selfRepost' | 'selfQuote'
-	service: null
-	props: Record<string, never>
-} | {
-	type: 'repost'
-	service: null
-	props: {
-		byUsername: string
-	}
-} | {
-	//TODO Test quote filter
-	type: 'quote'
-	service: null
-	props: {
-		byUsername: string
-	}
-} | {
-	type: 'interval'
-	service: null
-	props: {
-		interval: number
-		offset: number
-		includeOffset: boolean
-	}
 }
+
+type GenericFilter =
+	| 'media'
+	| 'animated'
+	| 'notMarkedAsRead'
+	| 'noRef'
+	| 'selfRepost'
+	| 'selfQuote'
+	| 'repost'
+	//TODO Test quote filter
+	| 'quote'
+	| 'interval'
 //TODO Number of medias (with equal, less than, greater than, etc)
 
-export function getFilterName(filterType: GenericFilter['type'], inverted: boolean): string {
-	if (inverted) {
-		switch (filterType) {
-			case 'media':
-				return 'Without Media';
-			case 'animated':
-				return 'Not Animated';
-			case 'notMarkedAsRead':
-				return 'Marked as read';
-			case 'noRef':
-				return 'References other articles';
-			case 'repost':
-				return 'Not a repost';
-			case 'quote':
-				return 'Not a quote';
-			case 'selfRepost':
-				return 'Not a self repost';
-			case 'selfQuote':
-				return 'Not a self quote';
-			case 'interval':
-				return 'Not by interval';
-		}
-	}else {
-		switch (filterType) {
-			case 'media':
-				return 'Has media';
-			case 'animated':
-				return 'Animated';
-			case 'notMarkedAsRead':
-				return 'Not marked as read';
-			case 'noRef':
-				return "Doesn't references other articles";
-			case 'repost':
-				return 'Repost';
-			case 'quote':
-				return 'Quote';
-			case 'selfRepost':
-				return 'Self repost';
-			case 'selfQuote':
-				return 'Self quote';
-			case 'interval':
-				return 'By interval';
-		}
-	}
+export type FilterInfo<S extends string = string> = {
+	type: S
+	name: string
+	invertedName: string
+	props: Record<string, PropType>
 }
 
-export const genericFilterTypes: GenericFilter['type'][] = [
-	'media',
-	'animated',
-	'notMarkedAsRead',
-	'noRef',
-	'repost',
-	'quote',
-	'selfRepost',
-	'selfQuote',
-];
+export function getFilterName(filter: FilterInfo, inversed: boolean): string {
+	return inversed ? filter.invertedName : filter.name;
+
+}
+
+export type PropType =
+| {
+	type: 'string' | 'boolean' | 'string[]'
+}
+| {
+	type: 'number'
+	min?: number
+	max?: number
+}
+
+export const genericFilterTypes: Record<GenericFilter, FilterInfo<GenericFilter>> = {
+	media: {
+		type: 'media',
+		name: 'Has media',
+		invertedName: 'Without media',
+		props: {},
+	},
+	animated: {
+		type: 'animated',
+		name: 'Animated',
+		invertedName: 'Not animated',
+		props: {},
+	},
+	notMarkedAsRead: {
+		type: 'notMarkedAsRead',
+		name: 'Not marked as read',
+		invertedName: 'Marked as read',
+		props: {},
+	},
+	noRef: {
+		type: 'noRef',
+		name: "Doesn't references other articles",
+		invertedName: 'References other articles',
+		props: {},
+	},
+	repost: {
+		type: 'repost',
+		name: 'Repost',
+		invertedName: 'Not a repost',
+		props: {
+			byUsername: {
+				type: 'string',
+			},
+		},
+	},
+	quote: {
+		type: 'quote',
+		name: 'Quote',
+		invertedName: 'Not a quote',
+		props: {
+			byUsername: {
+				type: 'string',
+			},
+		},
+	},
+	selfRepost: {
+		type: 'selfRepost',
+		name: 'Self repost',
+		invertedName: 'Not a self repost',
+		props: {},
+	},
+	selfQuote: {
+		type: 'selfQuote',
+		name: 'Self quote',
+		invertedName: 'Not a self quote',
+		props: {},
+	},
+	interval: {
+		type: 'interval',
+		name: 'By interval',
+		invertedName: 'Not by interval',
+		props: {
+			interval: {
+				type: 'number',
+				min: 1,
+			},
+			offset: {
+				type: 'number',
+				min: 0,
+			},
+			includeOffset: {
+				type: 'boolean'
+			},
+		},
+	},
+};
 
 export function defaultFilter(filterType: string, service: string | null): Filter {
 	if (service)
@@ -118,7 +149,11 @@ export function defaultFilter(filterType: string, service: string | null): Filte
 				service: null,
 			};
 		default:
-			return { type: filterType, service: null } as GenericFilter;
+			return {
+				type: filterType as GenericFilter,
+				service: null,
+				props: {},
+			};
 	}
 }
 
@@ -137,8 +172,8 @@ export function keepArticle(articleWithRefs: ArticleWithRefs, index: number, fil
 		return keepArticleGeneric(articleWithRefs, index, filter);
 }
 
-function keepArticleGeneric(articleWithRefs: ArticleWithRefs, index: number, filter: GenericFilter): boolean {
-	switch (filter.type) {
+function keepArticleGeneric(articleWithRefs: ArticleWithRefs, index: number, filter: Filter): boolean {
+	switch (filter.type as GenericFilter) {
 		case 'media':
 			return articleWithRefToArray(articleWithRefs).some(a => a.medias.length > 0);
 		case 'animated':

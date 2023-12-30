@@ -3,7 +3,7 @@
 	import {getWritable, toggleMarkAsRead} from '~/services/service';
 	import Article, {getActualArticle} from '../articles'
 	import type {ArticleProps, TimelineArticleProps} from './index'
-	import {afterUpdate, type SvelteComponent} from 'svelte';
+	import {afterUpdate, type ComponentType} from 'svelte';
 	import {getContext} from 'svelte'
 	import {getRootArticle} from './index'
 	import Modal from '../Modal.svelte'
@@ -12,7 +12,7 @@
 
 	export let articleProps: ArticleProps
 	export let timelineProps: TimelineArticleProps
-	export let view: new (...args: any[]) => SvelteComponent;
+	export let view: ComponentType;
 	export let style = ''; style;
 	let modal = false
 	let showAllMedia = false

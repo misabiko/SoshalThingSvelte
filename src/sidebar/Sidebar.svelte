@@ -14,7 +14,7 @@
 	import MediaLoader from "./MediaLoader.svelte"
 	import Undoables from "./Undoables.svelte"
 	import Endpoints from "./Endpoints.svelte"
-	import type {SvelteComponent} from 'svelte'
+	import type {ComponentType} from 'svelte';
 	import SettingsMenu from "./SettingsMenu.svelte"
 	import TimelineEditMenu from "./TimelineEditMenu.svelte";
 	import BatchActions from "./BatchActions.svelte";
@@ -31,7 +31,7 @@
 		Undoables,
 	}
 
-	let menu: (new (...args: any[]) => SvelteComponent) | SidebarMenu | null = null;
+	let menu: ComponentType | SidebarMenu | null = null;
 
 	export let setModalTimeline: (data: TimelineData, width?: number) => void
 	export let addTimeline: (data: TimelineData) => void
@@ -40,11 +40,11 @@
 	export let timelineViews: Record<string, TimelineView>
 	export let timelineViewId: string
 
-	function toggleSidebarMenu(newMenu: (new (...args: any[]) => SvelteComponent) | SidebarMenu) {
+	function toggleSidebarMenu(newMenu: ComponentType | SidebarMenu) {
 		menu = menu === newMenu ? null : newMenu;
 	}
 
-	const buttons: {icon: IconDefinition, menu: (new (...args: any[]) => SvelteComponent) | SidebarMenu, title: string}[] = [
+	const buttons: {icon: IconDefinition, menu: ComponentType | SidebarMenu, title: string}[] = [
 		{icon: faPlus, menu: SidebarMenu.TimelineEdit, title: 'Add new timeline'},
 		{icon: faBarsProgress, menu: Endpoints, title: 'Endpoints'},
 		{icon: faNewspaper, menu: LoadArticle, title: 'Load article'},

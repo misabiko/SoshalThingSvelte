@@ -1,16 +1,16 @@
-import type { ArticleAuthor, ArticleIdPair } from '../articles';
-import type { SvelteComponent } from 'svelte';
-import type { FilterInstance } from '../filters';
-import { SortMethod, type SortInfo } from '../sorting';
-import ColumnContainer from '../containers/ColumnContainer.svelte';
-import SocialArticleView from '../articles/social/SocialArticleView.svelte';
-import { defaultFilterInstances } from '../filters';
-import type { Endpoint, RefreshType } from '../services/endpoints';
+import type { ArticleAuthor, ArticleIdPair } from '~/articles';
+import type {ComponentType} from 'svelte';
+import type { FilterInstance } from '~/filters';
+import { SortMethod, type SortInfo } from '~/sorting';
+import ColumnContainer from '~/containers/ColumnContainer.svelte';
+import SocialArticleView from '~/articles/social/SocialArticleView.svelte';
+import { defaultFilterInstances } from '~/filters';
+import type { Endpoint, RefreshType } from '~/services/endpoints';
 import type { Writable } from 'svelte/store';
 import { writable } from 'svelte/store';
-import { everyRefreshType } from '../services/endpoints';
-import MasonryContainer from '../containers/MasonryContainer.svelte';
-import { getServices } from '../services/service';
+import { everyRefreshType } from '~/services/endpoints';
+import MasonryContainer from '~/containers/MasonryContainer.svelte';
+import { getServices } from '~/services/service';
 
 export type TimelineData = {
 	title: string;
@@ -20,8 +20,8 @@ export type TimelineData = {
 	//TODO Give timelines a list of article lists
 	articles: Writable<ArticleIdPair[]>;
 	section: { useSection: boolean; count: number };
-	container: new (...args: any[]) => SvelteComponent;
-	articleView: new (...args: any[]) => SvelteComponent;
+	container: ComponentType;
+	articleView: ComponentType;
 	columnCount: number;
 	rtl: boolean;
 	// TODO Add option to set flex-grow: 1 instead of fixed width
@@ -95,7 +95,7 @@ export type TimelineEndpoint = {
 export type FullscreenInfo = {
 	index: number | null;
 	columnCount: number | null;
-	container: ((new (...args: any[]) => SvelteComponent)) | null;
+	container: ComponentType | null;
 }
 
 export function newUserTimeline(serviceName: string, author: ArticleAuthor): TimelineData | null {

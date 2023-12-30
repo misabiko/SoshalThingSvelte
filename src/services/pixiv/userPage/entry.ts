@@ -1,3 +1,6 @@
+import '~/services/pixiv/service';
+import '~/services/pixiv/endpoints/user.endpoint';
+
 import UserArtworksPage from './UserArtworksPage.svelte';
 import {tryInject} from '~/services/extension';
 import UserBookmarksPage from './UserBookmarksPage.svelte';

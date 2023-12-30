@@ -129,7 +129,7 @@
 				<Undoables
 					{setModalTimeline}
 				/>
-			{:else if !Object.values(SidebarMenu).includes(menu)}
+			{:else}
 				<svelte:component this={menu}/>
 			{/if}
 		</div>

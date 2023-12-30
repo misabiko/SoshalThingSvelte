@@ -75,25 +75,25 @@
 		<div class="field has-addons">
 			<label>
 				Username
-				<input bind:value={instance.filter.byUsername}/>
+				<input bind:value={instance.filter.props.byUsername}/>
 			</label>
 		</div>
 	{:else if instance.filter.type === 'interval'}
 		<div class='field has-addons'>
 			<label>
 				Interval
-				<input type='number' class='input' bind:value={instance.filter.interval} min={1}/>
+				<input type='number' class='input' bind:value={instance.filter.props.interval} min={1}/>
 			</label>
 		</div>
 		<div class='field has-addons'>
 			<label>
 				Offset
-				<input type='number' class='input' bind:value={instance.filter.offset} min={0}/>
+				<input type='number' class='input' bind:value={instance.filter.props.offset} min={0}/>
 			</label>
 		</div>
 		<div class='field has-addons'>
 			<label>
-				<input type='checkbox' bind:checked={instance.filter.includeOffset}/>
+				<input type='checkbox' bind:checked={instance.filter.props.includeOffset}/>
 				Include Offset
 			</label>
 		</div>

@@ -1,3 +1,6 @@
+import '~/services/twitter/service.ts';
+import '~/services/twitter/endpoints/domainEndpoints/UserTweetsAPI.endpoint';
+
 import { tryInject } from '~/services/extension';
 import HomePage from './HomePage.svelte';
 

@@ -101,7 +101,7 @@
 		{#if fullscreen !== null}
 			<label class='field'>
 				<input type='checkbox' checked={!!fullscreen.container}
-					   on:change={e => setFullscreenContainer(e.target.checked)}/>
+					   on:change={e => setFullscreenContainer(e.currentTarget.checked)}/>
 				Fullscreen Container
 				{#if fullscreen.container}
 					<select
@@ -151,7 +151,7 @@
 			{#if fullscreen !== null}
 				<label class='field'>
 					<input type='checkbox' checked={fullscreen.columnCount !== null}
-						   on:change={e => setFullscreenColumnCount(e.target.checked)}/>
+						   on:change={e => setFullscreenColumnCount(e.currentTarget.checked)}/>
 					Fullscreen Column Count
 					{#if fullscreen.columnCount !== null}
 						<input
@@ -159,13 +159,23 @@
 								type='number'
 								min={1}
 								value={fullscreen.columnCount}
-								on:change={e => {if (e.value) fullscreen.columnCount = parseInt(e.value)}}
-								on:change={() => updateFullscreenStorage(fullscreen)}
+								on:change={e => {if (fullscreen && e.currentTarget.value) fullscreen.columnCount = parseInt(e.currentTarget.value)}}
+								on:change={() => fullscreen && updateFullscreenStorage(fullscreen)}
 						/>
-						<button on:click={() => {fullscreen.columnCount++; updateFullscreenStorage(fullscreen)}}>
+						<button on:click={() => {
+							if (fullscreen?.columnCount) {
+								fullscreen.columnCount++;
+								updateFullscreenStorage(fullscreen)
+							}
+						}}>
 							+
 						</button>
-						<button on:click={() => {if (fullscreen.columnCount > 1) fullscreen.columnCount--; updateFullscreenStorage(fullscreen)}}>
+						<button on:click={() => {
+							if (fullscreen?.columnCount && fullscreen?.columnCount > 1) {
+								fullscreen.columnCount--;
+								updateFullscreenStorage(fullscreen)
+							}
+						}}>
 							-
 						</button>
 					{/if}

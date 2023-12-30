@@ -29,7 +29,7 @@
 			)
 		);
 
-		addArticles(getServices()[endpoint.constructor.service], false, ...articles);
+		addArticles(getServices()[(endpoint.constructor as typeof Endpoint).service], false, ...articles);
 
 		if (!Object.hasOwn(endpoints, endpoint.name))
 			endpoints[endpoint.name].set(endpoint);

@@ -114,12 +114,20 @@ export function newUserTimeline(serviceName: string, author: ArticleAuthor): Tim
 		filters: [
 			...defaultFilterInstances,
 			{
-				filter: { type: 'media', service: null },
+				filter: {
+					type: 'media',
+					service: null,
+					props: {},
+				},
 				enabled: true,
 				inverted: false,
 			},
 			{
-				filter: { type: 'noRef', service: null },
+				filter: {
+					type: 'noRef',
+					service: null,
+					props: {},
+				},
 				enabled: true,
 				inverted: false,
 			}

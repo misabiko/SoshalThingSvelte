@@ -1,21 +1,21 @@
 <script lang='ts'>
 	//TODO Fix/Test BatchActions
 	import FiltersOptions from "../filters/FiltersOptions.svelte"
-	import {type FilterInstance, useFilters} from '../filters'
-	import {getWritable} from '../services/service'
-	import type {TimelineCollection} from '../timelines'
+	import {type FilterInstance, useFilters} from '~/filters'
+	import {getWritable} from '~/services/service'
+	import type {TimelineCollection} from '~/timelines'
 	import {derived, type Readable, type Writable} from 'svelte/store'
 	import Article, {
 		type ArticleIdPair,
 		type ArticleWithRefs, deriveArticleRefs, getDerivedArticleWithRefs, getRootArticle,
 	} from '../articles'
-	import {articleAction, STANDARD_ACTIONS} from '../services/actions'
+	import {articleAction, STANDARD_ACTIONS} from '~/services/actions'
 
 	export let timelines: TimelineCollection
 	export let filterInstances: FilterInstance[]
 
 	let timelineId: string = Object.keys(timelines)[0]
-	let action = STANDARD_ACTIONS.markAsRead.key
+	let action = 'markAsRead'
 	let onlyListedArticles = true
 
 	let articleIdPairs: Writable<ArticleIdPair[]> = timelines[timelineId].articles

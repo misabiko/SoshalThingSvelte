@@ -29,7 +29,7 @@ const extensionBuildOptions = {
 	entryPoints,
 	outdir,
 	splitting: false,
-	format: 'iife',
+	format: 'esm',
 	plugins: [...buildOptions.plugins, DedupSvelteInternalPlugin],
 };
 

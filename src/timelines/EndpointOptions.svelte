@@ -86,7 +86,7 @@
 					<input
 							type='checkbox'
 							checked={timelineEndpoint.refreshTypes.has(refreshType)}
-							on:change={e => onRefreshTypeChange(i, refreshType, e.target.checked)}
+							on:change={e => onRefreshTypeChange(i, refreshType, e.currentTarget.checked)}
 					/>
 				</label>
 			{/each}
@@ -113,11 +113,11 @@
 		<label class='field'>
 			{key}
 			{#if typeof value === 'number'}
-				<input type='number' bind:value={params[key]}/>
+				<input type='number' bind:value/>
 			{:else if typeof value === 'boolean'}
-				<input type='checkbox' bind:checked={params[key]}/>
+				<input type='checkbox' bind:checked={value}/>
 			{:else}
-				<input type='text' bind:value={params[key]}/>
+				<input type='text' bind:value/>
 			{/if}
 		</label>
 	{/each}

@@ -26,7 +26,6 @@
 	export let loadingStates: LoadingState[];
 
 	let minimized = false
-	const isArticleRepost = articleProps.type === 'reposts'
 
 	let compact: boolean | null = null;
 	let quoteCompact: boolean | null = null;
@@ -172,12 +171,13 @@
 
 <div class='socialArticle'>
 	<div class='repostLabel'>
-		{#if isArticleRepost && rootArticle.author}
+		{#if articleProps.type === 'reposts' && rootArticle.author}
+			{@const timestamp = rootArticle.creationTime && (' - ' + shortTimestamp(rootArticle.creationTime))}
 			<a href={rootArticle.author.url} target='_blank' rel='noreferrer' on:click|preventDefault={() => onUsernameClick(rootArticle)}>
 				{#if articleProps.reposts.length > 1}
-					{articleProps.reposts.map(r => r.author.name).join(', ')} reposted - {shortTimestamp(rootArticle.creationTime)}
+					{articleProps.reposts.map(r => r.author?.name).filter(n => n).join(', ')} reposted{timestamp}
 				{:else}
-					{rootArticle.author.name} reposted - {shortTimestamp(rootArticle.creationTime)}
+					{rootArticle.author.name} reposted{timestamp}
 				{/if}
 			</a>
 		{/if}
@@ -185,8 +185,8 @@
 	<!--{ self.view_reply_label(ctx) }-->
 	<div class='media'>
 		{#if actualArticle.author?.avatarUrl}
-			<figure class='avatar' class:sharedAvatar={isArticleRepost}>
-				{#if isArticleRepost}
+			<figure class='avatar' class:sharedAvatar={articleProps.type === 'reposts'}>
+				{#if articleProps.type === 'reposts' && rootArticle.author}
 					<img src={actualArticle.author.avatarUrl} alt={`${actualArticle.author.username}'s avatar`}/>
 					<img src={rootArticle.author.avatarUrl} alt={`${rootArticle.author.username}'s avatar`}/>
 				{:else}
@@ -225,11 +225,15 @@
 				{@const quoted = get(getWritable(actualArticle.actualArticleRef.quoted))}
 				<div class='quotedPost'>
 					<div class='articleHeader'>
-						<a class='names' href={quoted.author.url} target='_blank' rel='noreferrer'>
-							<strong>{ quoted.author.name }</strong>
-							<small>{ `@${quoted.author.username}` }</small>
-						</a>
-						<Timestamp date={quoted.creationTime}/>
+						{#if quoted.author}
+							<a class='names' href={quoted.author.url} target='_blank' rel='noreferrer'>
+								<strong>{ quoted.author.name }</strong>
+								<small>{ `@${quoted.author.username}` }</small>
+							</a>
+						{/if}
+						{#if quoted.creationTime !== undefined}
+							<Timestamp date={quoted.creationTime}/>
+						{/if}
 					</div>
 					{#if !minimized}<!--&& !actualArticleProps.quoted.filteredOut-->
 						{#if !timelineProps.hideText}
@@ -264,7 +268,7 @@
 				article={actualArticle}
 				bind:modal
 				{timelineProps}
-				repost={isArticleRepost ? rootArticle : undefined}
+				repost={articleProps.type === 'reposts' ? rootArticle : undefined}
 				{onLogData}
 				{onLogJSON}
 				bind:compact

@@ -1,3 +1,6 @@
+import '~/services/twitter/**/service.ts';
+import '~/services/twitter/**/*.endpoint.ts'
+
 import { tryInject } from '~/services/extension';
 import ListPage from './ListPage.svelte';
 

@@ -46,8 +46,8 @@
 			color: null,
 			count: null,
 			index: 7,
-			listAsIcon: true,
-			listAsDropdown: false,
+			listAsIcon: false,
+			listAsDropdown: true,
 		});
 
 	//TODO Have option to move icon actions to dropdown

@@ -13,6 +13,7 @@ const config: PlaywrightTestConfig = {
 	reporter: process.env.CI ? 'github' : 'list',
 	//Unit tests are built separately, and ran from /dist-test
 	testDir: 'tests/e2e/',
+	forbidOnly: !!process.env.CI,
 };
 
 export default config;

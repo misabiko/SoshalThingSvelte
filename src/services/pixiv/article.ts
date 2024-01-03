@@ -6,6 +6,7 @@ export default class PixivArticle extends Article {
 	static service = 'Pixiv';
 
 	liked = false;
+	//TODO Add tags
 
 	constructor(
 		readonly id: number,

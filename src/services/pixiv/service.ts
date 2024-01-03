@@ -158,8 +158,10 @@ export const PixivService: PixivServiceType = {
 	},
 	filterTypes: {
 		bookmarked: {
-			name: (inverted) => inverted ? 'Not bookmarked' : 'Bookmarked',
-			props: [],
+			type: 'bookmarked',
+			name: 'Bookmarked',
+			invertedName: 'Not bookmarked',
+			props: {},
 		},
 	},
 	settings: ServiceSettings,

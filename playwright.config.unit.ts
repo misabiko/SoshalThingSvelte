@@ -7,6 +7,7 @@ const config: PlaywrightTestConfig = {
 	fullyParallel: true,
 	reporter: process.env.CI ? 'github' : 'list',
 	testDir: 'dist-test/',
+	forbidOnly: !!process.env.CI,
 };
 
 export default config;

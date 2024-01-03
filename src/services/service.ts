@@ -7,7 +7,7 @@ import {writable} from 'svelte/store';
 import {updateCachedArticlesStorage, updateMarkAsReadStorage} from '~/storages/serviceCache';
 import type {Endpoint, EndpointConstructorInfo} from './endpoints';
 import {undoables} from '~/undo';
-import type {Filter} from '~/filters';
+import type {Filter, FilterInfo} from '~/filters';
 import type {ArticleAction} from './actions';
 import {fetchExtension} from './extension';
 import type {ComponentType} from 'svelte';
@@ -23,11 +23,10 @@ export interface Service<A extends Article = Article> {
 	articleActions: { [name: string]: ArticleAction<A> };
 	requestImageLoad?: (id: ArticleId, index: number) => void;
 	getCachedArticles?: () => {[id: string]: object}
-	//TODO Add keepArticle and filterTypes in one object
 	keepArticle(articleWithRefs: ArticleWithRefs | ArticleProps, index: number, filter: Filter): boolean
 	defaultFilter(filterType: string): Filter
-	filterTypes: { [name: string]: FilterTypeInfo }
-	sortMethods: { [name: string]: SortMethodInfo }
+	filterTypes: Record<string, FilterInfo>
+	sortMethods: Record<string, SortMethodInfo>
 	//Might have to move to per-endpoint
 	fetchInfo: FetchInfo,
 	fetch: (url: RequestInfo | URL, init?: RequestInit) => Promise<any>
@@ -63,11 +62,6 @@ export type SortMethodInfo = {
 	name: string
 	compare(a: ArticleWithRefs | ArticleProps, b: ArticleWithRefs | ArticleProps): number
 	directionLabel(reversed: boolean): string
-};
-
-export type FilterTypeInfo = {
-	name(inverted: boolean): string
-	props: string[]
 };
 
 export function addArticles(service: Service<any>, ignoreRefs: boolean, ...articlesWithRefs: ArticleWithRefs[]) {

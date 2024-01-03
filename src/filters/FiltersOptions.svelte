@@ -1,9 +1,9 @@
 <script lang='ts'>
-	import type {Filter, FilterInstance} from './index';
+	import {type Filter, type FilterInfo, type FilterInstance, getFilterName} from './index';
 	import Dropdown from '../Dropdown.svelte';
-	import {filterTypes, getFilterName} from './index';
+	import {genericFilterTypes} from './index';
 	import {defaultFilter} from './index';
-	import {getServices, type FilterTypeInfo} from '~/services/service';
+	import {getServices} from '~/services/service';
 	import {updateTimelinesStorageValue} from '~/storages';
 
 	export let timelineId: string | null;
@@ -13,11 +13,10 @@
 			updateTimelinesStorageValue(timelineId, 'filters', instances);
 	}
 
-	//[ServiceName, FilterName, FilterTypeInfo][]
 	const serviceFilterTypes: {
 		service: string,
 		filter: string,
-		filterTypeInfo: FilterTypeInfo
+		filterTypeInfo: FilterInfo,
 	}[] = Object.values(getServices()).flatMap(s => Object.entries(s.filterTypes).map(m => ({
 		service: s.name,
 		filter: m[0],
@@ -40,13 +39,19 @@
 </script>
 
 {#each instances as instance, index (`${JSON.stringify(instance)}/${index}`)}
-	<!-- TODO Add has-addons' merged buttons -->
-	<div class="field has-addons">
+	{@const filterTypeInfo = instance.filter.service === null
+		? genericFilterTypes[instance.filter.type]
+		: getServices()[instance.filter.service].filterTypes[instance.filter.type]
+	}
+	<div class="field">
 		<label>
 			{
-				instance.filter.service === null ?
-					getFilterName(instance.filter.type, instance.inverted) :
-					getServices()[instance.filter.service].filterTypes[instance.filter.type].name(instance.inverted)
+				getFilterName(
+					instance.filter.service === null
+						? genericFilterTypes[instance.filter.type]
+						: getServices()[instance.filter.service].filterTypes[instance.filter.type],
+					instance.inverted
+				)
 			}
 			<button class='button' class:is-success={instance.enabled} on:click={() => instance.enabled = !instance.enabled}>
 				{instance.enabled ? 'Enabled' : 'Disabled'}
@@ -60,67 +65,71 @@
 		</label>
 	</div>
 
-	{#if instance.filter.service !== null}
-		{#each getServices()[instance.filter.service].filterTypes[instance.filter.type].props as prop}
-			<div class="field has-addons">
-				<label>
-					{prop}
-					<input bind:value={instance.filter.props[prop]}/>
-				</label>
-			</div>
-		{/each}
-	{/if}
-
-	{#if instance.filter.type === 'repost' || instance.filter.type === 'quote'}
-		<div class="field has-addons">
+	{#each Object.entries(filterTypeInfo.props) as [propName, propType]}
+		<div class="field">
 			<label>
-				Username
-				<input bind:value={instance.filter.props.byUsername}/>
+				{propName}
+				{#if propType.type === 'boolean'}
+					<input
+						type='checkbox'
+						bind:checked={instance.filter.props[propName]}
+						indeterminate={propType.optional}
+						required={!propType.optional}
+					/>
+				{:else if propType.type === 'number'}
+					<input
+						type='number'
+						value={instance.filter.props[propName] ?? ''}
+						on:change={e => {
+							if (propType.optional && e.currentTarget.value === '')
+								delete instance.filter.props[propName];
+							else
+								instance.filter.props[propName] = Number(e.currentTarget.value);
+						}}
+						min={propType.min}
+						max={propType.max}
+						required={!propType.optional}
+					/>
+				{:else}
+					<!--TODO Enforce required-->
+					<input
+						value={instance.filter.props[propName] ?? ''}
+						on:change={e => {
+							if (propType.optional && e.currentTarget.value === '')
+								delete instance.filter.props[propName];
+							else
+								instance.filter.props[propName] = e.currentTarget.value;
+						}}
+						required={!propType.optional}
+					/>
+				{/if}
+			<!--	TODO Add string array type-->
 			</label>
 		</div>
-	{:else if instance.filter.type === 'interval'}
-		<div class='field has-addons'>
-			<label>
-				Interval
-				<input type='number' class='input' bind:value={instance.filter.props.interval} min={1}/>
-			</label>
-		</div>
-		<div class='field has-addons'>
-			<label>
-				Offset
-				<input type='number' class='input' bind:value={instance.filter.props.offset} min={0}/>
-			</label>
-		</div>
-		<div class='field has-addons'>
-			<label>
-				<input type='checkbox' bind:checked={instance.filter.props.includeOffset}/>
-				Include Offset
-			</label>
-		</div>
-	{/if}
+	{/each}
 {/each}
 
 <Dropdown labelText='New Filter'>
-	{#each filterTypes as filterType}
+	{#each Object.entries(genericFilterTypes) as [filterType, filterTypeInfo]}
 		<button class='dropdown-item' on:click={() => addFilter(filterType, false)}>
-			{ getFilterName(filterType, false) }
+			{ filterTypeInfo.name }
 		</button>
 	{/each}
 	{#each serviceFilterTypes as filterType}
 		<button class='dropdown-item' on:click={() => addFilter(filterType.filter, false, filterType.service)}>
-			{ filterType.filterTypeInfo.name(false) }
+			{ filterType.filterTypeInfo.name }
 		</button>
 	{/each}
 </Dropdown>
 <Dropdown labelText='New Inverted Filter'>
-	{#each filterTypes as filterType}
+	{#each Object.entries(genericFilterTypes) as [filterType, filterTypeInfo]}
 		<button class="dropdown-item" on:click={() => addFilter(filterType, true)}>
-			{ getFilterName(filterType, true) }
+			{ filterTypeInfo.invertedName }
 		</button>
 	{/each}
 	{#each serviceFilterTypes as filterType}
 		<button class="dropdown-item" on:click={() => addFilter(filterType.filter, true, filterType.service)}>
-			{ filterType.filterTypeInfo.name(true) }
+			{ filterType.filterTypeInfo.invertedName }
 		</button>
 	{/each}
 </Dropdown>

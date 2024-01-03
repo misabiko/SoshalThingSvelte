@@ -21,8 +21,10 @@ export const TwitterNotificationService: Service<TwitterNotificationArticle> = {
 	filterTypes: {
 		//TODO Replace with notificationType
 		onRetweet: {
-			name: (inverted) => inverted ? 'Not on retweet' : 'On retweet',
-			props: [],
+			type: 'onRetweet',
+			name: 'On retweet',
+			invertedName: 'Not on retweet',
+			props: {},
 		},
 	},
 	keepArticle(articleWithRefs: ArticleWithRefs, _index: number, filter: Filter): boolean {

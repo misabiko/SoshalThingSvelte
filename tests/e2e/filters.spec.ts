@@ -33,6 +33,36 @@ test.describe('mark as read', () => {
 	});
 });
 
+test('missing optional props field should be added', async ({page}) => {
+	page.on('pageerror', msg => {
+		throw msg;
+	});
+
+	await loadWithLocalStorage(page, {
+		[TIMELINE_STORAGE_KEY]: {t1: {
+				endpoints: [
+					{
+						service: 'Dummy',
+						endpointType: 'DummyEndpoint',
+					}
+				],
+				filters: [
+					{
+						filter: {
+							type: 'repost',
+							service: null
+							// 	no `props: {byUsername}`
+						},
+						enabled: true,
+						inverted: false,
+					},
+				]
+			}}
+	});
+
+	await page.click('.timeline button[title = "Expand options"]');
+});
+
 test.skip('repost by username', async () => {});
 
 test.skip('quote by username', async () => {});

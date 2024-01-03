@@ -363,6 +363,7 @@ function parseFilters(filters: FilterInstance[] | undefined) {
 
 	for (const instance of filters) {
 		instance.filter.service ??= null;
+		instance.filter.props ??= {};
 
 		if (instance.filter.service !== null && !Object.hasOwn(getServices(), instance.filter.service))
 			console.error(`Service ${instance.filter.service} isn't registered.`, instance);

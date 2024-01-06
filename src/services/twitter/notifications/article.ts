@@ -68,6 +68,7 @@ export enum NotificationType {
 	UserLikedTweetsAboutYou = 'user_liked_tweets_about_you',
 	UserRetweetedTweetsAboutYou = 'user_retweeted_tweets_about_you',
 	UsersFollowedYou = 'users_followed_you',
+	FollowFromRecommendedUser = 'follow_from_recommended_user',
 	UserRepliedToYourTweet = 'user_replied_to_your_tweet',
 	GenericMagicRecFirstDegreeTweetRecent = 'generic_magic_rec_first_degree_tweet_recent',
 }

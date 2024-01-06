@@ -4,7 +4,7 @@ import TwitterArticle from '~/services/twitter/article';
 import {getMarkedAsReadStorage} from '~/storages/serviceCache';
 import {TwitterService} from '~/services/twitter/service';
 
-export function articleFromV1(json: TweetResponse, isRef = false): ArticleWithRefs {
+export function articleFromV1(json: TweetResponse, isRef = false, extraTweets?: Record<string, TweetResponse>): ArticleWithRefs {
 	const rawText = json.full_text ?? json.text as string;
 	const { text, textHtml } = parseText(rawText, json.entities, json.extended_entities);
 
@@ -32,8 +32,17 @@ export function articleFromV1(json: TweetResponse, isRef = false): ArticleWithRe
 		json,
 	);
 
-	if (json.retweeted_status !== undefined) {
-		const retweeted = articleFromV1(json.retweeted_status, true);
+	if (
+		json.retweeted_status !== undefined ||
+		//hack for NotificationAPIEndpoint
+		(json.retweeted_status_id_str !== undefined && extraTweets !== undefined)
+	) {
+		const jsonRetweeted = json.retweeted_status !== undefined
+			? json.retweeted_status
+			: extraTweets![json.retweeted_status_id_str!]
+		if (jsonRetweeted === undefined)
+			throw new Error('Retweeted tweet not found: ' + JSON.stringify(json), extraTweets);
+		const retweeted = articleFromV1(jsonRetweeted, true);
 
 		if (retweeted.type === 'quote') {
 			actualArticleRefIdPair = {
@@ -243,6 +252,7 @@ export type TweetResponse = {
 	place: null;
 	contributors: null;
 	retweeted_status?: TweetResponse;
+	retweeted_status_id_str?: string;
 	is_quote_status: boolean;
 	quoted_status?: TweetResponse;
 	quoted_status_id?: number;

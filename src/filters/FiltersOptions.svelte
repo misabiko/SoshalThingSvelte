@@ -45,6 +45,9 @@
 	}
 	<div class="field">
 		<label>
+			{#if instance.filter.service !== null}
+				{`${instance.filter.service}: ` }
+			{/if}
 			{
 				getFilterName(
 					instance.filter.service === null
@@ -117,7 +120,7 @@
 	{/each}
 	{#each serviceFilterTypes as filterType}
 		<button class='dropdown-item' on:click={() => addFilter(filterType.filter, false, filterType.service)}>
-			{ filterType.filterTypeInfo.name }
+			{ filterType.service }: { filterType.filterTypeInfo.name }
 		</button>
 	{/each}
 </Dropdown>
@@ -129,7 +132,7 @@
 	{/each}
 	{#each serviceFilterTypes as filterType}
 		<button class="dropdown-item" on:click={() => addFilter(filterType.filter, true, filterType.service)}>
-			{ filterType.filterTypeInfo.invertedName }
+			{ filterType.service }: { filterType.filterTypeInfo.invertedName }
 		</button>
 	{/each}
 </Dropdown>

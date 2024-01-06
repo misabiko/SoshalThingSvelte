@@ -75,6 +75,13 @@ export default class NotificationAPIEndpoint extends Endpoint {
 						throw new Error('Unknown notification entry type');
 
 					let id;
+
+					//quite hacky
+					const tweetsWithUsers = data.globalObjects.tweets;
+					for (const tweetId in tweetsWithUsers) {
+						(tweetsWithUsers[tweetId] as any).user = data.globalObjects.users[tweetsWithUsers[tweetId].user_id_str] as any;
+					}
+
 					if (entry.content.item.content.notification) {
 						id = entry.content.item.content.notification.id;
 
@@ -94,9 +101,12 @@ export default class NotificationAPIEndpoint extends Endpoint {
 						if (quotedTweetId !== null) {
 							const rawQuoted = data.globalObjects.tweets[quotedTweetId];
 							(rawQuoted as any).user = data.globalObjects.users[rawQuoted.user_id_str] as any;
-							const quoted = articleFromV1(rawQuoted as unknown as TweetResponse, true);
+							let quoted = articleFromV1(rawQuoted as unknown as TweetResponse, true, tweetsWithUsers as any);
+
+							//Sometimes referenced tweet is a retweet itself
+							//We could add a "unwrapRetweets" endpoint option do this if only if true
 							if (quoted.type === 'repost' || quoted.type === 'reposts')
-								throw new Error('Notification ref is a retweet: ' + JSON.stringify(quoted));
+								quoted = quoted.reposted;
 
 							articles.push({
 								type: 'quote',
@@ -157,9 +167,10 @@ export default class NotificationAPIEndpoint extends Endpoint {
 						const { text, textHtml } = parseText(tweet.full_text ?? tweet.text ?? '', tweet.entities, tweet.extended_entities);
 
 						(tweet as any).user = data.globalObjects.users[tweet.user_id_str] as any;
-						const quoted = articleFromV1(tweet as unknown as TweetResponse, true);
+						let quoted = articleFromV1(tweet as unknown as TweetResponse, true, tweetsWithUsers as any);
+						//Sometimes referenced tweet is a retweet itself
 						if (quoted.type === 'repost' || quoted.type === 'reposts')
-							throw new Error('Notification ref is a retweet: ' + JSON.stringify(quoted));
+							quoted = quoted.reposted;
 
 						articles.push({
 							type: 'quote',

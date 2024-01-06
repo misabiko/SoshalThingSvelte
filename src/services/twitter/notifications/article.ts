@@ -27,23 +27,13 @@ export default class TwitterNotificationArticle extends Article {
 			rawSource,
 		});
 
-		//temp
-		switch (type) {
-			case NotificationType.UsersLikedYourTweet:
-			case NotificationType.UsersRetweetedYourTweet:
-			case NotificationType.UserLikedMultipleTweets:
-			case NotificationType.UsersRetweetedMultipleTweet:
-			case NotificationType.UsersLikedYourRetweet:
-			case NotificationType.UsersRetweetedYourRetweet:
-			case NotificationType.UsersFollowedYou:
-			case NotificationType.UserRepliedToYourTweet:
-				break;
-			default:
-				console.warn('Unknown notification type', type);
-				notifications.notify({
-					type: 'error',
-					text: 'Unknown notification type: ' + type,
-				});
+		//Temporarily detecting unknown notification types
+		if (!Object.values(NotificationType).includes(type)) {
+			console.warn('Unknown notification type', type);
+			notifications.notify({
+				type: 'error',
+				text: 'Unknown notification type: ' + type,
+			});
 		}
 	}
 
@@ -60,6 +50,12 @@ export enum NotificationType {
 	UsersRetweetedMultipleTweet = 'user_retweeted_multiple_tweets',
 	UsersLikedYourRetweet = 'users_liked_your_retweet',
 	UsersRetweetedYourRetweet = 'users_retweeted_your_retweet',
+	UsersLikedMentionOfYou = 'users_liked_mention_of_you',
+	UsersRetweetedMentionOfYou = 'users_retweeted_mention_of_you',
+	UsersLikedMediaTagOfYou = 'users_liked_media_tag_of_you',
+	UsersRetweetedMediaTagOfYou = 'users_retweeted_media_tag_of_you',
+	UserRetweetedTweetsAboutYou = 'user_retweeted_tweets_about_you',
 	UsersFollowedYou = 'users_followed_you',
 	UserRepliedToYourTweet = 'user_replied_to_your_tweet',
+	GenericMagicRecFirstDegreeTweetRecent = 'generic_magic_rec_first_degree_tweet_recent',
 }

@@ -1,4 +1,4 @@
-import Article from '~/articles';
+import Article, {type ArticleRefIdPair} from '~/articles';
 import type {TwitterUser} from '../article';
 import {notifications} from '~/notifications/store';
 
@@ -15,6 +15,7 @@ export default class TwitterNotificationArticle extends Article {
 		readonly author: TwitterUser,
 		markedAsRead: boolean,
 		markedAsReadStorage: string[],
+		actualArticleRef: ArticleRefIdPair | null,
 		rawSource: any,
 	) {
 		super({
@@ -24,6 +25,7 @@ export default class TwitterNotificationArticle extends Article {
 			medias: [],
 			markedAsRead,
 			markedAsReadStorage,
+			actualArticleRef: actualArticleRef ?? undefined,
 			rawSource,
 		});
 
@@ -52,8 +54,11 @@ export enum NotificationType {
 	UsersRetweetedYourRetweet = 'users_retweeted_your_retweet',
 	UsersLikedMentionOfYou = 'users_liked_mention_of_you',
 	UsersRetweetedMentionOfYou = 'users_retweeted_mention_of_you',
+	UserMentionedYou = 'user_mentioned_you',
 	UsersLikedMediaTagOfYou = 'users_liked_media_tag_of_you',
 	UsersRetweetedMediaTagOfYou = 'users_retweeted_media_tag_of_you',
+	UserMediaTaggedYou = 'user_media_tagged_you',
+	UserLikedTweetsAboutYou = 'user_liked_tweets_about_you',
 	UserRetweetedTweetsAboutYou = 'user_retweeted_tweets_about_you',
 	UsersFollowedYou = 'users_followed_you',
 	UserRepliedToYourTweet = 'user_replied_to_your_tweet',

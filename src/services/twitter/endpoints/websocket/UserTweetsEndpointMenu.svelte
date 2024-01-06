@@ -1,7 +1,7 @@
 <script lang='ts'>
     import { getRootArticle, type ArticleWithRefs } from 'articles';
     import { endpoints, type Endpoint } from 'services/endpoints';
-    import { addArticles, getServices } from 'services/service';
+    import { addArticles } from 'services/service';
     import { parseResponse } from 'services/twitter/pageAPI';
     import type { TimelineData } from 'timelines';
 
@@ -29,7 +29,7 @@
 			)
 		);
 
-		addArticles(getServices()[(endpoint.constructor as typeof Endpoint).service], false, ...articles);
+		addArticles(false, ...articles);
 
 		if (!Object.hasOwn(endpoints, endpoint.name))
 			endpoints[endpoint.name].set(endpoint);

@@ -243,7 +243,7 @@ export async function refreshEndpoint(endpoint: Endpoint, refreshType: RefreshTy
 		)
 	);
 
-	addArticles(getServices()[(endpoint.constructor as typeof Endpoint).service], false, ...articles);
+	addArticles(false, ...articles);
 
 	if (endpoints[endpoint.name] !== undefined)
 		endpoints[endpoint.name].set(endpoint);

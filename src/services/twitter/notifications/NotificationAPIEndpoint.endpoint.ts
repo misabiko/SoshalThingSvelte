@@ -5,7 +5,7 @@ import TwitterNotificationArticle, {NotificationType} from './article';
 import {getMarkedAsReadStorage} from '~/storages/serviceCache';
 import {registerEndpointConstructor} from '../../service';
 import type {TwitterUser} from '../article';
-import {type Entities, type ExtendedEntities, parseText} from '../apiV1';
+import {articleFromV1, type Entities, type ExtendedEntities, parseText, type TweetResponse} from '../apiV1';
 
 export default class NotificationAPIEndpoint extends Endpoint {
 	static service = 'TwitterNotification';
@@ -77,23 +77,57 @@ export default class NotificationAPIEndpoint extends Endpoint {
 							url: `https://twitter.com/${firstUser.screen_name}`,
 						};
 
-						articles.push({
-							type: 'normal',
-							article: new TwitterNotificationArticle(
-								id,
-								new Date(parseInt(notification.timestampMs)),
-								notification.message.text,
-								undefined,
-								entry.content.item.clientEventInfo.element as NotificationType,
-								user,
-								false,
-								markedAsReads,
-								{
-									entry,
-									notification,
-								}
-							)
-						});
+						// TODO Support quoting multiple articles
+						const quotedTweetId = notification.template.aggregateUserActionsV1.targetObjects[0]?.tweet?.id ?? null;
+						if (quotedTweetId !== null) {
+							const rawQuoted = data.globalObjects.tweets[quotedTweetId];
+							(rawQuoted as any).user = data.globalObjects.users[rawQuoted.user_id_str] as any;
+							const quoted = articleFromV1(rawQuoted as unknown as TweetResponse, true);
+							if (quoted.type === 'repost' || quoted.type === 'reposts')
+								throw new Error('Notification ref is a retweet: ' + JSON.stringify(quoted));
+
+							articles.push({
+								type: 'quote',
+								article: new TwitterNotificationArticle(
+									id,
+									new Date(parseInt(notification.timestampMs)),
+									notification.message.text,
+									undefined,
+									entry.content.item.clientEventInfo.element as NotificationType,
+									user,
+									false,
+									markedAsReads,
+									{
+										type: 'quote',
+										quoted: quoted.article.idPair,
+									},
+									{
+										entry,
+										notification,
+									}
+								),
+								quoted,
+							});
+						}else {
+							articles.push({
+								type: 'normal',
+								article: new TwitterNotificationArticle(
+									id,
+									new Date(parseInt(notification.timestampMs)),
+									notification.message.text,
+									undefined,
+									entry.content.item.clientEventInfo.element as NotificationType,
+									user,
+									false,
+									markedAsReads,
+									null,
+									{
+										entry,
+										notification,
+									}
+								),
+							});
+						}
 					}else {
 						id = entry.entryId.replace('notification-', '');
 
@@ -110,8 +144,13 @@ export default class NotificationAPIEndpoint extends Endpoint {
 
 						const { text, textHtml } = parseText(tweet.full_text ?? tweet.text ?? '', tweet.entities, tweet.extended_entities);
 
+						(tweet as any).user = data.globalObjects.users[tweet.user_id_str] as any;
+						const quoted = articleFromV1(tweet as unknown as TweetResponse, true);
+						if (quoted.type === 'repost' || quoted.type === 'reposts')
+							throw new Error('Notification ref is a retweet: ' + JSON.stringify(quoted));
+
 						articles.push({
-							type: 'normal',
+							type: 'quote',
 							article: new TwitterNotificationArticle(
 								id,
 								new Date(tweet.created_at),
@@ -122,10 +161,15 @@ export default class NotificationAPIEndpoint extends Endpoint {
 								false,
 								markedAsReads,
 								{
+									type: 'quote',
+									quoted: quoted.article.idPair,
+								},
+								{
 									entry,
 									tweet,
-								}
-							)
+								},
+							),
+							quoted,
 						});
 					}
 				}
@@ -314,6 +358,7 @@ type NotificationInstruction =
 	}
 	addEntries?: never
 };
+//TODO Support removeEntries and marked listed notifications as deleted
 
 type NotificationEntry =
 | {

@@ -1,6 +1,6 @@
 import { getRootArticle, type ArticleWithRefs } from '~/articles';
 import { Endpoint, RefreshType, addEndpointArticlesToTimeline, endpoints } from './endpoints';
-import { addArticles, getServices } from './service';
+import { addArticles } from './service';
 
 export default abstract class WebSocketEndpoint extends Endpoint {
 	ws = new WebSocket('ws://localhost:443');
@@ -30,7 +30,7 @@ export default abstract class WebSocketEndpoint extends Endpoint {
 				)
 			);
 
-			addArticles(getServices()[WebSocketEndpoint.service], false, ...articles);
+			addArticles(false, ...articles);
 
 			if (endpoints[this.name] !== undefined)
 				endpoints[this.name].set(this);

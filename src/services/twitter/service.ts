@@ -318,7 +318,7 @@ export async function loadArticle(id: string): Promise<ArticleWithRefs | null> {
 
 	const articles = parseResponse(response.data.threaded_conversation_with_injections_v2.instructions);
 
-	addArticles(TwitterService, false, ...articles);
+	addArticles(false, ...articles);
 
 	return articles[0] ?? null;
 }

@@ -247,13 +247,15 @@
 								{/if}
 							</p>
 						{/if}
-						<SocialMedia
-							bind:showAllMedia
-							article={quoted}
-							{timelineProps}
-							onMediaClick={index => onMediaClick(actualArticle.idPair, index)}
-							compact={quoteCompact}
-						/>
+						{#if !timelineProps.hideQuoteMedia}
+							<SocialMedia
+								bind:showAllMedia
+								article={quoted}
+								{timelineProps}
+								onMediaClick={index => onMediaClick(actualArticle.idPair, index)}
+								compact={quoteCompact}
+							/>
+						{/if}
 					{/if}
 					<SocialNav
 						article={quoted}

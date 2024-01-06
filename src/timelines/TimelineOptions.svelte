@@ -283,6 +283,15 @@
 			<div class='field'>
 				<label>
 					<input type='checkbox'
+							bind:checked={data.hideQuoteMedia}
+							on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'hideQuoteMedia', data.hideQuoteMedia)}
+					/>
+					Hide quote media
+				</label>
+			</div>
+			<div class='field'>
+				<label>
+					<input type='checkbox'
 							bind:checked={data.hideText}
 							on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'hideText', data.hideText)}
 					/>

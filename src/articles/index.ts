@@ -1,5 +1,5 @@
-import type {TimelineData} from '../timelines';
-import {getWritable} from '../services/service';
+import type {TimelineData} from '~/timelines';
+import {getWritable} from '~/services/service';
 import type {Readable} from 'svelte/store';
 import {derived, get, readable} from 'svelte/store';
 import type {ArticleMedia} from './media';
@@ -235,6 +235,7 @@ export type TimelineArticleProps = {
 	animatedAsGifs: boolean;
 	muteVideos: boolean;
 	compact: boolean;
+	hideQuoteMedia: boolean;
 	hideText: boolean;
 	shouldLoadMedia: boolean;
 	maxMediaCount: number | null;

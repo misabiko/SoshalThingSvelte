@@ -67,7 +67,10 @@ export function updateServiceStorage(service: string, key: string, value: any) {
 	const storageKey = `${MAIN_STORAGE_KEY} ${service}`;
 	const item = localStorage.getItem(storageKey);
 	const storage = item ? JSON.parse(item) : {};
-	storage[key] = value;
+	if (value === undefined)
+		delete storage[key];
+	else
+		storage[key] = value;
 
 	localStorage.setItem(storageKey, JSON.stringify(storage));
 }

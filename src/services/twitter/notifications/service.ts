@@ -26,22 +26,35 @@ export const TwitterNotificationService: Service<TwitterNotificationArticle> = {
 			invertedName: 'Not on retweet',
 			props: {},
 		},
+		recommendation: {
+			type: 'recommendation',
+			name: 'Recommendation',
+			invertedName: 'Not recommendation',
+			props: {},
+		},
 	},
-	keepArticle(articleWithRefs: ArticleWithRefs, _index: number, filter: Filter): boolean {
-		if ((getRootArticle(articleWithRefs).constructor as typeof Article).service !== 'TwitterNotification')
+	keepArticle(articleWithRefs: ArticleWithRefs, _index: number, filter: Filter & {type: keyof typeof TwitterNotificationService.filterTypes}): boolean {
+		const rootArticle = getRootArticle(articleWithRefs) as TwitterNotificationArticle;
+		//TODO Move this check to caller
+		if (
+			filter.service !== 'TwitterNotification' ||
+			(rootArticle.constructor as typeof Article).service !== 'TwitterNotification'
+		)
 			return true;
 
 		switch (filter.type) {
 			case 'onRetweet':
-				switch ((getRootArticle(articleWithRefs) as TwitterNotificationArticle).type) {
+				switch (rootArticle.type) {
 					case NotificationType.UsersLikedYourRetweet:
 					case NotificationType.UsersRetweetedYourRetweet:
 						return true;
 					default:
 						return false;
 				}
+			case 'recommendation':
+				return rootArticle.type === NotificationType.GenericMagicRecFirstDegreeTweetRecent;
 			default:
-				return true;
+				throw new Error('Unknown filter type: ' + filter.type);
 		}
 	},
 };

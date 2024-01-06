@@ -252,7 +252,7 @@
 								bind:showAllMedia
 								article={quoted}
 								{timelineProps}
-								onMediaClick={index => onMediaClick(actualArticle.idPair, index)}
+								onMediaClick={index => onMediaClick(quoted.idPair, index)}
 								compact={quoteCompact}
 							/>
 						{/if}

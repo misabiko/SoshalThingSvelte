@@ -3,7 +3,7 @@ import type {ArticleWithRefs} from '~/articles';
 import {TwitterNotificationService} from './service';
 import TwitterNotificationArticle, {NotificationType} from './article';
 import {getMarkedAsReadStorage} from '~/storages/serviceCache';
-import {registerEndpointConstructor} from '../../service';
+import {getWritable, registerEndpointConstructor} from '../../service';
 import type {TwitterUser} from '../article';
 import {articleFromV1, type Entities, type ExtendedEntities, parseText, type TweetResponse} from '../apiV1';
 
@@ -34,6 +34,18 @@ export default class NotificationAPIEndpoint extends Endpoint {
 
 		const data: NotificationResponse = await TwitterNotificationService.fetch('https://twitter.com/i/api/2/notifications/all.json' + (cursor ? '?cursor=' + cursor : ''));
 		const markedAsReads = getMarkedAsReadStorage(TwitterNotificationService);
+
+		const deleteInstructions = data.timeline.instructions.filter(i => i.removeEntries);
+		for (const deleteInstruction of deleteInstructions) {
+			for (const entryId of deleteInstruction.removeEntries!.entryIds) {
+				const article = getWritable<TwitterNotificationArticle>({service: TwitterNotificationService.name, id: entryId})
+				//Maybe we could cache deleted article id if we don't have them yet and mark them when we find them
+				article?.update(a => {
+					a.deleted = true;
+					return a;
+				});
+			}
+		}
 
 		const entriesInstructions: NotificationInstruction | undefined = data.timeline.instructions.find(i => i.addEntries?.entries);
 		const articles: ArticleWithRefs[] = [];
@@ -342,23 +354,32 @@ type NotificationInstruction =
 | {
 	clearCache: object
 	addEntries?: never
+	removeEntries?: never
 }
 | {
 	addEntries: {
 		entries: NotificationEntry[]
 	}
+	removeEntries?: never
 }
 | {
 	clearEntriesUnreadState: object
 	addEntries?: never
+	removeEntries?: never
 }
 | {
 	markEntriesUnreadGreaterThanSortIndex: {
 		sortIndex: string
 	}
 	addEntries?: never
+	removeEntries?: never
+}
+| {
+	addEntries?: never
+	removeEntries: {
+		entryIds: string[]
+	}
 };
-//TODO Support removeEntries and marked listed notifications as deleted
 
 type NotificationEntry =
 | {

@@ -4,6 +4,7 @@ import {notifications} from '~/notifications/store';
 
 export default class TwitterNotificationArticle extends Article {
 	static service = 'TwitterNotification';
+	deleted = false;
 
 	constructor(
 		readonly id: string,
@@ -42,6 +43,12 @@ export default class TwitterNotificationArticle extends Article {
 	//TODO Use sortIndex
 	get numberId() {
 		return 0;
+	}
+
+	update(newArticle: this) {
+		super.update(newArticle);
+
+		this.deleted ||= newArticle.deleted;
 	}
 }
 

@@ -19,6 +19,12 @@ export const TwitterNotificationService: Service<TwitterNotificationArticle> = {
 		}
 	},
 	filterTypes: {
+		deleted: {
+			type: 'deleted',
+			name: 'Deleted',
+			invertedName: 'Not deleted',
+			props: {},
+		},
 		//TODO Replace with notificationType
 		onRetweet: {
 			type: 'onRetweet',
@@ -43,6 +49,8 @@ export const TwitterNotificationService: Service<TwitterNotificationArticle> = {
 			return true;
 
 		switch (filter.type) {
+			case 'deleted':
+				return rootArticle.deleted;
 			case 'onRetweet':
 				switch (rootArticle.type) {
 					case NotificationType.UsersLikedYourRetweet:

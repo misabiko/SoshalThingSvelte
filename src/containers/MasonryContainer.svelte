@@ -118,15 +118,11 @@
 	.masonryColumn {
 		flex: 1 1 0;
 	}
-
-	:global(.fullscreenTimeline .masonryColumn) {
-		width: unset;
-	}
 </style>
 
 <div class='articlesContainer masonryContainer' bind:this={containerRef} style:flex-direction={props.rtl ? 'row-reverse' : null}>
 	{#each columns as column, i (i)}
-		<div class='masonryColumn'>
+		<div class='masonryColumn' style:width={props.columnCount > 1 ? (100 / props.columnCount) + '%' : undefined}>
 <!--		<span>Ratio: {column.ratio}</span>-->
 <!--		TODO Find a way to share key among multiple columns?-->
 			{#each column.articles as idPairStr (idPairStr)}

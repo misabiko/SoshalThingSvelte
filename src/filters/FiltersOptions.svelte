@@ -76,7 +76,7 @@
 					<input
 						type='checkbox'
 						bind:checked={instance.filter.props[propName]}
-						indeterminate={propType.optional}
+						indeterminate={propType.optional && instance.filter.props[propName] === undefined}
 						required={!propType.optional}
 					/>
 				{:else if propType.type === 'number'}

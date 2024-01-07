@@ -56,66 +56,188 @@ export default class NotificationAPIEndpoint extends Endpoint {
 			let foundTopCursor = false;
 			let foundBottomCursor = false;
 			for (const entry of entriesInstructions.addEntries!.entries) {
-				if (entry.content.operation?.cursor.cursorType === 'Top') {
-					this.topCursor = entry.content.operation.cursor.value;
-					this.refreshTypes.update(rt => {
-						rt.add(RefreshType.LoadTop);
-						return rt;
-					});
-					foundTopCursor = true;
-				}else if (entry.content.operation?.cursor.cursorType === 'Bottom') {
-					this.bottomCursor = entry.content.operation.cursor.value;
-					this.refreshTypes.update(rt => {
-						rt.add(RefreshType.LoadBottom);
-						return rt;
-					});
-					foundBottomCursor = true;
-				}else {
-					if (!entry.content.item)
-						throw new Error('Unknown notification entry type');
+				try {
+					if (entry.content.operation?.cursor.cursorType === 'Top') {
+						this.topCursor = entry.content.operation.cursor.value;
+						this.refreshTypes.update(rt => {
+							rt.add(RefreshType.LoadTop);
+							return rt;
+						});
+						foundTopCursor = true;
+					} else if (entry.content.operation?.cursor.cursorType === 'Bottom') {
+						this.bottomCursor = entry.content.operation.cursor.value;
+						this.refreshTypes.update(rt => {
+							rt.add(RefreshType.LoadBottom);
+							return rt;
+						});
+						foundBottomCursor = true;
+					} else {
+						if (!entry.content.item)
+							throw new Error('Unknown notification entry type');
 
-					let id;
+						let id;
 
-					//quite hacky
-					const tweetsWithUsers = data.globalObjects.tweets;
-					for (const tweetId in tweetsWithUsers) {
-						(tweetsWithUsers[tweetId] as any).user = data.globalObjects.users[tweetsWithUsers[tweetId].user_id_str] as any;
-					}
+						//quite hacky
+						const tweetsWithUsers = data.globalObjects.tweets;
+						for (const tweetId in tweetsWithUsers) {
+							(tweetsWithUsers[tweetId] as any).user = data.globalObjects.users[tweetsWithUsers[tweetId].user_id_str] as any;
+						}
 
-					if (entry.content.item.content.notification) {
-						id = entry.content.item.content.notification.id;
+						if (entry.content.item.content.notification) {
+							id = entry.content.item.content.notification.id;
 
-						const notification = data.globalObjects.notifications[id];
-						const firstUserId = notification.template.aggregateUserActionsV1.fromUsers[0].user.id;
-						const firstUser = data.globalObjects.users[firstUserId];
-						const user: TwitterUser = {
-							username: firstUser.screen_name,
-							name: firstUser.name,
-							id: firstUserId,
-							avatarUrl: firstUser.profile_image_url_https,
-							url: `https://twitter.com/${firstUser.screen_name}`,
-						};
+							const notification = data.globalObjects.notifications[id];
+							const firstUserId = notification.template.aggregateUserActionsV1.fromUsers[0].user.id;
+							const firstUser = data.globalObjects.users[firstUserId];
+							const user: TwitterUser = {
+								username: firstUser.screen_name,
+								name: firstUser.name,
+								id: firstUserId,
+								avatarUrl: firstUser.profile_image_url_https,
+								url: `https://twitter.com/${firstUser.screen_name}`,
+							};
 
-						// TODO Support quoting multiple articles
-						const quotedTweetId = notification.template.aggregateUserActionsV1.targetObjects[0]?.tweet?.id ?? null;
-						if (quotedTweetId !== null) {
-							const rawQuoted = data.globalObjects.tweets[quotedTweetId];
-							(rawQuoted as any).user = data.globalObjects.users[rawQuoted.user_id_str] as any;
-							let quoted = articleFromV1(rawQuoted as unknown as TweetResponse, true, tweetsWithUsers as any);
+							// TODO Support quoting multiple articles
+							let quotedTweets;
+							if (notification.template.aggregateUserActionsV1.showAllLinkText !== undefined) {
+								//TODO Probably should put a option for this
+								const showAllResponse: NotificationResponse = await TwitterNotificationService.fetch(`https://twitter.com/i/api/2/notifications/view/${id}.json`);
+								quotedTweets = showAllResponse.timeline.instructions
+									.filter((i: any) => i.addEntries?.entries)
+									.flatMap((i: any) => i.addEntries!.entries
+										.filter((e: any) => e.entryId.startsWith('tweet-'))
+										.map((e: any) => {
+											const tweet = showAllResponse.globalObjects.tweets[e.content.item.content.tweet.id];
+											(tweet as any).user = showAllResponse.globalObjects.users[tweet.user_id_str] as any;
+											return tweet;
+										})
+									)
+							} else {
+								quotedTweets = notification.template.aggregateUserActionsV1.targetObjects
+									.map(t => {
+										const tweet = data.globalObjects.tweets[t.tweet.id];
+										(tweet as any).user = data.globalObjects.users[tweet.user_id_str] as any;
+										return tweet;
+									});
+							}
 
+							// Putting the non-retweets at the front of the array, probably should put an option to toggle this
+							quotedTweets = quotedTweets
+								.sort((a, b) =>
+									((a.retweeted_status ?? a.retweeted_status_id_str) !== undefined ? 0 : 1) - ((b.retweeted_status ?? b.retweeted_status_id_str) !== undefined ? 0 : 1)
+								);
+
+							const rawQuoted = quotedTweets[0] ?? null;
+							if (rawQuoted !== null) {
+								let quoted = articleFromV1(rawQuoted as unknown as TweetResponse, true, tweetsWithUsers as any);
+
+								let notifType = entry.content.item.clientEventInfo.element as NotificationType;
+								//Sometimes referenced tweet is a retweet itself
+								//We could add a "unwrapRetweets" endpoint option do this if only if true
+								if (quoted.type === 'repost' || quoted.type === 'reposts') {
+									switch (notifType) {
+										case NotificationType.UsersLikedYourRetweet:
+										case NotificationType.UsersRetweetedYourRetweet:
+											break;
+										case NotificationType.UserLikedMultipleTweets:
+											notifType = NotificationType.UserLikedMultipleOfYourRetweets;
+											console.debug(`Changing ${NotificationType.UserLikedMultipleTweets} to ${NotificationType.UserLikedMultipleOfYourRetweets}`);
+											break;
+										case NotificationType.UserRetweetedMultipleTweets:
+											notifType = NotificationType.UserRetweetedMultipleOfYourRetweets;
+											console.debug(`Changing ${NotificationType.UserRetweetedMultipleTweets} to ${NotificationType.UserRetweetedMultipleOfYourRetweets}`);
+											break;
+										default:
+											console.warn('Type: ', entry.content.item.clientEventInfo.element, '\nQuoted tweets: ', quotedTweets);
+									}
+									quoted = quoted.reposted;
+								}
+
+								articles.push({
+									type: 'quote',
+									article: new TwitterNotificationArticle(
+										id,
+										new Date(parseInt(notification.timestampMs)),
+										notification.message.text,
+										undefined,
+										notifType,
+										user,
+										false,
+										markedAsReads,
+										{
+											type: 'quote',
+											quoted: quoted.article.idPair,
+										},
+										{
+											entry,
+											notification,
+										}
+									),
+									quoted,
+								});
+							} else {
+								articles.push({
+									type: 'normal',
+									article: new TwitterNotificationArticle(
+										id,
+										new Date(parseInt(notification.timestampMs)),
+										notification.message.text,
+										undefined,
+										entry.content.item.clientEventInfo.element as NotificationType,
+										user,
+										false,
+										markedAsReads,
+										null,
+										{
+											entry,
+											notification,
+										}
+									),
+								});
+							}
+						} else {
+							id = entry.entryId.replace('notification-', '');
+
+							const tweet = data.globalObjects.tweets[entry.content.item.content.tweet.id];
+							const userId = tweet.user_id_str;
+							const globalUser = data.globalObjects.users[userId];
+							const user: TwitterUser = {
+								username: globalUser.screen_name,
+								name: globalUser.name,
+								id: userId,
+								avatarUrl: globalUser.profile_image_url_https,
+								url: `https://twitter.com/${globalUser.screen_name}`,
+							};
+
+							const {
+								text,
+								textHtml
+							} = parseText(tweet.full_text ?? tweet.text ?? '', tweet.entities, tweet.extended_entities);
+
+							(tweet as any).user = data.globalObjects.users[tweet.user_id_str] as any;
+							let quoted = articleFromV1(tweet as unknown as TweetResponse, true, tweetsWithUsers as any);
+
+							let notifType = entry.content.item.clientEventInfo.element as NotificationType;
 							//Sometimes referenced tweet is a retweet itself
-							//We could add a "unwrapRetweets" endpoint option do this if only if true
-							if (quoted.type === 'repost' || quoted.type === 'reposts')
+							if (quoted.type === 'repost' || quoted.type === 'reposts') {
+								switch (notifType) {
+									case NotificationType.UsersLikedYourRetweet:
+									case NotificationType.UsersRetweetedYourRetweet:
+										break;
+									default:
+										console.warn('Type: ', entry.content.item.clientEventInfo.element, '\nTweet: ', tweet);
+								}
 								quoted = quoted.reposted;
+							}
 
 							articles.push({
 								type: 'quote',
 								article: new TwitterNotificationArticle(
 									id,
-									new Date(parseInt(notification.timestampMs)),
-									notification.message.text,
-									undefined,
-									entry.content.item.clientEventInfo.element as NotificationType,
+									new Date(tweet.created_at),
+									text,
+									textHtml,
+									notifType,
 									user,
 									false,
 									markedAsReads,
@@ -125,76 +247,15 @@ export default class NotificationAPIEndpoint extends Endpoint {
 									},
 									{
 										entry,
-										notification,
-									}
+										tweet,
+									},
 								),
 								quoted,
 							});
-						}else {
-							articles.push({
-								type: 'normal',
-								article: new TwitterNotificationArticle(
-									id,
-									new Date(parseInt(notification.timestampMs)),
-									notification.message.text,
-									undefined,
-									entry.content.item.clientEventInfo.element as NotificationType,
-									user,
-									false,
-									markedAsReads,
-									null,
-									{
-										entry,
-										notification,
-									}
-								),
-							});
 						}
-					}else {
-						id = entry.entryId.replace('notification-', '');
-
-						const tweet = data.globalObjects.tweets[entry.content.item.content.tweet.id];
-						const userId = tweet.user_id_str;
-						const globalUser = data.globalObjects.users[userId];
-						const user: TwitterUser = {
-							username: globalUser.screen_name,
-							name: globalUser.name,
-							id: userId,
-							avatarUrl: globalUser.profile_image_url_https,
-							url: `https://twitter.com/${globalUser.screen_name}`,
-						};
-
-						const { text, textHtml } = parseText(tweet.full_text ?? tweet.text ?? '', tweet.entities, tweet.extended_entities);
-
-						(tweet as any).user = data.globalObjects.users[tweet.user_id_str] as any;
-						let quoted = articleFromV1(tweet as unknown as TweetResponse, true, tweetsWithUsers as any);
-						//Sometimes referenced tweet is a retweet itself
-						if (quoted.type === 'repost' || quoted.type === 'reposts')
-							quoted = quoted.reposted;
-
-						articles.push({
-							type: 'quote',
-							article: new TwitterNotificationArticle(
-								id,
-								new Date(tweet.created_at),
-								text,
-								textHtml,
-								entry.content.item.clientEventInfo.element as NotificationType,
-								user,
-								false,
-								markedAsReads,
-								{
-									type: 'quote',
-									quoted: quoted.article.idPair,
-								},
-								{
-									entry,
-									tweet,
-								},
-							),
-							quoted,
-						});
 					}
+				}catch (e) {
+					console.error('Error parsing: ', entry, e);
 				}
 			}
 
@@ -319,6 +380,9 @@ type NotificationResponse = {
 			favorited: boolean
 			retweeted: boolean
 			lang: string
+
+			retweeted_status?: any;
+			retweeted_status_id_str?: string;
 		}>
 		notifications: Record<string, {
 			id: string
@@ -350,7 +414,8 @@ type NotificationResponse = {
 						user: {
 							id: string
 						}
-					}[]
+					}[],
+					showAllLinkText?: 'Show all'
 				}
 			}
 		}>

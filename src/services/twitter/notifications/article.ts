@@ -56,7 +56,7 @@ export enum NotificationType {
 	UsersLikedYourTweet = 'users_liked_your_tweet',
 	UsersRetweetedYourTweet = 'users_retweeted_your_tweet',
 	UserLikedMultipleTweets = 'user_liked_multiple_tweets',
-	UsersRetweetedMultipleTweet = 'user_retweeted_multiple_tweets',
+	UserRetweetedMultipleTweets = 'user_retweeted_multiple_tweets',
 	UsersLikedYourRetweet = 'users_liked_your_retweet',
 	UsersRetweetedYourRetweet = 'users_retweeted_your_retweet',
 	UsersLikedMentionOfYou = 'users_liked_mention_of_you',
@@ -71,4 +71,8 @@ export enum NotificationType {
 	FollowFromRecommendedUser = 'follow_from_recommended_user',
 	UserRepliedToYourTweet = 'user_replied_to_your_tweet',
 	GenericMagicRecFirstDegreeTweetRecent = 'generic_magic_rec_first_degree_tweet_recent',
+
+	//Custom, because twitter marks liked/retweeted retweets as "multiple tweets"
+	UserLikedMultipleOfYourRetweets = 'user_liked_multiple_of_your_retweets',
+	UserRetweetedMultipleOfYourRetweets = 'user_retweeted_multiple_of_your_retweets',
 }

@@ -55,6 +55,8 @@ export const TwitterNotificationService: Service<TwitterNotificationArticle> = {
 				switch (rootArticle.type) {
 					case NotificationType.UsersLikedYourRetweet:
 					case NotificationType.UsersRetweetedYourRetweet:
+					case NotificationType.UserLikedMultipleOfYourRetweets:
+					case NotificationType.UserRetweetedMultipleOfYourRetweets:
 						return true;
 					default:
 						return false;

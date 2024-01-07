@@ -13,6 +13,7 @@
 
 	export let timelineProps: TimelineArticleProps;
 	export let articleProps: ArticleProps;
+	export let actualArticleProps: ArticleProps;
 	export let modal: boolean; modal;
 	export let showAllMedia: boolean;
 	export let rootArticle: Readonly<Article>;
@@ -236,7 +237,7 @@
 							<Timestamp date={quoted.creationTime}/>
 						{/if}
 					</div>
-					{#if !minimized}<!--&& !actualArticleProps.quoted.filteredOut-->
+					{#if !minimized && !actualArticleProps.quoted.filteredOut}
 						{#if !timelineProps.hideText}
 							<p class='refArticleParagraph'>
 								{#if quoted.textHtml !== undefined}

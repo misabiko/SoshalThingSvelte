@@ -185,6 +185,17 @@ export function getActualArticle(articleWithRefs: ArticleWithRefs | ArticleProps
 	}
 }
 
+export function getActualArticleRefs(articleWithRefs: ArticleWithRefs | ArticleProps) : Readonly<ArticleWithRefs | ArticleProps> {
+	switch (articleWithRefs.type) {
+		case 'normal':
+		case 'quote':
+			return articleWithRefs;
+		case 'repost':
+		case 'reposts':
+			return getActualArticleRefs(articleWithRefs.reposted);
+	}
+}
+
 //To be fair I don't understand this anymore, probably should redo the whole thing once runes come in
 export function deriveArticleRefs(article: Article): Readable<DerivedArticleWithRefs> {
 	switch (article.actualArticleRef?.type) {

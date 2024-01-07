@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import type {ArticleIdPair} from './index';
+	import {type ArticleIdPair, getActualArticleRefs} from './index';
 	import {getWritable, toggleMarkAsRead} from '~/services/service';
 	import Article, {getActualArticle} from '../articles';
 	import type {ArticleProps, TimelineArticleProps} from './index';
@@ -10,6 +10,7 @@
 	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
 
 	export let articleProps: ArticleProps;
+	let actualArticleProps = getActualArticleRefs(articleProps);
 	export let timelineProps: TimelineArticleProps;
 	export let view: ComponentType;
 	export let style = ''; style;
@@ -131,6 +132,7 @@
 		bind:modal
 		bind:showAllMedia
 		{articleProps}
+		{actualArticleProps}
 		{rootArticle}
 		{actualArticle}
 		{onLogData}

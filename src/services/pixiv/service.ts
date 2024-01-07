@@ -146,14 +146,12 @@ export const PixivService: PixivServiceType = {
 	},
 	isOnDomain: globalThis.window?.location?.hostname.endsWith('pixiv.net'),
 	keepArticle(articleWithRefs: ArticleWithRefs, index: number, filter: Filter): boolean {
-		if ((getRootArticle(articleWithRefs).constructor as typeof Article).service !== this.name)
-			return true;
-
 		switch (filter.type) {
 			case 'bookmarked':
 				return (articleWithRefToArray(articleWithRefs) as PixivArticle[])
 					.some(a => a.bookmarked);
-			default: return true;
+			default:
+				throw new Error('Unknown filter type: ' + filter.type);
 		}
 	},
 	filterTypes: {

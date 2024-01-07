@@ -3,6 +3,7 @@ import {getWritable} from '~/services/service';
 import type {Readable} from 'svelte/store';
 import {derived, get, readable} from 'svelte/store';
 import type {ArticleMedia} from './media';
+import type {FilterInstance} from '~/filters';
 
 export default abstract class Article {
 	static readonly service: string;
@@ -113,7 +114,10 @@ export type DerivedArticleWithRefs = Readonly<
 >
 type NonRepostDerivedArticleWithRefs = Exclude<DerivedArticleWithRefs, {type: 'repost' | 'reposts'}>
 
-export type ArticleProps = ArticleWithRefs & Readonly<{filteredOut: boolean}>
+export type ArticleProps = ArticleWithRefs & Readonly<{
+	filteredOut: boolean,
+	nonKeepFilters: FilterInstance[],
+}>
 
 export interface ArticleIdPair {
 	service: string;

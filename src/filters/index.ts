@@ -1,4 +1,4 @@
-import type { ArticleWithRefs } from '~/articles';
+import {type ArticleWithRefs, getRootArticle} from '~/articles';
 import {articleWithRefToArray} from '~/articles';
 import {getServices} from '~/services/service';
 import {type ArticleMedia, MediaType} from '~/articles/media';
@@ -194,11 +194,13 @@ export const defaultFilterInstances: FilterInstance[] = [
 	},
 ];
 
-export function keepArticle(articleWithRefs: ArticleWithRefs, index: number, filter: Filter): boolean {
-	if (filter.service !== null)
-		return getServices()[filter.service].keepArticle(articleWithRefs, index, filter);
-	else
+export function keepArticle(articleWithRefs: ArticleWithRefs, index: number, filter: Filter): boolean | null {
+	if (filter.service === null)
 		return keepArticleGeneric(articleWithRefs, index, filter);
+	else if (filter.service !== getRootArticle(articleWithRefs).idPair.service)
+		return null;
+	else
+		return getServices()[filter.service].keepArticle(articleWithRefs, index, filter);
 }
 
 function keepArticleGeneric(articleWithRefs: ArticleWithRefs, index: number, filter: Filter): boolean {
@@ -212,12 +214,12 @@ function keepArticleGeneric(articleWithRefs: ArticleWithRefs, index: number, fil
 				case 'normal':
 					return !articleWithRefs.article.markedAsRead;
 				case 'repost':
-					return !articleWithRefs.article.markedAsRead && keepArticleGeneric(articleWithRefs.reposted, index, filter);
+					return !articleWithRefs.article.markedAsRead && (keepArticle(articleWithRefs.reposted, index, filter) ?? true);
 				case 'reposts':
-					return articleWithRefs.reposts.every(a => !a.markedAsRead) && keepArticleGeneric(articleWithRefs.reposted, index, filter);
+					return articleWithRefs.reposts.every(a => !a.markedAsRead) && (keepArticle(articleWithRefs.reposted, index, filter) ?? true);
 				case 'quote':
 					return !articleWithRefs.article.markedAsRead &&
-						(!filter.props.includeQuoted || keepArticleGeneric(articleWithRefs.quoted, index, filter));
+						(!filter.props.includeQuoted || (keepArticle(articleWithRefs.quoted, index, filter) ?? true));
 				default:
 					throw new Error(`Unknown article type: ${(articleWithRefs as unknown as any).type}`);
 			}

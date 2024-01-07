@@ -2,7 +2,7 @@ import {FetchType, newService, registerService, type Service} from '../../servic
 import TwitterNotificationArticle, {NotificationType} from './article';
 import {twitterFetch} from '../service';
 import {writable} from 'svelte/store';
-import Article, {type ArticleWithRefs, getRootArticle} from '~/articles';
+import {type ArticleWithRefs, getRootArticle} from '~/articles';
 import type {Filter} from '~/filters';
 
 export const TwitterNotificationService: Service<TwitterNotificationArticle> = {
@@ -41,12 +41,6 @@ export const TwitterNotificationService: Service<TwitterNotificationArticle> = {
 	},
 	keepArticle(articleWithRefs: ArticleWithRefs, _index: number, filter: Filter & {type: keyof typeof TwitterNotificationService.filterTypes}): boolean {
 		const rootArticle = getRootArticle(articleWithRefs) as TwitterNotificationArticle;
-		//TODO Move this check to caller
-		if (
-			filter.service !== 'TwitterNotification' ||
-			(rootArticle.constructor as typeof Article).service !== 'TwitterNotification'
-		)
-			return true;
 
 		switch (filter.type) {
 			case 'deleted':

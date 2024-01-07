@@ -45,9 +45,6 @@ export const TwitterService: Service<TwitterArticle> = {
 		},
 	},
 	keepArticle(articleWithRefs: ArticleWithRefs, index: number, filter: Filter): boolean {
-		if ((getRootArticle(articleWithRefs).constructor as typeof Article).service !== 'Twitter')
-			return true;
-
 		switch (filter.type) {
 			case 'deleted':
 				return (getRootArticle(articleWithRefs) as TwitterArticle).deleted;
@@ -58,7 +55,7 @@ export const TwitterService: Service<TwitterArticle> = {
 				return (articleWithRefToArray(articleWithRefs) as TwitterArticle[])
 					.some(a => a.retweeted);
 			default:
-				return true;
+				throw new Error('Unknown filter type: ' + filter.type);
 		}
 	},
 	fetch: twitterFetch,

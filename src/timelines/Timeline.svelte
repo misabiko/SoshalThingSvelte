@@ -98,24 +98,36 @@
 	});
 
 	function addProps(articleWithRefs: ArticleWithRefs, index: number): ArticleProps {
-		const filteredOut = !data.filters.every(f => !f.enabled || (keepArticle(articleWithRefs, index, f.filter) !== f.inverted));
+		// const filteredOut =  !data.filters.every(f => !f.enabled || ((keepArticle(articleWithRefs, index, f.filter) ?? !f.inverted) !== f.inverted));
+		//Caching filters for debugging, could return to boolean later
+		const nonKeepFilters = [];
+		for (const instance of data.filters) {
+			if (!(!instance.enabled || (keepArticle(articleWithRefs, index, instance.filter) ?? !instance.inverted) !== instance.inverted))
+				nonKeepFilters.push(instance);
+		}
+
+		const filteredOut = !!nonKeepFilters.length;
+
 		switch (articleWithRefs.type) {
 			case 'normal':
 				return {
 					...articleWithRefs,
-					filteredOut
+					filteredOut,
+					nonKeepFilters,
 				};
 			case 'repost':
 				return {
 					type: 'reposts',
 					reposts: [articleWithRefs.article],
 					filteredOut,
+					nonKeepFilters,
 					reposted: addProps(articleWithRefs.reposted, index)
 				} as ArticleProps;
 			case 'quote':
 				return {
 					...articleWithRefs,
 					filteredOut,
+					nonKeepFilters,
 					quoted: addProps(articleWithRefs.quoted, index)
 				} as ArticleProps;
 			default:

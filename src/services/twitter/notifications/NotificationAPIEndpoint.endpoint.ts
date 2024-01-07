@@ -38,7 +38,7 @@ export default class NotificationAPIEndpoint extends Endpoint {
 		const deleteInstructions = data.timeline.instructions.filter(i => i.removeEntries);
 		for (const deleteInstruction of deleteInstructions) {
 			for (const entryId of deleteInstruction.removeEntries!.entryIds) {
-				const article = getWritable<TwitterNotificationArticle>({service: TwitterNotificationService.name, id: entryId})
+				const article = getWritable<TwitterNotificationArticle>({service: TwitterNotificationService.name, id: entryId});
 				//Maybe we could cache deleted article id if we don't have them yet and mark them when we find them
 				article?.update(a => {
 					a.deleted = true;
@@ -111,7 +111,7 @@ export default class NotificationAPIEndpoint extends Endpoint {
 											(tweet as any).user = showAllResponse.globalObjects.users[tweet.user_id_str] as any;
 											return tweet;
 										})
-									)
+									);
 							} else {
 								quotedTweets = notification.template.aggregateUserActionsV1.targetObjects
 									.map(t => {
@@ -223,6 +223,14 @@ export default class NotificationAPIEndpoint extends Endpoint {
 								switch (notifType) {
 									case NotificationType.UsersLikedYourRetweet:
 									case NotificationType.UsersRetweetedYourRetweet:
+										break;
+									case NotificationType.UserLikedMultipleTweets:
+										notifType = NotificationType.UserLikedMultipleOfYourRetweets;
+										console.debug(`Changing ${NotificationType.UserLikedMultipleTweets} to ${NotificationType.UserLikedMultipleOfYourRetweets}`);
+										break;
+									case NotificationType.UserRetweetedMultipleTweets:
+										notifType = NotificationType.UserRetweetedMultipleOfYourRetweets;
+										console.debug(`Changing ${NotificationType.UserRetweetedMultipleTweets} to ${NotificationType.UserRetweetedMultipleOfYourRetweets}`);
 										break;
 									default:
 										console.warn('Type: ', entry.content.item.clientEventInfo.element, '\nTweet: ', tweet);

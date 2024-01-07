@@ -9,7 +9,7 @@ import {
 	type Service
 } from '../service';
 import {get, type Writable} from 'svelte/store';
-import Article, {type ArticleIdPair, type ArticleWithRefs, articleWithRefToArray, getRootArticle} from '~/articles';
+import {type ArticleIdPair, type ArticleWithRefs, articleWithRefToArray} from '~/articles';
 import {STANDARD_ACTIONS} from '../actions';
 import {getServiceStorage} from '~/storages';
 import {getRatio, MediaLoadType, MediaType} from '~/articles/media';

@@ -2,7 +2,7 @@
 	import {getServices, type Service} from '~/services/service';
 	import ArticleComponent from '../articles/ArticleComponent.svelte';
 	import SocialArticleView from '../articles/social/SocialArticleView.svelte';
-	import type {ArticleWithRefs, TimelineArticleProps} from '~/articles';
+	import type {ArticleProps, ArticleWithRefs, TimelineArticleProps} from '~/articles';
 
 	type LoadArticleService = Service & {loadArticle: Exclude<Service['loadArticle'], null>};
 	let services = Object.entries(getServices()).filter(([_, s]) => s.loadArticle !== null) as [string, LoadArticleService][];
@@ -32,6 +32,13 @@
 		maxMediaCount: 4,
 		setModalTimeline: () => {},
 	};
+
+	let articleProps: ArticleProps | null;
+	$: article !== null ? {
+		...article,
+		filteredOut: false,
+		nonKeepFilters: [],
+	} : null;
 </script>
 
 <style>
@@ -51,13 +58,10 @@
 	<input bind:value={articleId}/>
 	<button on:click={loadArticle} disabled={serviceName === null || !articleId.length}>Load</button>
 </div>
-{#if article !== null}
+{#if article !== null && articleProps !== null}
 	<ArticleComponent
 			view={SocialArticleView}
-			articleProps={{
-				...article,
-				filteredOut: false,
-			}}
+			{articleProps}
 			bind:timelineProps
 	/>
 {/if}

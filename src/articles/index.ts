@@ -73,7 +73,7 @@ export interface ArticleAuthor {
 	avatarUrl?: string;
 }
 
-export type ArticleWithRefs = Readonly<
+export type ArticleWithRefs<Extra extends object = object> = Readonly<(
 	| {
 		type: 'normal'
 		article: Article
@@ -81,20 +81,20 @@ export type ArticleWithRefs = Readonly<
 	| {
 		type: 'repost'
 		article: Article
-		reposted: NonRepostArticleWithRefs
+		reposted: NonRepostArticleWithRefs<Extra>
 	}
 	| {
 		type: 'reposts'
 		reposts: Article[]
-		reposted: NonRepostArticleWithRefs
+		reposted: NonRepostArticleWithRefs<Extra>
 	}
 	| {
 		type: 'quote'
 		article: Article
-		quoted: NonRepostArticleWithRefs
+		quoted: NonRepostArticleWithRefs<Extra>
 	}
->
-type NonRepostArticleWithRefs = Exclude<ArticleWithRefs, {type: 'repost' | 'reposts'}>
+) & Extra>
+type NonRepostArticleWithRefs<Extra extends object = object> = Exclude<ArticleWithRefs<Extra>, {type: 'repost' | 'reposts'}>
 
 export type DerivedArticleWithRefs = Readonly<
 	| {
@@ -114,7 +114,7 @@ export type DerivedArticleWithRefs = Readonly<
 >
 type NonRepostDerivedArticleWithRefs = Exclude<DerivedArticleWithRefs, {type: 'repost' | 'reposts'}>
 
-export type ArticleProps = ArticleWithRefs & Readonly<{
+export type ArticleProps = ArticleWithRefs<{
 	filteredOut: boolean,
 	nonKeepFilters: FilterInstance[],
 }>

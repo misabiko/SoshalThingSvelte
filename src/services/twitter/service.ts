@@ -2,7 +2,7 @@ import type TwitterArticle from './article';
 import {addArticles, FetchType, getWritable, type Service} from '~/services/service';
 import {newService, registerService} from '~/services/service';
 import {STANDARD_ACTIONS} from '~/services/actions';
-import Article, {
+import {
 	type ArticleIdPair,
 	type ArticleWithRefs,
 	articleWithRefToArray,

@@ -223,7 +223,8 @@
 					</p>
 				{/if}
 			</div>
-			{#if actualArticle.actualArticleRef?.type === 'quote'}
+			<!-- (actualArticleProps.type === 'quote') is just to appease svelte-check-->
+			{#if actualArticle.actualArticleRef?.type === 'quote' && actualArticleProps.type === 'quote'}
 				{@const quoted = get(getWritable(actualArticle.actualArticleRef.quoted))}
 				<div class='quotedPost'>
 					<div class='articleHeader'>
@@ -237,6 +238,7 @@
 							<Timestamp date={quoted.creationTime}/>
 						{/if}
 					</div>
+
 					{#if !minimized && !actualArticleProps.quoted.filteredOut}
 						{#if !timelineProps.hideText}
 							<p class='refArticleParagraph'>

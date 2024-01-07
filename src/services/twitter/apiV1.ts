@@ -39,7 +39,7 @@ export function articleFromV1(json: TweetResponse, isRef = false, extraTweets?: 
 	) {
 		const jsonRetweeted = json.retweeted_status !== undefined
 			? json.retweeted_status
-			: extraTweets![json.retweeted_status_id_str!]
+			: extraTweets![json.retweeted_status_id_str!];
 		if (jsonRetweeted === undefined)
 			throw new Error('Retweeted tweet not found: ' + JSON.stringify(json), extraTweets);
 		const retweeted = articleFromV1(jsonRetweeted, true);

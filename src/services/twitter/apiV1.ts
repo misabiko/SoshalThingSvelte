@@ -1,4 +1,99 @@
 import { type ArticleMedia, getRatio, MediaLoadType, MediaType } from '~/articles/media';
+import {type ArticleRefIdPair, type ArticleWithRefs, getRootArticle} from '~/articles';
+import TwitterArticle from '~/services/twitter/article';
+import {getMarkedAsReadStorage} from '~/storages/serviceCache';
+import {TwitterService} from '~/services/twitter/service';
+
+export function articleFromV1(json: TweetResponse, isRef = false, extraTweets?: Record<string, TweetResponse>): ArticleWithRefs {
+	const rawText = json.full_text ?? json.text as string;
+	const { text, textHtml } = parseText(rawText, json.entities, json.extended_entities);
+
+	let actualArticleRefIdPair: ArticleRefIdPair | undefined;
+
+	const makeArticle = () => new TwitterArticle(
+		BigInt(json.id_str),
+		text,
+		textHtml,
+		{
+			id: json.user.id_str,
+			name: json.user.name,
+			username: json.user.screen_name,
+			url: 'https://twitter.com/' + json.user.screen_name,
+			avatarUrl: json.user.profile_image_url_https,
+		},
+		new Date(json.created_at),
+		getMarkedAsReadStorage(TwitterService),
+		actualArticleRefIdPair,
+		parseMedia(json.extended_entities),
+		json.favorited,
+		json.favorite_count,
+		json.retweeted,
+		json.retweet_count,
+		json,
+	);
+
+	if (
+		json.retweeted_status !== undefined ||
+		//hack for NotificationAPIEndpoint
+		(json.retweeted_status_id_str !== undefined && extraTweets !== undefined)
+	) {
+		const jsonRetweeted = json.retweeted_status !== undefined
+			? json.retweeted_status
+			: extraTweets![json.retweeted_status_id_str!];
+		if (jsonRetweeted === undefined)
+			throw new Error('Retweeted tweet not found: ' + JSON.stringify(json), extraTweets);
+		const retweeted = articleFromV1(jsonRetweeted, true);
+
+		if (retweeted.type === 'quote') {
+			actualArticleRefIdPair = {
+				type: 'quote',
+				quoted: retweeted.quoted.article.idPair,
+			};
+		} else {
+			actualArticleRefIdPair = {
+				type: 'repost',
+				reposted: getRootArticle(retweeted).idPair,
+			};
+		}
+
+		if (retweeted.type === 'repost' || retweeted.type === 'reposts')
+			throw new Error('Retweeted article is a retweet itself: ' + JSON.stringify(retweeted));
+		return {
+			type: 'repost',
+			article: makeArticle(),
+			reposted: retweeted,
+		};
+	} else if (json.is_quote_status) {
+		if (json.quoted_status) {
+			const quoted = articleFromV1(json.quoted_status, true);
+
+			actualArticleRefIdPair = {
+				type: 'quote',
+				quoted: getRootArticle(quoted).idPair,
+			};
+
+			if (quoted.type === 'repost' || quoted.type === 'reposts')
+				throw new Error('Quoted article is a repost itself: ' + JSON.stringify(quoted));
+			return {
+				type: 'quote',
+				article: makeArticle(),
+				quoted,
+			};
+		} else {
+			if (!isRef) {	//Twitter won't give quoted_status for quote of quote
+				if (json.quoted_status_id_str)
+					console.warn("Quote tweet doesn't include quoted tweet, need to get the tweet from service", json);
+				else
+					console.error('is_quote_status true, but no quote info', json);
+			}
+		}
+	}
+
+	return {
+		type: 'normal',
+		article: makeArticle()
+	};
+}
 
 export function parseText(rawText: string, entities: Entities, extendedEntities?: ExtendedEntities): { text: string, textHtml: string } {
 	let trimmedText = rawText;
@@ -157,6 +252,7 @@ export type TweetResponse = {
 	place: null;
 	contributors: null;
 	retweeted_status?: TweetResponse;
+	retweeted_status_id_str?: string;
 	is_quote_status: boolean;
 	quoted_status?: TweetResponse;
 	quoted_status_id?: number;

@@ -9,7 +9,7 @@ import {
 	type Service
 } from '../service';
 import {get, type Writable} from 'svelte/store';
-import Article, {type ArticleIdPair, type ArticleWithRefs, articleWithRefToArray, getRootArticle} from '~/articles';
+import {type ArticleIdPair, type ArticleWithRefs, articleWithRefToArray} from '~/articles';
 import {STANDARD_ACTIONS} from '../actions';
 import {getServiceStorage} from '~/storages';
 import {getRatio, MediaLoadType, MediaType} from '~/articles/media';
@@ -146,14 +146,12 @@ export const PixivService: PixivServiceType = {
 	},
 	isOnDomain: globalThis.window?.location?.hostname.endsWith('pixiv.net'),
 	keepArticle(articleWithRefs: ArticleWithRefs, index: number, filter: Filter): boolean {
-		if ((getRootArticle(articleWithRefs).constructor as typeof Article).service !== this.name)
-			return true;
-
 		switch (filter.type) {
 			case 'bookmarked':
 				return (articleWithRefToArray(articleWithRefs) as PixivArticle[])
 					.some(a => a.bookmarked);
-			default: return true;
+			default:
+				throw new Error('Unknown filter type: ' + filter.type);
 		}
 	},
 	filterTypes: {

@@ -64,12 +64,15 @@ export type SortMethodInfo = {
 	directionLabel(reversed: boolean): string
 };
 
-export function addArticles(service: Service<any>, ignoreRefs: boolean, ...articlesWithRefs: ArticleWithRefs[]) {
+export function addArticles(ignoreRefs: boolean, ...articlesWithRefs: ArticleWithRefs[]) {
 	const articles = ignoreRefs
 		? articlesWithRefs.map(getRootArticle)
 		: articlesWithRefs.flatMap(articleWithRefToArray);
 
 	for (const article of articles) {
+		//Articles from one service can quote articles from other (TwitterNotifs quotes Tweets)
+		const service = services[article.idPair.service];
+
 		if (Object.hasOwn(service.articles, article.idPair.id as string)) {
 			service.articles[article.idPair.id as string].update(a => {
 				a.update(article);

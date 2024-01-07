@@ -2,7 +2,7 @@ import type TwitterArticle from './article';
 import {addArticles, FetchType, getWritable, type Service} from '~/services/service';
 import {newService, registerService} from '~/services/service';
 import {STANDARD_ACTIONS} from '~/services/actions';
-import Article, {
+import {
 	type ArticleIdPair,
 	type ArticleWithRefs,
 	articleWithRefToArray,
@@ -45,9 +45,6 @@ export const TwitterService: Service<TwitterArticle> = {
 		},
 	},
 	keepArticle(articleWithRefs: ArticleWithRefs, index: number, filter: Filter): boolean {
-		if ((getRootArticle(articleWithRefs).constructor as typeof Article).service !== 'Twitter')
-			return true;
-
 		switch (filter.type) {
 			case 'deleted':
 				return (getRootArticle(articleWithRefs) as TwitterArticle).deleted;
@@ -58,7 +55,7 @@ export const TwitterService: Service<TwitterArticle> = {
 				return (articleWithRefToArray(articleWithRefs) as TwitterArticle[])
 					.some(a => a.retweeted);
 			default:
-				return true;
+				throw new Error('Unknown filter type: ' + filter.type);
 		}
 	},
 	fetch: twitterFetch,
@@ -318,7 +315,7 @@ export async function loadArticle(id: string): Promise<ArticleWithRefs | null> {
 
 	const articles = parseResponse(response.data.threaded_conversation_with_injections_v2.instructions);
 
-	addArticles(TwitterService, false, ...articles);
+	addArticles(false, ...articles);
 
 	return articles[0] ?? null;
 }

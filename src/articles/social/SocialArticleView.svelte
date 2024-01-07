@@ -13,6 +13,7 @@
 
 	export let timelineProps: TimelineArticleProps;
 	export let articleProps: ArticleProps;
+	export let actualArticleProps: ArticleProps;
 	export let modal: boolean; modal;
 	export let showAllMedia: boolean;
 	export let rootArticle: Readonly<Article>;
@@ -222,7 +223,8 @@
 					</p>
 				{/if}
 			</div>
-			{#if actualArticle.actualArticleRef?.type === 'quote'}
+			<!-- (actualArticleProps.type === 'quote') is just to appease svelte-check-->
+			{#if actualArticle.actualArticleRef?.type === 'quote' && actualArticleProps.type === 'quote'}
 				{@const quoted = get(getWritable(actualArticle.actualArticleRef.quoted))}
 				<div class='quotedPost'>
 					<div class='articleHeader'>
@@ -236,7 +238,8 @@
 							<Timestamp date={quoted.creationTime}/>
 						{/if}
 					</div>
-					{#if !minimized}<!--&& !actualArticleProps.quoted.filteredOut-->
+
+					{#if !minimized && !actualArticleProps.quoted.filteredOut}
 						{#if !timelineProps.hideText}
 							<p class='refArticleParagraph'>
 								{#if quoted.textHtml !== undefined}
@@ -247,13 +250,15 @@
 								{/if}
 							</p>
 						{/if}
-						<SocialMedia
-							bind:showAllMedia
-							article={quoted}
-							{timelineProps}
-							onMediaClick={index => onMediaClick(actualArticle.idPair, index)}
-							compact={quoteCompact}
-						/>
+						{#if !timelineProps.hideQuoteMedia}
+							<SocialMedia
+								bind:showAllMedia
+								article={quoted}
+								{timelineProps}
+								onMediaClick={index => onMediaClick(quoted.idPair, index)}
+								compact={quoteCompact}
+							/>
+						{/if}
 					{/if}
 					<SocialNav
 						article={quoted}

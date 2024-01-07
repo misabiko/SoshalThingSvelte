@@ -113,11 +113,11 @@
 		<label class='field'>
 			{key}
 			{#if typeof value === 'number'}
-				<input type='number' bind:value/>
+				<input type='number' {value} on:change={e => params[key] = e.currentTarget.value}/>
 			{:else if typeof value === 'boolean'}
-				<input type='checkbox' bind:checked={value}/>
+				<input type='checkbox' checked={value} on:change={e => params[key] = e.currentTarget.checked}/>
 			{:else}
-				<input type='text' bind:value/>
+				<input type='text' {value} on:change={e => params[key] = e.currentTarget.value}/>
 			{/if}
 		</label>
 	{/each}

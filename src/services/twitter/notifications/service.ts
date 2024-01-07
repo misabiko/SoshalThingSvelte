@@ -2,7 +2,7 @@ import {FetchType, newService, registerService, type Service} from '../../servic
 import TwitterNotificationArticle, {NotificationType} from './article';
 import {twitterFetch} from '../service';
 import {writable} from 'svelte/store';
-import Article, {type ArticleWithRefs, getRootArticle} from '~/articles';
+import {type ArticleWithRefs, getRootArticle} from '~/articles';
 import type {Filter} from '~/filters';
 
 export const TwitterNotificationService: Service<TwitterNotificationArticle> = {
@@ -19,6 +19,12 @@ export const TwitterNotificationService: Service<TwitterNotificationArticle> = {
 		}
 	},
 	filterTypes: {
+		deleted: {
+			type: 'deleted',
+			name: 'Deleted',
+			invertedName: 'Not deleted',
+			props: {},
+		},
 		//TODO Replace with notificationType
 		onRetweet: {
 			type: 'onRetweet',
@@ -26,22 +32,33 @@ export const TwitterNotificationService: Service<TwitterNotificationArticle> = {
 			invertedName: 'Not on retweet',
 			props: {},
 		},
+		recommendation: {
+			type: 'recommendation',
+			name: 'Recommendation',
+			invertedName: 'Not recommendation',
+			props: {},
+		},
 	},
-	keepArticle(articleWithRefs: ArticleWithRefs, _index: number, filter: Filter): boolean {
-		if ((getRootArticle(articleWithRefs).constructor as typeof Article).service !== 'TwitterNotification')
-			return true;
+	keepArticle(articleWithRefs: ArticleWithRefs, _index: number, filter: Filter & {type: keyof typeof TwitterNotificationService.filterTypes}): boolean {
+		const rootArticle = getRootArticle(articleWithRefs) as TwitterNotificationArticle;
 
 		switch (filter.type) {
+			case 'deleted':
+				return rootArticle.deleted;
 			case 'onRetweet':
-				switch ((getRootArticle(articleWithRefs) as TwitterNotificationArticle).type) {
+				switch (rootArticle.type) {
 					case NotificationType.UsersLikedYourRetweet:
 					case NotificationType.UsersRetweetedYourRetweet:
+					case NotificationType.UserLikedMultipleOfYourRetweets:
+					case NotificationType.UserRetweetedMultipleOfYourRetweets:
 						return true;
 					default:
 						return false;
 				}
+			case 'recommendation':
+				return rootArticle.type === NotificationType.GenericMagicRecFirstDegreeTweetRecent;
 			default:
-				return true;
+				throw new Error('Unknown filter type: ' + filter.type);
 		}
 	},
 };

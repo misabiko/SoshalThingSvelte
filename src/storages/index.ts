@@ -67,7 +67,10 @@ export function updateServiceStorage(service: string, key: string, value: any) {
 	const storageKey = `${MAIN_STORAGE_KEY} ${service}`;
 	const item = localStorage.getItem(storageKey);
 	const storage = item ? JSON.parse(item) : {};
-	storage[key] = value;
+	if (value === undefined)
+		delete storage[key];
+	else
+		storage[key] = value;
 
 	localStorage.setItem(storageKey, JSON.stringify(storage));
 }
@@ -145,6 +148,7 @@ export function loadTimelines(): TimelineCollection {
 			scrollSpeed: defaulted.scrollSpeed ?? 3,
 			hideText: defaulted.hideText ?? false,
 			compact: defaulted.compact ?? false,
+			hideQuoteMedia: defaulted.hideQuoteMedia ?? false,
 			shouldLoadMedia: defaulted.shouldLoadMedia ?? true,
 			hideFilteredOutArticles: defaulted.hideFilteredOutArticles ?? true,
 			mergeReposts: defaulted.mergeReposts ?? true,
@@ -166,6 +170,7 @@ export function updateTimelinesStorage(timelines: TimelineCollection) {
 		filters: t.filters,
 		sortInfo: sortInfoToStorage(t.sortInfo),
 		compact: t.compact,
+		hideQuoteMedia: t.hideQuoteMedia,
 		animatedAsGifs: t.animatedAsGifs,
 		muteVideos: t.muteVideos,
 		hideText: t.hideText,
@@ -452,6 +457,7 @@ type TimelineStorage = {
 	scrollSpeed?: number
 	hideText?: boolean
 	compact?: boolean
+	hideQuoteMedia?: boolean
 	shouldLoadMedia?: boolean
 	hideFilteredOutArticles?: boolean
 	mergeReposts?: boolean

@@ -1,8 +1,9 @@
-import type {TimelineData} from '../timelines';
-import {getWritable} from '../services/service';
+import type {TimelineData} from '~/timelines';
+import {getWritable} from '~/services/service';
 import type {Readable} from 'svelte/store';
 import {derived, get, readable} from 'svelte/store';
 import type {ArticleMedia} from './media';
+import type {FilterInstance} from '~/filters';
 
 export default abstract class Article {
 	static readonly service: string;
@@ -72,7 +73,7 @@ export interface ArticleAuthor {
 	avatarUrl?: string;
 }
 
-export type ArticleWithRefs = Readonly<
+export type ArticleWithRefs<Extra extends object = object> = Readonly<(
 	| {
 		type: 'normal'
 		article: Article
@@ -80,20 +81,20 @@ export type ArticleWithRefs = Readonly<
 	| {
 		type: 'repost'
 		article: Article
-		reposted: NonRepostArticleWithRefs
+		reposted: NonRepostArticleWithRefs<Extra>
 	}
 	| {
 		type: 'reposts'
 		reposts: Article[]
-		reposted: NonRepostArticleWithRefs
+		reposted: NonRepostArticleWithRefs<Extra>
 	}
 	| {
 		type: 'quote'
 		article: Article
-		quoted: NonRepostArticleWithRefs
+		quoted: NonRepostArticleWithRefs<Extra>
 	}
->
-type NonRepostArticleWithRefs = Exclude<ArticleWithRefs, {type: 'repost' | 'reposts'}>
+) & Extra>
+type NonRepostArticleWithRefs<Extra extends object = object> = Exclude<ArticleWithRefs<Extra>, {type: 'repost' | 'reposts'}>
 
 export type DerivedArticleWithRefs = Readonly<
 	| {
@@ -113,7 +114,10 @@ export type DerivedArticleWithRefs = Readonly<
 >
 type NonRepostDerivedArticleWithRefs = Exclude<DerivedArticleWithRefs, {type: 'repost' | 'reposts'}>
 
-export type ArticleProps = ArticleWithRefs & Readonly<{filteredOut: boolean}>
+export type ArticleProps = ArticleWithRefs<{
+	filteredOut: boolean,
+	nonKeepFilters: FilterInstance[],
+}>
 
 export interface ArticleIdPair {
 	service: string;
@@ -185,6 +189,17 @@ export function getActualArticle(articleWithRefs: ArticleWithRefs | ArticleProps
 	}
 }
 
+export function getActualArticleRefs(articleWithRefs: ArticleWithRefs | ArticleProps) : Readonly<ArticleWithRefs | ArticleProps> {
+	switch (articleWithRefs.type) {
+		case 'normal':
+		case 'quote':
+			return articleWithRefs;
+		case 'repost':
+		case 'reposts':
+			return getActualArticleRefs(articleWithRefs.reposted);
+	}
+}
+
 //To be fair I don't understand this anymore, probably should redo the whole thing once runes come in
 export function deriveArticleRefs(article: Article): Readable<DerivedArticleWithRefs> {
 	switch (article.actualArticleRef?.type) {
@@ -235,6 +250,7 @@ export type TimelineArticleProps = {
 	animatedAsGifs: boolean;
 	muteVideos: boolean;
 	compact: boolean;
+	hideQuoteMedia: boolean;
 	hideText: boolean;
 	shouldLoadMedia: boolean;
 	maxMediaCount: number | null;

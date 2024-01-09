@@ -8,8 +8,7 @@
 	import Timestamp from './Timestamp.svelte';
 	import {newUserTimeline} from '~/timelines';
 	import {LoadingState} from '~/bufferedMediaLoading';
-	import {getWritable} from '~/services/service';
-	import {get} from 'svelte/store';
+	import SocialQuote from '~/articles/social/SocialQuote.svelte';
 
 	export let timelineProps: TimelineArticleProps;
 	export let articleProps: ArticleProps;
@@ -26,10 +25,13 @@
 	export let mediaRefs: HTMLImageElement[];
 	export let loadingStates: LoadingState[];
 
-	let minimized = false;
-
 	let compact: boolean | null = null;
 	let quoteCompact: boolean | null = null;
+
+	let quoted: ArticleProps | null;
+	$: quoted = actualArticleProps.type === 'quote'
+		? actualArticleProps.quoted
+		: null;
 
 	function onUsernameClick(clickedArticle: Article) {
 		if (!clickedArticle.author)
@@ -142,32 +144,6 @@
 	.repostLabel a:hover {
 		text-decoration: underline;
 	}
-
-	.quotedPost {
-		border: 2px solid var(--scheme-main-ter);
-		border-radius: 6px;
-		padding: 16px;
-	}
-	.quotedPost .names {
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		overflow: hidden;
-		display: inline-block;
-		max-width: 300px;
-	}
-	.quotedPost .names strong {
-		margin-right: 0.5rem;
-		color: var(--white-ter);
-	}
-	.quotedPost .names:hover > * {
-		text-decoration: underline;
-	}
-	.quotedPost span * {
-		vertical-align: middle;
-	}
-	.quotedPost p {
-		white-space: pre-line;
-	}
 </style>
 
 <div class='socialArticle'>
@@ -212,7 +188,7 @@
 						<Timestamp date={actualArticle.creationTime}/>
 					{/if}
 				</div>
-				{#if !timelineProps.hideText && !minimized}
+				{#if !timelineProps.hideText}
 					<p class='articleParagraph'>
 						{#if actualArticle.textHtml !== undefined}
 							<!--eslint-disable-next-line svelte/no-at-html-tags-->
@@ -223,53 +199,17 @@
 					</p>
 				{/if}
 			</div>
-			<!-- (actualArticleProps.type === 'quote') is just to appease svelte-check-->
-			{#if actualArticle.actualArticleRef?.type === 'quote' && actualArticleProps.type === 'quote'}
-				{@const quoted = get(getWritable(actualArticle.actualArticleRef.quoted))}
-				<div class='quotedPost'>
-					<div class='articleHeader'>
-						{#if quoted.author}
-							<a class='names' href={quoted.author.url} target='_blank' rel='noreferrer'>
-								<strong>{ quoted.author.name }</strong>
-								<small>{ `@${quoted.author.username}` }</small>
-							</a>
-						{/if}
-						{#if quoted.creationTime !== undefined}
-							<Timestamp date={quoted.creationTime}/>
-						{/if}
-					</div>
-
-					{#if !minimized && !actualArticleProps.quoted.filteredOut}
-						{#if !timelineProps.hideText}
-							<p class='refArticleParagraph'>
-								{#if quoted.textHtml !== undefined}
-									<!--eslint-disable-next-line svelte/no-at-html-tags-->
-									{@html quoted.textHtml}
-								{:else if quoted.text !== undefined}
-									{quoted.text}
-								{/if}
-							</p>
-						{/if}
-						{#if !timelineProps.hideQuoteMedia}
-							<SocialMedia
-								bind:showAllMedia
-								article={quoted}
-								{timelineProps}
-								onMediaClick={index => onMediaClick(quoted.idPair, index)}
-								compact={quoteCompact}
-							/>
-						{/if}
-					{/if}
-					<SocialNav
-						article={quoted}
-						isQuoted={true}
-						{timelineProps}
-						{modal}
-						{onLogData}
-						{onLogJSON}
-						bind:compact={quoteCompact}
-					/>
-				</div>
+			{#if quoted !== null}
+				<SocialQuote
+					bind:articleProps={quoted}
+					{timelineProps}
+					{modal}
+					{showAllMedia}
+					bind:compact={quoteCompact}
+					{onMediaClick}
+					{onLogData}
+					{onLogJSON}
+				/>
 			{/if}
 			<SocialNav
 				article={actualArticle}
@@ -282,7 +222,7 @@
 			/>
 		</div>
 	</div>
-	{#if actualArticle.medias.length && !minimized}
+	{#if actualArticle.medias.length}
 		<SocialMedia
 			bind:showAllMedia
 			article={actualArticle}

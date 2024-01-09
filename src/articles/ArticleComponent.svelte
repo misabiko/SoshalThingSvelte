@@ -56,6 +56,7 @@
 		}
 	});
 
+	//TODO Pass articleProps as arg
 	function onLogData() {
 		console.dir(articleProps);
 	}

@@ -14,8 +14,7 @@ export default class TwitterArticle extends Article {
 		readonly author: TwitterUser,
 		readonly creationTime: Date,
 		markedAsReadStorage: string[],
-		actualArticleRef: ArticleRefIdPair | undefined,
-		//replyRef: ArticleIdPair | undefined,
+		refs: ArticleRefIdPair | null,
 		medias: ArticleMedia[],
 		public liked: boolean,
 		public likeCount: number,
@@ -31,8 +30,7 @@ export default class TwitterArticle extends Article {
 			medias,
 			markedAsRead: false,
 			markedAsReadStorage,
-			actualArticleRef,
-			//replyRef,
+			refs,
 			rawSource,
 		});
 	}

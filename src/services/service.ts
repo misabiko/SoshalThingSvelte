@@ -2,7 +2,7 @@ import type Article from '~/articles';
 import type { ArticleAuthor } from '~/articles';
 import type { ArticleId, ArticleIdPair, ArticleWithRefs, ArticleProps } from '~/articles';
 import {articleWithRefToArray, getRootArticle} from '~/articles';
-import {get, type Writable} from 'svelte/store';
+import {get, type Readable, readonly, type Writable} from 'svelte/store';
 import {writable} from 'svelte/store';
 import {updateCachedArticlesStorage, updateMarkAsReadStorage} from '~/storages/serviceCache';
 import type {Endpoint, EndpointConstructorInfo} from './endpoints';
@@ -31,7 +31,7 @@ export interface Service<A extends Article = Article> {
 	fetchInfo: FetchInfo,
 	fetch: (url: RequestInfo | URL, init?: RequestInit) => Promise<any>
 	isOnDomain: boolean | null
-	settings: ComponentType | null	//TODO Try retyping other components to ConstructorOfATypedSvelteComponent
+	settings: ComponentType | null
 }
 
 export type FetchInfo =
@@ -132,6 +132,10 @@ export function toggleMarkAsRead(idPair: ArticleIdPair) {
 export function getWritable<T extends Article = Article>(idPair: ArticleIdPair): Writable<T> {
 	//Type casting might not be a great idea, no guarantee that the service returns T
 	return services[idPair.service].articles[idPair.id as string] as Writable<T>;
+}
+
+export function getReadable<T extends Article = Article>(idPair: ArticleIdPair): Readable<T> {
+	return readonly(services[idPair.service].articles[idPair.id as string]) as Readable<T>;
 }
 
 export async function fetchArticle(idPair: ArticleIdPair) {

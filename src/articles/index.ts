@@ -21,8 +21,7 @@ export default abstract class Article {
 
 	markedAsRead: boolean;
 
-	readonly actualArticleRef?: ArticleRefIdPair;
-	//readonly replyRef?: ArticleIdPair
+	readonly refs: ArticleRefIdPair | null;
 
 	fetched: boolean;
 	rawSource: any;
@@ -36,8 +35,7 @@ export default abstract class Article {
 		//TODO Remove markedAsRead from Article
 		markedAsRead?: boolean,
 		markedAsReadStorage: string[],
-		actualArticleRef?: ArticleRefIdPair
-		//replyRef?: ArticleIdPair
+		refs?: ArticleRefIdPair | null,
 		fetched?: boolean,
 		rawSource?: any,
 	}) {
@@ -46,8 +44,7 @@ export default abstract class Article {
 		this.url = params.url ?? null;
 		this.medias = params.medias || [];
 		this.markedAsRead = params.markedAsRead || params.markedAsReadStorage.includes(params.id.toString());
-		this.actualArticleRef = params.actualArticleRef;
-		//this.replyRef = params.replyRef
+		this.refs = params.refs ?? null;
 		this.fetched = params.fetched || false;
 		this.rawSource = params.rawSource;
 
@@ -61,6 +58,36 @@ export default abstract class Article {
 	update(newArticle: this) {
 		if (newArticle.creationTime !== undefined)
 			(this.creationTime as Date) = newArticle.creationTime;
+	}
+
+	getArticleWithRefs(): ArticleWithRefs {
+		switch (this.refs?.type) {
+			case undefined:
+				return {
+					type: 'normal',
+					article: this,
+				};
+			case 'repost': {
+				const reposted = get(getWritable(this.refs.reposted)).getArticleWithRefs();
+				if (reposted === null || reposted.type === 'repost' || reposted.type === 'reposts')
+					throw new Error('Reposted article is a repost itself: ' + JSON.stringify(reposted));
+				return {
+					type: 'repost',
+					article: this,
+					reposted,
+				};
+			}
+			case 'quote': {
+				const quoted = get(getWritable(this.refs.quoted)).getArticleWithRefs();
+				if (quoted === null || quoted.type === 'repost' || quoted.type === 'reposts')
+					throw new Error('Quoted article is a repost itself: ' + JSON.stringify(quoted));
+				return {
+					type: 'quote',
+					article: this,
+					quoted,
+				};
+			}
+		}
 	}
 }
 
@@ -161,9 +188,9 @@ export function articleWithRefToArray(articleWithRefs: ArticleWithRefs | Article
 }
 
 export function getActualArticleIdPair(article: Article): Readonly<ArticleIdPair> {
-	switch (article.actualArticleRef?.type) {
+	switch (article.refs?.type) {
 		case 'repost':
-			return article.actualArticleRef.reposted;
+			return article.refs.reposted;
 		default:
 			return article.idPair;
 	}
@@ -202,14 +229,14 @@ export function getActualArticleRefs(articleWithRefs: ArticleWithRefs | ArticleP
 
 //To be fair I don't understand this anymore, probably should redo the whole thing once runes come in
 export function deriveArticleRefs(article: Article): Readable<DerivedArticleWithRefs> {
-	switch (article.actualArticleRef?.type) {
+	switch (article.refs?.type) {
 		case undefined:
 			return readable({
 				type: 'normal',
 				article,
 			});
 		case 'repost':
-			return derived(getWritable(article.actualArticleRef.reposted), (repostedArticle: Article) =>
+			return derived(getWritable(article.refs.reposted), (repostedArticle: Article) =>
 				({
 					type: 'repost',
 					article,
@@ -217,7 +244,7 @@ export function deriveArticleRefs(article: Article): Readable<DerivedArticleWith
 				} as unknown as DerivedArticleWithRefs)
 			);
 		case 'quote':
-			return derived(getWritable(article.actualArticleRef.quoted), (quotedArticle: Article) =>
+			return derived(getWritable(article.refs.quoted), (quotedArticle: Article) =>
 				({
 					type: 'quote',
 					article,

@@ -16,7 +16,7 @@ export default class TwitterNotificationArticle extends Article {
 		readonly author: TwitterUser,
 		markedAsRead: boolean,
 		markedAsReadStorage: string[],
-		actualArticleRef: ArticleRefIdPair | null,
+		refs: ArticleRefIdPair | null,
 		rawSource: any,
 	) {
 		super({
@@ -26,7 +26,7 @@ export default class TwitterNotificationArticle extends Article {
 			medias: [],
 			markedAsRead,
 			markedAsReadStorage,
-			actualArticleRef: actualArticleRef ?? undefined,
+			refs,
 			rawSource,
 		});
 

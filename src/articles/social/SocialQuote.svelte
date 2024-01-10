@@ -3,6 +3,8 @@
 	import Timestamp from './Timestamp.svelte';
 	import SocialNav from './SocialNav.svelte';
 	import SocialMedia from './SocialMedia.svelte';
+	import {getReadable} from '~/services/service';
+	import {type Readable} from 'svelte/store';
 
 	export let articleProps: ArticleProps;
 	export let timelineProps: TimelineArticleProps;
@@ -13,8 +15,7 @@
 	export let onLogData: () => void;
 	export let onLogJSON: () => void;
 
-	let article: Article;
-	$: article = getRootArticle(articleProps);
+	let article: Readable<Article> = getReadable(getRootArticle(articleProps).idPair);
 </script>
 
 <style>
@@ -48,40 +49,40 @@
 
 <div class='quotedPost'>
 	<div class='articleHeader'>
-		{#if article.author}
-			<a class='names' href={article.author.url} target='_blank' rel='noreferrer'>
-				<strong>{ article.author.name }</strong>
-				<small>{ `@${article.author.username}` }</small>
+		{#if $article.author}
+			<a class='names' href={$article.author.url} target='_blank' rel='noreferrer'>
+				<strong>{ $article.author.name }</strong>
+				<small>{ `@${$article.author.username}` }</small>
 			</a>
 		{/if}
-		{#if article.creationTime !== undefined}
-			<Timestamp date={article.creationTime}/>
+		{#if $article.creationTime !== undefined}
+			<Timestamp date={$article.creationTime}/>
 		{/if}
 	</div>
 
 	{#if !articleProps.filteredOut}
 		{#if !timelineProps.hideText}
 			<p class='refArticleParagraph'>
-				{#if article.textHtml !== undefined}
+				{#if $article.textHtml !== undefined}
 					<!--eslint-disable-next-line svelte/no-at-html-tags-->
-					{@html article.textHtml}
-				{:else if article.text !== undefined}
-					{article.text}
+					{@html $article.textHtml}
+				{:else if $article.text !== undefined}
+					{$article.text}
 				{/if}
 			</p>
 		{/if}
 		{#if !timelineProps.hideQuoteMedia}
 			<SocialMedia
 					bind:showAllMedia
-					article={article}
+					article={$article}
 					{timelineProps}
-					onMediaClick={index => onMediaClick(article.idPair, index)}
+					onMediaClick={index => onMediaClick($article.idPair, index)}
 					{compact}
 			/>
 		{/if}
 	{/if}
 	<SocialNav
-			{article}
+			article={$article}
 			isQuoted={true}
 			{timelineProps}
 			{modal}

@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import type Article from '~/articles';
+	import Article, {getRootArticle} from '~/articles';
 	import type {ArticleIdPair} from '../index';
 	import type {ArticleProps, TimelineArticleProps} from '../index';
 	import {shortTimestamp} from '../index';
@@ -16,6 +16,7 @@
 	export let modal: boolean; modal;
 	export let showAllMedia: boolean;
 	export let rootArticle: Readonly<Article>;
+	// $: idPair = rootArticle.idPair;
 	export let actualArticle: Readonly<Article>;
 	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number;
 	export let onLogData: () => void;
@@ -201,8 +202,9 @@
 			</div>
 			{#if quoted !== null}
 				<SocialQuote
-					bind:articleProps={quoted}
+					idPair={getRootArticle(quoted).idPair}
 					{timelineProps}
+					filteredOut={quoted.filteredOut}
 					{modal}
 					{showAllMedia}
 					bind:compact={quoteCompact}
@@ -212,7 +214,7 @@
 				/>
 			{/if}
 			<SocialNav
-				article={actualArticle}
+				idPair={actualArticle.idPair}
 				bind:modal
 				{timelineProps}
 				repost={articleProps.type === 'reposts' ? rootArticle : undefined}
@@ -225,7 +227,7 @@
 	{#if actualArticle.medias.length}
 		<SocialMedia
 			bind:showAllMedia
-			article={actualArticle}
+			idPair={actualArticle.idPair}
 			{timelineProps}
 			onMediaClick={index => onMediaClick(actualArticle.idPair, index)}
 			bind:divRef

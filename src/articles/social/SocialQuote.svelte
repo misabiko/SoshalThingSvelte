@@ -1,13 +1,14 @@
 <script lang='ts'>
-	import Article, {type ArticleIdPair, type ArticleProps, getRootArticle, type TimelineArticleProps} from '../index';
+	import Article, {type ArticleIdPair, type TimelineArticleProps} from '../index';
 	import Timestamp from './Timestamp.svelte';
 	import SocialNav from './SocialNav.svelte';
 	import SocialMedia from './SocialMedia.svelte';
 	import {getReadable} from '~/services/service';
 	import {type Readable} from 'svelte/store';
 
-	export let articleProps: ArticleProps;
+	export let idPair: ArticleIdPair;
 	export let timelineProps: TimelineArticleProps;
+	export let filteredOut: boolean;
 	export let modal: boolean;
 	export let showAllMedia: boolean;
 	export let compact: boolean | null;
@@ -15,7 +16,7 @@
 	export let onLogData: () => void;
 	export let onLogJSON: () => void;
 
-	let article: Readable<Article> = getReadable(getRootArticle(articleProps).idPair);
+	let article: Readable<Article> = getReadable(idPair);
 </script>
 
 <style>
@@ -60,7 +61,7 @@
 		{/if}
 	</div>
 
-	{#if !articleProps.filteredOut}
+	{#if !filteredOut}
 		{#if !timelineProps.hideText}
 			<p class='refArticleParagraph'>
 				{#if $article.textHtml !== undefined}
@@ -74,7 +75,7 @@
 		{#if !timelineProps.hideQuoteMedia}
 			<SocialMedia
 					bind:showAllMedia
-					article={$article}
+					{idPair}
 					{timelineProps}
 					onMediaClick={index => onMediaClick($article.idPair, index)}
 					{compact}
@@ -82,7 +83,7 @@
 		{/if}
 	{/if}
 	<SocialNav
-			article={$article}
+			{idPair}
 			isQuoted={true}
 			{timelineProps}
 			{modal}

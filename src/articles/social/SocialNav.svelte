@@ -4,12 +4,13 @@
 		faEllipsisH, faExpandAlt, faSpinner, faGripVertical, faEllipsisVertical, faUpRightFromSquare,
 	} from '@fortawesome/free-solid-svg-icons';
 	import Dropdown from '../../Dropdown.svelte';
-	import Article from '../../articles';
+	import Article, {type ArticleIdPair} from '../../articles';
 	import type {TimelineArticleProps} from '../index';
-	import {getServices} from '~/services/service';
+	import {getReadable, getServices} from '~/services/service';
 	import {type ArticleAction, getGenericActions} from '~/services/actions';
 
-	export let article: Article;
+	export let idPair: ArticleIdPair;
+	let article = getReadable(idPair);
 	export let repost: Article | null = null;
 	export let isQuoted = false;
 	export let modal: boolean;
@@ -19,7 +20,7 @@
 
 	export let compact: boolean | null;
 
-	const genericActions = getGenericActions(article);
+	const genericActions = getGenericActions($article);
 	genericActions.push({
 		action: () => compact = !(compact ?? timelineProps.compact),
 		actionedName: 'Show expanded',
@@ -51,7 +52,7 @@
 		});
 
 	//TODO Have option to move icon actions to dropdown
-	let actions: [ArticleAction[], ArticleAction[]] = [...Object.values(getServices()[article.idPair.service].articleActions), ...genericActions]
+	let actions: [ArticleAction[], ArticleAction[]] = [...Object.values(getServices()[idPair.service].articleActions), ...genericActions]
 		.filter(a => a.icon !== null)
 		.sort((a, b) => a.index - b.index)
 		.reduce(([icons, dropdown], action) => {
@@ -115,16 +116,16 @@
 		{#each actions[0] as action (action.key)}
 			{#if action.action}
 				{@const actionFunc = action.action}
-				{@const count = action.count ? action.count(article) : 0}
-				{@const disabled = action.disabled ? action.disabled(article) : false}
-				{@const actioned = action.actioned(article)}
+				{@const count = action.count ? action.count($article) : 0}
+				{@const disabled = action.disabled ? action.disabled($article) : false}
+				{@const actioned = action.actioned($article)}
 				{@const isHovered = hoveredActions.has(action.key)}
 				<!-- svelte-ignore a11y-mouse-events-have-key-events -->
 				<button
 					class='articleButton borderless-button'
 					class:actioned
 					title={action.name}
-					on:click={() => actionFunc(article.idPair)}
+					on:click={() => actionFunc(idPair)}
 					disabled={disabled || (actioned && !action.togglable)}
 					on:mouseover={() => updateActionHover(action.key, true)}
 					on:mouseout={() => updateActionHover(action.key, false)}
@@ -140,7 +141,7 @@
 					{/if}
 				</button>
 			{:else}
-				{@const count = action.count ? action.count(article) : 0}
+				{@const count = action.count ? action.count($article) : 0}
 				{@const isHovered = hoveredActions.has(action.key)}
 				<!-- svelte-ignore a11y-mouse-events-have-key-events -->
 				<a
@@ -181,12 +182,12 @@
 			{#each actions[1] as action (action.key)}
 				{#if action.action}
 					{@const actionFunc = action.action}
-					{@const count = action.count ? action.count(article) : 0}
-					{@const disabled = action.disabled ? action.disabled(article) : false}
-					{@const actioned = action.actioned(article)}
+					{@const count = action.count ? action.count($article) : 0}
+					{@const disabled = action.disabled ? action.disabled($article) : false}
+					{@const actioned = action.actioned($article)}
 					<button
 							class='dropdown-item'
-							on:click={() => actionFunc(article.idPair)}
+							on:click={() => actionFunc(idPair)}
 							disabled={disabled || (actioned && !action.togglable)}
 					>
 						{#if action.actionedName && actioned}

@@ -1,14 +1,14 @@
 <script lang='ts'>
-	import type {TimelineArticleProps} from '../index';
-	import Article from '../index';
+	import type {ArticleIdPair, TimelineArticleProps} from '../index';
 	import {afterUpdate} from 'svelte';
-	import {getWritable} from '~/services/service';
+	import {getReadable, getWritable} from '~/services/service';
 	import Fa from 'svelte-fa';
 	import {faImages} from '@fortawesome/free-solid-svg-icons';
 	import {MediaType} from '../media';
 	import {LoadingState} from '~/bufferedMediaLoading';
 
-	export let article: Article;
+	export let idPair: ArticleIdPair;
+	let article = getReadable(idPair);
 	export let timelineProps: TimelineArticleProps;
 	export let showAllMedia: boolean;
 	export let onMediaClick: (index: number) => void;
@@ -24,11 +24,11 @@
 		const articleMediaEls = divRef?.querySelectorAll('.articleMedia:not(.articleThumbnail)');
 		if (articleMediaEls) {
 			const modifiedMedias: [number, number][] = [];
-			for (let i = 0; i < article.medias.length; ++i)
-				if (article.medias[i].ratio === null && articleMediaEls[i] !== undefined)
+			for (let i = 0; i < $article.medias.length; ++i)
+				if ($article.medias[i].ratio === null && articleMediaEls[i] !== undefined)
 					modifiedMedias.push([i, articleMediaEls[i].clientHeight / articleMediaEls[i].clientWidth]);
 
-			getWritable(article.idPair).update(a => {
+			getWritable($article.idPair).update(a => {
 				for (const [i, ratio] of modifiedMedias)
 					a.medias[i].ratio = ratio;
 				return a;
@@ -38,12 +38,12 @@
 
 	//Sloppy to make sure landscape single images aren't forced to square aspect ratio
 	let aspectRatio: number | undefined;
-	$: if ((compact ?? timelineProps.compact) && article.medias.length === 1 && (article.medias[0].ratio ?? 1) < 1) {
-		aspectRatio = 1 / (article.medias[0]?.ratio ?? 1);
+	$: if ((compact ?? timelineProps.compact) && $article.medias.length === 1 && ($article.medias[0].ratio ?? 1) < 1) {
+		aspectRatio = 1 / ($article.medias[0]?.ratio ?? 1);
 	}
 	let aspectRatioThumbnail: number | undefined;
-	$: if ((compact ?? timelineProps.compact) && article.medias.length === 1 && (article.medias[0].thumbnail?.ratio ?? 1) < 1) {
-		aspectRatioThumbnail = 1 / (article.medias[0]?.thumbnail?.ratio ?? 1);
+	$: if ((compact ?? timelineProps.compact) && $article.medias.length === 1 && ($article.medias[0].thumbnail?.ratio ?? 1) < 1) {
+		aspectRatioThumbnail = 1 / ($article.medias[0]?.thumbnail?.ratio ?? 1);
 	}
 </script>
 
@@ -104,7 +104,7 @@
 </style>
 
 <div class='socialMedia' class:socialMediaCompact={compact ?? timelineProps.compact} bind:this={divRef}>
-	{#each article.medias.slice(0, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined) as media, index (index)}
+	{#each $article.medias.slice(0, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined) as media, index (index)}
 		<!--{@const isLoading = loadingStates && loadingStates[index] === LoadingState.Loading}-->
 		{#if loadingStates && loadingStates[index] === LoadingState.NotLoaded}
 			<div class='imagesHolder' style:aspect-ratio={aspectRatioThumbnail}>
@@ -113,7 +113,7 @@
 				{#if media.thumbnail}
 					<img
 							class='articleMedia articleThumbnail'
-							alt={`${article.idPairStr}/${index}`}
+							alt={`${$article.idPairStr}/${index}`}
 							src={media.thumbnail.src}
 							on:click={() => onMediaClick(index)}
 					/>
@@ -125,7 +125,7 @@
 				<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 				<img
 						class='articleMedia'
-						alt={`${article.idPairStr}/${index}`}
+						alt={`${$article.idPairStr}/${index}`}
 						src={media.src}
 						on:click={() => onMediaClick(index)}
 						bind:this={mediaRefs[index]}
@@ -157,7 +157,7 @@
 			</video>
 		{/if}
 	{/each}
-	{#if !showAllMedia && timelineProps.maxMediaCount !== null && article.medias.length > timelineProps.maxMediaCount}
+	{#if !showAllMedia && timelineProps.maxMediaCount !== null && $article.medias.length > timelineProps.maxMediaCount}
 		<div class='moreMedia'>
 			<button class='borderless-button' title='Load more medias' on:click={() => showAllMedia = true}>
 				<Fa icon={faImages} size='2x'/>

@@ -1,8 +1,9 @@
 import type Article from '~/articles';
+import type { ArticleRefIdPair } from '~/articles';
 import type { ArticleAuthor } from '~/articles';
 import type { ArticleId, ArticleIdPair, ArticleWithRefs, ArticleProps } from '~/articles';
 import {articleWithRefToArray, getRootArticle} from '~/articles';
-import {get, type Readable, readonly, type Writable} from 'svelte/store';
+import {get, type Writable} from 'svelte/store';
 import {writable} from 'svelte/store';
 import {updateCachedArticlesStorage, updateMarkAsReadStorage} from '~/storages/serviceCache';
 import type {Endpoint, EndpointConstructorInfo} from './endpoints';
@@ -16,7 +17,7 @@ const services: { [name: string]: Service<any> } = {};
 
 export interface Service<A extends Article = Article> {
 	readonly name: string;
-	readonly articles: { [id: string]: Writable<A> };
+	readonly articles: Record<string, [Writable<A>, ArticleRefIdPair | null]>;
 	readonly endpointConstructors: Record<string, EndpointConstructorInfo>
 	userEndpoint: ((author: ArticleAuthor) => Endpoint) | null,
 	loadArticle: ((id: string) => Promise<ArticleWithRefs | null>) | null,
@@ -74,13 +75,13 @@ export function addArticles(ignoreRefs: boolean, ...articlesWithRefs: ArticleWit
 		const service = services[article.idPair.service];
 
 		if (Object.hasOwn(service.articles, article.idPair.id as string)) {
-			service.articles[article.idPair.id as string].update(a => {
+			service.articles[article.idPair.id as string][0].update(a => {
 				a.update(article);
 				return a;
 			});
 		}else {
 			//https://github.com/microsoft/TypeScript/issues/46395
-			service.articles[article.idPair.id as string] = writable(article);
+			service.articles[article.idPair.id as string] = [writable(article), article.refs];
 		}
 	}
 
@@ -131,11 +132,7 @@ export function toggleMarkAsRead(idPair: ArticleIdPair) {
 
 export function getWritable<T extends Article = Article>(idPair: ArticleIdPair): Writable<T> {
 	//Type casting might not be a great idea, no guarantee that the service returns T
-	return services[idPair.service].articles[idPair.id as string] as Writable<T>;
-}
-
-export function getReadable<T extends Article = Article>(idPair: ArticleIdPair): Readable<T> {
-	return readonly(services[idPair.service].articles[idPair.id as string]) as Readable<T>;
+	return services[idPair.service].articles[idPair.id as string][0] as Writable<T>;
 }
 
 export async function fetchArticle(idPair: ArticleIdPair) {

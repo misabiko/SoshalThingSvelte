@@ -166,7 +166,7 @@ export async function toggleLikePage(idPair: ArticleIdPair) {
 }
 
 export async function retweetPage(idPair: ArticleIdPair) {
-	const writable = TwitterService.articles[idPair.id as string];
+	const writable = TwitterService.articles[idPair.id as string][0];
 	if (get(writable).retweeted)
 		return;
 

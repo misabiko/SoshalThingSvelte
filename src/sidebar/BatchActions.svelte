@@ -2,13 +2,12 @@
 	//TODO Fix/Test BatchActions
 	import FiltersOptions from '../filters/FiltersOptions.svelte';
 	import {type FilterInstance, useFilters} from '~/filters';
-	import {getWritable} from '~/services/service';
 	import type {TimelineCollection} from '~/timelines';
-	import {derived, type Readable, type Writable} from 'svelte/store';
-	import Article, {
+	import {derived, type Readable, readonly} from 'svelte/store';
+	import  {
 		type ArticleIdPair,
-		type ArticleWithRefs, deriveArticleRefs, getDerivedArticleWithRefs, getRootArticle,
-	} from '../articles';
+		type ArticleWithRefs, flatDeriveArticle, getRootArticle,
+	} from '~/articles';
 	import {articleAction, STANDARD_ACTIONS} from '~/services/actions';
 
 	export let timelines: TimelineCollection;
@@ -18,13 +17,13 @@
 	let action = 'markAsRead';
 	let onlyListedArticles = true;
 
-	let articleIdPairs: Writable<ArticleIdPair[]> = timelines[timelineId].articles;
-
-	let articles: Readable<Article[]>;
-	$: articles = derived($articleIdPairs.map(getWritable), a => a);
+	let articleIdPairs: Readable<ArticleIdPair[]> = readonly(timelines[timelineId].articles);
 
 	let articlesWithRefs: Readable<ArticleWithRefs[]>;
-	$: articlesWithRefs = derived($articles.map(deriveArticleRefs), a => a.map(getDerivedArticleWithRefs));
+	$: articlesWithRefs = derived(
+		$articleIdPairs.map(idPair => derived(flatDeriveArticle(idPair), articles => articles[0])),
+		$articles => $articles.map(a => a.getArticleWithRefs())
+	);
 
 	let filteredArticles: Readable<ArticleWithRefs[]>;
 	$: filteredArticles = derived(

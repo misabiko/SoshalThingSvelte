@@ -1,7 +1,7 @@
 import type {TimelineData} from '~/timelines';
-import {getWritable} from '~/services/service';
+import {getServices, getWritable} from '~/services/service';
 import type {Readable} from 'svelte/store';
-import {derived, get, readable} from 'svelte/store';
+import {get} from 'svelte/store';
 import type {ArticleMedia} from './media';
 import type {FilterInstance} from '~/filters';
 
@@ -227,48 +227,15 @@ export function getActualArticleRefs(articleWithRefs: ArticleWithRefs | ArticleP
 	}
 }
 
-//To be fair I don't understand this anymore, probably should redo the whole thing once runes come in
-export function deriveArticleRefs(article: Article): Readable<DerivedArticleWithRefs> {
-	switch (article.refs?.type) {
+export function flatDeriveArticle(idPair: ArticleIdPair): Readable<Article>[] {
+	const [articleStore, refs] = getServices()[idPair.service].articles[idPair.id as string];
+	switch (refs?.type) {
 		case undefined:
-			return readable({
-				type: 'normal',
-				article,
-			});
+			return [articleStore];
 		case 'repost':
-			return derived(getWritable(article.refs.reposted), (repostedArticle: Article) =>
-				({
-					type: 'repost',
-					article,
-					reposted: deriveArticleRefs(repostedArticle),
-				} as unknown as DerivedArticleWithRefs)
-			);
+			return [articleStore, ...flatDeriveArticle(refs.reposted)];
 		case 'quote':
-			return derived(getWritable(article.refs.quoted), (quotedArticle: Article) =>
-				({
-					type: 'quote',
-					article,
-					quoted: deriveArticleRefs(quotedArticle),
-				} as unknown as DerivedArticleWithRefs)
-			);
-	}
-}
-
-//Probably postponing clean up to runes here too
-export function getDerivedArticleWithRefs(a: DerivedArticleWithRefs): ArticleWithRefs {
-	switch (a.type) {
-		case 'normal':
-			return a;
-		case 'repost':
-			return {
-				...a,
-				reposted: getDerivedArticleWithRefs(get(a.reposted as any)) as NonRepostArticleWithRefs
-			};
-		case 'quote':
-			return {
-				...a,
-				quoted: getDerivedArticleWithRefs(get(a.quoted as any)) as NonRepostArticleWithRefs
-			};
+			return [articleStore, ...flatDeriveArticle(refs.quoted)];
 	}
 }
 

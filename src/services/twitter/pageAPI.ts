@@ -321,7 +321,7 @@ export async function toggleLikeWebSocket(idPair: ArticleIdPair) {
 }
 
 export async function retweetWebSocket(idPair: ArticleIdPair) {
-	const writable = TwitterService.articles[idPair.id as string];
+	const writable = TwitterService.articles[idPair.id as string][0];
 	if (get(writable).retweeted)
 		return;
 

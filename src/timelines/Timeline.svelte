@@ -1,12 +1,16 @@
 <script lang='ts'>
 	import {type Readable, readonly} from 'svelte/store';
 	import {derived, get} from 'svelte/store';
-	import type {ArticleIdPair, ArticleProps, ArticleWithRefs} from '~/articles';
+	import {
+		type ArticleIdPair,
+		type ArticleProps,
+		type ArticleWithRefs, flatDeriveArticle
+	} from '~/articles';
 	import {
 		articleWithRefToArray,
 		getActualArticle, getRootArticle, idPairEqual,
 	} from '~/articles';
-	import {fetchArticle, getReadable} from '~/services/service';
+	import {fetchArticle} from '~/services/service';
 	import type {FullscreenInfo, TimelineData} from './index';
 	import {keepArticle} from '~/filters';
 	import {compare, SortMethod} from '~/sorting';
@@ -36,10 +40,12 @@
 	let articleIdPairs: Readable<ArticleIdPair[]> = readonly(data.articles);
 
 	let articles: Readable<ArticleProps[]>;
-	$: articles = derived($articleIdPairs.map(getReadable), $articles => {
-		console.log('update articles');
-		return $articles.map((a, i) => addProps(a.getArticleWithRefs(), i));
-	});
+	$: {
+		//Get flat article ref store array per idPair, derive each then discard the refs, then add props for each
+		articles = derived($articleIdPairs.map(idPair => derived(flatDeriveArticle(idPair), articles => articles[0])),
+			$articles => $articles.map((a, i) => addProps(a.getArticleWithRefs(), i))
+		);
+	}
 
 	let filteredArticles: Readable<ArticleProps[]>;
 	$: filteredArticles = derived(articles, articleProps => {

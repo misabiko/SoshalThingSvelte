@@ -22,7 +22,7 @@
 	let articlesWithRefs: Readable<ArticleWithRefs[]>;
 	$: articlesWithRefs = derived(
 		$articleIdPairs.map(idPair => derived(flatDeriveArticle(idPair), articles => articles[0])),
-		$articles => $articles.map(a => a.getArticleWithRefs())
+		articles => articles.map(a => a.getArticleWithRefs())
 	);
 
 	let filteredArticles: Readable<ArticleWithRefs[]>;

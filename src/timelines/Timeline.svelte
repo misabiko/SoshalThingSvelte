@@ -43,7 +43,7 @@
 	$: {
 		//Get flat article ref store array per idPair, derive each then discard the refs, then add props for each
 		articles = derived($articleIdPairs.map(idPair => derived(flatDeriveArticle(idPair), articles => articles[0])),
-			$articles => $articles.map((a, i) => addProps(a.getArticleWithRefs(), i))
+			articles => articles.map((a, i) => addProps(a.getArticleWithRefs(), i))
 		);
 	}
 

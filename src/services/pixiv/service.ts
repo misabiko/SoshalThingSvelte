@@ -1,4 +1,5 @@
 import type PixivArticle from './article';
+import type { CachedPixivArticle } from './article';
 import {
 	type FetchingService,
 	FetchType, getServices,
@@ -16,6 +17,7 @@ import {getRatio, MediaLoadType, MediaType} from '~/articles/media';
 import {faFaceSmile} from '@fortawesome/free-solid-svg-icons';
 import type {Filter} from '~/filters';
 import ServiceSettings from './ServiceSettings.svelte';
+import {updateCachedArticlesStorage} from '~/storages/serviceCache';
 
 export const PixivService: PixivServiceType = {
 	...newService('Pixiv'),
@@ -89,6 +91,8 @@ export const PixivService: PixivServiceType = {
 					a.liked = true;
 					return a;
 				});
+
+				updateCachedArticlesStorage(PixivService.name);
 			},
 			actioned(article: PixivArticle) { return article.liked; },
 		},
@@ -144,12 +148,29 @@ export const PixivService: PixivServiceType = {
 			actioned(article) { return article.bookmarked === true; },
 		}
 	},
+	getCachedArticles() {
+		const cachedArticles: Record<string, CachedPixivArticle> = {};
+		for (const a of Object.values(PixivService.articles).map(([w, _]) => get(w))) {
+			if (a.fetched || a.liked) {
+				cachedArticles[a.id] = {
+					id: a.id,
+					medias: a.fetched ? a.medias : undefined,
+					liked: a.liked || undefined,
+				};
+			}
+		}
+
+		return cachedArticles;
+	},
 	isOnDomain: globalThis.window?.location?.hostname.endsWith('pixiv.net'),
 	keepArticle(articleWithRefs: ArticleWithRefs, index: number, filter: Filter): boolean {
 		switch (filter.type) {
 			case 'bookmarked':
 				return (articleWithRefToArray(articleWithRefs) as PixivArticle[])
 					.some(a => a.bookmarked);
+			case 'liked':
+				return (articleWithRefToArray(articleWithRefs) as PixivArticle[])
+					.some(a => a.liked);
 			default:
 				throw new Error('Unknown filter type: ' + filter.type);
 		}
@@ -159,6 +180,12 @@ export const PixivService: PixivServiceType = {
 			type: 'bookmarked',
 			name: 'Bookmarked',
 			invertedName: 'Not bookmarked',
+			props: {},
+		},
+		liked: {
+			type: 'liked',
+			name: 'Liked',
+			invertedName: 'Not liked',
 			props: {},
 		},
 	},
@@ -171,7 +198,9 @@ export const PixivService: PixivServiceType = {
 
 registerService(PixivService);
 
-interface PixivServiceType extends Service<PixivArticle>, FetchingService<PixivArticle> {}
+interface PixivServiceType extends Service<PixivArticle>, FetchingService<PixivArticle> {
+	getCachedArticles: () => Record<string, CachedPixivArticle>
+}
 
 type PagesResponse = {
 	error: boolean

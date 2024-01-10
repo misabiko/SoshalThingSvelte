@@ -1,9 +1,9 @@
 import {type EndpointConstructorInfo, LoadableEndpoint, PageEndpoint, RefreshType} from '../../endpoints';
 import type {ArticleWithRefs} from '~/articles';
 import {PixivService} from '../service';
-import PixivArticle from '../article';
+import PixivArticle, {type CachedPixivArticle} from '../article';
 import type {PixivUser} from '../article';
-import {getMarkedAsReadStorage} from '~/storages/serviceCache';
+import {getCachedArticlesStorage, getMarkedAsReadStorage} from '~/storages/serviceCache';
 import {getWritable, registerEndpointConstructor} from '../../service';
 import {getEachPageURL, getUserUrl, parseThumbnail, type BookmarkData} from './index';
 import {MediaLoadType, MediaType} from '~/articles/media';
@@ -69,12 +69,13 @@ export default class BookmarkPageEndpoint extends PageEndpoint {
 		if (!thumbnails)
 			throw "Couldn't find thumbnails";
 		const markedAsReadStorage = getMarkedAsReadStorage(PixivService);
+		const cachedArticlesStorage = getCachedArticlesStorage<CachedPixivArticle>(PixivService);
 
-		return [...thumbnails].map(t => this.parseThumbnail(t, markedAsReadStorage)).filter(a => a !== null) as ArticleWithRefs[];
+		return [...thumbnails].map(t => this.parseThumbnail(t, markedAsReadStorage, cachedArticlesStorage)).filter(a => a !== null) as ArticleWithRefs[];
 	}
 
-	parseThumbnail(element: Element, markedAsReadStorage: string[]): ArticleWithRefs | null {
-		return parseThumbnail(element, markedAsReadStorage, this.user);
+	parseThumbnail(element: Element, markedAsReadStorage: string[], cachedArticlesStorage: Record<number, CachedPixivArticle | undefined>): ArticleWithRefs | null {
+		return parseThumbnail(element, markedAsReadStorage, cachedArticlesStorage, this.user);
 	}
 }
 
@@ -115,24 +116,30 @@ export class BookmarkAPIEndpoint extends LoadableEndpoint {
 		}
 
 		const markedAsReadStorage = getMarkedAsReadStorage(PixivService);
+		const cachedArticlesStorage = getCachedArticlesStorage<CachedPixivArticle>(PixivService);
 
 		//For now, I'm only parsing illusts, not novels
 		return Object.values(response.body.works).map(illust => {
+			const id = parseInt(illust.id);
+			const cached = cachedArticlesStorage[id];
+
+			const medias = cached?.medias ?? getEachPageURL(illust.url, illust.pageCount).map(src => ({
+				mediaType: MediaType.Image,
+				src,
+				ratio: null,
+				queueLoadInfo: MediaLoadType.Thumbnail,
+				offsetX: null,
+				offsetY: null,
+				cropRatio: null,
+			}));
+			const liked = cached?.liked ?? false;
 			const bookmarked = illust.bookmarkData !== null;
 
 			return {
 				type: 'normal',
 				article: new PixivArticle(
-					parseInt(illust.id),
-					getEachPageURL(illust.url, illust.pageCount).map(src => ({
-						mediaType: MediaType.Image,
-						src,
-						ratio: null,
-						queueLoadInfo: MediaLoadType.Thumbnail,
-						offsetX: null,
-						offsetY: null,
-						cropRatio: null,
-					})),
+					id,
+					medias,
 					illust.title,
 					{
 						id: parseInt(illust.userId),
@@ -144,7 +151,9 @@ export class BookmarkAPIEndpoint extends LoadableEndpoint {
 					new Date(illust.createDate),
 					markedAsReadStorage,
 					illust,
+					liked,
 					bookmarked,
+					cached?.medias !== undefined,
 				),
 			};
 		});

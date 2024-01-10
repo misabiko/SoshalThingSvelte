@@ -1,9 +1,9 @@
 import type {ArticleWithRefs} from '~/articles';
-import type {PixivUser} from '../article';
+import type {CachedPixivArticle, PixivUser} from '../article';
 import PixivArticle from '../article';
 import {type ArticleMedia, MediaLoadType, MediaType} from '~/articles/media';
 
-export function parseThumbnail(element: Element, markedAsReadStorage: string[], user: PixivUser): ArticleWithRefs | null {
+export function parseThumbnail(element: Element, markedAsReadStorage: string[], cachedArticlesStorage: Record<number, CachedPixivArticle | undefined>, user: PixivUser): ArticleWithRefs | null {
 	const anchors = element.querySelectorAll('a');
 	const idStr = anchors[0]?.getAttribute('data-gtm-value');
 	if (!idStr) {
@@ -25,7 +25,9 @@ export function parseThumbnail(element: Element, markedAsReadStorage: string[], 
 	const pageCountSpan = element.querySelector('span:nth-child(2)');
 	const pageCount = pageCountSpan !== null ? parseInt(pageCountSpan.textContent as string) : 1;
 
-	const medias: ArticleMedia[] =
+	const cached = cachedArticlesStorage[id];
+
+	const medias: ArticleMedia[] = cached?.medias ??
 		getEachPageURL(thumbnailSrc, pageCount)
 		.map(src => ({
 			mediaType: MediaType.Image,
@@ -40,6 +42,8 @@ export function parseThumbnail(element: Element, markedAsReadStorage: string[], 
 	const title = anchors[1]?.textContent;
 	if (!title)
 		throw new Error("Couldn't find title");
+
+	const liked = cached?.liked ?? false;
 
 	let bookmarked = false;
 	const bookmarkButton = element.querySelector('button svg');
@@ -58,7 +62,9 @@ export function parseThumbnail(element: Element, markedAsReadStorage: string[], 
 			undefined,
 			markedAsReadStorage,
 			element,
+			liked,
 			bookmarked,
+			cached?.medias !== undefined,
 		)
 	};
 }

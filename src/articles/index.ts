@@ -45,7 +45,7 @@ export default abstract class Article {
 		this.medias = params.medias || [];
 		this.markedAsRead = params.markedAsRead || params.markedAsReadStorage.includes(params.id.toString());
 		this.refs = params.refs ?? null;
-		this.fetched = params.fetched || false;
+		this.fetched = params.fetched ?? false;
 		this.rawSource = params.rawSource;
 
 		this.idPair = {

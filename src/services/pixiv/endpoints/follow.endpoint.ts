@@ -1,8 +1,8 @@
 import {type EndpointConstructorInfo, LoadableEndpoint, PageEndpoint, RefreshType} from '../../endpoints';
 import type {ArticleWithRefs} from '~/articles';
 import {PixivService} from '../service';
-import {getMarkedAsReadStorage} from '~/storages/serviceCache';
-import type {PixivUser} from '../article';
+import {getCachedArticlesStorage, getMarkedAsReadStorage} from '~/storages/serviceCache';
+import type {CachedPixivArticle, PixivUser} from '../article';
 import PixivArticle from '../article';
 import {getCurrentPage, getEachPageURL, getUserUrl, parseThumbnail, type BookmarkData} from './index';
 import {MediaLoadType, MediaType} from '~/articles/media';
@@ -30,11 +30,12 @@ export class FollowPageEndpoint extends PageEndpoint {
 		if (!thumbnails)
 			throw "Couldn't find thumbnails";
 		const markedAsReadStorage = getMarkedAsReadStorage(PixivService);
+		const cachedArticlesStorage = getCachedArticlesStorage<CachedPixivArticle>(PixivService);
 
-		return [...thumbnails].map(t => this.parseThumbnail(t, markedAsReadStorage)).filter(a => a !== null) as ArticleWithRefs[];
+		return [...thumbnails].map(t => this.parseThumbnail(t, markedAsReadStorage, cachedArticlesStorage)).filter(a => a !== null) as ArticleWithRefs[];
 	}
 
-	parseThumbnail(element: Element, markedAsReadStorage: string[]): ArticleWithRefs | null {
+	parseThumbnail(element: Element, markedAsReadStorage: string[], cachedArticlesStorage: Record<number, CachedPixivArticle | undefined>): ArticleWithRefs | null {
 		const userAnchor = element.querySelector('section li > div > div:nth-last-child(1) > div > a') as HTMLAnchorElement;
 		const userId = parseInt(userAnchor.getAttribute('data-gtm-value') as string);
 		const name = userAnchor.textContent as string;
@@ -45,7 +46,7 @@ export class FollowPageEndpoint extends PageEndpoint {
 			url: getUserUrl(userId)
 		};
 
-		return parseThumbnail(element, markedAsReadStorage, user);
+		return parseThumbnail(element, markedAsReadStorage, cachedArticlesStorage, user);
 	}
 }
 
@@ -76,24 +77,30 @@ export class FollowAPIEndpoint extends LoadableEndpoint {
 		const response: FollowAPIResponse = await PixivService.fetch(url.toString(), {headers: {'Accept': 'application/json'}});
 
 		const markedAsReadStorage = getMarkedAsReadStorage(PixivService);
+		const cachedArticlesStorage = getCachedArticlesStorage<CachedPixivArticle>(PixivService);
 
 		//For now, I'm only parsing illusts, not novels
 		return response.body.thumbnails.illust.map(illust => {
+			const id = parseInt(illust.id);
+			const cached = cachedArticlesStorage[id];
+
+			const medias = cached?.medias ?? getEachPageURL(illust.url, illust.pageCount).map(src => ({
+				mediaType: MediaType.Image,
+				src,
+				ratio: null,
+				queueLoadInfo: MediaLoadType.Thumbnail,
+				offsetX: null,
+				offsetY: null,
+				cropRatio: null,
+			}));
+			const liked = cached?.liked ?? false;
 			const bookmarked = illust.bookmarkData !== null;
 
 			return {
 				type: 'normal',
 				article: new PixivArticle(
-					parseInt(illust.id),
-					getEachPageURL(illust.url, illust.pageCount).map(src => ({
-						mediaType: MediaType.Image,
-						src,
-						ratio: null,
-						queueLoadInfo: MediaLoadType.Thumbnail,
-						offsetX: null,
-						offsetY: null,
-						cropRatio: null,
-					})),
+					id,
+					medias,
 					illust.title,
 					{
 						id: parseInt(illust.userId),
@@ -105,7 +112,9 @@ export class FollowAPIEndpoint extends LoadableEndpoint {
 					new Date(illust.createDate),
 					markedAsReadStorage,
 					illust,
+					liked,
 					bookmarked,
+					cached?.medias !== undefined,
 				),
 			};
 		});

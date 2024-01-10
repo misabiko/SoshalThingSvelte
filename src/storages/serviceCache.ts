@@ -54,7 +54,7 @@ export function updateMarkAsReadStorage() {
 	storageType.setItem(MAIN_STORAGE_KEY, JSON.stringify(storage));
 }
 
-export function updateCachedArticlesStorage() {
+export function updateCachedArticlesStorage(service?: string) {
 	const item = sessionStorage.getItem(MAIN_STORAGE_KEY);
 	let storage = item !== null ? JSON.parse(item) : null;
 	if (storage === null)
@@ -62,7 +62,9 @@ export function updateCachedArticlesStorage() {
 	else if (storage.services === undefined)
 		storage.services = {};
 
-	for (const service of Object.values(getServices())) {
+	const services = service !== undefined ? [getServices()[service]] : Object.values(getServices());
+
+	for (const service of services) {
 		const getCachedArticles = service.getCachedArticles;
 		if (getCachedArticles !== undefined) {
 			const cachedArticles = getCachedArticles();
@@ -92,7 +94,7 @@ export function getMarkedAsReadStorage(service: Service<any>): string[] {
 	return parsed.services[service.name]?.articlesMarkedAsRead || [];
 }
 
-export function getCachedArticlesStorage(service: Service<any>): { [id: string]: object } {
+export function getCachedArticlesStorage<S extends object>(service: Service<any>): Record<string, S | undefined> {
 	const item = sessionStorage.getItem(MAIN_STORAGE_KEY);
 	const parsed = item !== null ? JSON.parse(item) : null;
 	if (parsed?.services === undefined)

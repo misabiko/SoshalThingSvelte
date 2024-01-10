@@ -1,13 +1,16 @@
 <script lang='ts'>
-	import type {Readable, Writable} from 'svelte/store';
+	import {type Readable, readonly} from 'svelte/store';
 	import {derived, get} from 'svelte/store';
-	import type {ArticleIdPair, ArticleProps, ArticleWithRefs} from '~/articles';
-	import Article, {
+	import {
+		type ArticleIdPair,
+		type ArticleProps,
+		type ArticleWithRefs, flatDeriveArticle
+	} from '~/articles';
+	import {
 		articleWithRefToArray,
-		deriveArticleRefs,
-		getActualArticle, getDerivedArticleWithRefs, getRootArticle, idPairEqual,
-	} from '../articles';
-	import {fetchArticle, getWritable} from '~/services/service';
+		getActualArticle, getRootArticle, idPairEqual,
+	} from '~/articles';
+	import {fetchArticle} from '~/services/service';
 	import type {FullscreenInfo, TimelineData} from './index';
 	import {keepArticle} from '~/filters';
 	import {compare, SortMethod} from '~/sorting';
@@ -19,7 +22,6 @@
 
 	export let timelineId: string | null;
 	export let data: TimelineData;
-	//Would like to make this immutable https://github.com/sveltejs/svelte/issues/5572
 	export let fullscreen: FullscreenInfo | null = null;
 	export let toggleFullscreen: (() => void) | null = null;
 	export let removeTimeline: () => void;
@@ -35,19 +37,18 @@
 	let containerRef: HTMLElement | null = null;
 	let containerRebalance = false;
 
-	let articleIdPairs: Writable<ArticleIdPair[]> = data.articles;
+	let articleIdPairs: Readable<ArticleIdPair[]> = readonly(data.articles);
 
-	let articles: Readable<Article[]>;
-	$: articles = derived($articleIdPairs.map(getWritable), a => a);
-
-	let articlesWithRefs: Readable<ArticleWithRefs[]>;
-	$: articlesWithRefs = derived($articles.map(deriveArticleRefs), a => a.map(getDerivedArticleWithRefs));
+	let articles: Readable<ArticleProps[]>;
+	$: {
+		//Get flat article ref store array per idPair, derive each then discard the refs, then add props for each
+		articles = derived($articleIdPairs.map(idPair => derived(flatDeriveArticle(idPair), articles => articles[0])),
+			articles => articles.map((a, i) => addProps(a.getArticleWithRefs(), i))
+		);
+	}
 
 	let filteredArticles: Readable<ArticleProps[]>;
-	$: filteredArticles = derived(articlesWithRefs, stores => {
-		let articleProps: ArticleProps[] = stores
-			.map((articleWithRefs, i) => addProps(articleWithRefs, i));
-
+	$: filteredArticles = derived(articles, articleProps => {
 		if (data.hideFilteredOutArticles)
 			articleProps = articleProps.filter(a => !a.filteredOut);
 
@@ -278,7 +279,7 @@
 	}
 
 	function sortOnce(method: SortMethod, reversed: boolean) {
-		const sorted = get(articlesWithRefs).sort(compare({method, reversed, customMethod: null}));
+		const sorted = get(articles).sort(compare({method, reversed, customMethod: null}));
 		if (reversed)
 			sorted.reverse();
 		data.articles.set(sorted.map(a => getRootArticle(a).idPair));
@@ -287,7 +288,7 @@
 	function removeFiltered() {
 		//TODO Prevent articles from just being added back
 		data.articles.set(
-			get(articlesWithRefs)
+			get(articles)
 				.filter((a, i) =>
 					data.filters.every(f =>
 						!f.enabled || (keepArticle(a, i, f.filter) !== f.inverted)

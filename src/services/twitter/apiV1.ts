@@ -8,7 +8,7 @@ export function articleFromV1(json: TweetResponse, isRef = false, extraTweets?: 
 	const rawText = json.full_text ?? json.text as string;
 	const { text, textHtml } = parseText(rawText, json.entities, json.extended_entities);
 
-	let actualArticleRefIdPair: ArticleRefIdPair | undefined;
+	let refs: ArticleRefIdPair | null = null;
 
 	const makeArticle = () => new TwitterArticle(
 		BigInt(json.id_str),
@@ -23,7 +23,7 @@ export function articleFromV1(json: TweetResponse, isRef = false, extraTweets?: 
 		},
 		new Date(json.created_at),
 		getMarkedAsReadStorage(TwitterService),
-		actualArticleRefIdPair,
+		refs,
 		parseMedia(json.extended_entities),
 		json.favorited,
 		json.favorite_count,
@@ -45,12 +45,12 @@ export function articleFromV1(json: TweetResponse, isRef = false, extraTweets?: 
 		const retweeted = articleFromV1(jsonRetweeted, true);
 
 		if (retweeted.type === 'quote') {
-			actualArticleRefIdPair = {
+			refs = {
 				type: 'quote',
 				quoted: retweeted.quoted.article.idPair,
 			};
 		} else {
-			actualArticleRefIdPair = {
+			refs = {
 				type: 'repost',
 				reposted: getRootArticle(retweeted).idPair,
 			};
@@ -67,7 +67,7 @@ export function articleFromV1(json: TweetResponse, isRef = false, extraTweets?: 
 		if (json.quoted_status) {
 			const quoted = articleFromV1(json.quoted_status, true);
 
-			actualArticleRefIdPair = {
+			refs = {
 				type: 'quote',
 				quoted: getRootArticle(quoted).idPair,
 			};

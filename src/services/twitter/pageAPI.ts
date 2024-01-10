@@ -74,7 +74,7 @@ export function parseResponse(instructions: Instruction[]): ArticleWithRefs[] {
 export function articleFromResult(result: Result): ArticleWithRefs {
 	const {text, textHtml} = parseText(result.legacy.full_text, result.legacy.entities, result.legacy.extended_entities);
 
-	const article = (actualArticleRef?: ArticleRefIdPair) => new TwitterArticle(
+	const article = (refs: ArticleRefIdPair | null = null) => new TwitterArticle(
 		BigInt(result.legacy.id_str),
 		text,
 		textHtml,
@@ -87,7 +87,7 @@ export function articleFromResult(result: Result): ArticleWithRefs {
 		} as TwitterUser,
 		new Date(result.legacy.created_at),
 		getMarkedAsReadStorage(TwitterService),
-		actualArticleRef,
+		refs,
 		parseMedia(result.legacy.extended_entities),
 		result.legacy.favorited,
 		result.legacy.favorite_count,
@@ -321,7 +321,7 @@ export async function toggleLikeWebSocket(idPair: ArticleIdPair) {
 }
 
 export async function retweetWebSocket(idPair: ArticleIdPair) {
-	const writable = TwitterService.articles[idPair.id as string];
+	const writable = TwitterService.articles[idPair.id as string][0];
 	if (get(writable).retweeted)
 		return;
 

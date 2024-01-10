@@ -56,6 +56,7 @@
 		}
 	});
 
+	//TODO Pass articleProps as arg
 	function onLogData() {
 		console.dir(articleProps);
 	}
@@ -112,6 +113,7 @@
 				bind:modal
 				bind:showAllMedia
 				{articleProps}
+				{actualArticleProps}
 				{rootArticle}
 				{actualArticle}
 				{onLogData}

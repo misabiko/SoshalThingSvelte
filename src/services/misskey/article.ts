@@ -18,7 +18,7 @@ export default class MisskeyArticle extends Article {
 		medias: ArticleMedia[],
 		readonly creationTime: Date,
 		readonly author: MisskeyUser,
-		actualArticleRef: ArticleRefIdPair | undefined,
+		refs: ArticleRefIdPair | null,
 		markedAsReadStorage: string[],
 		rawSource: any
 	) {
@@ -29,7 +29,7 @@ export default class MisskeyArticle extends Article {
 			medias,
 			//TODO Use host
 			url: `https://misskey.io/notes/${id}`,
-			actualArticleRef,
+			refs,
 			markedAsReadStorage,
 			rawSource,
 		});
@@ -58,7 +58,7 @@ export function fromAPI(
 		console.error(`Failed to parse mfm for note 'https://misskey.io/notes/${note.id}'`, e);
 	}
 
-	let actualArticleRefIdPair: ArticleRefIdPair | undefined;
+	let refs: ArticleRefIdPair | null = null;
 
 	const medias: ArticleMedia[] = note.files.map(f => {
 		let mediaType: MediaType;
@@ -101,7 +101,7 @@ export function fromAPI(
 			medias,
 			new Date(note.createdAt),
 			author,
-			actualArticleRefIdPair,
+			refs,
 			markedAsReadStorage,
 			note,
 		);
@@ -110,7 +110,7 @@ export function fromAPI(
 		const renoted = fromAPI(note.renote, markedAsReadStorage, true);
 
 		if (note.text !== null) {
-			actualArticleRefIdPair = {
+			refs = {
 				type: 'quote',
 				quoted: getRootArticle(renoted).idPair,
 			};
@@ -124,12 +124,12 @@ export function fromAPI(
 			};
 		}else {
 			if (renoted.type === 'quote') {
-				actualArticleRefIdPair = {
+				refs = {
 					type: 'quote',
 					quoted: renoted.quoted.article.idPair,
 				};
 			}else {
-				actualArticleRefIdPair = {
+				refs = {
 					type: 'repost',
 					reposted: getRootArticle(renoted).idPair,
 				};

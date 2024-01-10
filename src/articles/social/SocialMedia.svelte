@@ -18,7 +18,6 @@
 	export let loadingStates: LoadingState[] | null = null;
 
 	export let compact: boolean | null;
-	//TODO Add option for full first (n) media and compact rest
 
 	afterUpdate(() => {
 		const articleMediaEls = divRef?.querySelectorAll('.articleMedia:not(.articleThumbnail)');
@@ -69,7 +68,7 @@
 		border-radius: 8px;
 	}
 
-	.socialMediaCompact .imagesHolder, .socialMediaCompact video.articleMedia {
+	.socialMediaCompact .imagesHolder:not(.socialMediaFull), .socialMediaCompact video.articleMedia:not(.socialMediaFull) {
 		width: 50%;
 		aspect-ratio: 1;
 	}
@@ -107,7 +106,7 @@
 	{#each $article.medias.slice(0, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined) as media, index (index)}
 		<!--{@const isLoading = loadingStates && loadingStates[index] === LoadingState.Loading}-->
 		{#if loadingStates && loadingStates[index] === LoadingState.NotLoaded}
-			<div class='imagesHolder' style:aspect-ratio={aspectRatioThumbnail}>
+			<div class='imagesHolder' class:socialMediaFull={index < timelineProps.fullMedia} style:aspect-ratio={aspectRatioThumbnail}>
 				<div class='imgPlaceHolder' style:aspect-ratio={1 / (media.ratio ?? 1)} style:display='none'></div>
 				<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 				{#if media.thumbnail}
@@ -120,7 +119,7 @@
 				{/if}
 			</div>
 		{:else if media.mediaType === MediaType.Image || media.mediaType === MediaType.Gif}
-			<div class='imagesHolder' style:aspect-ratio={aspectRatio}>
+			<div class='imagesHolder' class:socialMediaFull={index < timelineProps.fullMedia} style:aspect-ratio={aspectRatio}>
 				<div class='imgPlaceHolder' style:aspect-ratio={1 / (media.ratio ?? 1)} style:display='none'></div>
 				<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 				<img
@@ -134,6 +133,7 @@
 		{:else if !timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
 			<video
 					class='articleMedia'
+					class:socialMediaFull={index < timelineProps.fullMedia}
 					controls
 					preload='auto'
 					muted={timelineProps.muteVideos}
@@ -145,6 +145,7 @@
 		{:else if media.mediaType === MediaType.VideoGif || timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
 			<video
 					class='articleMedia'
+					class:socialMediaFull={index < timelineProps.fullMedia}
 					controls
 					autoplay
 					loop

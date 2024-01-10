@@ -31,6 +31,7 @@
 				reversed: false,
 			},
 			compact: true,
+			fullMedia: 1,
 		}
 	};
 

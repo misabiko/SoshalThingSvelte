@@ -280,6 +280,16 @@
 					Compact articles
 				</label>
 			</div>
+			<label class='field'>
+				Full medias
+				<input
+						class='input'
+						type='number'
+						bind:value={data.fullMedia}
+						min={0}
+						on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'fullMedia', data.fullMedia)}
+				/>
+			</label>
 			<div class='field'>
 				<label>
 					<input type='checkbox'

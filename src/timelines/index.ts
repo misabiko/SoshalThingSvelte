@@ -33,6 +33,7 @@ export type TimelineData = {
 	scrollSpeed: number;
 	hideText: boolean;
 	compact: boolean;
+	fullMedia: number;
 	hideQuoteMedia: boolean;
 	shouldLoadMedia: boolean;
 	hideFilteredOutArticles: boolean;
@@ -63,6 +64,7 @@ export function defaultTimeline(articles: ArticleIdPair[] = []): TimelineData {
 		scrollSpeed: 3,
 		hideText: false,
 		compact: false,
+		fullMedia: 0,
 		hideQuoteMedia: false,
 		shouldLoadMedia: true,
 		hideFilteredOutArticles: true,

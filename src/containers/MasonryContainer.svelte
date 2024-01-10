@@ -94,9 +94,12 @@
 		if (props.timelineArticleProps.compact) {
 			//TODO Take into account per-article compact bool
 			//Compact with more than 1 media has medias in square grid of 2xn, so 1,2 has ratio of 1/2, 3,4 has ratio of 2/2, 5,6 has ratio of 3/2, etc
-			const evenMediaCount = Math.min(getActualArticle(article).medias.length, props.timelineArticleProps.maxMediaCount ?? Infinity);
+			const evenMediaCount = Math.min(getActualArticle(article).medias.length - props.timelineArticleProps.fullMedia, props.timelineArticleProps.maxMediaCount ?? Infinity);
 			if (evenMediaCount > 1)
-				return 1 + Math.floor(evenMediaCount / 2); /*( * 2 / 2)*/
+				return 1 + Math.floor(evenMediaCount / 2) /*( * 2 / 2)*/
+					+ getActualArticle(article).medias
+						.slice(0, props.timelineArticleProps.fullMedia)
+						.reduce((acc, curr) => acc + (curr.ratio ?? 1), 0);
 			else
 				return 2;
 		}else

@@ -26,6 +26,7 @@
 		animatedAsGifs: false,
 		muteVideos: false,
 		compact: false,
+		fullMedia: 0,
 		hideQuoteMedia: false,
 		hideText: false,
 		shouldLoadMedia: false,

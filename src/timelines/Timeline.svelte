@@ -170,6 +170,7 @@
 			animatedAsGifs: data.animatedAsGifs,
 			muteVideos: data.muteVideos,
 			compact: data.compact,
+			fullMedia: data.fullMedia,
 			hideQuoteMedia: data.hideQuoteMedia,
 			hideText: data.hideText,
 			shouldLoadMedia: data.shouldLoadMedia,

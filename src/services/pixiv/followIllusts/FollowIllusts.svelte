@@ -24,7 +24,7 @@
 				filters: [],
 			}],
 			container: MasonryContainer,
-			columnCount: 3,
+			columnCount: 4,
 			animatedAsGifs: true,
 			sortInfo: {
 				method: SortMethod.Id,
@@ -32,6 +32,7 @@
 				reversed: true,
 			},
 			compact: true,
+			fullMedia: 1,
 		}
 	};
 

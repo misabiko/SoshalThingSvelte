@@ -12,7 +12,7 @@ import MasonryContainer from '~/containers/MasonryContainer.svelte';
 import SocialArticleView from '~/articles/social/SocialArticleView.svelte';
 import GalleryArticleView from '~/articles/gallery/GalleryArticleView.svelte';
 import {getServices} from '~/services/service';
-import type {FilterInstance} from '~/filters';
+import {type FilterInstance, genericFilterTypes} from '~/filters';
 import type {SortInfo} from '~/sorting';
 import {SortMethod} from '~/sorting';
 import {defaultTimeline} from '~/timelines';
@@ -126,7 +126,7 @@ export function loadTimelines(): TimelineCollection {
 				endpoints.push(endpoint);
 		}
 
-		parseFilters(defaulted.filters);
+		defaulted.filters = parseFilters(defaulted.filters ?? []);
 
 		return [id, {
 			...defaultTimeline(),
@@ -280,7 +280,7 @@ function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | unde
 	if (storage.autoRefresh)
 		startAutoRefresh(endpoint.name);
 
-	parseFilters(storage.filters);
+	storage.filters = parseFilters(storage.filters ?? []);
 
 	return {
 		name: endpoint.name,
@@ -362,17 +362,24 @@ function sortInfoToStorage(sortInfo: SortInfo): TimelineStorage['sortInfo'] {
 
 }
 
-function parseFilters(filters: FilterInstance[] | undefined) {
-	if (filters === undefined)
-		return;
+function parseFilters(storageFilters: FilterInstance[]) {
+	const filters: FilterInstance[] = [];
 
-	for (const instance of filters) {
+	for (const instance of storageFilters) {
 		instance.filter.service ??= null;
 		instance.filter.props ??= {};
 
-		if (instance.filter.service !== null && !Object.hasOwn(getServices(), instance.filter.service))
+		if (instance.filter.service === null && !Object.hasOwn(genericFilterTypes, instance.filter.type))
+			console.error(`Generic filter "${instance.filter.type}" doesn't exist.`, instance);
+		else if (instance.filter.service !== null && !Object.hasOwn(getServices(), instance.filter.service))
 			console.error(`Service ${instance.filter.service} isn't registered.`, instance);
+		else if (instance.filter.service !== null && !Object.hasOwn(getServices()[instance.filter.service].filterTypes, instance.filter.type))
+			console.error(`Service "${instance.filter.service}" doesn't have filter "${instance.filter.type}".`, instance);
+		else
+			filters.push(instance);
 	}
+
+	return filters;
 }
 
 function parseFullscreenInfo(fullscreen?: boolean | number | FullscreenInfoStorage): FullscreenInfo {

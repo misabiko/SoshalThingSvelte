@@ -113,6 +113,7 @@
 				bind:modal
 				bind:showAllMedia
 				{articleProps}
+				{actualArticleProps}
 				{rootArticle}
 				{actualArticle}
 				{onLogData}

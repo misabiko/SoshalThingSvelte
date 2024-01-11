@@ -10,7 +10,6 @@
 	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
 	import Dropdown from '~/Dropdown.svelte';
 	import {
-		fetchArticle,
 		getServices,
 	} from '~/services/service';
 	import type {TimelineArticleProps} from '../index';
@@ -36,7 +35,6 @@
 	export let loadingStates: LoadingState[];
 
 	let actions: [ArticleAction[], ArticleAction[]] = [...Object.values(getServices()[rootArticle.idPair.service].articleActions), ...getGenericActions(rootArticle)]
-		.filter(a => a.icon !== null)
 		.sort((a, b) => a.index - b.index)
 		.reduce(([icons, dropdown], action) => {
 			if (action.listAsIcon)
@@ -224,14 +222,6 @@
 						</a>
 					{/if}
 				{/each}
-				{#if actualArticle.medias.some(m => !m.loaded) }
-					<button
-						class='dropdown-item'
-						on:click={() => {for (let i = 0; i < actualArticle.medias.length; ++i) loadingStore.forceLoading(actualArticle, i);}}
-					>
-						Load Media
-					</button>
-				{/if}
 				{#if actualArticle.url}
 					<a
 						class='dropdown-item'
@@ -246,11 +236,6 @@
 				<button class='dropdown-item' on:click={onLogJSON}>
 					Log JSON Data
 				</button>
-				{#if !actualArticle.fetched }
-					<button class='dropdown-item' on:click={() => fetchArticle(actualArticle.idPair)}>
-						Fetch Article
-					</button>
-				{/if}
 			</Dropdown>
 		</div>
 		<div class='holderBox holderBoxBottom'>

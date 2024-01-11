@@ -53,7 +53,6 @@
 
 	//TODO Have option to move icon actions to dropdown
 	let actions: [ArticleAction[], ArticleAction[]] = [...Object.values(getServices()[idPair.service].articleActions), ...genericActions]
-		.filter(a => a.icon !== null)
 		.sort((a, b) => a.index - b.index)
 		.reduce(([icons, dropdown], action) => {
 			if (action.listAsIcon)
@@ -217,9 +216,6 @@
 				<button class='dropdown-item' on:click={onLogJSON}>
 					Log Json Data
 				</button>
-				<!--	<button class='dropdown-item'>-->
-				<!--		Fetch Data-->
-				<!--	</button>-->
 			{/if}
 		</Dropdown>
 	</div>

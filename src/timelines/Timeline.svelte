@@ -37,7 +37,7 @@
 	let containerRef: HTMLElement | null = null;
 	let containerRebalance = false;
 
-	let articleIdPairs: Readable<ArticleIdPair[]> = readonly(data.articles);
+	let articleIdPairs: Readable<ArticleIdPair[]> = derived([readonly(data.articles), loadingStore], ([a, _]) => a);
 
 	let articles: Readable<ArticleProps[]>;
 	$: {

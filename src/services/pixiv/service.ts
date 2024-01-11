@@ -154,7 +154,11 @@ export const PixivService: PixivServiceType = {
 			if (a.fetched || a.liked) {
 				cachedArticles[a.id] = {
 					id: a.id,
-					medias: a.fetched ? a.medias : undefined,
+					medias: a.fetched ? a.medias.map(m => {
+						if (m.loaded)
+							m.loaded = false;
+						return m;
+					}) : undefined,
 					liked: a.liked || undefined,
 				};
 			}

@@ -113,7 +113,7 @@
 		<label class='field'>
 			{key}
 			{#if typeof value === 'number'}
-				<input type='number' {value} on:change={e => params[key] = e.currentTarget.value}/>
+				<input type='number' {value} on:change={e => params[key] = parseInt(e.currentTarget.value)}/>
 			{:else if typeof value === 'boolean'}
 				<input type='checkbox' checked={value} on:change={e => params[key] = e.currentTarget.checked}/>
 			{:else}

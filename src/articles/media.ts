@@ -51,7 +51,7 @@ export enum MediaType {
 }
 
 export enum MediaLoadType {
-	DirectLoad,
-	Thumbnail,
-	LazyLoad,
+	DirectLoad = 'DirectLoad',
+	Thumbnail = 'Thumbnail',
+	LazyLoad = 'LazyLoad',
 }

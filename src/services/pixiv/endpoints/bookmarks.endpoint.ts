@@ -108,6 +108,8 @@ export class BookmarkAPIEndpoint extends LoadableEndpoint {
 		//url.searchParams.set('limit', '')
 		url.searchParams.set('rest', this.r18 ? 'hide' : 'show');
 		url.searchParams.set('lang', 'en');
+		if (this.currentPage > 0)
+			url.searchParams.set('p', (this.currentPage + 1).toString());
 
 		const response: FollowAjaxResponse = await PixivService.fetch(url.toString(), {headers: {'Accept': 'application/json'}});
 		if (response.error) {

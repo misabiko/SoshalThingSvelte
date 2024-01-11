@@ -94,8 +94,8 @@ export default abstract class Article {
 export type ArticleId = string | number | bigint
 
 export interface ArticleAuthor {
-	username: string;
-	name: string;	//TODO Make author name optional
+	username: string;	//TODO Make username optional and rename name to displayName
+	name: string;
 	url: string;
 	avatarUrl?: string;
 }

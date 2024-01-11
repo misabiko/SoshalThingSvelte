@@ -1,6 +1,7 @@
 //TODO Figure out how to load endpoints
 import '~/services/pixiv/service';
 import '~/services/pixiv/endpoints/user.endpoint';
+import '~/services/pixiv/endpoints/ranking.endpoint';
 
 import FollowIllusts from './FollowIllusts.svelte';
 import {tryInject} from '~/services/extension';

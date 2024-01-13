@@ -97,7 +97,7 @@ export class RankingAPIEndpoint extends LoadableEndpoint {
 					liked,
 					c.is_bookmarked,
 					cached?.medias !== undefined,
-				)
+				),
 			};
 		});
 	}

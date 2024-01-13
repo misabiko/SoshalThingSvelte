@@ -14,7 +14,7 @@
 	} from '~/services/service';
 	import type {TimelineArticleProps} from '../index';
 	import type {ArticleProps} from '../index';
-	import {MediaType} from '../media';
+	import {type ArticleMedia, MediaType} from '../media';
 	import GalleryThumbnail from './GalleryThumbnail.svelte';
 	import GalleryImage from './GalleryImage.svelte';
 	import {type ArticleAction, getGenericActions} from '~/services/actions';
@@ -33,7 +33,7 @@
 	let showAllMedia = derived(timelineProps.showAllMediaArticles, articles => articles.has(rootArticle.idPairStr));
 
 	export let divRef: HTMLDivElement | null;
-	export let mediaRefs: HTMLImageElement[];
+	export let mediaRefs: Record<number, HTMLImageElement | HTMLVideoElement>;
 	export let loadingStates: Readable<LoadingState[]>;
 
 	let actions: [ArticleAction[], ArticleAction[]] = [...Object.values(getServices()[rootArticle.idPair.service].articleActions), ...getGenericActions(rootArticle)]
@@ -46,9 +46,11 @@
 			return [icons, dropdown];
 		}, [[], []] as [ArticleAction[], ArticleAction[]]);
 
+	let medias: [ArticleMedia, number][];
 	$: medias = actualArticleProps.mediaIndex === null
 		? actualArticle.medias.slice(0, !$showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined)
-		: [actualArticle.medias[actualArticleProps.mediaIndex]];
+			.map((m, i) => [m, i])
+		: [[actualArticle.medias[actualArticleProps.mediaIndex], actualArticleProps.mediaIndex]];
 </script>
 
 <style>
@@ -125,7 +127,7 @@
 
 <div class='galleryArticle' bind:this={divRef}>
 	<div>
-		{#each medias as media, i (i)}
+		{#each medias as [media, i] (i)}
 			{@const isLoading = $loadingStates[i] === LoadingState.Loading}
 			{#if $loadingStates[i] === LoadingState.NotLoaded}
 				<GalleryThumbnail

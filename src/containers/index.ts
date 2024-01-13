@@ -1,6 +1,5 @@
-import {type ArticleWithRefs, type ArticleProps, type TimelineArticleProps, getIdServiceMediaStr} from '~/articles';
+import {type ArticleProps, type TimelineArticleProps, getIdServiceMediaStr} from '~/articles';
 import type {ComponentType} from 'svelte';
-import {getRootArticle} from '~/articles';
 
 export type ContainerProps = {
 	articles: ArticleProps[];

@@ -23,7 +23,7 @@
 	export let onLogJSON: () => void;
 
 	export let divRef: HTMLDivElement | null;
-	export let mediaRefs: HTMLImageElement[];
+	export let mediaRefs: Record<number, HTMLImageElement>;
 	export let loadingStates: Readable<LoadingState[]>;
 
 	//TODO Propagate article compact to the timeline

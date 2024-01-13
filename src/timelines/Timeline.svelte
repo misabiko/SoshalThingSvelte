@@ -10,7 +10,7 @@
 		articleWithRefToArray,
 		getRootArticle, idPairEqual,
 	} from '~/articles';
-	import {fetchArticle} from '~/services/service';
+	import {fetchArticle, getWritable} from '~/services/service';
 	import type {FullscreenInfo, TimelineData} from './index';
 	import {keepArticle} from '~/filters';
 	import {compare, SortMethod} from '~/sorting';
@@ -211,13 +211,16 @@
 			const actualArticleProps = getActualArticleRefs(articleProps) as ArticleProps;
 			if (actualArticleProps.type === 'repost' || actualArticleProps.type === 'reposts')
 				throw new Error('Actual article is repost');
+
+			if (data.hideFilteredOutArticles && actualArticleProps.filteredOut)
+				continue;
 			if (!actualArticleProps.article.fetched)
 				fetchArticle(actualArticleProps.article.idPair);
 			if (data.shouldLoadMedia)
 				for (const article of articleWithRefToArray(articleProps)) {
 					const mediaCount = Math.min(actualArticleProps.article.medias.length, !$showAllMediaArticles.has(article.idPairStr) && data.maxMediaCount !== null ? data.maxMediaCount : Infinity);
 					for (let i = 0; i < mediaCount; ++i)
-						if (article.medias[i].loaded === false)
+						if (get(getWritable(article.idPair)).medias[i].loaded === false)
 							loadingStore.requestLoad(article.idPair, i);
 				}
 		}

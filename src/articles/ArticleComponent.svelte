@@ -27,7 +27,7 @@
 	}
 
 	let divRef: HTMLDivElement | null = null;
-	let mediaRefs: HTMLImageElement[] = [];
+	let mediaRefs: Record<number, HTMLImageElement> = {};
 	let loadingStates: Writable<LoadingState[]> = writable([]);
 	$: {
 		$loadingStates = [];
@@ -41,9 +41,11 @@
 	afterUpdate(() => {
 		{
 			const modifiedMedias: [number, number][] = [];
-			for (let i = 0; i < mediaRefs.length; ++i)
+			for (const [iStr, _mediaRef] of Object.entries(mediaRefs)) {
+				const i = parseInt(iStr);
 				if (actualArticle.medias[i].ratio === null)
 					modifiedMedias.push([i, mediaRefs[i].clientHeight / mediaRefs[i].clientWidth]);
+			}
 
 			getWritable(actualArticle.idPair).update(a => {
 				for (const [i, ratio] of modifiedMedias)
@@ -52,11 +54,18 @@
 			});
 		}
 
-		const count = actualArticle.medias.length;
-		for (let i = 0; i < count; ++i) {
-			if (actualArticle.medias[i].queueLoadInfo === MediaLoadType.LazyLoad && !actualArticle.medias[i].loaded) {
-				if (mediaRefs[i]?.complete)
-					loadingStore.mediaLoaded(actualArticle.idPair, i);
+		if (actualArticleProps.mediaIndex === null) {
+			const count = actualArticle.medias.length;
+			for (let i = 0; i < count; ++i) {
+				if (actualArticle.medias[i].queueLoadInfo === MediaLoadType.LazyLoad && !actualArticle.medias[i].loaded) {
+					if (mediaRefs[i]?.complete)
+						loadingStore.mediaLoaded(actualArticle.idPair, i);
+				}
+			}
+		}else {
+			if (actualArticle.medias[actualArticleProps.mediaIndex].queueLoadInfo === MediaLoadType.LazyLoad && !actualArticle.medias[actualArticleProps.mediaIndex].loaded) {
+				if (mediaRefs[actualArticleProps.mediaIndex]?.complete)
+					loadingStore.mediaLoaded(actualArticle.idPair, actualArticleProps.mediaIndex);
 			}
 		}
 	});

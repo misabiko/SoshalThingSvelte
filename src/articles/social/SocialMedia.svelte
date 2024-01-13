@@ -4,7 +4,7 @@
 	import {getReadable, getWritable} from '~/services/service';
 	import Fa from 'svelte-fa';
 	import {faImages} from '@fortawesome/free-solid-svg-icons';
-	import {MediaType} from '../media';
+	import {type ArticleMedia, MediaType} from '../media';
 	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
 	import {derived, type Readable} from 'svelte/store';
 
@@ -16,7 +16,7 @@
 	let showAllMedia = derived(timelineProps.showAllMediaArticles, articles => articles.has($article.idPairStr));
 
 	export let divRef: HTMLDivElement | null = null;
-	export let mediaRefs: (HTMLImageElement | HTMLVideoElement)[] = [];
+	export let mediaRefs: Record<number, HTMLImageElement | HTMLVideoElement> = [];
 	export let loadingStates: Readable<LoadingState[]>;
 
 	export let compact: boolean | null;
@@ -47,9 +47,11 @@
 		aspectRatioThumbnail = 1 / ($article.medias[0]?.thumbnail?.ratio ?? 1);
 	}
 
+	let medias: [ArticleMedia, number][];
 	$: medias = mediaIndex === null
 		? $article.medias.slice(0, !$showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined)
-		: [$article.medias[mediaIndex]];
+			.map((m, i) => [m, i])
+		: [[$article.medias[mediaIndex], mediaIndex]];
 </script>
 
 <style>
@@ -109,7 +111,7 @@
 </style>
 
 <div class='socialMedia' class:socialMediaCompact={compact ?? timelineProps.compact} bind:this={divRef}>
-	{#each medias as media, index (index)}
+	{#each medias as [media, index] (index)}
 		{@const isLoading = $loadingStates[index] === LoadingState.Loading}
 		{#if $loadingStates[index] === LoadingState.NotLoaded}
 			<div class='imagesHolder' class:socialMediaFull={index < timelineProps.fullMedia} style:aspect-ratio={aspectRatioThumbnail}>

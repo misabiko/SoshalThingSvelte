@@ -23,7 +23,7 @@ export enum LoadingState {
 export const loadingStore = (() => {
 	const {subscribe, update} = writable<LoadingInfo>({
 		loadings: new Set<string>(),
-		queue: []
+		queue: [],
 	});
 	let localLoadings = new Set<string>();
 	let localQueue: string[] = [];
@@ -31,9 +31,11 @@ export const loadingStore = (() => {
 	return {
 		subscribe,
 		requestLoad(idPair: ArticleIdPair, mediaIndex: number) {
+			const key = hash(idPair, mediaIndex);
+
 			if (localLoadings.size >= maxLoading) {
 				update(store => {
-					const idPairStr = hash(idPair, mediaIndex);
+					const idPairStr = key;
 					if (!store.queue.includes(idPairStr))
 						store.queue.push(idPairStr);
 					localQueue = store.queue;
@@ -44,7 +46,7 @@ export const loadingStore = (() => {
 			}
 
 			update(store => {
-				store.loadings.add(hash(idPair, mediaIndex));
+				store.loadings.add(key);
 				localLoadings = store.loadings;
 				return store;
 			});

@@ -2,6 +2,7 @@ import type {ArticleWithRefs} from '~/articles';
 import type {CachedPixivArticle, PixivUser} from '../article';
 import PixivArticle from '../article';
 import {type ArticleMedia, MediaLoadType, MediaType} from '~/articles/media';
+import {avatarHighRes} from '~/services/pixiv/endpoints/bookmarks.endpoint';
 
 export function parseThumbnail(element: Element, markedAsReadStorage: string[], cachedArticlesStorage: Record<number, CachedPixivArticle | undefined>, user: PixivUser): ArticleWithRefs | null {
 	const anchors = element.querySelectorAll('a');
@@ -90,4 +91,76 @@ export function getCurrentPage(): number {
 export type BookmarkData = {
 	id: string
 	private: boolean
+}
+
+export type Illust = {
+	id: string
+	title: string
+	illustType: number //enum
+	xRestrict: number
+	restrict: number
+	sl: number
+	url: string
+	description: string
+	tags: string[]
+	userId: string
+	userName: string
+	width: number
+	height: number
+	pageCount: number
+	isBookmarkable: boolean
+	bookmarkData: BookmarkData | null
+	alt: string
+	titleCaptionTranslation: {
+		workTitle: null
+		workCaption: null
+	}
+	createDate: string
+	updateDate: string
+	isUnlisted: boolean
+	isMasked: boolean
+	urls: {
+		//Didn't confirm those were the only sizes
+		[key in '250x250' | '360x360' | '540x540']: string
+	}
+	profileImageUrl: string
+}
+
+export function illustToArticle(illust: Illust, markedAsReadStorage: string[], cachedArticlesStorage: Record<string, CachedPixivArticle | undefined>): ArticleWithRefs {
+	const id = parseInt(illust.id);
+	const cached = cachedArticlesStorage[id];
+
+	const medias = cached?.medias ?? getEachPageURL(illust.url, illust.pageCount).map(src => ({
+		mediaType: MediaType.Image,
+		src,
+		ratio: null,
+		queueLoadInfo: MediaLoadType.Thumbnail,
+		offsetX: null,
+		offsetY: null,
+		cropRatio: null,
+	}));
+	const liked = cached?.liked ?? false;
+	const bookmarked = illust.bookmarkData !== null;
+
+	return {
+		type: 'normal',
+		article: new PixivArticle(
+			id,
+			medias,
+			illust.title,
+			{
+				id: parseInt(illust.userId),
+				url: getUserUrl(illust.userId),
+				username: illust.userName,
+				name: illust.userName,
+				avatarUrl: avatarHighRes(illust.profileImageUrl),
+			},
+			new Date(illust.createDate),
+			markedAsReadStorage,
+			illust,
+			liked,
+			bookmarked,
+			cached?.medias !== undefined,
+		),
+	};
 }

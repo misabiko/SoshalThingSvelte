@@ -3,10 +3,13 @@ import type {ArticleWithRefs} from '~/articles';
 import {PixivService} from '../service';
 import {getCachedArticlesStorage, getMarkedAsReadStorage} from '~/storages/serviceCache';
 import type {CachedPixivArticle, PixivUser} from '../article';
-import PixivArticle from '../article';
-import {getCurrentPage, getEachPageURL, getUserUrl, parseThumbnail, type BookmarkData} from './index';
-import {MediaLoadType, MediaType} from '~/articles/media';
-import {avatarHighRes} from './bookmarks.endpoint';
+import {
+	getCurrentPage,
+	getUserUrl,
+	parseThumbnail,
+	type Illust,
+	illustToArticle
+} from './index';
 import {registerEndpointConstructor} from '../../service';
 
 export class FollowPageEndpoint extends PageEndpoint {
@@ -80,44 +83,7 @@ export class FollowAPIEndpoint extends LoadableEndpoint {
 		const cachedArticlesStorage = getCachedArticlesStorage<CachedPixivArticle>(PixivService);
 
 		//For now, I'm only parsing illusts, not novels
-		return response.body.thumbnails.illust.map(illust => {
-			const id = parseInt(illust.id);
-			const cached = cachedArticlesStorage[id];
-
-			const medias = cached?.medias ?? getEachPageURL(illust.url, illust.pageCount).map(src => ({
-				mediaType: MediaType.Image,
-				src,
-				ratio: null,
-				queueLoadInfo: MediaLoadType.Thumbnail,
-				offsetX: null,
-				offsetY: null,
-				cropRatio: null,
-			}));
-			const liked = cached?.liked ?? false;
-			const bookmarked = illust.bookmarkData !== null;
-
-			return {
-				type: 'normal',
-				article: new PixivArticle(
-					id,
-					medias,
-					illust.title,
-					{
-						id: parseInt(illust.userId),
-						url: getUserUrl(illust.userId),
-						username: illust.userName,
-						name: illust.userName,
-						avatarUrl: avatarHighRes(illust.profileImageUrl),
-					},
-					new Date(illust.createDate),
-					markedAsReadStorage,
-					illust,
-					liked,
-					bookmarked,
-					cached?.medias !== undefined,
-				),
-			};
-		});
+		return response.body.thumbnails.illust.map(illust => illustToArticle(illust, markedAsReadStorage, cachedArticlesStorage));
 	}
 
 	matchParams(params: any): boolean {
@@ -125,7 +91,7 @@ export class FollowAPIEndpoint extends LoadableEndpoint {
 	}
 
 	static readonly constructorInfo: EndpointConstructorInfo = {
-		name: 'SearchEndpoint',
+		name: 'FollowEndpoint',
 		paramTemplate: [
 			['page', 0],
 			['r18', false],
@@ -151,38 +117,7 @@ type FollowAPIResponse = {
 			}
 		}
 		thumbnails: {
-			illust: {
-				id: string
-				title: string
-				illustType: number //enum
-				xRestrict: number
-				restrict: number
-				sl: number
-				url: string
-				description: string
-				tags: string[]
-				userId: string
-				userName: string
-				width: number
-				height: number
-				pageCount: number
-				isBookmarkable: boolean
-				bookmarkData: BookmarkData | null
-				alt: string
-				titleCaptionTranslation: {
-					workTitle: null
-					workCaption: null
-				}
-				createDate: string
-				updateDate: string
-				isUnlisted: boolean
-				isMasked: boolean
-				urls: {
-					//Didn't confirm those were the only sizes
-					[key in '250x250' | '360x360' | '540x540']: string
-				}
-				profileImageUrl: string
-			}[]
+			illust: Illust[]
 			novel: []
 			novelSeries: []
 			novelDraft: []

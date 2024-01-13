@@ -2,6 +2,7 @@
 import '~/services/pixiv/service';
 import '~/services/pixiv/endpoints/user.endpoint';
 import '~/services/pixiv/endpoints/ranking.endpoint';
+import '~/services/pixiv/endpoints/top.endpoint';
 
 import FollowIllusts from './FollowIllusts.svelte';
 import {tryInject} from '~/services/extension';

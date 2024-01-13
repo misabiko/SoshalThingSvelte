@@ -9,6 +9,7 @@
 
 	export let idPair: ArticleIdPair;
 	let article = getReadable(idPair);
+	export let mediaIndex: number | null = null;
 	export let timelineProps: TimelineArticleProps;
 	export let showAllMedia: boolean;
 	export let onMediaClick: (index: number) => void;
@@ -44,6 +45,10 @@
 	$: if ((compact ?? timelineProps.compact) && $article.medias.length === 1 && ($article.medias[0].thumbnail?.ratio ?? 1) < 1) {
 		aspectRatioThumbnail = 1 / ($article.medias[0]?.thumbnail?.ratio ?? 1);
 	}
+
+	let medias = mediaIndex === null
+		? $article.medias.slice(0, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined)
+		: [$article.medias[mediaIndex]];
 </script>
 
 <style>
@@ -103,7 +108,7 @@
 </style>
 
 <div class='socialMedia' class:socialMediaCompact={compact ?? timelineProps.compact} bind:this={divRef}>
-	{#each $article.medias.slice(0, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined) as media, index (index)}
+	{#each medias as media, index (index)}
 		<!--{@const isLoading = loadingStates && loadingStates[index] === LoadingState.Loading}-->
 		{#if loadingStates && loadingStates[index] === LoadingState.NotLoaded}
 			<div class='imagesHolder' class:socialMediaFull={index < timelineProps.fullMedia} style:aspect-ratio={aspectRatioThumbnail}>

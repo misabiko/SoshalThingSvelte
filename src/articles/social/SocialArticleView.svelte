@@ -26,6 +26,7 @@
 	export let mediaRefs: HTMLImageElement[];
 	export let loadingStates: LoadingState[];
 
+	//TODO Propagate article compact to the timeline
 	let compact: boolean | null = null;
 	let quoteCompact: boolean | null = null;
 
@@ -228,6 +229,7 @@
 		<SocialMedia
 			bind:showAllMedia
 			idPair={actualArticle.idPair}
+			mediaIndex={actualArticleProps.mediaIndex}
 			{timelineProps}
 			onMediaClick={index => onMediaClick(actualArticle.idPair, index)}
 			bind:divRef

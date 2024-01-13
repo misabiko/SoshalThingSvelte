@@ -9,6 +9,7 @@ export type ContainerProps = {
 	articleView: ComponentType;
 	timelineArticleProps: TimelineArticleProps;
 	rebalanceTrigger: boolean;
+	separateMedia: boolean;
 }
 
 export function articlesWithUniqueKeys<T extends ArticleWithRefs>(articles: T[]): [T, string][] {

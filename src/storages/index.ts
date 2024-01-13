@@ -128,6 +128,7 @@ export function loadTimelines(): TimelineCollection {
 
 		defaulted.filters = parseFilters(defaulted.filters ?? []);
 
+		//TODO Do wee need the ?? if defaulted has the values?
 		return [id, {
 			...defaultTimeline(),
 			title: defaulted.title,
@@ -155,6 +156,7 @@ export function loadTimelines(): TimelineCollection {
 			mergeReposts: defaulted.mergeReposts ?? true,
 			showArticleCount: defaulted.showArticleCount ?? false,
 			maxMediaCount: defaulted.maxMediaCount ?? 4,
+			separateMedia: defaulted.separateMedia ?? false,
 		}];
 	}));
 }
@@ -473,6 +475,7 @@ type TimelineStorage = {
 	mergeReposts?: boolean
 	showArticleCount?: boolean
 	maxMediaCount?: number | null
+	separateMedia?: boolean
 }
 
 const DEFAULT_TIMELINE_STORAGE: TimelineStorage = {

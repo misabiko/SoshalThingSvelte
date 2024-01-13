@@ -319,6 +319,15 @@
 					on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'maxMediaCount', data.maxMediaCount)}
 			/>
 		</label>
+		<div class='field'>
+			<label>
+				<input type='checkbox'
+					bind:checked={data.separateMedia}
+					on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'separateMedia', data.separateMedia)}
+				/>
+				Split articles per media
+			</label>
+		</div>
 	</section>
 	<section>
 		<h1>Endpoints</h1>

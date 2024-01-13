@@ -144,6 +144,7 @@ type NonRepostDerivedArticleWithRefs = Exclude<DerivedArticleWithRefs, {type: 'r
 export type ArticleProps = ArticleWithRefs<{
 	filteredOut: boolean,
 	nonKeepFilters: FilterInstance[],
+	mediaIndex: number | null,	//Should be always null for reposts
 }>
 
 export interface ArticleIdPair {

@@ -42,8 +42,9 @@
 	let articles: Readable<ArticleProps[]>;
 	$: {
 		//Get flat article ref store array per idPair, derive each then discard the refs, then add props for each
-		articles = derived($articleIdPairs.map(idPair => derived(flatDeriveArticle(idPair), articles => articles[0])),
-			articles => articles.map((a, i) => addProps(a.getArticleWithRefs(), i))
+		articles = derived($articleIdPairs
+				.map(idPair => derived(flatDeriveArticle(idPair), articles => articles[0])),
+			articles => articles.flatMap((a, i) => addPropsRoot(a.getArticleWithRefs(), i))
 		);
 	}
 
@@ -98,7 +99,78 @@
 		return articleProps;
 	});
 
+	function addPropsRoot(articleWithRefs: ArticleWithRefs, index: number): ArticleProps[] {
+		if (data.separateMedia) {
+			switch (articleWithRefs.type) {
+				case 'normal':
+				case 'quote': {
+					const articleProps = addProps(articleWithRefs, index);
+					if (articleProps.type === 'reposts' || articleProps.type === 'repost')
+						throw new Error('addProps({type: normal|quote}) returned a repost');
+
+					const mediaCount = articleProps.article.medias.length;
+					return mediaCount > 0
+						? [...Array(mediaCount)].map((_, mediaIndex) => ({
+							...articleProps,
+							mediaIndex,
+						}))
+						: [articleProps];
+				}
+				case 'repost': {
+					const splitReposted = addPropsRoot(articleWithRefs.reposted, index);
+					const {filteredOut, nonKeepFilters} = useFilters(articleWithRefs, index);
+					return splitReposted.map(reposted => ({
+						type: 'reposts',
+						reposts: [articleWithRefs.article],
+						filteredOut,
+						nonKeepFilters,
+						reposted,
+						mediaIndex: null,
+					} as ArticleProps));
+				}
+				case 'reposts':
+					throw {message: 'Reposts should come from the timeline and not articles themselves', articleWithRefs};
+			}
+		}else {
+			return [addProps(articleWithRefs, index)];
+		}
+	}
+
 	function addProps(articleWithRefs: ArticleWithRefs, index: number): ArticleProps {
+		const {filteredOut, nonKeepFilters} = useFilters(articleWithRefs, index);
+
+		switch (articleWithRefs.type) {
+			case 'normal':
+				return {
+					...articleWithRefs,
+					filteredOut,
+					nonKeepFilters,
+					mediaIndex: null,
+				};
+			case 'repost':
+				return {
+					type: 'reposts',
+					reposts: [articleWithRefs.article],
+					filteredOut,
+					nonKeepFilters,
+					reposted: addProps(articleWithRefs.reposted, index),
+					mediaIndex: null,
+				} as ArticleProps;
+			case 'quote':
+				return {
+					...articleWithRefs,
+					filteredOut,
+					nonKeepFilters,
+					quoted: addProps(articleWithRefs.quoted, index),
+					mediaIndex: null,
+				} as ArticleProps;
+			case 'reposts':
+				throw {message: 'Reposts should come from the timeline and not articles themselves', articleWithRefs};
+		}
+	}
+
+	//TODO Is this the same as the other useFilters?
+	function useFilters(articleWithRefs: ArticleWithRefs, index: number) {
 		// const filteredOut =  !data.filters.every(f => !f.enabled || ((keepArticle(articleWithRefs, index, f.filter) ?? !f.inverted) !== f.inverted));
 		//Caching filters for debugging, could return to boolean later
 		const nonKeepFilters = [];
@@ -109,31 +181,7 @@
 
 		const filteredOut = !!nonKeepFilters.length;
 
-		switch (articleWithRefs.type) {
-			case 'normal':
-				return {
-					...articleWithRefs,
-					filteredOut,
-					nonKeepFilters,
-				};
-			case 'repost':
-				return {
-					type: 'reposts',
-					reposts: [articleWithRefs.article],
-					filteredOut,
-					nonKeepFilters,
-					reposted: addProps(articleWithRefs.reposted, index)
-				} as ArticleProps;
-			case 'quote':
-				return {
-					...articleWithRefs,
-					filteredOut,
-					nonKeepFilters,
-					quoted: addProps(articleWithRefs.quoted, index)
-				} as ArticleProps;
-			default:
-				throw new Error('Unknown article type: ' + articleWithRefs.type);
-		}
+		return {filteredOut, nonKeepFilters};
 	}
 
 	let articleCountLabel: string;
@@ -181,6 +229,7 @@
 		columnCount: fullscreen?.columnCount ?? data.columnCount,
 		rtl: data.rtl,
 		rebalanceTrigger: containerRebalance,
+		separateMedia: data.separateMedia,
 	};
 
 	enum ScrollDirection {

@@ -21,6 +21,7 @@
 
 	export let timelineProps: TimelineArticleProps;
 	export let articleProps: ArticleProps; articleProps;
+	export let actualArticleProps: ArticleProps;
 	export let style = ''; style;
 	export let modal: boolean; modal;
 	export let showAllMedia: boolean;
@@ -43,6 +44,10 @@
 				dropdown.push(action);
 			return [icons, dropdown];
 		}, [[], []] as [ArticleAction[], ArticleAction[]]);
+
+	let medias = actualArticleProps.mediaIndex === null
+		? actualArticle.medias.slice(0, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined)
+		: [actualArticle.medias[actualArticleProps.mediaIndex]];
 </script>
 
 <style>
@@ -119,7 +124,7 @@
 
 <div class='galleryArticle' bind:this={divRef}>
 	<div>
-		{#each actualArticle.medias.slice(0, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined) as media, i (i)}
+		{#each medias as media, i (i)}
 			{@const isLoading = loadingStates[i] === LoadingState.Loading}
 			{#if loadingStates[i] === LoadingState.NotLoaded}
 				<GalleryThumbnail

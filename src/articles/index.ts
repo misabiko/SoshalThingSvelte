@@ -147,6 +147,10 @@ export type ArticleProps = ArticleWithRefs<{
 	mediaIndex: number | null,	//Should be always null for reposts
 }>
 
+export function getIdServiceMediaStr(articleProps: ArticleProps): string {
+	return `${getRootArticle(articleProps).idPairStr}/${articleProps.mediaIndex}`;
+}
+
 export interface ArticleIdPair {
 	service: string;
 	id: ArticleId

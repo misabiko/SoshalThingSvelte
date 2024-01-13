@@ -1,6 +1,6 @@
 <script lang="ts">
 	import ArticleComponent from '~/articles/ArticleComponent.svelte';
-	import type {ArticleProps} from '~/articles';
+	import {type ArticleProps, getIdServiceMediaStr} from '~/articles';
 	import {getActualArticle, getRootArticle} from '~/articles';
 	import type {ContainerProps} from './index';
 
@@ -12,7 +12,7 @@
 	let uniqueArticles: Record<string, { articleProps: ArticleProps, index: number, mediaIndex: number | null }>;
 	$: if (props.separateMedia) {
 		uniqueArticles = Object.fromEntries(props.articles.map((articleProps, index) => [
-			`${getRootArticle(articleProps).idPairStr}/${articleProps.mediaIndex}`,
+			getIdServiceMediaStr(articleProps),
 			{articleProps, index, mediaIndex: articleProps.mediaIndex}
 		]));
 	}else {
@@ -20,7 +20,7 @@
 		const idServiceMedias = new Set<string>();
 		for (const a of props.articles) {
 			let lastSize = idServiceMedias.size;
-			const idServiceMedia = `${getRootArticle(a).idPairStr}/${a.mediaIndex}`;
+			const idServiceMedia = getIdServiceMediaStr(a);
 			idServiceMedias.add(idServiceMedia);
 			if (idServiceMedias.size > lastSize) {
 				uniqueArticles[idServiceMedia] = {articleProps: a, index: lastSize, mediaIndex: 0};

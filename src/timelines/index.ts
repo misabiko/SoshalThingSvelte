@@ -19,6 +19,7 @@ export type TimelineData = {
 	addedIdPairs: Writable<ArticleIdPair[]>;
 	//TODO Give timelines a list of article lists
 	articles: Writable<ArticleIdPair[]>;
+	articlesOrder: Writable<null | string[]>;
 	section: { useSection: boolean; count: number };
 	container: ComponentType;
 	articleView: ComponentType;
@@ -49,6 +50,7 @@ export function defaultTimeline(articles: ArticleIdPair[] = []): TimelineData {
 		endpoints: [],
 		addedIdPairs: writable([...articles]),
 		articles: writable(articles),
+		articlesOrder: writable(null),
 		section: { useSection: false, count: 100 },
 		container: ColumnContainer,
 		articleView: SocialArticleView,

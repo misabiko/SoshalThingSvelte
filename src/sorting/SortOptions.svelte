@@ -4,9 +4,11 @@
 	import {directionLabel, genericSortMethods} from './index';
 	import {getServices, type SortMethodInfo} from '~/services/service';
 	import {updateTimelinesStorageSortInfo} from '~/storages';
+	import type {Writable} from 'svelte/store';
 
 	export let timelineId: string | null;
 	export let sortInfo: SortInfo;
+	export let articlesOrder: Writable<null | string[]>;
 	$: {
 		if (timelineId !== null)
 			updateTimelinesStorageSortInfo(timelineId, sortInfo);
@@ -50,7 +52,12 @@
 				{#each [false, true] as reversed}
 					<button
 						class='dropdown-item'
-						on:click={() => {sortInfo.method = method; sortInfo.customMethod = null; sortInfo.reversed = reversed;}}
+						on:click={() => {
+							sortInfo.method = method;
+							sortInfo.customMethod = null;
+							sortInfo.reversed = reversed;
+							$articlesOrder = null;
+						}}
 					>
 						{ `${methodName(method)} - ${directionLabel(method, reversed)}` }
 					</button>
@@ -67,13 +74,17 @@
 								service: method.service
 							};
 							sortInfo.reversed = reversed;
+							$articlesOrder = null;
 						}}
 					>
 						{ `${method.methodInfo.name} - ${method.methodInfo.directionLabel(reversed)}` }
 					</button>
 				{/each}
 			{/each}
-			<button class='dropdown-item' on:click={() => sortInfo.method = null}>
+			<button class='dropdown-item' on:click={() => {
+				sortInfo.method = null;
+				$articlesOrder = null;
+			}}>
 				Unsorted
 			</button>
 		</Dropdown>

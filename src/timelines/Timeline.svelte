@@ -4,7 +4,7 @@
 	import {
 		type ArticleIdPair,
 		type ArticleProps,
-		type ArticleWithRefs, flatDeriveArticle
+		type ArticleWithRefs, flatDeriveArticle, getIdServiceMediaStr
 	} from '~/articles';
 	import {
 		articleWithRefToArray,
@@ -38,15 +38,27 @@
 	let containerRebalance = false;
 
 	let articleIdPairs: Readable<ArticleIdPair[]> = derived([readonly(data.articles), loadingStore], ([a, _]) => a);
+	let articlesOrder = readonly(data.articlesOrder);
 
-	let articles: Readable<ArticleProps[]>;
+	let preOrderArticles: Readable<Record<string, ArticleProps>>;
 	$: {
 		//Get flat article ref store array per idPair, derive each then discard the refs, then add props for each
-		articles = derived($articleIdPairs
+		preOrderArticles = derived($articleIdPairs
 				.map(idPair => derived(flatDeriveArticle(idPair), articles => articles[0])),
-			articles => articles.flatMap((a, i) => addPropsRoot(a.getArticleWithRefs(), i))
+			//Might have to give in to using .find if we want to keep duplicate articles
+			articles => Object.fromEntries(articles
+				.flatMap((a, i) => addPropsRoot(a.getArticleWithRefs(), i))
+				.map(a => [getIdServiceMediaStr(a), a]))
 		);
 	}
+
+	let articles: Readable<ArticleProps[]>;
+	$: articles = derived([preOrderArticles, articlesOrder], ([a, order]) => {
+		if (order === null)
+			return Object.values(a);
+
+		return order.map(id => a[id]);
+	});
 
 	let filteredArticles: Readable<ArticleProps[]>;
 	$: filteredArticles = derived(articles, articleProps => {
@@ -246,8 +258,11 @@
 	};
 
 	function shuffle() {
-		data.articles.update(idPairs => {
-			let currentIndex = idPairs.length,  randomIndex;
+		data.articlesOrder.update(articleIndex => {
+			if (articleIndex === null)
+				articleIndex = get(articles).map(getIdServiceMediaStr);
+
+			let currentIndex = articleIndex.length,  randomIndex;
 
 			// While there remain elements to shuffle...
 			while (currentIndex != 0) {
@@ -257,13 +272,13 @@
 				currentIndex--;
 
 				// And swap it with the current element.
-				[idPairs[currentIndex], idPairs[randomIndex]] = [
-					idPairs[randomIndex], idPairs[currentIndex]];
+				[articleIndex[currentIndex], articleIndex[randomIndex]] = [
+					articleIndex[randomIndex], articleIndex[currentIndex]];
 			}
 
 			data.sortInfo.method = null;
 			containerRebalance = !containerRebalance;
-			return idPairs;
+			return articleIndex;
 		});
 	}
 

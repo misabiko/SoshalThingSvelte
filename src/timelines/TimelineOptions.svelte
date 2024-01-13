@@ -341,7 +341,7 @@
 		<button on:click={removeFiltered}>Remove filtered articles</button>
 	</section>
 	<section>
-		<SortOptions {timelineId} bind:sortInfo={data.sortInfo} {sortOnce}/>
+		<SortOptions {timelineId} bind:sortInfo={data.sortInfo} articlesOrder={data.articlesOrder} {sortOnce}/>
 	</section>
 	<section>
 		<button on:click={() => console.log(data)}>

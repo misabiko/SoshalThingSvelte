@@ -8,9 +8,10 @@
 	import Modal from '../Modal.svelte';
 	import {MediaLoadType} from './media';
 	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
+	import {writable, type Writable} from 'svelte/store';
 
 	export let articleProps: ArticleProps;
-	let actualArticleProps = getActualArticleRefs(articleProps);
+	let actualArticleProps = getActualArticleRefs(articleProps) as ArticleProps;
 	export let timelineProps: TimelineArticleProps;
 	export let view: ComponentType;
 	export let style = ''; style;
@@ -26,11 +27,14 @@
 
 	let divRef: HTMLDivElement | null = null;
 	let mediaRefs: HTMLImageElement[] = [];
-	let loadingStates: LoadingState[] = [];
+	let loadingStates: Writable<LoadingState[]> = writable([]);
 	$: {
-		loadingStates = [];
-		for (let mediaIndex = 0; mediaIndex < actualArticle.medias.length; ++mediaIndex)
-			loadingStates.push(loadingStore.getLoadingState(actualArticle.idPair, mediaIndex, timelineProps.shouldLoadMedia));
+		$loadingStates = [];
+		if (actualArticleProps.mediaIndex === null) {
+			for (let mediaIndex = 0; mediaIndex < Math.min(actualArticle.medias.length, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : Infinity); ++mediaIndex)
+				$loadingStates.push(loadingStore.getLoadingState(actualArticle.idPair, mediaIndex, timelineProps.shouldLoadMedia));
+		}else
+			$loadingStates.push(loadingStore.getLoadingState(actualArticle.idPair, actualArticleProps.mediaIndex, timelineProps.shouldLoadMedia));
 	}
 
 	afterUpdate(() => {
@@ -142,6 +146,6 @@
 		{onMediaClick}
 		bind:divRef
 		bind:mediaRefs
-		bind:loadingStates
+		{loadingStates}
 	/>
 </article>

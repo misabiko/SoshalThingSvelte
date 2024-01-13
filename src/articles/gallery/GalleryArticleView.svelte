@@ -18,6 +18,7 @@
 	import GalleryThumbnail from './GalleryThumbnail.svelte';
 	import GalleryImage from './GalleryImage.svelte';
 	import {type ArticleAction, getGenericActions} from '~/services/actions';
+	import type {Readable} from 'svelte/store';
 
 	export let timelineProps: TimelineArticleProps;
 	export let articleProps: ArticleProps; articleProps;
@@ -33,7 +34,7 @@
 
 	export let divRef: HTMLDivElement | null;
 	export let mediaRefs: HTMLImageElement[];
-	export let loadingStates: LoadingState[];
+	export let loadingStates: Readable<LoadingState[]>;
 
 	let actions: [ArticleAction[], ArticleAction[]] = [...Object.values(getServices()[rootArticle.idPair.service].articleActions), ...getGenericActions(rootArticle)]
 		.sort((a, b) => a.index - b.index)
@@ -45,7 +46,7 @@
 			return [icons, dropdown];
 		}, [[], []] as [ArticleAction[], ArticleAction[]]);
 
-	let medias = actualArticleProps.mediaIndex === null
+	$: medias = actualArticleProps.mediaIndex === null
 		? actualArticle.medias.slice(0, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined)
 		: [actualArticle.medias[actualArticleProps.mediaIndex]];
 </script>
@@ -125,8 +126,8 @@
 <div class='galleryArticle' bind:this={divRef}>
 	<div>
 		{#each medias as media, i (i)}
-			{@const isLoading = loadingStates[i] === LoadingState.Loading}
-			{#if loadingStates[i] === LoadingState.NotLoaded}
+			{@const isLoading = $loadingStates[i] === LoadingState.Loading}
+			{#if $loadingStates[i] === LoadingState.NotLoaded}
 				<GalleryThumbnail
 						{actualArticle}
 						mediaIndex={i}

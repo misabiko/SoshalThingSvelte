@@ -314,7 +314,7 @@
 			<input
 					class='input'
 					type='number'
-					bind:value={data.maxMediaCount}
+					value={data.maxMediaCount}
 					min={1}
 					on:change={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'maxMediaCount', data.maxMediaCount)}
 			/>

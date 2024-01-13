@@ -210,10 +210,11 @@
 			if (!actualArticle.fetched)
 				fetchArticle(actualArticle.idPair);
 			if (data.shouldLoadMedia)
-				for (const article of articleWithRefToArray(articleProps))
-					for (let i = 0; i < article.medias.length; ++i)
+				for (const article of articleWithRefToArray(articleProps)) {
+					for (let i = 0; i < Math.min(article.medias.length, data.maxMediaCount ?? Infinity); ++i)
 						if (article.medias[i].loaded === false)
 							loadingStore.requestLoad(article.idPair, i);
+				}
 		}
 	}
 

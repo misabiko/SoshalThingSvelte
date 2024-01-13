@@ -5,7 +5,8 @@
 	import Fa from 'svelte-fa';
 	import {faImages} from '@fortawesome/free-solid-svg-icons';
 	import {MediaType} from '../media';
-	import {LoadingState} from '~/bufferedMediaLoading';
+	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
+	import type {Readable} from 'svelte/store';
 
 	export let idPair: ArticleIdPair;
 	let article = getReadable(idPair);
@@ -16,7 +17,7 @@
 
 	export let divRef: HTMLDivElement | null = null;
 	export let mediaRefs: (HTMLImageElement | HTMLVideoElement)[] = [];
-	export let loadingStates: LoadingState[] | null = null;
+	export let loadingStates: Readable<LoadingState[]>;
 
 	export let compact: boolean | null;
 
@@ -46,7 +47,7 @@
 		aspectRatioThumbnail = 1 / ($article.medias[0]?.thumbnail?.ratio ?? 1);
 	}
 
-	let medias = mediaIndex === null
+	$: medias = mediaIndex === null
 		? $article.medias.slice(0, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined)
 		: [$article.medias[mediaIndex]];
 </script>
@@ -109,8 +110,8 @@
 
 <div class='socialMedia' class:socialMediaCompact={compact ?? timelineProps.compact} bind:this={divRef}>
 	{#each medias as media, index (index)}
-		<!--{@const isLoading = loadingStates && loadingStates[index] === LoadingState.Loading}-->
-		{#if loadingStates && loadingStates[index] === LoadingState.NotLoaded}
+		{@const isLoading = $loadingStates[index] === LoadingState.Loading}
+		{#if $loadingStates[index] === LoadingState.NotLoaded}
 			<div class='imagesHolder' class:socialMediaFull={index < timelineProps.fullMedia} style:aspect-ratio={aspectRatioThumbnail}>
 				<div class='imgPlaceHolder' style:aspect-ratio={1 / (media.ratio ?? 1)} style:display='none'></div>
 				<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
@@ -133,6 +134,8 @@
 						src={media.src}
 						on:click={() => onMediaClick(index)}
 						bind:this={mediaRefs[index]}
+						on:load={() => isLoading ? loadingStore.mediaLoaded($article.idPair, index) : undefined}
+						class:articleMediaLoading={isLoading}
 				/>
 			</div>
 		{:else if !timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}

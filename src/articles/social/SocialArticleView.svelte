@@ -9,6 +9,7 @@
 	import {newUserTimeline} from '~/timelines';
 	import {LoadingState} from '~/bufferedMediaLoading';
 	import SocialQuote from '~/articles/social/SocialQuote.svelte';
+	import type {Readable} from 'svelte/store';
 
 	export let timelineProps: TimelineArticleProps;
 	export let articleProps: ArticleProps;
@@ -24,7 +25,7 @@
 
 	export let divRef: HTMLDivElement | null;
 	export let mediaRefs: HTMLImageElement[];
-	export let loadingStates: LoadingState[];
+	export let loadingStates: Readable<LoadingState[]>;
 
 	//TODO Propagate article compact to the timeline
 	let compact: boolean | null = null;
@@ -234,7 +235,7 @@
 			onMediaClick={index => onMediaClick(actualArticle.idPair, index)}
 			bind:divRef
 			bind:mediaRefs
-			bind:loadingStates
+			{loadingStates}
 			{compact}
 		/>
 	{/if}

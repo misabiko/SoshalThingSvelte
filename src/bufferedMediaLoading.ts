@@ -15,9 +15,9 @@ type LoadingInfo = {
 const maxLoading = 5;
 
 export enum LoadingState {
-	NotLoaded,
-	Loading,
-	Loaded,
+	NotLoaded = 'NotLoaded',
+	Loading = 'Loading',
+	Loaded = 'Loaded',
 }
 
 export const loadingStore = (() => {

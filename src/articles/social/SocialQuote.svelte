@@ -4,7 +4,8 @@
 	import SocialNav from './SocialNav.svelte';
 	import SocialMedia from './SocialMedia.svelte';
 	import {getReadable} from '~/services/service';
-	import {type Readable} from 'svelte/store';
+	import {type Readable, writable, type Writable} from 'svelte/store';
+	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
 
 	export let idPair: ArticleIdPair;
 	export let timelineProps: TimelineArticleProps;
@@ -17,6 +18,13 @@
 	export let onLogJSON: () => void;
 
 	let article: Readable<Article> = getReadable(idPair);
+
+	let loadingStates: Writable<LoadingState[]> = writable([]);
+	$: {
+		$loadingStates = [];
+		for (let mediaIndex = 0; mediaIndex < Math.min($article.medias.length, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : Infinity); ++mediaIndex)
+			$loadingStates.push(loadingStore.getLoadingState($article.idPair, mediaIndex, timelineProps.shouldLoadMedia));
+	}
 </script>
 
 <style>
@@ -79,6 +87,7 @@
 					{timelineProps}
 					onMediaClick={index => onMediaClick($article.idPair, index)}
 					{compact}
+					{loadingStates}
 			/>
 		{/if}
 	{/if}

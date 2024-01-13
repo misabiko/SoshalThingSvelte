@@ -15,7 +15,6 @@
 	export let articleProps: ArticleProps;
 	export let actualArticleProps: ArticleProps;
 	export let modal: boolean; modal;
-	export let showAllMedia: boolean;
 	export let rootArticle: Readonly<Article>;
 	// $: idPair = rootArticle.idPair;
 	export let actualArticle: Readonly<Article>;
@@ -208,7 +207,6 @@
 					{timelineProps}
 					filteredOut={quoted.filteredOut}
 					{modal}
-					{showAllMedia}
 					bind:compact={quoteCompact}
 					{onMediaClick}
 					{onLogData}
@@ -228,7 +226,6 @@
 	</div>
 	{#if actualArticle.medias.length}
 		<SocialMedia
-			bind:showAllMedia
 			idPair={actualArticle.idPair}
 			mediaIndex={actualArticleProps.mediaIndex}
 			{timelineProps}

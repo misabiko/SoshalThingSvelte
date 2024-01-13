@@ -4,11 +4,11 @@
 	import {
 		type ArticleIdPair,
 		type ArticleProps,
-		type ArticleWithRefs, flatDeriveArticle, getIdServiceMediaStr
+		type ArticleWithRefs, flatDeriveArticle, getActualArticleRefs, getIdServiceMediaStr
 	} from '~/articles';
 	import {
 		articleWithRefToArray,
-		getActualArticle, getRootArticle, idPairEqual,
+		getRootArticle, idPairEqual,
 	} from '~/articles';
 	import {fetchArticle} from '~/services/service';
 	import type {FullscreenInfo, TimelineData} from './index';
@@ -39,6 +39,8 @@
 
 	let articleIdPairs: Readable<ArticleIdPair[]> = derived([readonly(data.articles), loadingStore], ([a, _]) => a);
 	let articlesOrder = readonly(data.articlesOrder);
+
+	let showAllMediaArticles = data.showAllMediaArticles;
 
 	let preOrderArticles: Readable<Record<string, ArticleProps>>;
 	$: {
@@ -102,7 +104,7 @@
 
 		if (data.sortInfo.method !== null)
 			articleProps.sort(compare(data.sortInfo));
-		if (data.sortInfo.reversed)
+		else if (data.sortInfo.reversed)
 			articleProps.reverse();
 
 		if (data.section.useSection)
@@ -120,7 +122,7 @@
 					if (articleProps.type === 'reposts' || articleProps.type === 'repost')
 						throw new Error('addProps({type: normal|quote}) returned a repost');
 
-					const mediaCount = articleProps.article.medias.length;
+					const mediaCount = Math.min(!$showAllMediaArticles.has(articleProps.article.idPairStr) && data.maxMediaCount !== null ? data.maxMediaCount : Infinity, articleProps.article.medias.length);
 					return mediaCount > 0
 						? [...Array(mediaCount)].map((_, mediaIndex) => ({
 							...articleProps,
@@ -206,12 +208,15 @@
 
 	$: if (data.shouldLoadMedia && $filteredArticles.length) {
 		for (const articleProps of $filteredArticles) {
-			const actualArticle = getActualArticle(articleProps);
-			if (!actualArticle.fetched)
-				fetchArticle(actualArticle.idPair);
+			const actualArticleProps = getActualArticleRefs(articleProps) as ArticleProps;
+			if (actualArticleProps.type === 'repost' || actualArticleProps.type === 'reposts')
+				throw new Error('Actual article is repost');
+			if (!actualArticleProps.article.fetched)
+				fetchArticle(actualArticleProps.article.idPair);
 			if (data.shouldLoadMedia)
 				for (const article of articleWithRefToArray(articleProps)) {
-					for (let i = 0; i < Math.min(article.medias.length, data.maxMediaCount ?? Infinity); ++i)
+					const mediaCount = Math.min(actualArticleProps.article.medias.length, !$showAllMediaArticles.has(article.idPairStr) && data.maxMediaCount !== null ? data.maxMediaCount : Infinity);
+					for (let i = 0; i < mediaCount; ++i)
 						if (article.medias[i].loaded === false)
 							loadingStore.requestLoad(article.idPair, i);
 				}
@@ -237,6 +242,7 @@
 			shouldLoadMedia: data.shouldLoadMedia,
 			maxMediaCount: data.maxMediaCount,
 			setModalTimeline,
+			showAllMediaArticles: data.showAllMediaArticles,
 		},
 		articleView: data.articleView,
 		columnCount: fullscreen?.columnCount ?? data.columnCount,
@@ -345,10 +351,11 @@
 	}
 
 	function sortOnce(method: SortMethod, reversed: boolean) {
-		const sorted = get(articles).sort(compare({method, reversed, customMethod: null}));
-		if (reversed)
-			sorted.reverse();
-		data.articles.set(sorted.map(a => getRootArticle(a).idPair));
+		//Setting reversed otherwise the timeline will reverse the order again
+		data.sortInfo.reversed = false;
+		data.articlesOrder.set(get(articles)
+			.sort(compare({method, reversed, customMethod: null}))
+			.map(getIdServiceMediaStr));
 	}
 
 	function removeFiltered() {

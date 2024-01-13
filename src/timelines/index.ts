@@ -41,6 +41,7 @@ export type TimelineData = {
 	mergeReposts: boolean;
 	showArticleCount: boolean;
 	maxMediaCount: number | null;
+	showAllMediaArticles: Writable<Set<string>>;
 	separateMedia: boolean;
 }
 
@@ -74,6 +75,7 @@ export function defaultTimeline(articles: ArticleIdPair[] = []): TimelineData {
 		mergeReposts: true,
 		showArticleCount: false,
 		maxMediaCount: 4,
+		showAllMediaArticles: writable(new Set()),
 		separateMedia: false,
 		muteVideos: false,
 	};

@@ -1,6 +1,6 @@
 import type {TimelineData} from '~/timelines';
 import {getServices, getWritable} from '~/services/service';
-import type {Readable} from 'svelte/store';
+import type {Readable, Writable} from 'svelte/store';
 import {get} from 'svelte/store';
 import type {ArticleMedia} from './media';
 import type {FilterInstance} from '~/filters';
@@ -256,6 +256,7 @@ export type TimelineArticleProps = {
 	shouldLoadMedia: boolean;
 	maxMediaCount: number | null;
 	setModalTimeline: (data: TimelineData, width?: number) => void;
+	showAllMediaArticles: Writable<Set<string>>,
 }
 
 const MONTH_ABBREVS: string[] = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];

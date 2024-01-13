@@ -18,19 +18,19 @@
 	import GalleryThumbnail from './GalleryThumbnail.svelte';
 	import GalleryImage from './GalleryImage.svelte';
 	import {type ArticleAction, getGenericActions} from '~/services/actions';
-	import type {Readable} from 'svelte/store';
+	import {derived, type Readable} from 'svelte/store';
 
 	export let timelineProps: TimelineArticleProps;
 	export let articleProps: ArticleProps; articleProps;
 	export let actualArticleProps: ArticleProps;
 	export let style = ''; style;
 	export let modal: boolean; modal;
-	export let showAllMedia: boolean;
 	export let rootArticle: Readonly<Article>; rootArticle;
 	export let actualArticle: Readonly<Article>;
 	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number;
 	export let onLogData: () => void;
 	export let onLogJSON: () => void;
+	let showAllMedia = derived(timelineProps.showAllMediaArticles, articles => articles.has(rootArticle.idPairStr));
 
 	export let divRef: HTMLDivElement | null;
 	export let mediaRefs: HTMLImageElement[];
@@ -47,7 +47,7 @@
 		}, [[], []] as [ArticleAction[], ArticleAction[]]);
 
 	$: medias = actualArticleProps.mediaIndex === null
-		? actualArticle.medias.slice(0, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined)
+		? actualArticle.medias.slice(0, !$showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined)
 		: [actualArticle.medias[actualArticleProps.mediaIndex]];
 </script>
 
@@ -171,9 +171,9 @@
 				</video>
 			{/if}
 		{/each}
-		{#if !showAllMedia && timelineProps.maxMediaCount !== null && actualArticle.medias.length > timelineProps.maxMediaCount}
+		{#if !$showAllMedia && timelineProps.maxMediaCount !== null && actualArticle.medias.length > timelineProps.maxMediaCount}
 			<div class='moreMedia'>
-				<button class='borderless-button' title='Load more medias' on:click={() => showAllMedia = true}>
+				<button class='borderless-button' title='Load more medias' on:click={() => timelineProps.showAllMediaArticles.update(a => {a.add(rootArticle.idPairStr); return a;})}>
 					<Fa icon={faImages} size='2x'/>
 				</button>
 			</div>

@@ -6,14 +6,14 @@
 	import {faImages} from '@fortawesome/free-solid-svg-icons';
 	import {MediaType} from '../media';
 	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
-	import type {Readable} from 'svelte/store';
+	import {derived, type Readable} from 'svelte/store';
 
 	export let idPair: ArticleIdPair;
 	let article = getReadable(idPair);
 	export let mediaIndex: number | null = null;
 	export let timelineProps: TimelineArticleProps;
-	export let showAllMedia: boolean;
 	export let onMediaClick: (index: number) => void;
+	let showAllMedia = derived(timelineProps.showAllMediaArticles, articles => articles.has($article.idPairStr));
 
 	export let divRef: HTMLDivElement | null = null;
 	export let mediaRefs: (HTMLImageElement | HTMLVideoElement)[] = [];
@@ -48,7 +48,7 @@
 	}
 
 	$: medias = mediaIndex === null
-		? $article.medias.slice(0, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined)
+		? $article.medias.slice(0, !$showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined)
 		: [$article.medias[mediaIndex]];
 </script>
 
@@ -166,9 +166,9 @@
 			</video>
 		{/if}
 	{/each}
-	{#if !showAllMedia && timelineProps.maxMediaCount !== null && $article.medias.length > timelineProps.maxMediaCount}
+	{#if !$showAllMedia && timelineProps.maxMediaCount !== null && $article.medias.length > timelineProps.maxMediaCount}
 		<div class='moreMedia'>
-			<button class='borderless-button' title='Load more medias' on:click={() => showAllMedia = true}>
+			<button class='borderless-button' title='Load more medias' on:click={() => timelineProps.showAllMediaArticles.update(a => {a.add($article.idPairStr); return a;})}>
 				<Fa icon={faImages} size='2x'/>
 			</button>
 		</div>

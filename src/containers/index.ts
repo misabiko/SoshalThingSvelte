@@ -1,4 +1,4 @@
-import type {ArticleWithRefs, ArticleProps, TimelineArticleProps} from '~/articles';
+import {type ArticleWithRefs, type ArticleProps, type TimelineArticleProps, getIdServiceMediaStr} from '~/articles';
 import type {ComponentType} from 'svelte';
 import {getRootArticle} from '~/articles';
 
@@ -12,13 +12,13 @@ export type ContainerProps = {
 	separateMedia: boolean;
 }
 
-export function articlesWithUniqueKeys<T extends ArticleWithRefs>(articles: T[]): [T, string][] {
+export function articlesWithUniqueKeys(articles: ArticleProps[]): [ArticleProps, string][] {
 	const idPairs = new Set<string>();
 	return articles.map(a => {
 		let i = 0;
-		let key = `${getRootArticle(a).idPairStr}/${i}`;
+		let key = `${getIdServiceMediaStr(a)}/${i}`;
 		while (idPairs.has(key)) {
-			key = `${getRootArticle(a).idPairStr}/${++i}`;
+			key = `${getIdServiceMediaStr(a)}/${++i}`;
 		}
 
 		idPairs.add(key);

@@ -1,21 +1,10 @@
-import {
-	type EndpointConstructorInfo,
-	LoadableEndpoint,
-	PageEndpoint,
-	RefreshType
-} from '../../endpoints';
+import {type EndpointConstructorInfo, LoadableEndpoint, PageEndpoint, RefreshType} from '../../endpoints';
 import type {ArticleWithRefs} from '~/articles';
 import {PixivService} from '../service';
 import type {PixivUser} from '../article';
 import PixivArticle, {type CachedPixivArticle} from '../article';
 import {getCachedArticlesStorage, getMarkedAsReadStorage} from '~/storages/serviceCache';
-import {
-	getEachPageURL,
-	getUserUrl,
-	parseThumbnail,
-	type PixivResponse,
-	type PixivResponseWithWorks,
-} from './index';
+import {getEachPageURL, getUserUrl, parseThumbnail, type PixivResponse, type PixivResponseWithWorks,} from './index';
 import {MediaLoadType, MediaType} from '~/articles/media';
 import {avatarHighRes} from './bookmarks.endpoint';
 import {getServices, registerEndpointConstructor} from '../../service';
@@ -105,10 +94,12 @@ export class UserAPIEndpoint extends LoadableEndpoint {
 			this.workIds = workIds;
 		}
 
-		if (this.workIds.length) {
+		const workIds = this.workIds.slice(50 * this.currentPage, 50 * (this.currentPage + 1));
+
+		if (workIds.length) {
 			const url = new URL(`https://www.pixiv.net/ajax/user/${this.userId}/profile/illusts`);
 
-			for (const id of this.workIds.slice(50 * this.currentPage, 50 * (this.currentPage + 1)))
+			for (const id of workIds)
 				url.searchParams.append('ids[]', id.toString());
 			url.searchParams.set('work_category', 'illust');
 			url.searchParams.set('is_first_page', (this.currentPage === 0 ? 1 : 0).toString());

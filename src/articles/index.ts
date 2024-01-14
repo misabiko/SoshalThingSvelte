@@ -10,7 +10,7 @@ export default abstract class Article {
 
 	readonly idPair: ArticleIdPair;
 	readonly idPairStr: string;
-	abstract numberId: number | bigint
+	abstract numberId: number | bigint;
 
 	readonly text?: string;
 	readonly textHtml?: string;
@@ -27,17 +27,17 @@ export default abstract class Article {
 	rawSource: any;
 
 	protected constructor(params: {
-		id: ArticleId,
-		text?: string,
-		textHtml?: string,
-		url?: string,
-		medias: ArticleMedia[],
+		id: ArticleId
+		text?: string
+		textHtml?: string
+		url?: string
+		medias: ArticleMedia[]
 		//TODO Remove markedAsRead from Article
-		markedAsRead?: boolean,
-		markedAsReadStorage: string[],
-		refs?: ArticleRefIdPair | null,
-		fetched?: boolean,
-		rawSource?: any,
+		markedAsRead?: boolean
+		markedAsReadStorage: string[]
+		refs?: ArticleRefIdPair | null
+		fetched?: boolean
+		rawSource?: any
 	}) {
 		this.text = params.text;
 		this.textHtml = params.textHtml;
@@ -91,13 +91,13 @@ export default abstract class Article {
 	}
 }
 
-export type ArticleId = string | number | bigint
+export type ArticleId = string | number | bigint;
 
 export interface ArticleAuthor {
-	username: string;	//TODO Make username optional and rename name to displayName
-	name: string;
-	url: string;
-	avatarUrl?: string;
+	username: string	//TODO Make username optional and rename name to displayName
+	name: string
+	url: string
+	avatarUrl?: string
 }
 
 export type ArticleWithRefs<Extra extends object = object> = Readonly<(
@@ -120,8 +120,8 @@ export type ArticleWithRefs<Extra extends object = object> = Readonly<(
 		article: Article
 		quoted: NonRepostArticleWithRefs<Extra>
 	}
-) & Extra>
-type NonRepostArticleWithRefs<Extra extends object = object> = Exclude<ArticleWithRefs<Extra>, {type: 'repost' | 'reposts'}>
+) & Extra>;
+type NonRepostArticleWithRefs<Extra extends object = object> = Exclude<ArticleWithRefs<Extra>, {type: 'repost' | 'reposts';}>;
 
 export type DerivedArticleWithRefs = Readonly<
 	| {
@@ -138,21 +138,21 @@ export type DerivedArticleWithRefs = Readonly<
 		article: Article
 		quoted: NonRepostDerivedArticleWithRefs
 	}
->
-type NonRepostDerivedArticleWithRefs = Exclude<DerivedArticleWithRefs, {type: 'repost' | 'reposts'}>
+>;
+type NonRepostDerivedArticleWithRefs = Exclude<DerivedArticleWithRefs, {type: 'repost' | 'reposts';}>;
 
 export type ArticleProps = ArticleWithRefs<{
-	filteredOut: boolean,
-	nonKeepFilters: FilterInstance[],
-	mediaIndex: number | null,	//Should be always null for reposts
-}>
+	filteredOut: boolean
+	nonKeepFilters: FilterInstance[]
+	mediaIndex: number | null	//Should be always null for reposts
+}>;
 
 export function getIdServiceMediaStr(articleProps: ArticleProps): string {
 	return `${getRootArticle(articleProps).idPairStr}/${articleProps.mediaIndex}`;
 }
 
 export interface ArticleIdPair {
-	service: string;
+	service: string
 	id: ArticleId
 }
 
@@ -162,13 +162,13 @@ export function idPairEqual(a: ArticleIdPair, b: ArticleIdPair) {
 
 export type ArticleRefIdPair =
 	{
-		type: 'repost',
-		reposted: ArticleIdPair,
+		type: 'repost'
+		reposted: ArticleIdPair
 	} |
 	{
-		type: 'quote',
-		quoted: ArticleIdPair,
-	}
+		type: 'quote'
+		quoted: ArticleIdPair
+	};
 
 export function getRefed(ref: ArticleRefIdPair): ArticleIdPair[] {
 	switch (ref.type) {
@@ -246,18 +246,18 @@ export function flatDeriveArticle(idPair: ArticleIdPair): Readable<Article>[] {
 
 //Props for every article in the timeline
 export type TimelineArticleProps = {
-	animatedAsGifs: boolean;
-	muteVideos: boolean;
-	compact: boolean;
+	animatedAsGifs: boolean
+	muteVideos: boolean
+	compact: boolean
 	/// If true, the media stays full even when compact is true
-	fullMedia: number;
-	hideQuoteMedia: boolean;
-	hideText: boolean;
-	shouldLoadMedia: boolean;
-	maxMediaCount: number | null;
-	setModalTimeline: (data: TimelineData, width?: number) => void;
-	showAllMediaArticles: Writable<Set<string>>,
-}
+	fullMedia: number
+	hideQuoteMedia: boolean
+	hideText: boolean
+	shouldLoadMedia: boolean
+	maxMediaCount: number | null
+	setModalTimeline: (data: TimelineData, width?: number) => void
+	showAllMediaArticles: Writable<Set<string>>
+};
 
 const MONTH_ABBREVS: string[] = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 

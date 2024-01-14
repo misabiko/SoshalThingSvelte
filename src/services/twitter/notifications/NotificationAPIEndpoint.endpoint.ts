@@ -389,15 +389,15 @@ type NotificationResponse = {
 			retweeted: boolean
 			lang: string
 
-			retweeted_status?: any;
-			retweeted_status_id_str?: string;
+			retweeted_status?: any
+			retweeted_status_id_str?: string
 		}>
 		notifications: Record<string, {
 			id: string
 			timestampMs: string
 			icon: {
 				id: string // "heart_icon"
-			},
+			}
 			message: {
 				text: string
 				entities: {
@@ -408,21 +408,21 @@ type NotificationResponse = {
 							id: string
 						}
 					}
-				}[],
+				}[]
 				rtl: boolean
-			},
+			}
 			template: {
 				aggregateUserActionsV1: {
 					targetObjects: {
 						tweet: {
 							id: string
 						}
-					}[],
+					}[]
 					fromUsers: {
 						user: {
 							id: string
 						}
-					}[],
+					}[]
 					showAllLinkText?: 'Show all'
 				}
 			}

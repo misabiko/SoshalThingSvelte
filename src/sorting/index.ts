@@ -11,9 +11,9 @@ export type SortInfo = {
 	customMethod: {
 		service: string
 		method: string
-	},
+	}
 	reversed: boolean
-}
+};
 
 export enum SortMethod {
 	Id,

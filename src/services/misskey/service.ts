@@ -11,13 +11,13 @@ export const MisskeyService: MisskeyServiceType = {
 registerService(MisskeyService);
 
 interface MisskeyServiceType extends Service<MisskeyArticle> {
-	cli?: APIClient;
-	emojis?: Emoji[] | null;
+	cli?: APIClient
+	emojis?: Emoji[] | null
 }
 
 type Emoji = {
-	aliases: string[],
+	aliases: string[]
 	name: string
-	category: null,
+	category: null
 	url: string
 };

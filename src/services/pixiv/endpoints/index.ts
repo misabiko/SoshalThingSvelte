@@ -93,7 +93,7 @@ export type PixivResponse<Body> = {
 	error: boolean
 	message: string
 	body: Body
-}
+};
 
 export type PixivResponseWithPage<Page> = PixivResponse<{
 	page: Page
@@ -108,7 +108,7 @@ export type PixivResponseWithPage<Page> = PixivResponse<{
 	requests: []
 	users: []
 	zoneConfig: ZoneConfig
-}>
+}>;
 
 export type PixivResponseWithWorks = PixivResponse<{
 	works: Record<string, Illust>
@@ -124,26 +124,26 @@ export type PixivResponseWithWorks = PixivResponse<{
 				image: string
 				title: string
 				type: string
-			},
+			}
 			twitter: {
 				description: string
 				image: string
 				title: string
 				card: string
-			},
+			}
 			alternateLanguages: {
 				ja: string
 				en: string
-			},
+			}
 			descriptionHeader: string
 		}
 	}
-}
+};
 
 export type BookmarkData = {
 	id: string
 	private: boolean
-}
+};
 
 export type Illust = {
 	id: string
@@ -176,14 +176,14 @@ export type Illust = {
 		[key in '250x250' | '360x360' | '540x540']: string
 	}
 	profileImageUrl: string
-}
+};
 
 export type ZoneConfig = {
-	header: { url: string }
-	footer: { url: string }
-	logo: { url: string }
-	'500x500': { url: string }
-}
+	header: { url: string; }
+	footer: { url: string; }
+	logo: { url: string; }
+	'500x500': { url: string; }
+};
 
 export function illustToArticle(illust: Illust, markedAsReadStorage: string[], cachedArticlesStorage: Record<string, CachedPixivArticle | undefined>): ArticleWithRefs {
 	const id = parseInt(illust.id);

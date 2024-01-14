@@ -66,7 +66,7 @@ function parseFullscreen(search: URLSearchParams): FullscreenInfo | null {
 	};
 }
 
-function parseTimelineView(timelineViews: {[name: string]: TimelineView}, search: URLSearchParams): string | null {
+function parseTimelineView(timelineViews: {[name: string]: TimelineView;}, search: URLSearchParams): string | null {
 	const param = search.get('view');
 
 	if (!param?.length)

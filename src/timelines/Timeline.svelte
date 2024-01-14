@@ -260,9 +260,9 @@
 	}
 
 	let autoscrollInfo: {
-		direction: ScrollDirection,
-		anim?: () => void,
-		scrollRequestId?: number,
+		direction: ScrollDirection
+		anim?: () => void
+		scrollRequestId?: number
 	} = {
 		direction: ScrollDirection.Down,
 	};

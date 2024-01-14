@@ -75,7 +75,7 @@ export const STANDARD_ACTIONS = {
 		count: null,
 		index: 1,
 	},
-} satisfies { [key: string]: StandardAction<Article> };
+} satisfies { [key: string]: StandardAction<Article>; };
 
 export function articleAction(actionName: string, idPair: ArticleIdPair) {
 	switch (actionName) {

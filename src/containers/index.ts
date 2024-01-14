@@ -2,14 +2,14 @@ import {type ArticleProps, type TimelineArticleProps, getIdServiceMediaStr} from
 import type {ComponentType} from 'svelte';
 
 export type ContainerProps = {
-	articles: ArticleProps[];
-	columnCount: number;
-	rtl: boolean;
-	articleView: ComponentType;
-	timelineArticleProps: TimelineArticleProps;
-	rebalanceTrigger: boolean;
-	separateMedia: boolean;
-}
+	articles: ArticleProps[]
+	columnCount: number
+	rtl: boolean
+	articleView: ComponentType
+	timelineArticleProps: TimelineArticleProps
+	rebalanceTrigger: boolean
+	separateMedia: boolean
+};
 
 export function articlesWithUniqueKeys(articles: ArticleProps[]): [ArticleProps, string][] {
 	const idPairs = new Set<string>();

@@ -52,7 +52,7 @@ export interface PixivUser extends ArticleAuthor {
 }
 
 export type CachedPixivArticle = {
-	id: number;
-	medias?: ArticleMedia[];
-	liked?: boolean;
-}
+	id: number
+	medias?: ArticleMedia[]
+	liked?: boolean
+};

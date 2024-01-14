@@ -44,7 +44,7 @@
 		menu = menu === newMenu ? null : newMenu;
 	}
 
-	const buttons: {icon: IconDefinition, menu: ComponentType | SidebarMenu, title: string}[] = [
+	const buttons: {icon: IconDefinition; menu: ComponentType | SidebarMenu; title: string;}[] = [
 		{icon: faPlus, menu: SidebarMenu.TimelineEdit, title: 'Add new timeline'},
 		{icon: faBarsProgress, menu: Endpoints, title: 'Endpoints'},
 		{icon: faNewspaper, menu: LoadArticle, title: 'Load article'},

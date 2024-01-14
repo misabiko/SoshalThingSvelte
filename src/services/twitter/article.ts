@@ -47,6 +47,6 @@ export default class TwitterArticle extends Article {
 }
 
 export interface TwitterUser extends ArticleAuthor {
-	id: string;
-	avatarUrl: string;
+	id: string
+	avatarUrl: string
 }

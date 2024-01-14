@@ -57,7 +57,7 @@ export function loadMainStorage() {
 }
 
 //TODO Type storage per service
-export function getServiceStorage(service: string): { [key: string]: any } {
+export function getServiceStorage(service: string): { [key: string]: any; } {
 	const storageKey = `${MAIN_STORAGE_KEY} ${service}`;
 	const item = localStorage.getItem(storageKey);
 	return item ? JSON.parse(item) : {};
@@ -107,7 +107,7 @@ export function updateFullscreenStorage(fullscreen: FullscreenInfo) {
 
 export function loadTimelines(): TimelineCollection {
 	const item = localStorage.getItem(TIMELINE_STORAGE_KEY);
-	let storage: { [id: string]: Partial<TimelineStorage> } = item ? JSON.parse(item) : {};
+	let storage: { [id: string]: Partial<TimelineStorage>; } = item ? JSON.parse(item) : {};
 	if (storage instanceof Array) {
 		console.warn('SoshalThingSvelte Timelines should be an object {[id: string]: TimelineStorage}');
 		storage = Object.assign({}, storage);
@@ -415,9 +415,9 @@ function parseFullscreenInfo(fullscreen?: boolean | number | FullscreenInfoStora
 
 type MainStorage = Partial<MainStorageParsed> & {
 	currentTimelineView?: string
-	timelineViews: { [name: string]: TimelineViewStorage }
+	timelineViews: { [name: string]: TimelineViewStorage; }
 	fullscreen?: boolean | number | FullscreenInfoStorage
-}
+};
 
 type MainStorageParsed = {
 	timelineIds: TimelineView['timelineIds'] | null
@@ -428,15 +428,15 @@ type MainStorageParsed = {
 	markAsReadLocal: boolean
 	//TODO Add UI setting for websocket
 	useWebSocket: boolean
-}
+};
 
 type FullscreenInfoStorage = FullscreenInfo & {
 	container: string | null
-}
+};
 
 type TimelineViewStorage = TimelineView & {
 	fullscreen: FullscreenInfoStorage
-}
+};
 
 type TimelineStorage = {
 	title: string
@@ -450,7 +450,7 @@ type TimelineStorage = {
 	columnCount?: number
 	rtl?: boolean
 	width?: number
-	filters: FilterInstance[],
+	filters: FilterInstance[]
 	sortInfo: {
 		method: string | null
 		customMethod?: never
@@ -460,9 +460,9 @@ type TimelineStorage = {
 		customMethod: {
 			service: string
 			method: string
-		},
+		}
 		reversed: boolean
-	},
+	}
 	animatedAsGifs?: boolean
 	muteVideos?: boolean
 	scrollSpeed?: number
@@ -476,7 +476,7 @@ type TimelineStorage = {
 	showArticleCount?: boolean
 	maxMediaCount?: number | null
 	separateMedia?: boolean
-}
+};
 
 const DEFAULT_TIMELINE_STORAGE: TimelineStorage = {
 	title: 'Timeline',
@@ -498,4 +498,4 @@ type EndpointStorage = {
 	onRefresh?: boolean
 	loadTop?: boolean
 	loadBottom?: boolean
-}
+};

@@ -8,9 +8,9 @@ function hash(idPair: ArticleIdPair, mediaIndex: number) {
 }
 
 type LoadingInfo = {
-	loadings: Set<string>,
+	loadings: Set<string>
 	queue: string[]
-}
+};
 
 const maxLoading = 5;
 

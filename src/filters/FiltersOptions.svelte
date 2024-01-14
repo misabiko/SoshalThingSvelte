@@ -14,9 +14,9 @@
 	}
 
 	const serviceFilterTypes: {
-		service: string,
-		filter: string,
-		filterTypeInfo: FilterInfo,
+		service: string
+		filter: string
+		filterTypeInfo: FilterInfo
 	}[] = Object.values(getServices()).flatMap(s => Object.entries(s.filterTypes).map(m => ({
 		service: s.name,
 		filter: m[0],

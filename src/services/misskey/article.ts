@@ -42,8 +42,8 @@ export default class MisskeyArticle extends Article {
 }
 
 interface MisskeyUser extends ArticleAuthor {
-	id: User['id'],
-	avatarUrl: User['avatarUrl'],
+	id: User['id']
+	avatarUrl: User['avatarUrl']
 }
 
 export function fromAPI(

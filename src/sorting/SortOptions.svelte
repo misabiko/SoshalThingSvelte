@@ -17,8 +17,8 @@
 
 	//[ServiceName, MethodName, MethodInfo][]
 	const serviceSortMethods: {
-		service: string,
-		method: string,
+		service: string
+		method: string
 		methodInfo: SortMethodInfo
 	}[] = Object.values(getServices()).flatMap(s => Object.entries(s.sortMethods).map(m => ({
 		service: s.name,

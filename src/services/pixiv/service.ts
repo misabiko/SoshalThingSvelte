@@ -216,23 +216,23 @@ type PagesResponse = {
 				small: string
 				regular: string
 				original: string
-			},
+			}
 			width: number
 			height: number
 		}[]
-}
+};
 
 type LikeResponse = {
 	error : boolean
 	message : string
-	body : { is_liked : boolean }
-}
+	body : { is_liked : boolean; }
+};
 
 type BookmarkResponse = {
-	error : boolean,
-	message : string,
+	error : boolean
+	message : string
 	body : {
-		last_bookmark_id : string,
+		last_bookmark_id : string
 		stacc_status_id : any
 	}
-}
+};

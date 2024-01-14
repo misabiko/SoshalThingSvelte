@@ -169,8 +169,8 @@ export function getUserId() : number {
 }
 
 type UserListAjaxResponse = PixivResponse<{
-	illusts: { [id: string]: null }
-	manga: { [id: string]: null }
+	illusts: { [id: string]: null; }
+	manga: { [id: string]: null; }
 	novels: []
 	mangaSeries: [
 		{
@@ -191,20 +191,20 @@ type UserListAjaxResponse = PixivResponse<{
 			isWatched: boolean
 			isNotifying: boolean
 		}
-	],
+	]
 	novelSeries: []
-	pickup: any[],
+	pickup: any[]
 	bookmarkCount: {
 		[key in 'public' | 'private']: {
 			illust: number
 			novel: number
 		}
-	},
+	}
 	externalSiteWorksStatus: {
 		booth: boolean
 		sketch: boolean
 		vroidHub: boolean
-	},
+	}
 	request: {
 		showRequestTab: boolean
 		showRequestSentTab: boolean
@@ -213,4 +213,4 @@ type UserListAjaxResponse = PixivResponse<{
 			novels: []
 		}
 	}
-}>
+}>;

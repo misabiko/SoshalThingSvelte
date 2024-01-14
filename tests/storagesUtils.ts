@@ -4,7 +4,7 @@ import type {Page} from '@playwright/test';
 export const MAIN_STORAGE_KEY = 'SoshalThingSvelte';
 export const TIMELINE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Timelines';
 
-export async function loadWithLocalStorage(page: Page, storages: {[key: string]: any}) {
+export async function loadWithLocalStorage(page: Page, storages: {[key: string]: any;}) {
 	await page.goto('/');
 	await page.mainFrame().evaluate((storages) => {
 		for (const [key, storage] of Object.entries(storages))

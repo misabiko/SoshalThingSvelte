@@ -16,6 +16,6 @@ export default function portal(node: Element, { target, insertBefore }: PortalPr
 }
 
 type PortalProps = {
-	target: Element;
-	insertBefore?: Element | null;
-}
+	target: Element
+	insertBefore?: Element | null
+};

@@ -119,10 +119,10 @@ type TopResponse = PixivResponseWithPage<{
 	// trendingTags: []
 	// completeRequestIds: []
 	// userEventIds: []
-}>
+}>;
 
 type Detail = {
 	methods: string[]
 	score: number
 	seedIllustIds: string[]
-}
+};

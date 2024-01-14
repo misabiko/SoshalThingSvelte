@@ -148,8 +148,8 @@ export type Instruction =
 	type: Omit<string, 'TimelineAddEntries' | 'TimelineAddToModule'>
 };
 export type AddEntriesInstruction = {
-	type: 'TimelineAddEntries';
-	entries: EntryWithContent[];
+	type: 'TimelineAddEntries'
+	entries: EntryWithContent[]
 };
 type AddToModuleInstruction = {
 	type: 'TimelineAddToModule'
@@ -157,19 +157,19 @@ type AddToModuleInstruction = {
 };
 
 type EntryWithContent = {
-	entryId: string;
-	sortIndex: string;
+	entryId: string
+	sortIndex: string
 	content:
 		| {
-		entryType: 'TimelineTimelineItem';
+		entryType: 'TimelineTimelineItem'
 		itemContent: ItemContent
 	}
 		| {
-		entryType: 'TimelineTimelineModule';
+		entryType: 'TimelineTimelineModule'
 		items: {
 			entryId: string
 			item: {
-				entryType: 'TimelineTimelineItem';
+				entryType: 'TimelineTimelineItem'
 				itemContent: ItemContent
 			}
 		}[]
@@ -183,7 +183,7 @@ type EntryWithContent = {
 	item?: never
 };
 type EntryWithItem = {
-	entryId: string;
+	entryId: string
 	item: {
 		itemType: 'TimelineTweet'
 		itemContent: ItemContent
@@ -195,10 +195,10 @@ type ItemContent = {
 	tweet_results: {
 		result: Result
 	}
-}
+};
 
 export type Result = {
-	legacy: Legacy;
+	legacy: Legacy
 	core: {
 		user_results: {
 			result: {
@@ -253,23 +253,23 @@ export type Result = {
 			tweet: Result
 			limitedActionResults: object
 		}
-	};
-}
+	}
+};
 
 type Legacy = {
-	id_str: string;
-	user_id_str: string;
-	full_text: string;
-	created_at: string;
-	entities: Entities;
-	extended_entities: ExtendedEntities;
-	favorited: boolean;
-	favorite_count: number;
-	retweeted: boolean;
-	retweet_count: number;
-	retweeted_status_result?: { result: Result };
-	is_quote_status: boolean;
-}
+	id_str: string
+	user_id_str: string
+	full_text: string
+	created_at: string
+	entities: Entities
+	extended_entities: ExtendedEntities
+	favorited: boolean
+	favorite_count: number
+	retweeted: boolean
+	retweet_count: number
+	retweeted_status_result?: { result: Result; }
+	is_quote_status: boolean
+};
 
 export async function toggleLikeWebSocket(idPair: ArticleIdPair) {
 	const writable = getWritable<TwitterArticle>(idPair);
@@ -355,16 +355,16 @@ export async function retweetWebSocket(idPair: ArticleIdPair) {
 
 export type FavoriteResponse = {
 	data: {
-		favorite_tweet: 'Done';
-		unfavorite_tweet: undefined;
-	};
-	errors: undefined;
+		favorite_tweet: 'Done'
+		unfavorite_tweet: undefined
+	}
+	errors: undefined
 } | {
 	data: {
-		favorite_tweet: undefined;
-		unfavorite_tweet: 'Done';
-	};
-	errors: undefined;
+		favorite_tweet: undefined
+		unfavorite_tweet: 'Done'
+	}
+	errors: undefined
 } | ResponseError;
 
 export type RetweetResponse = {
@@ -372,36 +372,36 @@ export type RetweetResponse = {
 		create_retweet: {
 			retweet_results: {
 				result: {
-					rest_id: string;
+					rest_id: string
 					legacy: {
-						full_text: string;
-					};
-				};
-			};
-		};
-	};
-	errors: undefined;
+						full_text: string
+					}
+				}
+			}
+		}
+	}
+	errors: undefined
 } | ResponseError;
 
 export type ResponseError = {
 	errors: ({
-		message: string;
+		message: string
 		locations: {
-			line: number;
-			column: number;
-		}[];
-		path: string[];
-		extensions: ResponseSingleError;
-	} & ResponseSingleError)[];
-	data: object;
+			line: number
+			column: number
+		}[]
+		path: string[]
+		extensions: ResponseSingleError
+	} & ResponseSingleError)[]
+	data: object
 };
 
 export type ResponseSingleError = {
-	name: string;
-	source: string;
-	code: number;
-	kind: string;
+	name: string
+	source: string
+	code: number
+	kind: string
 	tracing: {
-		trace_id: string;
+		trace_id: string
 	}
 };

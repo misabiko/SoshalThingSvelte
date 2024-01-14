@@ -10,11 +10,11 @@ type SessionCacheStorage = {
 	services: {
 		[name: string]: {
 			//Storing as strings until we parse bigint, a library could fix it though
-			articlesMarkedAsRead: string[],
-			cachedArticles: { [id: string]: any }
+			articlesMarkedAsRead: string[]
+			cachedArticles: { [id: string]: any; }
 		}
 	}
-}
+};
 
 //Might be redundant now that markAsHidden has been removed
 // type LocalCacheStorage = {

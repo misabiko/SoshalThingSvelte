@@ -132,7 +132,7 @@ type RankingMode =
 	| 'weekly' | 'weekly_r18'
 	| 'daily_ai' | 'daily_r18_ai'
 	| 'male' | 'male_r18'
-	| 'female' | 'female_r18'
+	| 'female' | 'female_r18';
 
 type RankingResponse =
 | {
@@ -172,4 +172,4 @@ type RankingResponse =
 	rank_total: number
 
 	error?: never
-} | { error: any }
+} | { error: any; };

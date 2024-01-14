@@ -24,11 +24,26 @@
 		}
 	}],
     "plugins": [
-        "@typescript-eslint"
+        "@typescript-eslint",
+		"@stylistic"
     ],
     "rules": {
-        "semi": ["error", "always"],
-        "quotes": [
+		//Wish I could disable semicolon for class member fields
+        "@stylistic/semi": ["error", "always"],
+		"@stylistic/member-delimiter-style": [
+			"warn",
+			{
+				"multiline": {
+					"delimiter": "none",
+					"requireLast": true
+				},
+				"singleline": {
+					"delimiter": "semi",
+					"requireLast": true
+				}
+			}
+		],
+        "@stylistic/quotes": [
 			"warn",
 			"single",
 			{

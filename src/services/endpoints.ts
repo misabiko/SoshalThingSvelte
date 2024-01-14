@@ -9,15 +9,15 @@ import type {Writable} from 'svelte/store';
 export const endpoints: { [name: string]: Writable<Endpoint> } = {};
 
 type TimelineEndpoints = {
-	endpoints: TimelineEndpoint[],
+	endpoints: TimelineEndpoint[]
 	addArticles: (idPairs: ArticleIdPair[]) => void
-}
+};
 export const timelineEndpoints = writable<TimelineEndpoints[]>([]);
 let timelineEndpointsValue: TimelineEndpoints[];
 timelineEndpoints.subscribe(value => timelineEndpointsValue = value);
 
 export abstract class Endpoint {
-	abstract readonly name: string
+	abstract readonly name: string;
 	static readonly service: string;
 	readonly articleIdPairs: ArticleIdPair[] = [];
 	rateLimitInfo: RateLimitInfo | null = null;
@@ -42,7 +42,7 @@ export abstract class Endpoint {
 
 	abstract refresh(refreshType: RefreshType): Promise<ArticleWithRefs[]>;
 
-	abstract matchParams(params: any): boolean
+	abstract matchParams(params: any): boolean;
 
 	isRateLimited(): boolean {
 		if (this.rateLimitInfo === null)
@@ -55,7 +55,7 @@ export abstract class Endpoint {
 }
 
 export abstract class PageEndpoint extends Endpoint {
-	abstract readonly hostPage: number
+	abstract readonly hostPage: number;
 
 	async refresh(refreshType: RefreshType) {
 		return this.hostPageRefresh(refreshType);
@@ -65,11 +65,11 @@ export abstract class PageEndpoint extends Endpoint {
 		return this.parsePage(document.documentElement);
 	}
 
-	abstract parsePage(document: HTMLElement): ArticleWithRefs[]
+	abstract parsePage(document: HTMLElement): ArticleWithRefs[];
 }
 
 export abstract class LoadablePageEndpoint extends PageEndpoint {
-	abstract currentPage: number
+	abstract currentPage: number;
 
 	//Need a way to add RefreshType.LoadTop if currentPage > 0
 	protected constructor(refreshTypes = new Set<RefreshType>([
@@ -101,12 +101,12 @@ export abstract class LoadablePageEndpoint extends PageEndpoint {
 			return this.parsePage(await this.loadPage());
 	}
 
-	abstract loadPage(): Promise<HTMLElement>
+	abstract loadPage(): Promise<HTMLElement>;
 }
 
 //Maybe could use mixins to avoid duplicating Loadable part
 export abstract class LoadableEndpoint extends Endpoint {
-	abstract currentPage: number
+	abstract currentPage: number;
 
 	protected constructor(refreshTypes = new Set<RefreshType>([
 		RefreshType.RefreshStart,
@@ -139,9 +139,9 @@ export abstract class LoadableEndpoint extends Endpoint {
 
 //TODO Try passing the paramTemplate as a generic
 export interface EndpointConstructorInfo {
-	readonly name: string;
-	readonly paramTemplate: [string, ParamType][];
-	readonly constructor: (params: EndpointConstructorParams) => Endpoint;
+	readonly name: string
+	readonly paramTemplate: [string, ParamType][]
+	readonly constructor: (params: EndpointConstructorParams) => Endpoint
 }
 
 export type EndpointConstructorParams = Record<string, ParamType>;
@@ -164,10 +164,10 @@ type ParamType = string | number | boolean;
 
 //Format specific to Twitter
 export type RateLimitInfo = {
-	limit: number;
-	remaining: number;
-	reset: number;
-}
+	limit: number
+	remaining: number
+	reset: number
+};
 
 export function addEndpoint(endpoint: Endpoint) {
 	if (Object.hasOwn(endpoints, endpoint.name))

@@ -1,5 +1,5 @@
 import type {ArticleIdPair} from '~/articles';
-import {getServices, toggleMarkAsRead} from './service';
+import {fetchArticle, getServices, getWritable, toggleMarkAsRead} from './service';
 import {
 	faUpRightFromSquare,
 	type IconDefinition
@@ -7,6 +7,8 @@ import {
 import {faHeart as faHeartReg} from '@fortawesome/free-regular-svg-icons';
 import {faEye, faEyeSlash, faHeart, faRetweet} from '@fortawesome/free-solid-svg-icons';
 import type Article from '../articles';
+import {loadingStore} from '~/bufferedMediaLoading';
+import {get} from 'svelte/store';
 
 export type ArticleAction<A extends Article = Article> = (
 | (
@@ -126,6 +128,44 @@ export function getGenericActions(article: Article): ArticleAction[] {
 			index: 6,
 			listAsIcon: true,
 			listAsDropdown: false,
+		});
+	if (('fetchArticle' in getServices()[article.idPair.service])/* && !article.fetched*/)
+		genericActions.push({
+			action: (idPair: ArticleIdPair) => fetchArticle(idPair),
+			actionedName: 'Re-Fetch Article',
+			actioned: (article: Article) => article.fetched,
+			togglable: true,
+			actionedIcon: null,
+			key: 'fetchArticle',
+			name: 'Fetch Article',
+			disabled: null,
+			icon: null,
+			color: null,
+			count: null,
+			index: 5,
+			listAsIcon: false,
+			listAsDropdown: true,
+		});
+	if (article.medias.length)
+		genericActions.push({
+			action: (idPair: ArticleIdPair) => {
+				const article = get(getWritable(idPair));
+				for (let i = 0; i < article.medias.length; ++i)
+					loadingStore.forceLoading(article, i);
+			},
+			name: 'Load Media',
+			actionedName: null,
+			actioned: (article: Article) => article.medias.every(m => m.loaded),
+			togglable: false,
+			actionedIcon: null,
+			disabled: null,
+			key: 'loadMedia',
+			icon: null,
+			color: null,
+			count: null,
+			index: 4,
+			listAsIcon: false,
+			listAsDropdown: true,
 		});
 
 	return genericActions;

@@ -8,22 +8,22 @@ function hash(idPair: ArticleIdPair, mediaIndex: number) {
 }
 
 type LoadingInfo = {
-	loadings: Set<string>,
+	loadings: Set<string>
 	queue: string[]
-}
+};
 
 const maxLoading = 5;
 
 export enum LoadingState {
-	NotLoaded,
-	Loading,
-	Loaded,
+	NotLoaded = 'NotLoaded',
+	Loading = 'Loading',
+	Loaded = 'Loaded',
 }
 
 export const loadingStore = (() => {
 	const {subscribe, update} = writable<LoadingInfo>({
 		loadings: new Set<string>(),
-		queue: []
+		queue: [],
 	});
 	let localLoadings = new Set<string>();
 	let localQueue: string[] = [];
@@ -31,9 +31,18 @@ export const loadingStore = (() => {
 	return {
 		subscribe,
 		requestLoad(idPair: ArticleIdPair, mediaIndex: number) {
+			if (get(getWritable(idPair)).medias[mediaIndex].loaded)
+				return LoadingState.Loaded;
+
+			const key = hash(idPair, mediaIndex);
+			if (localLoadings.has(key))
+				return LoadingState.Loading;
+			if (localQueue.includes(key))
+				return LoadingState.NotLoaded;
+
 			if (localLoadings.size >= maxLoading) {
 				update(store => {
-					const idPairStr = hash(idPair, mediaIndex);
+					const idPairStr = key;
 					if (!store.queue.includes(idPairStr))
 						store.queue.push(idPairStr);
 					localQueue = store.queue;
@@ -44,11 +53,42 @@ export const loadingStore = (() => {
 			}
 
 			update(store => {
-				store.loadings.add(hash(idPair, mediaIndex));
+				store.loadings.add(key);
 				localLoadings = store.loadings;
 				return store;
 			});
 			return LoadingState.Loading;
+		},
+		requestLoads(...medias: {idPair: ArticleIdPair, mediaIndex: number}[]) {
+			const validMedias = medias
+				.filter(({idPair, mediaIndex}) => {
+					const idPairStr = hash(idPair, mediaIndex);
+					if (localLoadings.has(idPairStr) || localQueue.includes(idPairStr))
+						return false;
+
+					const loaded = get(getWritable(idPair)).medias[mediaIndex].loaded;
+					return loaded === false;
+				});
+
+			if (validMedias.length) {
+				update(store => {
+					for (const {idPair, mediaIndex} of validMedias) {
+						const idPairStr = hash(idPair, mediaIndex);
+						if (localLoadings.has(idPairStr) || localQueue.includes(idPairStr))
+							continue;
+
+						if (store.loadings.size >= maxLoading) {
+							if (!store.queue.includes(idPairStr))
+								store.queue.push(idPairStr);
+						} else
+							store.loadings.add(idPairStr);
+					}
+					localQueue = store.queue;
+					localLoadings = store.loadings;
+
+					return store;
+				});
+			}
 		},
 		getLoadingState(idPair: ArticleIdPair, mediaIndex: number, request = false): LoadingState {
 			const idPairStr = hash(idPair, mediaIndex);

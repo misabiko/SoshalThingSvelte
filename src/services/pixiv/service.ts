@@ -1,4 +1,5 @@
 import type PixivArticle from './article';
+import type { CachedPixivArticle } from './article';
 import {
 	type FetchingService,
 	FetchType, getServices,
@@ -16,13 +17,14 @@ import {getRatio, MediaLoadType, MediaType} from '~/articles/media';
 import {faFaceSmile} from '@fortawesome/free-solid-svg-icons';
 import type {Filter} from '~/filters';
 import ServiceSettings from './ServiceSettings.svelte';
+import {updateCachedArticlesStorage} from '~/storages/serviceCache';
 
 export const PixivService: PixivServiceType = {
 	...newService('Pixiv'),
 	...newFetchingService(),
 	async fetchArticle(store: Writable<PixivArticle>) {
 		const article = get(store);
-		const json: PagesResponse = await this.fetch(`https://www.pixiv.net/ajax/illust/${article.id}/pages`, {headers: {'Accept': 'application/json'}});
+		const json: PagesResponse = await this.fetch(`https://www.pixiv.net/ajax/illust/${article.id}/pages`, {headers: {Accept: 'application/json'}});
 
 		store.update(a => {
 			for (let i = 0; i < a.medias.length; ++i) {
@@ -69,7 +71,7 @@ export const PixivService: PixivServiceType = {
 					credentials: 'same-origin',
 					cache: 'no-cache',
 					headers: {
-						'Accept': 'application/json',
+						Accept: 'application/json',
 						'Content-Type': 'application/json',
 						'Cache-Control': 'no-cache',
 						'X-CSRF-TOKEN': csrfToken,
@@ -89,6 +91,8 @@ export const PixivService: PixivServiceType = {
 					a.liked = true;
 					return a;
 				});
+
+				updateCachedArticlesStorage(PixivService.name);
 			},
 			actioned(article: PixivArticle) { return article.liked; },
 		},
@@ -118,7 +122,7 @@ export const PixivService: PixivServiceType = {
 					credentials: 'same-origin',
 					cache: 'no-cache',
 					headers: {
-						'Accept': 'application/json',
+						Accept: 'application/json',
 						'Content-Type': 'application/json',
 						'Cache-Control': 'no-cache',
 						'X-CSRF-TOKEN': csrfToken,
@@ -144,12 +148,34 @@ export const PixivService: PixivServiceType = {
 			actioned(article) { return article.bookmarked === true; },
 		}
 	},
+	getCachedArticles() {
+		const cachedArticles: Record<string, CachedPixivArticle> = {};
+		for (const a of Object.values(PixivService.articles).map(([w, _]) => get(w))) {
+			if (a.fetched || a.liked) {
+				cachedArticles[a.id] = {
+					id: a.id,
+					medias: a.fetched ? a.medias.map(m => {
+						const newM = {...m};
+						if (newM.loaded)
+							newM.loaded = false;
+						return newM;
+					}) : undefined,
+					liked: a.liked || undefined,
+				};
+			}
+		}
+
+		return cachedArticles;
+	},
 	isOnDomain: globalThis.window?.location?.hostname.endsWith('pixiv.net'),
 	keepArticle(articleWithRefs: ArticleWithRefs, index: number, filter: Filter): boolean {
 		switch (filter.type) {
 			case 'bookmarked':
 				return (articleWithRefToArray(articleWithRefs) as PixivArticle[])
 					.some(a => a.bookmarked);
+			case 'liked':
+				return (articleWithRefToArray(articleWithRefs) as PixivArticle[])
+					.some(a => a.liked);
 			default:
 				throw new Error('Unknown filter type: ' + filter.type);
 		}
@@ -159,6 +185,12 @@ export const PixivService: PixivServiceType = {
 			type: 'bookmarked',
 			name: 'Bookmarked',
 			invertedName: 'Not bookmarked',
+			props: {},
+		},
+		liked: {
+			type: 'liked',
+			name: 'Liked',
+			invertedName: 'Not liked',
 			props: {},
 		},
 	},
@@ -171,7 +203,9 @@ export const PixivService: PixivServiceType = {
 
 registerService(PixivService);
 
-interface PixivServiceType extends Service<PixivArticle>, FetchingService<PixivArticle> {}
+interface PixivServiceType extends Service<PixivArticle>, FetchingService<PixivArticle> {
+	getCachedArticles: () => Record<string, CachedPixivArticle>
+}
 
 type PagesResponse = {
 	error: boolean
@@ -183,23 +217,23 @@ type PagesResponse = {
 				small: string
 				regular: string
 				original: string
-			},
+			}
 			width: number
 			height: number
 		}[]
-}
+};
 
 type LikeResponse = {
 	error : boolean
 	message : string
 	body : { is_liked : boolean }
-}
+};
 
 type BookmarkResponse = {
-	error : boolean,
-	message : string,
+	error : boolean
+	message : string
 	body : {
-		last_bookmark_id : string,
+		last_bookmark_id : string
 		stacc_status_id : any
 	}
-}
+};

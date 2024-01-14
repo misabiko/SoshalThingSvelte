@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang='ts'>
 	import type {ArticleMedia} from '../media';
 	import type {ArticleIdPair} from '../index';
 	import Article from '../index';
@@ -32,20 +32,20 @@
 </style>
 
 {#if cropped}
-	<div class="articleMediaCrop" style:aspect-ratio={`${media.cropRatio}`}>
+	<div class='articleMediaCrop' style:aspect-ratio='{`${media.cropRatio}`}'>
 		<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 		<img
-			alt={`${actualArticle.idPair.id}/${mediaIndex}`}
+			alt='{`${actualArticle.idPair.id}/${mediaIndex}`}'
 			class='articleMedia'
 			src={media.src}
-			on:click={() => onMediaClick(actualArticle.idPair, mediaIndex)}
-			on:load={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, mediaIndex) : undefined}
+			on:click='{() => onMediaClick(actualArticle.idPair, mediaIndex)}'
+			on:load='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, mediaIndex) : undefined}'
 			class:articleMediaLoading={isLoading}
 			bind:this={ref}
-			style:object-fit={'cover'}
-			style:object-position={`${media.offsetX ?? 0} ${media.offsetY ?? 0}`}
-			style:aspect-ratio={`1 / ${media.ratio}`}
-			style:width={'100%'}
+			style:object-fit="{'cover'}"
+			style:object-position='{`${media.offsetX ?? 0} ${media.offsetY ?? 0}`}'
+			style:aspect-ratio='{`1 / ${media.ratio}`}'
+			style:width="{'100%'}"
 		/>
 		{#if isLoading}
 			<GalleryThumbnail
@@ -59,11 +59,11 @@
 {:else}
 	<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 	<img
-		alt={`${actualArticle.idPair.id}/${mediaIndex}`}
+		alt='{`${actualArticle.idPair.id}/${mediaIndex}`}'
 		class='articleMedia'
 		src={media.src}
-		on:click={() => onMediaClick(actualArticle.idPair, mediaIndex)}
-		on:load={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, mediaIndex) : undefined}
+		on:click='{() => onMediaClick(actualArticle.idPair, mediaIndex)}'
+		on:load='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, mediaIndex) : undefined}'
 		class:articleMediaLoading={isLoading}
 		bind:this={ref}
 	/>

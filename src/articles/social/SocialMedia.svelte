@@ -4,21 +4,22 @@
 	import {getReadable, getWritable} from '~/services/service';
 	import Fa from 'svelte-fa';
 	import {faImages} from '@fortawesome/free-solid-svg-icons';
-	import {MediaType} from '../media';
-	import {LoadingState} from '~/bufferedMediaLoading';
+	import {type ArticleMedia, MediaType} from '../media';
+	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
+	import {derived, type Readable} from 'svelte/store';
 
 	export let idPair: ArticleIdPair;
 	let article = getReadable(idPair);
+	export let mediaIndex: number | null = null;
 	export let timelineProps: TimelineArticleProps;
-	export let showAllMedia: boolean;
 	export let onMediaClick: (index: number) => void;
+	let showAllMedia = derived(timelineProps.showAllMediaArticles, articles => articles.has($article.idPairStr));
 
 	export let divRef: HTMLDivElement | null = null;
-	export let mediaRefs: (HTMLImageElement | HTMLVideoElement)[] = [];
-	export let loadingStates: LoadingState[] | null = null;
+	export let mediaRefs: Record<number, HTMLImageElement | HTMLVideoElement> = [];
+	export let loadingStates: Readable<Record<number, LoadingState>>;
 
 	export let compact: boolean | null;
-	//TODO Add option for full first (n) media and compact rest
 
 	afterUpdate(() => {
 		const articleMediaEls = divRef?.querySelectorAll('.articleMedia:not(.articleThumbnail)');
@@ -38,13 +39,19 @@
 
 	//Sloppy to make sure landscape single images aren't forced to square aspect ratio
 	let aspectRatio: number | undefined;
-	$: if ((compact ?? timelineProps.compact) && $article.medias.length === 1 && ($article.medias[0].ratio ?? 1) < 1) {
+	$: if ((compact ?? timelineProps.compact) && ($article.medias.length === 1 || mediaIndex !== null) && ($article.medias[0].ratio ?? 1) < 1) {
 		aspectRatio = 1 / ($article.medias[0]?.ratio ?? 1);
 	}
 	let aspectRatioThumbnail: number | undefined;
-	$: if ((compact ?? timelineProps.compact) && $article.medias.length === 1 && ($article.medias[0].thumbnail?.ratio ?? 1) < 1) {
+	$: if ((compact ?? timelineProps.compact) && ($article.medias.length === 1 || mediaIndex !== null) && ($article.medias[0].thumbnail?.ratio ?? 1) < 1) {
 		aspectRatioThumbnail = 1 / ($article.medias[0]?.thumbnail?.ratio ?? 1);
 	}
+
+	let medias: [ArticleMedia, number][];
+	$: medias = mediaIndex === null
+		? $article.medias.slice(0, !$showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined)
+			.map((m, i) => [m, i])
+		: [[$article.medias[mediaIndex], mediaIndex]];
 </script>
 
 <style>
@@ -69,7 +76,7 @@
 		border-radius: 8px;
 	}
 
-	.socialMediaCompact .imagesHolder, .socialMediaCompact video.articleMedia {
+	.socialMediaCompact .imagesHolder:not(.socialMediaFull), .socialMediaCompact video.articleMedia:not(.socialMediaFull) {
 		width: 50%;
 		aspect-ratio: 1;
 	}
@@ -103,41 +110,44 @@
 	}
 </style>
 
-<div class='socialMedia' class:socialMediaCompact={compact ?? timelineProps.compact} bind:this={divRef}>
-	{#each $article.medias.slice(0, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined) as media, index (index)}
-		<!--{@const isLoading = loadingStates && loadingStates[index] === LoadingState.Loading}-->
-		{#if loadingStates && loadingStates[index] === LoadingState.NotLoaded}
-			<div class='imagesHolder' style:aspect-ratio={aspectRatioThumbnail}>
-				<div class='imgPlaceHolder' style:aspect-ratio={1 / (media.ratio ?? 1)} style:display='none'></div>
+<div class='socialMedia' class:socialMediaCompact='{compact ?? timelineProps.compact}' bind:this={divRef}>
+	{#each medias as [media, index] (index)}
+		{@const isLoading = $loadingStates[index] === LoadingState.Loading}
+		{#if $loadingStates[index] === LoadingState.NotLoaded}
+			<div class='imagesHolder' class:socialMediaFull='{index < timelineProps.fullMedia}' style:aspect-ratio={aspectRatioThumbnail}>
+				<div class='imgPlaceHolder' style:aspect-ratio='{1 / (media.ratio ?? 1)}' style:display='none'></div>
 				<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 				{#if media.thumbnail}
 					<img
 							class='articleMedia articleThumbnail'
-							alt={`${$article.idPairStr}/${index}`}
+							alt='{`${$article.idPairStr}/${index}`}'
 							src={media.thumbnail.src}
-							on:click={() => onMediaClick(index)}
+							on:click='{() => onMediaClick(index)}'
 					/>
 				{/if}
 			</div>
 		{:else if media.mediaType === MediaType.Image || media.mediaType === MediaType.Gif}
-			<div class='imagesHolder' style:aspect-ratio={aspectRatio}>
-				<div class='imgPlaceHolder' style:aspect-ratio={1 / (media.ratio ?? 1)} style:display='none'></div>
+			<div class='imagesHolder' class:socialMediaFull='{index < timelineProps.fullMedia}' style:aspect-ratio={aspectRatio}>
+				<div class='imgPlaceHolder' style:aspect-ratio='{1 / (media.ratio ?? 1)}' style:display='none'></div>
 				<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 				<img
 						class='articleMedia'
-						alt={`${$article.idPairStr}/${index}`}
+						alt='{`${$article.idPairStr}/${index}`}'
 						src={media.src}
-						on:click={() => onMediaClick(index)}
+						on:click='{() => onMediaClick(index)}'
 						bind:this={mediaRefs[index]}
+						on:load='{() => isLoading ? loadingStore.mediaLoaded($article.idPair, index) : undefined}'
+						class:articleMediaLoading={isLoading}
 				/>
 			</div>
 		{:else if !timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
 			<video
 					class='articleMedia'
+					class:socialMediaFull='{index < timelineProps.fullMedia}'
 					controls
 					preload='auto'
 					muted={timelineProps.muteVideos}
-					on:click|preventDefault={() => onMediaClick(index)}
+					on:click|preventDefault='{() => onMediaClick(index)}'
 					bind:this={mediaRefs[index]}
 			>
 				<source src={media.src} type='video/mp4'/>
@@ -145,23 +155,24 @@
 		{:else if media.mediaType === MediaType.VideoGif || timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
 			<video
 					class='articleMedia'
+					class:socialMediaFull='{index < timelineProps.fullMedia}'
 					controls
 					autoplay
 					loop
 					muted
 					preload='auto'
-					on:click|preventDefault={() => onMediaClick(index)}
+					on:click|preventDefault='{() => onMediaClick(index)}'
 					bind:this={mediaRefs[index]}
 			>
 				<source src={media.src} type='video/mp4'/>
 			</video>
 		{/if}
 	{/each}
-	{#if !showAllMedia && timelineProps.maxMediaCount !== null && $article.medias.length > timelineProps.maxMediaCount}
-		<div class='moreMedia'>
-			<button class='borderless-button' title='Load more medias' on:click={() => showAllMedia = true}>
-				<Fa icon={faImages} size='2x'/>
-			</button>
-		</div>
-	{/if}
 </div>
+{#if !$showAllMedia && timelineProps.maxMediaCount !== null && $article.medias.length > timelineProps.maxMediaCount}
+	<div class='moreMedia'>
+		<button class='borderless-button' title='Load more medias' on:click='{() => timelineProps.showAllMediaArticles.update(a => {a.add($article.idPairStr); return a;})}'>
+			<Fa icon={faImages} size='2x'/>
+		</button>
+	</div>
+{/if}

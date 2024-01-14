@@ -3,6 +3,7 @@
 	import ArticleComponent from '../articles/ArticleComponent.svelte';
 	import SocialArticleView from '../articles/social/SocialArticleView.svelte';
 	import type {ArticleProps, ArticleWithRefs, TimelineArticleProps} from '~/articles';
+	import {writable} from 'svelte/store';
 
 	type LoadArticleService = Service & {loadArticle: Exclude<Service['loadArticle'], null>};
 	let services = Object.entries(getServices()).filter(([_, s]) => s.loadArticle !== null) as [string, LoadArticleService][];
@@ -26,11 +27,13 @@
 		animatedAsGifs: false,
 		muteVideos: false,
 		compact: false,
+		fullMedia: 0,
 		hideQuoteMedia: false,
 		hideText: false,
 		shouldLoadMedia: false,
 		maxMediaCount: 4,
 		setModalTimeline: () => {},
+		showAllMediaArticles: writable(new Set())
 	};
 
 	let articleProps: ArticleProps | null;
@@ -56,7 +59,7 @@
 		{/each}
 	</select>
 	<input bind:value={articleId}/>
-	<button on:click={loadArticle} disabled={serviceName === null || !articleId.length}>Load</button>
+	<button on:click={loadArticle} disabled='{serviceName === null || !articleId.length}'>Load</button>
 </div>
 {#if article !== null && articleProps !== null}
 	<ArticleComponent

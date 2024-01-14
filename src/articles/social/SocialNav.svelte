@@ -53,7 +53,6 @@
 
 	//TODO Have option to move icon actions to dropdown
 	let actions: [ArticleAction[], ArticleAction[]] = [...Object.values(getServices()[idPair.service].articleActions), ...genericActions]
-		.filter(a => a.icon !== null)
 		.sort((a, b) => a.index - b.index)
 		.reduce(([icons, dropdown], action) => {
 			if (action.listAsIcon)
@@ -125,19 +124,19 @@
 					class='articleButton borderless-button'
 					class:actioned
 					title={action.name}
-					on:click={() => actionFunc(idPair)}
-					disabled={disabled || (actioned && !action.togglable)}
-					on:mouseover={() => updateActionHover(action.key, true)}
-					on:mouseout={() => updateActionHover(action.key, false)}
+					on:click='{() => actionFunc(idPair)}'
+					disabled='{disabled || (actioned && !action.togglable)}'
+					on:mouseover='{() => updateActionHover(action.key, true)}'
+					on:mouseout='{() => updateActionHover(action.key, false)}'
 				>
 					<span class='icon'>
 						<Fa
-							icon={action.actionedIcon && actioned ? action.actionedIcon : action.icon}
-							color={!disabled && (actioned || isHovered) ? action.color : undefined}
+							icon='{action.actionedIcon && actioned ? action.actionedIcon : action.icon}'
+							color='{!disabled && (actioned || isHovered) ? action.color : undefined}'
 						/>
 					</span>
 					{#if count}
-						<span style:color={!disabled && (actioned || isHovered) ? action.color : 'inherit'}>{count}</span>
+						<span style:color="{!disabled && (actioned || isHovered) ? action.color : 'inherit'}">{count}</span>
 					{/if}
 				</button>
 			{:else}
@@ -148,17 +147,17 @@
 						class='articleButton borderless-button'
 						title={action.name}
 						href={action.href}
-						on:mouseover={() => updateActionHover(action.key, true)}
-						on:mouseout={() => updateActionHover(action.key, false)}
+						on:mouseover='{() => updateActionHover(action.key, true)}'
+						on:mouseout='{() => updateActionHover(action.key, false)}'
 				>
 					<span class='icon'>
 						<Fa
 								icon={action.icon}
-								color={isHovered ? action.color ?? undefined : undefined}
+								color='{isHovered ? action.color ?? undefined : undefined}'
 						/>
 					</span>
 					{#if count}
-						<span style:color={isHovered ? action.color ?? undefined : 'inherit'}>{count}</span>
+						<span style:color="{isHovered ? action.color ?? undefined : 'inherit'}">{count}</span>
 					{/if}
 				</a>
 			{/if}
@@ -167,7 +166,7 @@
 			<button
 				class='articleButton borderless-button'
 				title='Expand article as modal'
-				on:click={() => modal = true}
+				on:click='{() => modal = true}'
 			>
 				<span class='icon'>
 					<Fa icon={faExpandAlt}/>
@@ -187,8 +186,8 @@
 					{@const actioned = action.actioned($article)}
 					<button
 							class='dropdown-item'
-							on:click={() => actionFunc(idPair)}
-							disabled={disabled || (actioned && !action.togglable)}
+							on:click='{() => actionFunc(idPair)}'
+							disabled='{disabled || (actioned && !action.togglable)}'
 					>
 						{#if action.actionedName && actioned}
 							{action.actionedName}
@@ -217,9 +216,6 @@
 				<button class='dropdown-item' on:click={onLogJSON}>
 					Log Json Data
 				</button>
-				<!--	<button class='dropdown-item'>-->
-				<!--		Fetch Data-->
-				<!--	</button>-->
 			{/if}
 		</Dropdown>
 	</div>

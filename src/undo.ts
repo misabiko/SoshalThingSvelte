@@ -34,4 +34,4 @@ export type Undoable = {
 	undid: boolean
 	text: string
 	articleIdPair: ArticleIdPair
-}
+};

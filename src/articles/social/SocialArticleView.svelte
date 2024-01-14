@@ -9,12 +9,12 @@
 	import {newUserTimeline} from '~/timelines';
 	import {LoadingState} from '~/bufferedMediaLoading';
 	import SocialQuote from '~/articles/social/SocialQuote.svelte';
+	import type {Readable} from 'svelte/store';
 
 	export let timelineProps: TimelineArticleProps;
 	export let articleProps: ArticleProps;
 	export let actualArticleProps: ArticleProps;
 	export let modal: boolean; modal;
-	export let showAllMedia: boolean;
 	export let rootArticle: Readonly<Article>;
 	// $: idPair = rootArticle.idPair;
 	export let actualArticle: Readonly<Article>;
@@ -23,9 +23,10 @@
 	export let onLogJSON: () => void;
 
 	export let divRef: HTMLDivElement | null;
-	export let mediaRefs: HTMLImageElement[];
-	export let loadingStates: LoadingState[];
+	export let mediaRefs: Record<number, HTMLImageElement>;
+	export let loadingStates: Readable<Record<number, LoadingState>>;
 
+	//TODO Propagate article compact to the timeline
 	let compact: boolean | null = null;
 	let quoteCompact: boolean | null = null;
 
@@ -151,7 +152,7 @@
 	<div class='repostLabel'>
 		{#if articleProps.type === 'reposts' && rootArticle.author}
 			{@const timestamp = rootArticle.creationTime && (' - ' + shortTimestamp(rootArticle.creationTime))}
-			<a href={rootArticle.author.url} target='_blank' rel='noreferrer' on:click|preventDefault={() => onUsernameClick(rootArticle)}>
+			<a href={rootArticle.author.url} target='_blank' rel='noreferrer' on:click|preventDefault='{() => onUsernameClick(rootArticle)}'>
 				{#if articleProps.reposts.length > 1}
 					{articleProps.reposts.map(r => r.author?.name).filter(n => n).join(', ')} reposted{timestamp}
 				{:else}
@@ -163,12 +164,12 @@
 	<!--{ self.view_reply_label(ctx) }-->
 	<div class='media'>
 		{#if actualArticle.author?.avatarUrl}
-			<figure class='avatar' class:sharedAvatar={articleProps.type === 'reposts'}>
+			<figure class='avatar' class:sharedAvatar="{articleProps.type === 'reposts'}">
 				{#if articleProps.type === 'reposts' && rootArticle.author}
-					<img src={actualArticle.author.avatarUrl} alt={`${actualArticle.author.username}'s avatar`}/>
-					<img src={rootArticle.author.avatarUrl} alt={`${rootArticle.author.username}'s avatar`}/>
+					<img src={actualArticle.author.avatarUrl} alt="{`${actualArticle.author.username}'s avatar`}"/>
+					<img src={rootArticle.author.avatarUrl} alt="{`${rootArticle.author.username}'s avatar`}"/>
 				{:else}
-					<img src={actualArticle.author.avatarUrl} alt={`${actualArticle.author.username}'s avatar`}/>
+					<img src={actualArticle.author.avatarUrl} alt="{`${actualArticle.author.username}'s avatar`}"/>
 				{/if}
 			</figure>
 		{/if}
@@ -180,7 +181,7 @@
 						href={actualArticle.author?.url}
 						target='_blank'
 						rel='noreferrer'
-						on:click|preventDefault={() => onUsernameClick(actualArticle)}
+						on:click|preventDefault='{() => onUsernameClick(actualArticle)}'
 					>
 						<strong>{ actualArticle.author?.name }</strong>
 						<small>@{ actualArticle.author?.username }</small>
@@ -206,7 +207,6 @@
 					{timelineProps}
 					filteredOut={quoted.filteredOut}
 					{modal}
-					{showAllMedia}
 					bind:compact={quoteCompact}
 					{onMediaClick}
 					{onLogData}
@@ -217,7 +217,7 @@
 				idPair={actualArticle.idPair}
 				bind:modal
 				{timelineProps}
-				repost={articleProps.type === 'reposts' ? rootArticle : undefined}
+				repost="{articleProps.type === 'reposts' ? rootArticle : undefined}"
 				{onLogData}
 				{onLogJSON}
 				bind:compact
@@ -226,13 +226,13 @@
 	</div>
 	{#if actualArticle.medias.length}
 		<SocialMedia
-			bind:showAllMedia
 			idPair={actualArticle.idPair}
+			mediaIndex={actualArticleProps.mediaIndex}
 			{timelineProps}
-			onMediaClick={index => onMediaClick(actualArticle.idPair, index)}
+			onMediaClick='{index => onMediaClick(actualArticle.idPair, index)}'
 			bind:divRef
 			bind:mediaRefs
-			bind:loadingStates
+			{loadingStates}
 			{compact}
 		/>
 	{/if}

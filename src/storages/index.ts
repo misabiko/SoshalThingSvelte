@@ -128,6 +128,7 @@ export function loadTimelines(): TimelineCollection {
 
 		defaulted.filters = parseFilters(defaulted.filters ?? []);
 
+		//TODO Do wee need the ?? if defaulted has the values?
 		return [id, {
 			...defaultTimeline(),
 			title: defaulted.title,
@@ -148,12 +149,14 @@ export function loadTimelines(): TimelineCollection {
 			scrollSpeed: defaulted.scrollSpeed ?? 3,
 			hideText: defaulted.hideText ?? false,
 			compact: defaulted.compact ?? false,
+			fullMedia: defaulted.fullMedia ?? 0,
 			hideQuoteMedia: defaulted.hideQuoteMedia ?? false,
 			shouldLoadMedia: defaulted.shouldLoadMedia ?? true,
 			hideFilteredOutArticles: defaulted.hideFilteredOutArticles ?? true,
 			mergeReposts: defaulted.mergeReposts ?? true,
 			showArticleCount: defaulted.showArticleCount ?? false,
 			maxMediaCount: defaulted.maxMediaCount ?? 4,
+			separateMedia: defaulted.separateMedia ?? false,
 		}];
 	}));
 }
@@ -170,6 +173,7 @@ export function updateTimelinesStorage(timelines: TimelineCollection) {
 		filters: t.filters,
 		sortInfo: sortInfoToStorage(t.sortInfo),
 		compact: t.compact,
+		fullMedia: t.fullMedia,
 		hideQuoteMedia: t.hideQuoteMedia,
 		animatedAsGifs: t.animatedAsGifs,
 		muteVideos: t.muteVideos,
@@ -413,7 +417,7 @@ type MainStorage = Partial<MainStorageParsed> & {
 	currentTimelineView?: string
 	timelineViews: { [name: string]: TimelineViewStorage }
 	fullscreen?: boolean | number | FullscreenInfoStorage
-}
+};
 
 type MainStorageParsed = {
 	timelineIds: TimelineView['timelineIds'] | null
@@ -424,15 +428,15 @@ type MainStorageParsed = {
 	markAsReadLocal: boolean
 	//TODO Add UI setting for websocket
 	useWebSocket: boolean
-}
+};
 
 type FullscreenInfoStorage = FullscreenInfo & {
 	container: string | null
-}
+};
 
 type TimelineViewStorage = TimelineView & {
 	fullscreen: FullscreenInfoStorage
-}
+};
 
 type TimelineStorage = {
 	title: string
@@ -446,7 +450,7 @@ type TimelineStorage = {
 	columnCount?: number
 	rtl?: boolean
 	width?: number
-	filters: FilterInstance[],
+	filters: FilterInstance[]
 	sortInfo: {
 		method: string | null
 		customMethod?: never
@@ -456,21 +460,23 @@ type TimelineStorage = {
 		customMethod: {
 			service: string
 			method: string
-		},
+		}
 		reversed: boolean
-	},
+	}
 	animatedAsGifs?: boolean
 	muteVideos?: boolean
 	scrollSpeed?: number
 	hideText?: boolean
 	compact?: boolean
+	fullMedia?: number
 	hideQuoteMedia?: boolean
 	shouldLoadMedia?: boolean
 	hideFilteredOutArticles?: boolean
 	mergeReposts?: boolean
 	showArticleCount?: boolean
 	maxMediaCount?: number | null
-}
+	separateMedia?: boolean
+};
 
 const DEFAULT_TIMELINE_STORAGE: TimelineStorage = {
 	title: 'Timeline',
@@ -492,4 +498,4 @@ type EndpointStorage = {
 	onRefresh?: boolean
 	loadTop?: boolean
 	loadBottom?: boolean
-}
+};

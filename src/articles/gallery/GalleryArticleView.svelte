@@ -10,33 +10,33 @@
 	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
 	import Dropdown from '~/Dropdown.svelte';
 	import {
-		fetchArticle,
 		getServices,
 	} from '~/services/service';
 	import type {TimelineArticleProps} from '../index';
 	import type {ArticleProps} from '../index';
-	import {MediaType} from '../media';
+	import {type ArticleMedia, MediaType} from '../media';
 	import GalleryThumbnail from './GalleryThumbnail.svelte';
 	import GalleryImage from './GalleryImage.svelte';
 	import {type ArticleAction, getGenericActions} from '~/services/actions';
+	import {derived, type Readable} from 'svelte/store';
 
 	export let timelineProps: TimelineArticleProps;
 	export let articleProps: ArticleProps; articleProps;
+	export let actualArticleProps: ArticleProps;
 	export let style = ''; style;
 	export let modal: boolean; modal;
-	export let showAllMedia: boolean;
 	export let rootArticle: Readonly<Article>; rootArticle;
 	export let actualArticle: Readonly<Article>;
 	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number;
 	export let onLogData: () => void;
 	export let onLogJSON: () => void;
+	let showAllMedia = derived(timelineProps.showAllMediaArticles, articles => articles.has(rootArticle.idPairStr));
 
 	export let divRef: HTMLDivElement | null;
-	export let mediaRefs: HTMLImageElement[];
-	export let loadingStates: LoadingState[];
+	export let mediaRefs: Record<number, HTMLImageElement | HTMLVideoElement>;
+	export let loadingStates: Readable<Record<number, LoadingState>>;
 
 	let actions: [ArticleAction[], ArticleAction[]] = [...Object.values(getServices()[rootArticle.idPair.service].articleActions), ...getGenericActions(rootArticle)]
-		.filter(a => a.icon !== null)
 		.sort((a, b) => a.index - b.index)
 		.reduce(([icons, dropdown], action) => {
 			if (action.listAsIcon)
@@ -45,6 +45,12 @@
 				dropdown.push(action);
 			return [icons, dropdown];
 		}, [[], []] as [ArticleAction[], ArticleAction[]]);
+
+	let medias: [ArticleMedia, number][];
+	$: medias = actualArticleProps.mediaIndex === null
+		? actualArticle.medias.slice(0, !$showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined)
+			.map((m, i) => [m, i])
+		: [[actualArticle.medias[actualArticleProps.mediaIndex], actualArticleProps.mediaIndex]];
 </script>
 
 <style>
@@ -121,9 +127,9 @@
 
 <div class='galleryArticle' bind:this={divRef}>
 	<div>
-		{#each actualArticle.medias.slice(0, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined) as media, i (i)}
-			{@const isLoading = loadingStates[i] === LoadingState.Loading}
-			{#if loadingStates[i] === LoadingState.NotLoaded}
+		{#each medias as [media, i] (i)}
+			{@const isLoading = $loadingStates[i] === LoadingState.Loading}
+			{#if $loadingStates[i] === LoadingState.NotLoaded}
 				<GalleryThumbnail
 						{actualArticle}
 						mediaIndex={i}
@@ -145,9 +151,9 @@
 					controls
 					preload='auto'
 					muted={timelineProps.muteVideos}
-					on:click|preventDefault={() => onMediaClick(actualArticle.idPair, i)}
-					on:loadeddata={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
-					on:load={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
+					on:click|preventDefault='{() => onMediaClick(actualArticle.idPair, i)}'
+					on:loadeddata='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}'
+					on:load='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}'
 				>
 					<source src={media.src} type='video/mp4'/>
 				</video>
@@ -159,17 +165,17 @@
 					loop
 					muted
 					preload='auto'
-					on:click|preventDefault={() => onMediaClick(actualArticle.idPair, i)}
-					on:loadeddata={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
-					on:load={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
+					on:click|preventDefault='{() => onMediaClick(actualArticle.idPair, i)}'
+					on:loadeddata='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}'
+					on:load='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}'
 				>
 					<source src={media.src} type='video/mp4'/>
 				</video>
 			{/if}
 		{/each}
-		{#if !showAllMedia && timelineProps.maxMediaCount !== null && actualArticle.medias.length > timelineProps.maxMediaCount}
+		{#if !$showAllMedia && timelineProps.maxMediaCount !== null && actualArticle.medias.length > timelineProps.maxMediaCount}
 			<div class='moreMedia'>
-				<button class='borderless-button' title='Load more medias' on:click={() => showAllMedia = true}>
+				<button class='borderless-button' title='Load more medias' on:click='{() => timelineProps.showAllMediaArticles.update(a => {a.add(rootArticle.idPairStr); return a;})}'>
 					<Fa icon={faImages} size='2x'/>
 				</button>
 			</div>
@@ -181,7 +187,7 @@
 				</span>
 			</a>
 			{#if !modal}
-				<button class='button' on:click={() => modal = !modal}>
+				<button class='button' on:click='{() => modal = !modal}'>
 					<span class='icon darkIcon'>
 						<Fa icon={faExpandArrowsAlt} class='is-small'/>
 					</span>
@@ -201,8 +207,8 @@
 						{@const actioned = action.actioned(rootArticle)}
 						<button
 								class='dropdown-item'
-								on:click={() => actionFunc(rootArticle.idPair)}
-								disabled={disabled || (actioned && !action.togglable)}
+								on:click='{() => actionFunc(rootArticle.idPair)}'
+								disabled='{disabled || (actioned && !action.togglable)}'
 						>
 							{#if action.actionedName && actioned}
 								{action.actionedName}
@@ -224,18 +230,10 @@
 						</a>
 					{/if}
 				{/each}
-				{#if actualArticle.medias.some(m => !m.loaded) }
-					<button
-						class='dropdown-item'
-						on:click={() => {for (let i = 0; i < actualArticle.medias.length; ++i) loadingStore.forceLoading(actualArticle, i);}}
-					>
-						Load Media
-					</button>
-				{/if}
 				{#if actualArticle.url}
 					<a
 						class='dropdown-item'
-						href={ actualArticle.url }
+						href='{ actualArticle.url }'
 					>
 						External Link
 					</a>
@@ -246,11 +244,6 @@
 				<button class='dropdown-item' on:click={onLogJSON}>
 					Log JSON Data
 				</button>
-				{#if !actualArticle.fetched }
-					<button class='dropdown-item' on:click={() => fetchArticle(actualArticle.idPair)}>
-						Fetch Article
-					</button>
-				{/if}
 			</Dropdown>
 		</div>
 		<div class='holderBox holderBoxBottom'>
@@ -264,11 +257,11 @@
 							class='button'
 							class:actioned
 							title={action.name}
-							on:click={() => actionFunc(rootArticle.idPair)}
+							on:click='{() => actionFunc(rootArticle.idPair)}'
 							{disabled}
 						>
 							<span class='icon darkIcon'>
-								<Fa icon={action.actionedIcon && actioned ? action.actionedIcon : action.icon} class='is-small'/>
+								<Fa icon='{action.actionedIcon && actioned ? action.actionedIcon : action.icon}' class='is-small'/>
 							</span>
 						</button>
 					{/if}

@@ -15,7 +15,7 @@
 	import {getCurrentPage} from '~/services/pixiv/endpoints';
 
 	const timelines: TimelineCollection = {
-		'Follows': {
+		Follows: {
 			...defaultTimeline(),
 			title: 'Follows',
 			endpoints: [{
@@ -24,7 +24,7 @@
 				filters: [],
 			}],
 			container: MasonryContainer,
-			columnCount: 3,
+			columnCount: 4,
 			animatedAsGifs: true,
 			sortInfo: {
 				method: SortMethod.Id,
@@ -32,6 +32,7 @@
 				reversed: true,
 			},
 			compact: true,
+			fullMedia: 1,
 		}
 	};
 
@@ -92,10 +93,10 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
 <a
-	use:portal={{ target: activatorMount }}
+	use:portal='{{ target: activatorMount }}'
 	id='favvieweractivator'
 	class={activatorMount.children[0].className}
-	on:click={() => favviewerHidden = !favviewerHidden}
+	on:click='{() => favviewerHidden = !favviewerHidden}'
 >
 	SoshalThing
 </a>

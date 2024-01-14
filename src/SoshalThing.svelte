@@ -2,7 +2,13 @@
 	import './partialGlobal.css';
 	import {setContext} from 'svelte';
 	import Sidebar from './sidebar/Sidebar.svelte';
-	import {defaultTimelineView, type TimelineCollection, type TimelineData, type TimelineView,} from './timelines';
+	import {
+		addArticlesToTimeline,
+		defaultTimelineView,
+		type TimelineCollection,
+		type TimelineData,
+		type TimelineView,
+	} from './timelines';
 	import TimelineContainer from './timelines/TimelineContainer.svelte';
 	import {notifications} from './notifications/store';
 	import Notification from './notifications/Notification.svelte';
@@ -33,7 +39,7 @@
 		if (view.fullscreen.index !== null && !Object.hasOwn(view.timelineIds, view.fullscreen.index)) {
 			console.warn(`TimelineView ${viewName} has invalid fullscreen.index ${view.fullscreen.index}`);
 			view.fullscreen.index = null;
-	}
+		}
 	}
 
 	export let timelineViewId: string = defaultTimelineView;
@@ -92,12 +98,14 @@
 		);
 		for (const serviceName of services) {
 			const service = getServices()[serviceName];
-			if (!service.isOnDomain &&  service.fetchInfo.type === FetchType.Tab && get(service.fetchInfo.tabInfo.tabId) === null)
+			if (!service.isOnDomain && service.fetchInfo.type === FetchType.Tab && get(service.fetchInfo.tabInfo.tabId) === null)
 				service.fetchInfo.tabInfo.tabId.set(await fetchExtension('getTabId', {
 					url: service.fetchInfo.tabInfo.url,
 					matchUrl: service.fetchInfo.tabInfo.matchUrl
 				}));
 		}
+
+		const refreshPromises = [];
 
 		const endpointNames = new Set<string>();
 		for (const timeline of refreshingTimelines)
@@ -105,24 +113,35 @@
 				if (timelineEndpoint.name !== undefined)
 					endpointNames.add(timelineEndpoint.name);
 				else if (timelineEndpoint.endpoint?.refreshTypes && get(timelineEndpoint.endpoint.refreshTypes).has(RefreshType.RefreshStart))
-					refreshEndpoint(timelineEndpoint.endpoint as Endpoint, RefreshType.RefreshStart)
-						.then(articles => {
-							if (articles.length) {
-								const newAddedIdPairs = articles.map(a => getRootArticle(a).idPair);
-								timeline.addedIdPairs.update(idPairs => {
-									idPairs.push(...newAddedIdPairs);
-									return idPairs;
-								});
-								timeline.articles.update(idPairs => {
-									idPairs.push(...newAddedIdPairs);
-									return idPairs;
-								});
-							}
-						});
+					refreshPromises.push(
+						refreshEndpoint(timelineEndpoint.endpoint as Endpoint, RefreshType.RefreshStart)
+							.then(articles => addArticlesToTimeline(timeline, ...articles.map(a => getRootArticle(a).idPair)))
+					);
 
-		//Purposefully not awaiting
-		for (const endpointName of endpointNames.values())
-			refreshEndpointName(endpointName, RefreshType.RefreshStart);
+		for (const endpointName of endpointNames)
+			refreshPromises.push(refreshEndpointName(endpointName, RefreshType.RefreshStart));
+
+		const results = await withTimeout(Promise.allSettled(refreshPromises), 5000, new Error('Initial refresh timed out'));
+
+		for (const result of results)
+			if (result.status === 'rejected')
+				console.error(result.reason);
+	}
+
+	function withTimeout<T>(
+		promise: Promise<T>,
+		ms: number,
+		timeoutError = new Error('Promise timed out')
+	): Promise<T> {
+		// create a promise that rejects in milliseconds
+		const timeout = new Promise<never>((_, reject) => {
+			setTimeout(() => {
+				reject(timeoutError);
+			}, ms);
+		});
+
+		// returns a race between timeout and the passed promise
+		return Promise.race<T>([promise, timeout]);
 	}
 </script>
 
@@ -160,6 +179,7 @@
 		font-weight: var(--body-weight);
 		line-height: var(--body-line-height);
 	}
+
 	:global(.soshalthing.injected button.delete) {
 		padding: 0;
 	}
@@ -173,24 +193,24 @@
 	</div>
 	{#if showSidebar}
 		<Sidebar
-			bind:batchActionFilters
-			bind:timelineViewId
-			bind:timelineViews
-			bind:timelines
-			{setModalTimeline}
-			{addTimeline}
+				bind:batchActionFilters
+				bind:timelineViewId
+				bind:timelineViews
+				bind:timelines
+				{setModalTimeline}
+				{addTimeline}
 		/>
 	{/if}
 	<TimelineContainer
-		bind:timelines
-		bind:timelineView={timelineViews[timelineViewId]}
-		bind:modalTimeline
-		bind:modalTimelineActive
-		bind:favviewerHidden
-		bind:favviewerMaximized
-		bind:showSidebar
-		{setModalTimeline}
-		{removeTimeline}
-		{initialRefresh}
+			bind:timelines
+			bind:timelineView={timelineViews[timelineViewId]}
+			bind:modalTimeline
+			bind:modalTimelineActive
+			bind:favviewerHidden
+			bind:favviewerMaximized
+			bind:showSidebar
+			{setModalTimeline}
+			{removeTimeline}
+			{initialRefresh}
 	/>
 </div>

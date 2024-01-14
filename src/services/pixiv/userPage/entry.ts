@@ -1,5 +1,8 @@
 import '~/services/pixiv/service';
 import '~/services/pixiv/endpoints/user.endpoint';
+import '~/services/pixiv/endpoints/ranking.endpoint';
+import '~/services/pixiv/endpoints/top.endpoint';
+import '~/services/pixiv/endpoints/discovery.endpoint';
 
 import UserArtworksPage from './UserArtworksPage.svelte';
 import {tryInject} from '~/services/extension';

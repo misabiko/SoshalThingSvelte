@@ -1,6 +1,6 @@
-<script lang="ts">
+<script lang='ts'>
 	import ArticleComponent from '~/articles/ArticleComponent.svelte';
-	import type {ArticleProps} from '~/articles';
+	import {type ArticleProps, getIdServiceMediaStr} from '~/articles';
 	import {getActualArticle, getRootArticle} from '~/articles';
 	import type {ContainerProps} from './index';
 
@@ -9,22 +9,28 @@
 	let lastRebalanceTrigger = false;
 	let lastColumnCount = props.columnCount;
 
-	let uniqueArticles: { [idPairStr: string]: { articleProps: ArticleProps, index: number } };
-	$: {
+	let uniqueArticles: Record<string, { articleProps: ArticleProps, index: number, mediaIndex: number | null }>;
+	$: if (props.separateMedia) {
+		uniqueArticles = Object.fromEntries(props.articles.map((articleProps, index) => [
+			getIdServiceMediaStr(articleProps),
+			{articleProps, index, mediaIndex: articleProps.mediaIndex}
+		]));
+	}else {
 		uniqueArticles = {};
-		const idPairs = new Set<string>();
+		const idServiceMedias = new Set<string>();
 		for (const a of props.articles) {
-			let lastSize = idPairs.size;
-			idPairs.add(getRootArticle(a).idPairStr);
-			if (idPairs.size > lastSize) {
-				uniqueArticles[getRootArticle(a).idPairStr] = {articleProps: a, index: lastSize};
+			let lastSize = idServiceMedias.size;
+			const idServiceMedia = getIdServiceMediaStr(a);
+			idServiceMedias.add(idServiceMedia);
+			if (idServiceMedias.size > lastSize) {
+				uniqueArticles[idServiceMedia] = {articleProps: a, index: lastSize, mediaIndex: 0};
 			}
 		}
 	}
 	//TODO Support duplicate articles
 	//Maybe by making a second MasonryContainer which refreshes every column every time
 
-	type Column = {articles: string[], ratio: number}
+	type Column = {idServiceMedias: string[], ratio: number};
 	let columns: Column[] = [];
 
 	$: if (props.rebalanceTrigger !== lastRebalanceTrigger || props.columnCount !== lastColumnCount) {
@@ -39,53 +45,56 @@
 			columns = makeColumns();
 		}else {
 			const columnsChanged = new Set<number>();
-			const addedArticles: { idPairStr: string, index: number }[] = [];
+			const addedArticles: { idServiceMedia: string, index: number }[] = [];
 
 			for (let i = 0; i < columns.length; ++i) {
-				for (let j = 0; j < columns[i].articles.length;) {
-					if (!uniqueArticles[columns[i].articles[j]]) {
-						columns[i].articles.splice(j, 1);
+				for (let j = 0; j < columns[i].idServiceMedias.length;) {
+					if (!uniqueArticles[columns[i].idServiceMedias[j]]) {
+						columns[i].idServiceMedias.splice(j, 1);
 						columnsChanged.add(i);
 					}else
 						++j;
 				}
 			}
 
-			for (const {articleProps, index} of Object.values(uniqueArticles)) {
-				if (!columns.some(c => c.articles.some(idPair => getRootArticle(uniqueArticles[idPair].articleProps).idPairStr === getRootArticle(articleProps).idPairStr))) {
-					addedArticles.push({idPairStr: getRootArticle(articleProps).idPairStr, index});
+			for (const [idServiceMedia, {articleProps, index, mediaIndex}] of Object.entries(uniqueArticles)) {
+				if (!columns.some(c => c.idServiceMedias.some(idServiceMedia => {
+					const [_idStr, _service, mediaIndexStr] = idServiceMedia.split('/');
+					return getRootArticle(uniqueArticles[idServiceMedia].articleProps).idPairStr === getRootArticle(articleProps).idPairStr && [mediaIndexStr === 'null' ? mediaIndex === null : parseInt(mediaIndexStr) === mediaIndex];
+				}))) {
+					addedArticles.push({idServiceMedia, index});
 				}
 			}
 
 			addedArticles.sort((a, b) => a.index - b.index);
-			for (const {idPairStr} of addedArticles)
-				columnsChanged.add(addArticle(idPairStr));
+			for (const {idServiceMedia} of addedArticles)
+				columnsChanged.add(addArticle(idServiceMedia));
 
 			for (let i = 0; i < columns.length; ++i)
-				columns[i].articles.sort((a, b) => uniqueArticles[a].index - uniqueArticles[b].index);
+				columns[i].idServiceMedias.sort((a, b) => uniqueArticles[a].index - uniqueArticles[b].index);
 
 			for (const i of columnsChanged.values())
-				columns[i].ratio = columns[i].articles.reduce((acc, curr) => acc + getRatio(uniqueArticles[curr].articleProps), 0);
+				columns[i].ratio = columns[i].idServiceMedias.reduce((acc, curr) => acc + getRatio(uniqueArticles[curr].articleProps), 0);
 		}
 	}
 
 	function makeColumns() {
 		columns = [];
 		for (let i = 0; i < props.columnCount; ++i)
-			columns.push({articles: [], ratio: 0});
+			columns.push({idServiceMedias: [], ratio: 0});
 
-		const sortedArticles = Object.values(uniqueArticles);
-		sortedArticles.sort((a, b) => a.index - b.index);
-		for (const {articleProps} of sortedArticles)
-			addArticle(getRootArticle(articleProps).idPairStr);
+		const sortedArticles = Object.entries(uniqueArticles);
+		sortedArticles.sort(([_ia, a], [_ib, b]) => a.index - b.index);
+		for (const [idServiceMedia, _] of sortedArticles)
+			addArticle(idServiceMedia);
 
 		return columns;
 	}
 
-	function addArticle(idPairStr: string): number {
+	function addArticle(idServiceMedia: string): number {
 		const smallestIndex = columns.reduce((acc, curr, currIndex) => curr.ratio < columns[acc].ratio ? currIndex : acc, 0);
-		columns[smallestIndex].articles.push(idPairStr);
-		columns[smallestIndex].ratio += getRatio(uniqueArticles[idPairStr].articleProps);
+		columns[smallestIndex].idServiceMedias.push(idServiceMedia);
+		columns[smallestIndex].ratio += getRatio(uniqueArticles[idServiceMedia].articleProps);
 		return smallestIndex;
 	}
 
@@ -94,9 +103,12 @@
 		if (props.timelineArticleProps.compact) {
 			//TODO Take into account per-article compact bool
 			//Compact with more than 1 media has medias in square grid of 2xn, so 1,2 has ratio of 1/2, 3,4 has ratio of 2/2, 5,6 has ratio of 3/2, etc
-			const evenMediaCount = Math.min(getActualArticle(article).medias.length, props.timelineArticleProps.maxMediaCount ?? Infinity);
+			const evenMediaCount = Math.min(getActualArticle(article).medias.length - props.timelineArticleProps.fullMedia, props.timelineArticleProps.maxMediaCount ?? Infinity);
 			if (evenMediaCount > 1)
-				return 1 + Math.floor(evenMediaCount / 2); /*( * 2 / 2)*/
+				return 1 + Math.floor(evenMediaCount / 2) /*( * 2 / 2)*/
+					+ getActualArticle(article).medias
+						.slice(0, props.timelineArticleProps.fullMedia)
+						.reduce((acc, curr) => acc + (curr.ratio ?? 1), 0);
 			else
 				return 2;
 		}else
@@ -120,15 +132,15 @@
 	}
 </style>
 
-<div class='articlesContainer masonryContainer' bind:this={containerRef} style:flex-direction={props.rtl ? 'row-reverse' : null}>
+<div class='articlesContainer masonryContainer' bind:this={containerRef} style:flex-direction="{props.rtl ? 'row-reverse' : null}">
 	{#each columns as column, i (i)}
-		<div class='masonryColumn' style:width={props.columnCount > 1 ? (100 / props.columnCount) + '%' : undefined}>
+		<div class='masonryColumn' style:width="{props.columnCount > 1 ? (100 / props.columnCount) + '%' : undefined}">
 <!--		<span>Ratio: {column.ratio}</span>-->
 <!--		TODO Find a way to share key among multiple columns?-->
-			{#each column.articles as idPairStr (idPairStr)}
+			{#each column.idServiceMedias as idServiceMedia (idServiceMedia)}
 				<ArticleComponent
 					view={props.articleView}
-					articleProps={uniqueArticles[idPairStr].articleProps}
+					articleProps={uniqueArticles[idServiceMedia].articleProps}
 					timelineProps={props.timelineArticleProps}
 				/>
 			{/each}

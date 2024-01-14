@@ -1,10 +1,10 @@
 import {type EndpointConstructorInfo, LoadableEndpoint, PageEndpoint, RefreshType} from '../../endpoints';
 import type {ArticleWithRefs} from '~/articles';
 import {PixivService} from '../service';
-import PixivArticle from '../article';
 import type {PixivUser} from '../article';
-import {getMarkedAsReadStorage} from '~/storages/serviceCache';
-import {getEachPageURL, getUserUrl, parseThumbnail, type BookmarkData} from './index';
+import PixivArticle, {type CachedPixivArticle} from '../article';
+import {getCachedArticlesStorage, getMarkedAsReadStorage} from '~/storages/serviceCache';
+import {getEachPageURL, getUserUrl, parseThumbnail, type PixivResponse, type PixivResponseWithWorks,} from './index';
 import {MediaLoadType, MediaType} from '~/articles/media';
 import {avatarHighRes} from './bookmarks.endpoint';
 import {getServices, registerEndpointConstructor} from '../../service';
@@ -44,12 +44,13 @@ export default class UserPageEndpoint extends PageEndpoint {
 		if (!thumbnails)
 			throw "Couldn't find thumbnails";
 		const markedAsReadStorage = getMarkedAsReadStorage(PixivService);
+		const cachedArticlesStorage = getCachedArticlesStorage<CachedPixivArticle>(PixivService);
 
-		return [...thumbnails].map(t => this.parseThumbnail(t, markedAsReadStorage)).filter(a => a !== null) as ArticleWithRefs[];
+		return [...thumbnails].map(t => this.parseThumbnail(t, markedAsReadStorage, cachedArticlesStorage)).filter(a => a !== null) as ArticleWithRefs[];
 	}
 
-	parseThumbnail(element: Element, markedAsReadStorage: string[]): ArticleWithRefs | null {
-		return parseThumbnail(element, markedAsReadStorage, this.user);
+	parseThumbnail(element: Element, markedAsReadStorage: string[], cachedArticlesStorage: Record<number, CachedPixivArticle | undefined>): ArticleWithRefs | null {
+		return parseThumbnail(element, markedAsReadStorage, cachedArticlesStorage, this.user);
 	}
 }
 
@@ -57,6 +58,8 @@ export class UserAPIEndpoint extends LoadableEndpoint {
 	readonly name = 'Pixiv User API Endpoint';
 	static service = PixivService.name;
 	readonly params;
+
+	workIds: number[] = [];
 
 	constructor(readonly userId: number, public currentPage = 0) {
 		super();
@@ -73,64 +76,85 @@ export class UserAPIEndpoint extends LoadableEndpoint {
 		};
 	}
 
-	async _refresh(_refreshType: RefreshType): Promise<ArticleWithRefs[]> {
-		let url = new URL(`https://www.pixiv.net/ajax/user/${this.userId}/profile/all`);
-		url.searchParams.set('p', (this.currentPage + 1).toString());
-		url.searchParams.set('lang', 'en`');
-		const listResponse: UserListAjaxResponse = await PixivService.fetch(url.toString(), {headers: {'Accept': 'application/json'}});
-		const illustIds = Object.keys(listResponse.body.illusts);
-		//Decreasing order sort
-		illustIds.sort((a, b) => parseInt(b) - parseInt(a));
+	async _refresh(refreshType: RefreshType): Promise<ArticleWithRefs[]> {
+		//profile/all gives you every ids, so we don't need to refetch when loading top/bottom
+		if (!this.workIds.length || refreshType === RefreshType.RefreshStart || refreshType === RefreshType.Refresh) {
+			const url = new URL(`https://www.pixiv.net/ajax/user/${this.userId}/profile/all`);
+			url.searchParams.set('lang', 'en`');
 
-		url = new URL(`https://www.pixiv.net/ajax/user/${this.userId}/profile/illusts`);
+			const listResponse: UserListAjaxResponse = await PixivService.fetch(url.toString(), {headers: {Accept: 'application/json'}});
 
-		//TODO Fetch every illust id first, then fetch 50 according to the currentPage
-		for (const id of illustIds.slice(0, 50))
-			url.searchParams.append('ids[]', id.toString());
-		url.searchParams.set('work_category', 'illust');
-		url.searchParams.set('is_first_page', (this.currentPage === 0 ? 1 : 0).toString());
-		url.searchParams.set('lang', 'en');
+			const workIds = [];
+			workIds.push(...[...Object.keys(listResponse.body.illusts)].map(id => parseInt(id)));
+			workIds.push(...[...Object.keys(listResponse.body.manga)].map(id => parseInt(id)));
 
-		const response: UserAjaxResponse = await PixivService.fetch(url.toString(), {headers: {'Accept': 'application/json'}});
-		if (response.error) {
-			console.error('Failed to fetch', response);
-			return [];
+			//Decreasing order sort
+			workIds.sort((a, b) => b - a);
+
+			this.workIds = workIds;
 		}
 
-		const markedAsReadStorage = getMarkedAsReadStorage(PixivService);
+		const workIds = this.workIds.slice(50 * this.currentPage, 50 * (this.currentPage + 1));
 
-		//For now, I'm only parsing illusts, not novels
-		return Object.values(response.body.works).map(illust => {
-			const bookmarked = illust.bookmarkData !== null;
+		if (workIds.length) {
+			const url = new URL(`https://www.pixiv.net/ajax/user/${this.userId}/profile/illusts`);
 
-			return {
-				type: 'normal',
-				article: new PixivArticle(
-					parseInt(illust.id),
-					getEachPageURL(illust.url, illust.pageCount).map(src => ({
-						mediaType: MediaType.Image,
-						src,
-						ratio: null,
-						queueLoadInfo: MediaLoadType.Thumbnail,
-						offsetX: null,
-						offsetY: null,
-						cropRatio: null,
-					})),
-					illust.title,
-					{
-						id: parseInt(illust.userId),
-						url: getUserUrl(illust.userId),
-						username: illust.userName,
-						name: illust.userName,
-						avatarUrl: avatarHighRes(illust.profileImageUrl),
-					},
-					new Date(illust.createDate),
-					markedAsReadStorage,
-					illust,
-					bookmarked,
-				),
-			};
-		});
+			for (const id of workIds)
+				url.searchParams.append('ids[]', id.toString());
+			url.searchParams.set('work_category', 'illust');
+			url.searchParams.set('is_first_page', (this.currentPage === 0 ? 1 : 0).toString());
+			url.searchParams.set('lang', 'en');
+
+			const response: PixivResponseWithWorks = await PixivService.fetch(url.toString(), {headers: {Accept: 'application/json'}});
+			if (response.error) {
+				console.error('Failed to fetch', response);
+				return [];
+			}
+
+			const markedAsReadStorage = getMarkedAsReadStorage(PixivService);
+			const cachedArticlesStorage = getCachedArticlesStorage<CachedPixivArticle>(PixivService);
+
+			return Object.values(response.body.works).map(illust => {
+				const id = parseInt(illust.id);
+				const cached = cachedArticlesStorage[id];
+
+				const medias = cached?.medias ?? getEachPageURL(illust.url, illust.pageCount).map(src => ({
+					mediaType: MediaType.Image,
+					src,
+					ratio: null,
+					queueLoadInfo: MediaLoadType.Thumbnail,
+					offsetX: null,
+					offsetY: null,
+					cropRatio: null,
+				}));
+				const liked = cached?.liked ?? false;
+				const bookmarked = illust.bookmarkData !== null;
+
+				return {
+					type: 'normal',
+					article: new PixivArticle(
+						id,
+						medias,
+						illust.title,
+						{
+							id: parseInt(illust.userId),
+							url: getUserUrl(illust.userId),
+							username: illust.userName,
+							name: illust.userName,
+							avatarUrl: avatarHighRes(illust.profileImageUrl),
+						},
+						new Date(illust.createDate),
+						markedAsReadStorage,
+						illust,
+						liked,
+						bookmarked,
+						cached?.medias !== undefined,
+					),
+				} satisfies ArticleWithRefs;
+			});
+		}
+
+		return [];
 	}
 
 	matchParams(params: any): boolean {
@@ -138,7 +162,7 @@ export class UserAPIEndpoint extends LoadableEndpoint {
 	}
 
 	static readonly constructorInfo: EndpointConstructorInfo = {
-		name: 'User Endpoint',
+		name: 'User API Endpoint',
 		paramTemplate: [
 			['userId', 0],
 			['page', 0],
@@ -154,118 +178,49 @@ export function getUserId() : number {
 	return parseInt(window.location.pathname.split('/')[3]);
 }
 
-type UserListAjaxResponse = {
-	error: false,
-	message: '',
-	body: {
-		illusts: { [id: string]: null }
-		manga: { [id: string]: null }
-		novels: []
-		mangaSeries: [
-			{
-				id: string
-				userId: string
-				title: string
-				description: string
-				caption: string
-				total: number
-				content_order: null
-				url: string
-				coverImageSl: number
-				firstIllustId: string
-				latestIllustId: string
-				createDate: string
-				updateDate: string
-				watchCount: null
-				isWatched: boolean
-				isNotifying: boolean
-			}
-		],
-		novelSeries: []
-		pickup: any[],
-		bookmarkCount: {
-			[key in 'public' | 'private']: {
-				illust: number
-				novel: number
-			}
-		},
-		externalSiteWorksStatus: {
-			booth: boolean
-			sketch: boolean
-			vroidHub: boolean
-		},
-		request: {
-			showRequestTab: boolean
-			showRequestSentTab: boolean
-			postWorks: {
-				artworks: []
-				novels: []
-			}
-		}
-	}
-}
-
-type UserAjaxResponse = {
-	error: boolean
-	message: string
-	body: {
-		works: {[id: string]: {
-				id: string
-				title: string
-				illustType: number
-				xRestrict: number
-				restrict: number
-				sl: number
-				url: string
-				description: string
-				tags: string[]
-				userId: string
-				userName: string
-				width: number
-				height: number
-				pageCount: number
-				isBookmarkable: boolean
-				bookmarkData: BookmarkData | null
-				alt: string
-				titleCaptionTranslation: {
-					workTitle: null
-					workCaption: null
-				}
-				createDate: string
-				updateDate: string
-				isUnlisted: boolean
-				isMasked: boolean
-				profileImageUrl: string
-		}}
-	}
-	zoneConfig: {
-		header: { url: string }
-		footer: { url: string }
-		logo: { url: string }
-		'500x500': { url: string }
-	}
-	extraData: {
-		meta: {
+type UserListAjaxResponse = PixivResponse<{
+	illusts: { [id: string]: null }
+	manga: { [id: string]: null }
+	novels: []
+	mangaSeries: [
+		{
+			id: string
+			userId: string
 			title: string
 			description: string
-			canonical: string
-			ogp: {
-				description: string
-				image: string
-				title: string
-				type: string
-			},
-			twitter: {
-				description: string
-				image: string
-				title: string
-				card: string
-			},
-			alternateLanguages: {
-				ja: string
-				en: string
-			},
-			descriptionHeader: string
+			caption: string
+			total: number
+			content_order: null
+			url: string
+			coverImageSl: number
+			firstIllustId: string
+			latestIllustId: string
+			createDate: string
+			updateDate: string
+			watchCount: null
+			isWatched: boolean
+			isNotifying: boolean
+		}
+	]
+	novelSeries: []
+	pickup: any[]
+	bookmarkCount: {
+		[key in 'public' | 'private']: {
+			illust: number
+			novel: number
 		}
 	}
-}
+	externalSiteWorksStatus: {
+		booth: boolean
+		sketch: boolean
+		vroidHub: boolean
+	}
+	request: {
+		showRequestTab: boolean
+		showRequestSentTab: boolean
+		postWorks: {
+			artworks: []
+			novels: []
+		}
+	}
+}>;

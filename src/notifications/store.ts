@@ -12,7 +12,7 @@ export type Notification =
 	{
 		type: 'error'
 		text: string
-	}
+	};
 
 const {subscribe, update} = writable<{[id: string]: Notification}>({});
 let ids: string[];

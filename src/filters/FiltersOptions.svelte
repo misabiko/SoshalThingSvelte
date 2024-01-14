@@ -14,9 +14,9 @@
 	}
 
 	const serviceFilterTypes: {
-		service: string,
-		filter: string,
-		filterTypeInfo: FilterInfo,
+		service: string
+		filter: string
+		filterTypeInfo: FilterInfo
 	}[] = Object.values(getServices()).flatMap(s => Object.entries(s.filterTypes).map(m => ({
 		service: s.name,
 		filter: m[0],
@@ -43,7 +43,7 @@
 		? genericFilterTypes[instance.filter.type]
 		: getServices()[instance.filter.service].filterTypes[instance.filter.type]
 	}
-	<div class="field">
+	<div class='field'>
 		<label>
 			{#if instance.filter.service !== null}
 				{`${instance.filter.service}: ` }
@@ -56,39 +56,39 @@
 					instance.inverted
 				)
 			}
-			<button class='button' class:is-success={instance.enabled} on:click={() => instance.enabled = !instance.enabled}>
+			<button class='button' class:is-success={instance.enabled} on:click='{() => instance.enabled = !instance.enabled}'>
 				{instance.enabled ? 'Enabled' : 'Disabled'}
 			</button>
-			<button class='button' class:is-info={instance.inverted} on:click={() => instance.inverted = !instance.inverted}>
+			<button class='button' class:is-info={instance.inverted} on:click='{() => instance.inverted = !instance.inverted}'>
 				{instance.inverted ? 'Inverted' : 'Normal'}
 			</button>
-			<button class='button' on:click={() => removeFilter(index)}>
+			<button class='button' on:click='{() => removeFilter(index)}'>
 				Remove
 			</button>
 		</label>
 	</div>
 
 	{#each Object.entries(filterTypeInfo.props) as [propName, propType]}
-		<div class="field">
+		<div class='field'>
 			<label>
 				{propName}
 				{#if propType.type === 'boolean'}
 					<input
 						type='checkbox'
 						bind:checked={instance.filter.props[propName]}
-						indeterminate={propType.optional && instance.filter.props[propName] === undefined}
+						indeterminate='{propType.optional && instance.filter.props[propName] === undefined}'
 						required={!propType.optional}
 					/>
 				{:else if propType.type === 'number'}
 					<input
 						type='number'
-						value={instance.filter.props[propName] ?? ''}
-						on:change={e => {
+						value="{instance.filter.props[propName] ?? ''}"
+						on:change="{e => {
 							if (propType.optional && e.currentTarget.value === '')
 								delete instance.filter.props[propName];
 							else
 								instance.filter.props[propName] = Number(e.currentTarget.value);
-						}}
+						}}"
 						min={propType.min}
 						max={propType.max}
 						required={!propType.optional}
@@ -96,13 +96,13 @@
 				{:else}
 					<!--TODO Enforce required-->
 					<input
-						value={instance.filter.props[propName] ?? ''}
-						on:change={e => {
+						value="{instance.filter.props[propName] ?? ''}"
+						on:change="{e => {
 							if (propType.optional && e.currentTarget.value === '')
 								delete instance.filter.props[propName];
 							else
 								instance.filter.props[propName] = e.currentTarget.value;
-						}}
+						}}"
 						required={!propType.optional}
 					/>
 				{/if}
@@ -114,24 +114,24 @@
 
 <Dropdown labelText='New Filter'>
 	{#each Object.entries(genericFilterTypes) as [filterType, filterTypeInfo]}
-		<button class='dropdown-item' on:click={() => addFilter(filterType, false)}>
+		<button class='dropdown-item' on:click='{() => addFilter(filterType, false)}'>
 			{ filterTypeInfo.name }
 		</button>
 	{/each}
 	{#each serviceFilterTypes as filterType}
-		<button class='dropdown-item' on:click={() => addFilter(filterType.filter, false, filterType.service)}>
+		<button class='dropdown-item' on:click='{() => addFilter(filterType.filter, false, filterType.service)}'>
 			{ filterType.service }: { filterType.filterTypeInfo.name }
 		</button>
 	{/each}
 </Dropdown>
 <Dropdown labelText='New Inverted Filter'>
 	{#each Object.entries(genericFilterTypes) as [filterType, filterTypeInfo]}
-		<button class="dropdown-item" on:click={() => addFilter(filterType, true)}>
+		<button class='dropdown-item' on:click='{() => addFilter(filterType, true)}'>
 			{ filterTypeInfo.invertedName }
 		</button>
 	{/each}
 	{#each serviceFilterTypes as filterType}
-		<button class="dropdown-item" on:click={() => addFilter(filterType.filter, true, filterType.service)}>
+		<button class='dropdown-item' on:click='{() => addFilter(filterType.filter, true, filterType.service)}'>
 			{ filterType.service }: { filterType.filterTypeInfo.invertedName }
 		</button>
 	{/each}

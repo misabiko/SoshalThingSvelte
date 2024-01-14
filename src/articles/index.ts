@@ -1,6 +1,6 @@
 import type {TimelineData} from '~/timelines';
 import {getServices, getWritable} from '~/services/service';
-import type {Readable} from 'svelte/store';
+import type {Readable, Writable} from 'svelte/store';
 import {get} from 'svelte/store';
 import type {ArticleMedia} from './media';
 import type {FilterInstance} from '~/filters';
@@ -10,7 +10,7 @@ export default abstract class Article {
 
 	readonly idPair: ArticleIdPair;
 	readonly idPairStr: string;
-	abstract numberId: number | bigint
+	abstract numberId: number | bigint;
 
 	readonly text?: string;
 	readonly textHtml?: string;
@@ -27,17 +27,17 @@ export default abstract class Article {
 	rawSource: any;
 
 	protected constructor(params: {
-		id: ArticleId,
-		text?: string,
-		textHtml?: string,
-		url?: string,
-		medias: ArticleMedia[],
+		id: ArticleId
+		text?: string
+		textHtml?: string
+		url?: string
+		medias: ArticleMedia[]
 		//TODO Remove markedAsRead from Article
-		markedAsRead?: boolean,
-		markedAsReadStorage: string[],
-		refs?: ArticleRefIdPair | null,
-		fetched?: boolean,
-		rawSource?: any,
+		markedAsRead?: boolean
+		markedAsReadStorage: string[]
+		refs?: ArticleRefIdPair | null
+		fetched?: boolean
+		rawSource?: any
 	}) {
 		this.text = params.text;
 		this.textHtml = params.textHtml;
@@ -45,7 +45,7 @@ export default abstract class Article {
 		this.medias = params.medias || [];
 		this.markedAsRead = params.markedAsRead || params.markedAsReadStorage.includes(params.id.toString());
 		this.refs = params.refs ?? null;
-		this.fetched = params.fetched || false;
+		this.fetched = params.fetched ?? false;
 		this.rawSource = params.rawSource;
 
 		this.idPair = {
@@ -91,13 +91,13 @@ export default abstract class Article {
 	}
 }
 
-export type ArticleId = string | number | bigint
+export type ArticleId = string | number | bigint;
 
 export interface ArticleAuthor {
-	username: string;
-	name: string;	//TODO Make author name optional
-	url: string;
-	avatarUrl?: string;
+	username: string	//TODO Make username optional and rename name to displayName
+	name: string
+	url: string
+	avatarUrl?: string
 }
 
 export type ArticleWithRefs<Extra extends object = object> = Readonly<(
@@ -120,8 +120,8 @@ export type ArticleWithRefs<Extra extends object = object> = Readonly<(
 		article: Article
 		quoted: NonRepostArticleWithRefs<Extra>
 	}
-) & Extra>
-type NonRepostArticleWithRefs<Extra extends object = object> = Exclude<ArticleWithRefs<Extra>, {type: 'repost' | 'reposts'}>
+) & Extra>;
+type NonRepostArticleWithRefs<Extra extends object = object> = Exclude<ArticleWithRefs<Extra>, {type: 'repost' | 'reposts'}>;
 
 export type DerivedArticleWithRefs = Readonly<
 	| {
@@ -138,16 +138,25 @@ export type DerivedArticleWithRefs = Readonly<
 		article: Article
 		quoted: NonRepostDerivedArticleWithRefs
 	}
->
-type NonRepostDerivedArticleWithRefs = Exclude<DerivedArticleWithRefs, {type: 'repost' | 'reposts'}>
+>;
+type NonRepostDerivedArticleWithRefs = Exclude<DerivedArticleWithRefs, {type: 'repost' | 'reposts'}>;
 
 export type ArticleProps = ArticleWithRefs<{
-	filteredOut: boolean,
-	nonKeepFilters: FilterInstance[],
-}>
+	filteredOut: boolean
+	nonKeepFilters: FilterInstance[]
+	mediaIndex: number | null	//Should be always null for reposts
+}>;
+
+export function getIdPairStr(ArticleIdPair: ArticleIdPair): ArticleIdPairStr {
+	return `${ArticleIdPair.service}/${ArticleIdPair.id}`;
+}
+
+export function getIdServiceMediaStr(articleProps: ArticleProps): ArticleIdPairStr {
+	return `${getRootArticle(articleProps).idPairStr}/${articleProps.mediaIndex}`;
+}
 
 export interface ArticleIdPair {
-	service: string;
+	service: string
 	id: ArticleId
 }
 
@@ -155,15 +164,17 @@ export function idPairEqual(a: ArticleIdPair, b: ArticleIdPair) {
 	return a.service === b.service && a.id === b.id;
 }
 
+export type ArticleIdPairStr = string;
+
 export type ArticleRefIdPair =
 	{
-		type: 'repost',
-		reposted: ArticleIdPair,
+		type: 'repost'
+		reposted: ArticleIdPair
 	} |
 	{
-		type: 'quote',
-		quoted: ArticleIdPair,
-	}
+		type: 'quote'
+		quoted: ArticleIdPair
+	};
 
 export function getRefed(ref: ArticleRefIdPair): ArticleIdPair[] {
 	switch (ref.type) {
@@ -184,6 +195,26 @@ export function articleWithRefToArray(articleWithRefs: ArticleWithRefs | Article
 			return [...articleWithRefs.reposts, ...articleWithRefToArray(articleWithRefs.reposted)];
 		case 'quote':
 			return [articleWithRefs.article, ...articleWithRefToArray(articleWithRefs.quoted)];
+	}
+}
+
+//Disgusting name
+//Also skipping ArticleWithRefs for now because the union type is annoying
+export function articleWithRefToWithRefArray(articleWithRefs: ArticleProps): ArticleProps[] {
+	switch (articleWithRefs.type) {
+		case 'normal':
+			return [articleWithRefs];
+		case 'repost':
+			return [articleWithRefs, ...articleWithRefToWithRefArray(articleWithRefs.reposted)];
+		case 'reposts':
+			return [...articleWithRefs.reposts.map(a => ({
+				...articleWithRefs,
+				type: 'repost',
+				article: a,
+				reposts: undefined,
+			} as ArticleProps)), ...articleWithRefToWithRefArray(articleWithRefs.reposted)];
+		case 'quote':
+			return [articleWithRefs, ...articleWithRefToWithRefArray(articleWithRefs.quoted)];
 	}
 }
 
@@ -241,15 +272,18 @@ export function flatDeriveArticle(idPair: ArticleIdPair): Readable<Article>[] {
 
 //Props for every article in the timeline
 export type TimelineArticleProps = {
-	animatedAsGifs: boolean;
-	muteVideos: boolean;
-	compact: boolean;
-	hideQuoteMedia: boolean;
-	hideText: boolean;
-	shouldLoadMedia: boolean;
-	maxMediaCount: number | null;
-	setModalTimeline: (data: TimelineData, width?: number) => void;
-}
+	animatedAsGifs: boolean
+	muteVideos: boolean
+	compact: boolean
+	// If true, the media stays full even when compact is true
+	fullMedia: number
+	hideQuoteMedia: boolean
+	hideText: boolean
+	shouldLoadMedia: boolean
+	maxMediaCount: number | null
+	setModalTimeline: (data: TimelineData, width?: number) => void
+	showAllMediaArticles: Writable<Set<string>>
+};
 
 const MONTH_ABBREVS: string[] = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 

@@ -4,14 +4,15 @@
 	import {
 		type ArticleIdPair,
 		type ArticleProps,
-		type ArticleWithRefs, flatDeriveArticle
+		type ArticleWithRefs,
+		articleWithRefToWithRefArray,
+		flatDeriveArticle,
+		getActualArticleRefs,
+		getIdServiceMediaStr
 	} from '~/articles';
-	import {
-		articleWithRefToArray,
-		getActualArticle, getRootArticle, idPairEqual,
-	} from '~/articles';
-	import {fetchArticle} from '~/services/service';
-	import type {FullscreenInfo, TimelineData} from './index';
+	import {getRootArticle, idPairEqual} from '~/articles';
+	import {fetchArticle, getWritable} from '~/services/service';
+	import {addArticlesToTimeline, type FullscreenInfo, type TimelineData} from './index';
 	import {keepArticle} from '~/filters';
 	import {compare, SortMethod} from '~/sorting';
 	import type {ContainerProps} from '~/containers';
@@ -37,15 +38,30 @@
 	let containerRef: HTMLElement | null = null;
 	let containerRebalance = false;
 
-	let articleIdPairs: Readable<ArticleIdPair[]> = readonly(data.articles);
+	let articleIdPairs: Readable<ArticleIdPair[]> = derived([readonly(data.articles), loadingStore], ([a, _]) => a);
+	let articlesOrder = readonly(data.articlesOrder);
 
-	let articles: Readable<ArticleProps[]>;
+	let showAllMediaArticles = data.showAllMediaArticles;
+
+	let preOrderArticles: Readable<Record<string, ArticleProps>>;
 	$: {
 		//Get flat article ref store array per idPair, derive each then discard the refs, then add props for each
-		articles = derived($articleIdPairs.map(idPair => derived(flatDeriveArticle(idPair), articles => articles[0])),
-			articles => articles.map((a, i) => addProps(a.getArticleWithRefs(), i))
+		preOrderArticles = derived($articleIdPairs
+				.map(idPair => derived(flatDeriveArticle(idPair), articles => articles[0])),
+			//Might have to give in to using .find if we want to keep duplicate articles
+			articles => Object.fromEntries(articles
+				.flatMap((a, i) => addPropsRoot(a.getArticleWithRefs(), i))
+				.map(a => [getIdServiceMediaStr(a), a]))
 		);
 	}
+
+	let articles: Readable<ArticleProps[]>;
+	$: articles = derived([preOrderArticles, articlesOrder], ([a, order]) => {
+		if (order === null)
+			return Object.values(a);
+
+		return order.map(id => a[id]);
+	});
 
 	let filteredArticles: Readable<ArticleProps[]>;
 	$: filteredArticles = derived(articles, articleProps => {
@@ -78,7 +94,7 @@
 						(merged[index] as any).reposts.push(...a.reposts);
 					else
 						merged.push(a);
-				}else
+				} else
 					merged.push(a);
 			}
 
@@ -89,7 +105,7 @@
 
 		if (data.sortInfo.method !== null)
 			articleProps.sort(compare(data.sortInfo));
-		if (data.sortInfo.reversed)
+		else if (data.sortInfo.reversed)
 			articleProps.reverse();
 
 		if (data.section.useSection)
@@ -98,7 +114,80 @@
 		return articleProps;
 	});
 
+	function addPropsRoot(articleWithRefs: ArticleWithRefs, index: number): ArticleProps[] {
+		if (data.separateMedia) {
+			switch (articleWithRefs.type) {
+				case 'normal':
+				case 'quote': {
+					const articleProps = addProps(articleWithRefs, index);
+					if (articleProps.type === 'reposts' || articleProps.type === 'repost')
+						throw new Error('addProps({type: normal|quote}) returned a repost');
+
+					const mediaCount = Math.min(!$showAllMediaArticles.has(articleProps.article.idPairStr) && data.maxMediaCount !== null ? data.maxMediaCount : Infinity, articleProps.article.medias.length);
+					return mediaCount > 0
+						? [...Array(mediaCount)].map((_, mediaIndex) => ({
+							...articleProps,
+							mediaIndex,
+						}))
+						: [articleProps];
+				}
+				case 'repost': {
+					const splitReposted = addPropsRoot(articleWithRefs.reposted, index);
+					const {filteredOut, nonKeepFilters} = useFilters(articleWithRefs, index);
+					return splitReposted.map(reposted => ({
+						type: 'reposts',
+						reposts: [articleWithRefs.article],
+						filteredOut,
+						nonKeepFilters,
+						reposted,
+						mediaIndex: null,
+					} as ArticleProps));
+				}
+				case 'reposts':
+					throw {
+						message: 'Reposts should come from the timeline and not articles themselves',
+						articleWithRefs
+					};
+			}
+		} else {
+			return [addProps(articleWithRefs, index)];
+		}
+	}
+
 	function addProps(articleWithRefs: ArticleWithRefs, index: number): ArticleProps {
+		const {filteredOut, nonKeepFilters} = useFilters(articleWithRefs, index);
+
+		switch (articleWithRefs.type) {
+			case 'normal':
+				return {
+					...articleWithRefs,
+					filteredOut,
+					nonKeepFilters,
+					mediaIndex: null,
+				};
+			case 'repost':
+				return {
+					type: 'reposts',
+					reposts: [articleWithRefs.article],
+					filteredOut,
+					nonKeepFilters,
+					reposted: addProps(articleWithRefs.reposted, index),
+					mediaIndex: null,
+				} as ArticleProps;
+			case 'quote':
+				return {
+					...articleWithRefs,
+					filteredOut,
+					nonKeepFilters,
+					quoted: addProps(articleWithRefs.quoted, index),
+					mediaIndex: null,
+				} as ArticleProps;
+			case 'reposts':
+				throw {message: 'Reposts should come from the timeline and not articles themselves', articleWithRefs};
+		}
+	}
+
+	function useFilters(articleWithRefs: ArticleWithRefs, index: number) {
 		// const filteredOut =  !data.filters.every(f => !f.enabled || ((keepArticle(articleWithRefs, index, f.filter) ?? !f.inverted) !== f.inverted));
 		//Caching filters for debugging, could return to boolean later
 		const nonKeepFilters = [];
@@ -109,31 +198,7 @@
 
 		const filteredOut = !!nonKeepFilters.length;
 
-		switch (articleWithRefs.type) {
-			case 'normal':
-				return {
-					...articleWithRefs,
-					filteredOut,
-					nonKeepFilters,
-				};
-			case 'repost':
-				return {
-					type: 'reposts',
-					reposts: [articleWithRefs.article],
-					filteredOut,
-					nonKeepFilters,
-					reposted: addProps(articleWithRefs.reposted, index)
-				} as ArticleProps;
-			case 'quote':
-				return {
-					...articleWithRefs,
-					filteredOut,
-					nonKeepFilters,
-					quoted: addProps(articleWithRefs.quoted, index)
-				} as ArticleProps;
-			default:
-				throw new Error('Unknown article type: ' + articleWithRefs.type);
-		}
+		return {filteredOut, nonKeepFilters};
 	}
 
 	let articleCountLabel: string;
@@ -144,17 +209,40 @@
 	else
 		articleCountLabel = 'No articles listed.';
 
+	//Pre-queuing media loads so they load in the right order
 	$: if (data.shouldLoadMedia && $filteredArticles.length) {
-		for (const articleProps of $filteredArticles) {
-			const actualArticle = getActualArticle(articleProps);
-			if (!actualArticle.fetched)
-				fetchArticle(actualArticle.idPair);
-			if (data.shouldLoadMedia)
-				for (const article of articleWithRefToArray(articleProps))
-					for (let i = 0; i < article.medias.length; ++i)
-						if (article.medias[i].loaded === false)
-							loadingStore.requestLoad(article.idPair, i);
+		const articles = $filteredArticles.flatMap(articleWithRefToWithRefArray);
+
+		const promises = [];
+		const toRequest = [];
+
+		for (const articleProps of articles) {
+			const actualArticleProps = getActualArticleRefs(articleProps) as ArticleProps;
+			if (actualArticleProps.type === 'repost' || actualArticleProps.type === 'reposts')
+				throw new Error('Actual article is repost');
+
+			if (data.hideFilteredOutArticles && actualArticleProps.filteredOut)
+				continue;
+
+			const articleStore = getWritable(actualArticleProps.article.idPair);
+			let article = get(articleStore);
+
+			if (!article.fetched)
+				promises.push(fetchArticle(article.idPair).then(() => {
+					let article = get(articleStore);
+					const mediaCount = Math.min(actualArticleProps.article.medias.length, !$showAllMediaArticles.has(article.idPairStr) && data.maxMediaCount !== null ? data.maxMediaCount : Infinity);
+					for (let i = 0; i < mediaCount; ++i)
+						loadingStore.getLoadingState(article.idPair, i, data.shouldLoadMedia);
+				}));
+			else {
+				const mediaCount = Math.min(actualArticleProps.article.medias.length, !$showAllMediaArticles.has(article.idPairStr) && data.maxMediaCount !== null ? data.maxMediaCount : Infinity);
+				for (let mediaIndex = 0; mediaIndex < mediaCount; ++mediaIndex)
+					toRequest.push({idPair: article.idPair, mediaIndex});
+			}
 		}
+
+		loadingStore.requestLoads(...toRequest);
+		Promise.allSettled(promises).then();
 	}
 
 	let availableRefreshTypes: Readable<Set<RefreshType>>;
@@ -170,16 +258,19 @@
 			animatedAsGifs: data.animatedAsGifs,
 			muteVideos: data.muteVideos,
 			compact: data.compact,
+			fullMedia: data.fullMedia,
 			hideQuoteMedia: data.hideQuoteMedia,
 			hideText: data.hideText,
 			shouldLoadMedia: data.shouldLoadMedia,
 			maxMediaCount: data.maxMediaCount,
 			setModalTimeline,
+			showAllMediaArticles: data.showAllMediaArticles,
 		},
 		articleView: data.articleView,
 		columnCount: fullscreen?.columnCount ?? data.columnCount,
 		rtl: data.rtl,
 		rebalanceTrigger: containerRebalance,
+		separateMedia: data.separateMedia,
 	};
 
 	enum ScrollDirection {
@@ -188,16 +279,19 @@
 	}
 
 	let autoscrollInfo: {
-		direction: ScrollDirection,
-		anim?: () => void,
-		scrollRequestId?: number,
+		direction: ScrollDirection
+		anim?: () => void
+		scrollRequestId?: number
 	} = {
 		direction: ScrollDirection.Down,
 	};
 
 	function shuffle() {
-		data.articles.update(idPairs => {
-			let currentIndex = idPairs.length,  randomIndex;
+		data.articlesOrder.update(articleIndex => {
+			if (articleIndex === null)
+				articleIndex = get(articles).map(getIdServiceMediaStr);
+
+			let currentIndex = articleIndex.length, randomIndex;
 
 			// While there remain elements to shuffle...
 			while (currentIndex != 0) {
@@ -207,13 +301,13 @@
 				currentIndex--;
 
 				// And swap it with the current element.
-				[idPairs[currentIndex], idPairs[randomIndex]] = [
-					idPairs[randomIndex], idPairs[currentIndex]];
+				[articleIndex[currentIndex], articleIndex[randomIndex]] = [
+					articleIndex[randomIndex], articleIndex[currentIndex]];
 			}
 
 			data.sortInfo.method = null;
 			containerRebalance = !containerRebalance;
-			return idPairs;
+			return articleIndex;
 		});
 	}
 
@@ -259,30 +353,15 @@
 				refreshEndpointName(timelineEndpoint.name, refreshType);
 			else
 				refreshEndpoint(timelineEndpoint.endpoint, refreshType)
-					.then(articles => {
-						if (articles.length) {
-							data.addedIdPairs.update(addedIdPairs => {
-								const newAddedIdPairs: ArticleIdPair[] = [];
-								for (const idPair of articles.map(a => getRootArticle(a).idPair))
-									if (!addedIdPairs.some(idp => idPairEqual(idPair, idp))) {
-										addedIdPairs.push(idPair);
-										newAddedIdPairs.push(idPair);
-									}
-								data.articles.update(actualIdPairs => {
-									actualIdPairs.push(...newAddedIdPairs);
-									return actualIdPairs;
-								});
-								return addedIdPairs;
-							});
-						}
-					});
+					.then(articles => addArticlesToTimeline(data, ...articles.map(a => getRootArticle(a).idPair)));
 	}
 
 	function sortOnce(method: SortMethod, reversed: boolean) {
-		const sorted = get(articles).sort(compare({method, reversed, customMethod: null}));
-		if (reversed)
-			sorted.reverse();
-		data.articles.set(sorted.map(a => getRootArticle(a).idPair));
+		//Setting reversed otherwise the timeline will reverse the order again
+		data.sortInfo.reversed = false;
+		data.articlesOrder.set(get(articles)
+			.sort(compare({method, reversed, customMethod: null}))
+			.map(getIdServiceMediaStr));
 	}
 
 	function removeFiltered() {
@@ -310,9 +389,11 @@
 		flex-shrink: 0;
 		background-color: var(--main-background);
 	}
+
 	.timeline:first-child {
 		padding: 0;
 	}
+
 	.timeline.fullscreenTimeline {
 		flex-grow: 2;
 		width: unset;
@@ -339,40 +420,44 @@
 	}
 </style>
 
-<div class='timeline' class:fullscreenTimeline={fullscreen !== null} style={modal ? '' : data.width > 1 ? `width: ${data.width * 500}px` : ''}>
+<div
+		class='timeline'
+		class:fullscreenTimeline='{fullscreen !== null}'
+		style="{modal ? '' : data.width > 1 ? `width: ${data.width * 500}px` : ''}"
+>
 	<TimelineHeader
-		bind:data
-		availableRefreshTypes={$availableRefreshTypes}
-		bind:containerRebalance
-		bind:showSidebar
-		bind:showOptions
-		bind:favviewerButtons
-		bind:favviewerHidden
-		bind:favviewerMaximized
-		{fullscreen}
-		{articleCountLabel}
+			bind:data
+			availableRefreshTypes={$availableRefreshTypes}
+			bind:containerRebalance
+			bind:showSidebar
+			bind:showOptions
+			bind:favviewerButtons
+			bind:favviewerHidden
+			bind:favviewerMaximized
+			{fullscreen}
+			{articleCountLabel}
 
-		{shuffle}
-		{autoscroll}
-		{refresh}
-		{toggleFullscreen}
+			{shuffle}
+			{autoscroll}
+			{refresh}
+			{toggleFullscreen}
 	/>
 	{#if showOptions}
 		<TimelineOptions
-			{timelineId}
-			bind:data
-			bind:fullscreen
-			{sortOnce}
-			{removeTimeline}
-			{articleCountLabel}
-			{removeFiltered}
+				{timelineId}
+				bind:data
+				bind:fullscreen
+				{sortOnce}
+				{removeTimeline}
+				{articleCountLabel}
+				{removeFiltered}
 		/>
 	{/if}
 	{#if $filteredArticles.length}
 		<svelte:component
-			this={fullscreen?.container ?? data.container}
-			bind:containerRef
-			props={containerProps}
+				this='{fullscreen?.container ?? data.container}'
+				bind:containerRef
+				props={containerProps}
 		/>
 	{:else}
 		<div class='articlesContainer'>

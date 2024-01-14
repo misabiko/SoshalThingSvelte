@@ -24,17 +24,33 @@
 		}
 	}],
     "plugins": [
-        "@typescript-eslint"
+        "@typescript-eslint",
+		"@stylistic"
     ],
     "rules": {
-        "semi": ["error", "always"],
-        "quotes": [
+		//Wish I could disable semicolon for class member fields
+        "@stylistic/semi": ["error", "always"],
+		"@stylistic/member-delimiter-style": [
+			"warn",
+			{
+				"multiline": {
+					"delimiter": "none",
+					"requireLast": true
+				},
+				"singleline": {
+					"delimiter": "comma",
+					"requireLast": false
+				}
+			}
+		],
+        "@stylistic/quotes": [
 			"warn",
 			"single",
 			{
 				"avoidEscape": true
 			}
 		],
+		"@stylistic/quote-props": ["warn", "as-needed"],
 		"@typescript-eslint/no-explicit-any": "off",
 		"@typescript-eslint/no-unused-vars": [
 			"warn",
@@ -42,7 +58,15 @@
 				"argsIgnorePattern": "^_",
 				"varsIgnorePattern": "^_"
 			}
-		]
+		],
+		"svelte/require-store-reactive-access": "error",
+		"svelte/html-quotes": ["warn", {
+			"prefer": "single",
+			"dynamic": {
+				"quoted": false,
+				"avoidInvalidUnquotedInHTML": true
+			}
+		}]
     },
 	"ignorePatterns": ["**/dist*/*", "**/node_modules/*"]
 }

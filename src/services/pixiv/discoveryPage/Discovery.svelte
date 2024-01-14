@@ -1,24 +1,23 @@
 <script lang='ts'>
-	import SoshalThing from '~/SoshalThing.svelte';
-	import {
-		defaultTimelineView,
-		type TimelineCollection,
-		type TimelineView,
-	} from '~/timelines';
-	import {defaultTimeline} from '~/timelines';
-	import MasonryContainer from '~/containers/MasonryContainer.svelte';
-	import {loadMainStorage} from '~/storages';
+	import {defaultTimeline, defaultTimelineView, type TimelineCollection, type TimelineView} from '~/timelines';
+	import DiscoveryEndpoint, {Mode} from '~/services/pixiv/endpoints/discovery.endpoint';
+	import {getCurrentPage} from '~/services/pixiv/endpoints';
 	import {everyRefreshType} from '~/services/endpoints';
 	import portal from '~/usePortal';
-	import {BookmarkAPIEndpoint} from '~/services/pixiv/endpoints/bookmarks.endpoint';
-	import {getUserId} from '~/services/pixiv/endpoints/user.endpoint';
+	import MasonryContainer from '~/containers/MasonryContainer.svelte';
+	import {SortMethod} from '~/sorting';
+	import {loadMainStorage} from '~/storages';
+	import SoshalThing from '~/SoshalThing.svelte';
+
+	const searchParams = new URLSearchParams(window.location.search);
+	const mode = searchParams.get('mode') as Mode;
 
 	const timelines: TimelineCollection = {
-		Bookmarks: {
+		Follows: {
 			...defaultTimeline(),
-			title: 'Bookmarks',
+			title: 'Discovery',
 			endpoints: [{
-				endpoint: new BookmarkAPIEndpoint(getUserId(), new URLSearchParams(window.location.search).get('rest') === 'hide'),
+				endpoint: new DiscoveryEndpoint(getCurrentPage(), mode),
 				refreshTypes: everyRefreshType,
 				filters: [],
 			}],
@@ -26,9 +25,9 @@
 			columnCount: 4,
 			animatedAsGifs: true,
 			sortInfo: {
-				method: null,
+				method: SortMethod.Id,
 				customMethod: null,
-				reversed: false,
+				reversed: true,
 			},
 			compact: true,
 			fullMedia: 1,
@@ -80,7 +79,7 @@
 		</style>
 	{:else}
 		<style>
-			section > div > div > ul > li {
+			#root section ul {
 				display: none;
 			}
 			.soshalthing {
@@ -92,18 +91,18 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
 <a
-	use:portal='{{ target: activatorMount }}'
-	id='favvieweractivator'
-	class={activatorMount.children[0].className}
-	on:click='{() => favviewerHidden = !favviewerHidden}'
+		use:portal='{{ target: activatorMount }}'
+		id='favvieweractivator'
+		class={activatorMount.children[0].className}
+		on:click='{() => favviewerHidden = !favviewerHidden}'
 >
 	SoshalThing
 </a>
 
 <SoshalThing
-	bind:favviewerHidden
-	bind:favviewerMaximized
-	{timelines}
-	{timelineViews}
-	isInjected={true}
+		bind:favviewerHidden
+		bind:favviewerMaximized
+		{timelines}
+		{timelineViews}
+		isInjected={true}
 />

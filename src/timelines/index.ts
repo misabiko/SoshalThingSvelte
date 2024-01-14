@@ -1,4 +1,9 @@
-import type { ArticleAuthor, ArticleIdPair } from '~/articles';
+import {
+	type ArticleAuthor,
+	type ArticleIdPair,
+	type ArticleIdPairStr,
+	getIdPairStr,
+} from '~/articles';
 import type {ComponentType} from 'svelte';
 import type { FilterInstance } from '~/filters';
 import { SortMethod, type SortInfo } from '~/sorting';
@@ -13,40 +18,45 @@ import MasonryContainer from '~/containers/MasonryContainer.svelte';
 import { getServices } from '~/services/service';
 
 export type TimelineData = {
-	title: string;
-	endpoints: TimelineEndpoint[];
-	//TODO Document why addedIdPairs is needed
-	addedIdPairs: Writable<ArticleIdPair[]>;
+	title: string
+	endpoints: TimelineEndpoint[]
+	//Keeps track of every added articles, so they're not added again once removed
+	addedIdPairs: Writable<Set<ArticleIdPairStr>>
 	//TODO Give timelines a list of article lists
-	articles: Writable<ArticleIdPair[]>;
-	section: { useSection: boolean; count: number };
-	container: ComponentType;
-	articleView: ComponentType;
-	columnCount: number;
-	rtl: boolean;
+	articles: Writable<ArticleIdPair[]>
+	articlesOrder: Writable<null | string[]>
+	section: { useSection: boolean, count: number }
+	container: ComponentType
+	articleView: ComponentType
+	columnCount: number
+	rtl: boolean
 	// TODO Add option to set flex-grow: 1 instead of fixed width
-	width: number;
-	filters: FilterInstance[];
-	sortInfo: SortInfo;
-	animatedAsGifs: boolean;
-	muteVideos: boolean;
-	scrollSpeed: number;
-	hideText: boolean;
-	compact: boolean;
-	hideQuoteMedia: boolean;
-	shouldLoadMedia: boolean;
-	hideFilteredOutArticles: boolean;
-	mergeReposts: boolean;
-	showArticleCount: boolean;
-	maxMediaCount: number | null;
-}
+	width: number
+	filters: FilterInstance[]
+	sortInfo: SortInfo
+	animatedAsGifs: boolean
+	muteVideos: boolean
+	scrollSpeed: number
+	hideText: boolean
+	compact: boolean
+	fullMedia: number
+	hideQuoteMedia: boolean
+	shouldLoadMedia: boolean
+	hideFilteredOutArticles: boolean
+	mergeReposts: boolean
+	showArticleCount: boolean
+	maxMediaCount: number | null
+	showAllMediaArticles: Writable<Set<string>>
+	separateMedia: boolean
+};
 
 export function defaultTimeline(articles: ArticleIdPair[] = []): TimelineData {
 	return {
 		title: 'Timeline',
 		endpoints: [],
-		addedIdPairs: writable([...articles]),
+		addedIdPairs: writable(new Set([...articles].map(getIdPairStr))),
 		articles: writable(articles),
+		articlesOrder: writable(null),
 		section: { useSection: false, count: 100 },
 		container: ColumnContainer,
 		articleView: SocialArticleView,
@@ -63,42 +73,67 @@ export function defaultTimeline(articles: ArticleIdPair[] = []): TimelineData {
 		scrollSpeed: 3,
 		hideText: false,
 		compact: false,
+		fullMedia: 0,
 		hideQuoteMedia: false,
 		shouldLoadMedia: true,
 		hideFilteredOutArticles: true,
 		mergeReposts: true,
 		showArticleCount: false,
 		maxMediaCount: 4,
+		showAllMediaArticles: writable(new Set()),
+		separateMedia: false,
 		muteVideos: false,
 	};
 }
 
-export type TimelineCollection = { [id: string]: TimelineData }
+export function addArticlesToTimeline(data: TimelineData, ...articles: ArticleIdPair[]) {
+	if (!articles.length)
+		return;
+
+	data.addedIdPairs.update(addedIdPairs => {
+		const newAddedIdPairs: ArticleIdPair[] = [];
+		for (const idPair of articles) {
+			const idPairStr = getIdPairStr(idPair);
+			if (!addedIdPairs.has(idPairStr)) {
+				addedIdPairs.add(idPairStr);
+				newAddedIdPairs.push(idPair);
+			}
+		}
+		data.articles.update(actualIdPairs => {
+			actualIdPairs.push(...newAddedIdPairs);
+			return actualIdPairs;
+		});
+
+		return addedIdPairs;
+	});
+}
+
+export type TimelineCollection = { [id: string]: TimelineData };
 
 //Would've wanted to use a symbol, but then we need to stringify in json anyway
 export const defaultTimelineView = 'default';
 export type TimelineView = {
-	timelineIds: string[];
-	fullscreen: FullscreenInfo;
-}
+	timelineIds: string[]
+	fullscreen: FullscreenInfo
+};
 
 export type TimelineEndpoint = {
-	name: string;
-	endpoint?: never;
-	refreshTypes: Set<RefreshType>;
+	name: string
+	endpoint?: never
+	refreshTypes: Set<RefreshType>
 	filters: FilterInstance[]
 } | {
-	name?: never;
-	endpoint: Endpoint;
-	refreshTypes: Set<RefreshType>;
+	name?: never
+	endpoint: Endpoint
+	refreshTypes: Set<RefreshType>
 	filters: FilterInstance[]
-}
+};
 
 export type FullscreenInfo = {
-	index: number | null;
-	columnCount: number | null;
-	container: ComponentType | null;
-}
+	index: number | null
+	columnCount: number | null
+	container: ComponentType | null
+};
 
 export function newUserTimeline(serviceName: string, author: ArticleAuthor): TimelineData | null {
 	const endpointConstructor = getServices()[serviceName].userEndpoint;

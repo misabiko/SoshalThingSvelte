@@ -1,5 +1,8 @@
 <script lang='ts'>
 	import {loadingStore} from '~/bufferedMediaLoading';
+	import {derived} from 'svelte/store';
+
+	$: queueLength = derived(loadingStore, $loadingStore => $loadingStore.queue.length);
 </script>
 
 <button on:click={loadingStore.clearLoadings}>Clear loadings</button>
@@ -15,7 +18,7 @@
 	{/if}
 </section>
 <section>
-	{#if $loadingStore.queue.length}
+	{#if $queueLength}
 		Currently queued:
 		{#each [...$loadingStore.queue] as idPair (idPair)}
 			{idPair}

@@ -57,7 +57,7 @@
 	}
 </style>
 
-<div class="modal" class:active={active} bind:this={modal}>
+<div class='modal' class:active={active} bind:this={modal}>
 	<!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
 	<div class='modal-background' on:click={close}/>
 	<div class='modal-content'>

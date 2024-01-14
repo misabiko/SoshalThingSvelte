@@ -11,9 +11,9 @@ export type SortInfo = {
 	customMethod: {
 		service: string
 		method: string
-	},
+	}
 	reversed: boolean
-}
+};
 
 export enum SortMethod {
 	Id,
@@ -28,22 +28,32 @@ export const genericSortMethods = [
 
 export function compare(info: SortInfo): (a: ArticleWithRefs | ArticleProps, b: ArticleWithRefs | ArticleProps) => number {
 	return (a, b) => {
+		let order;
 		switch (info.method) {
 			case SortMethod.Id: {
 				const aRoot = getRootArticle(a);
 				const bRoot = getRootArticle(b);
-				return aRoot.numberId > bRoot.numberId ? 1 : (aRoot.numberId < bRoot.numberId ? -1 : 0);
+				order = aRoot.numberId > bRoot.numberId ? 1 : (aRoot.numberId < bRoot.numberId ? -1 : 0);
 			}
+			break;
 			case SortMethod.Date:
-				return (getRootArticle(a).creationTime?.getTime() || 0) - (getRootArticle(b).creationTime?.getTime() || 0);
+				order = (getRootArticle(a).creationTime?.getTime() || 0) - (getRootArticle(b).creationTime?.getTime() || 0);
+				break;
 			case SortMethod.Custom: {
 				if (getRootArticle(a).idPair.service !== info?.customMethod?.service || getRootArticle(b).idPair.service !== info.customMethod.service)
-					return 0;
+					order = 0;
 				else
-					return getServices()[info.customMethod.service]?.sortMethods[info.customMethod.method]?.compare(a, b) || 0;
+					order = getServices()[info.customMethod.service]?.sortMethods[info.customMethod.method]?.compare(a, b) || 0;
+				break;
 			}case null:
-				return 0;
+				order = 0;
+				break;
 		}
+
+		if (order === 0 && 'mediaIndex' in a && 'mediaIndex' in b)
+			return (a.mediaIndex ?? 0) - (b.mediaIndex ?? 0);
+		else
+			return info.reversed ? -order : order;
 	};
 }
 

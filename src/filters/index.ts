@@ -9,7 +9,7 @@ export type FilterInstance = {
 	filter: Filter
 	enabled: boolean
 	inverted: boolean
-}
+};
 
 export type Filter = ({
 	type: string
@@ -19,7 +19,7 @@ export type Filter = ({
 	service: null
 }) & {
 	props: Record<string, any>
-}
+};
 
 type GenericFilter =
 	| 'media'
@@ -33,7 +33,7 @@ type GenericFilter =
 	//TODO Test quote filter
 	| 'quote'
 	| 'interval'
-	| 'section'
+	| 'section';
 //TODO Number of medias (with equal, less than, greater than, etc)
 
 export type FilterInfo<S extends string = string> = {
@@ -41,7 +41,7 @@ export type FilterInfo<S extends string = string> = {
 	name: string
 	invertedName: string
 	props: Record<string, PropType>
-}
+};
 
 export function getFilterName(filter: FilterInfo, inversed: boolean): string {
 	return inversed ? filter.invertedName : filter.name;
@@ -58,7 +58,7 @@ export type PropType =
 	max?: number
 }) & {
 	optional: boolean
-}
+};
 
 export const genericFilterTypes: Record<GenericFilter, FilterInfo<GenericFilter>> = {
 	media: {

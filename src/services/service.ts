@@ -16,20 +16,20 @@ import type {ComponentType} from 'svelte';
 const services: { [name: string]: Service<any> } = {};
 
 export interface Service<A extends Article = Article> {
-	readonly name: string;
-	readonly articles: Record<string, [Writable<A>, ArticleRefIdPair | null]>;
+	readonly name: string
+	readonly articles: Record<string, [Writable<A>, ArticleRefIdPair | null]>
 	readonly endpointConstructors: Record<string, EndpointConstructorInfo>
-	userEndpoint: ((author: ArticleAuthor) => Endpoint) | null,
-	loadArticle: ((id: string) => Promise<ArticleWithRefs | null>) | null,
-	articleActions: { [name: string]: ArticleAction<A> };
-	requestImageLoad?: (id: ArticleId, index: number) => void;
+	userEndpoint: ((author: ArticleAuthor) => Endpoint) | null
+	loadArticle: ((id: string) => Promise<ArticleWithRefs | null>) | null
+	articleActions: { [name: string]: ArticleAction<A> }
+	requestImageLoad?: (id: ArticleId, index: number) => void
 	getCachedArticles?: () => {[id: string]: object}
 	keepArticle(articleWithRefs: ArticleWithRefs | ArticleProps, index: number, filter: Filter): boolean
 	defaultFilter(filterType: string): Filter
 	filterTypes: Record<string, FilterInfo>
 	sortMethods: Record<string, SortMethodInfo>
 	//Might have to move to per-endpoint
-	fetchInfo: FetchInfo,
+	fetchInfo: FetchInfo
 	fetch: (url: RequestInfo | URL, init?: RequestInit) => Promise<any>
 	isOnDomain: boolean | null
 	settings: ComponentType | null
@@ -47,11 +47,11 @@ export type FetchInfo =
 | {
 	type: FetchType.Tab
 	tabInfo: {
-		tabId: Writable<number | null>,
-		url: string,
-		matchUrl: string[],
+		tabId: Writable<number | null>
+		url: string
+		matchUrl: string[]
 	}
-}
+};
 
 export enum FetchType {
 	OnDomainOnly,
@@ -167,10 +167,10 @@ export async function fetchArticle(idPair: ArticleIdPair) {
 }
 
 export interface FetchingService<A extends Article = Article> {
-	fetchArticle: (store: Writable<A>) => void;
-	fetchedArticles: Set<ArticleId>;
-	fetchedArticleQueue: number;
-	fetchTimeout: undefined | number;
+	fetchArticle: (store: Writable<A>) => Promise<void>
+	fetchedArticles: Set<ArticleId>
+	fetchedArticleQueue: number
+	fetchTimeout: undefined | number
 }
 
 export function newService<A extends Article = Article>(name: string): Service<A> {

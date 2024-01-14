@@ -72,21 +72,21 @@
 		<strong>{data.title + (data.showArticleCount ? ' - ' + articleCountLabel : '')}</strong>
 		{#if favviewerButtons}
 			<div class='timelineButtons'>
-				<button class='borderless-button' title='Toggle SoshalThing' on:click={() => favviewerHidden = !favviewerHidden}>
+				<button class='borderless-button' title='Toggle SoshalThing' on:click='{() => favviewerHidden = !favviewerHidden}'>
 					<Fa icon={faEyeSlash} size='large'/>
 				</button>
 				{#if favviewerMaximized !== null}
 					<button class='borderless-button'
-							title={favviewerMaximized ? 'Minimize SoshalThing' : 'Maximize SoshalThing'}
-							on:click={() => {
+							title="{favviewerMaximized ? 'Minimize SoshalThing' : 'Maximize SoshalThing'}"
+							on:click='{() => {
 								favviewerMaximized = !favviewerMaximized;
 								updateMaximized(favviewerMaximized);
-							}}
+							}}'
 					>
-						<Fa icon={favviewerMaximized ? faMinimize : faMaximize} size='large'/>
+						<Fa icon='{favviewerMaximized ? faMinimize : faMaximize}' size='large'/>
 					</button>
 				{/if}
-				<button class='borderless-button' title='Show Sidebar' on:click={() => showSidebar = !showSidebar}>
+				<button class='borderless-button' title='Show Sidebar' on:click='{() => showSidebar = !showSidebar}'>
 					<Fa icon={faEllipsisV} size='large'/>
 				</button>
 			</div>
@@ -98,18 +98,18 @@
 		</button>
 		{#if availableRefreshTypes.has(RefreshType.LoadTop)}
 			<button class='borderless-button' title='Load Top'
-					on:click={() => refresh(RefreshType.LoadTop)}>
+					on:click='{() => refresh(RefreshType.LoadTop)}'>
 				<Fa icon={faArrowUp} size='large'/>
 			</button>
 		{/if}
 		{#if availableRefreshTypes.has(RefreshType.LoadBottom)}
 			<button class='borderless-button' title='Load Bottom'
-					on:click={() => refresh(RefreshType.LoadBottom)}>
+					on:click='{() => refresh(RefreshType.LoadBottom)}'>
 				<Fa icon={faArrowDown} size='large'/>
 			</button>
 		{/if}
 		{#if availableRefreshTypes.has(RefreshType.Refresh)}
-			<button class='borderless-button' title='Refresh' on:click={() => refresh(RefreshType.Refresh)}>
+			<button class='borderless-button' title='Refresh' on:click='{() => refresh(RefreshType.Refresh)}'>
 				<Fa icon={faSyncAlt} size='large'/>
 			</button>
 		{/if}
@@ -121,17 +121,17 @@
 		</button>
 		{#if data.container === MasonryContainer}
 			<button class='borderless-button' title='Organize Container'
-					on:click={() => containerRebalance = !containerRebalance}>
+					on:click='{() => containerRebalance = !containerRebalance}'>
 				<Fa icon={faScaleBalanced} size='large'/>
 			</button>
 		{/if}
 		{#if toggleFullscreen}
 			<button
 				class='borderless-button'
-				title={fullscreen ? 'Disable fullscreen' : 'Make timeline fullscreen'}
+				title="{fullscreen ? 'Disable fullscreen' : 'Make timeline fullscreen'}"
 				on:click={toggleFullscreen}
 			>
-				<Fa icon={fullscreen ? faColumns: faExpandAlt} size='large'/>
+				<Fa icon='{fullscreen ? faColumns: faExpandAlt}' size='large'/>
 			</button>
 		{/if}
 	</div>

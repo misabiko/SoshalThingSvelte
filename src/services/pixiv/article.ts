@@ -5,7 +5,6 @@ import type {ArticleMedia} from '~/articles/media';
 export default class PixivArticle extends Article {
 	static service = 'Pixiv';
 
-	liked = false;
 	//TODO Add tags
 
 	constructor(
@@ -16,7 +15,9 @@ export default class PixivArticle extends Article {
 		public creationTime: Date | undefined,
 		markedAsReadStorage: string[],
 		rawSource: any | undefined,
+		public liked: boolean,
 		public bookmarked: boolean | null,
+		fetched: boolean,
 	) {
 		super({
 			id,
@@ -26,6 +27,7 @@ export default class PixivArticle extends Article {
 			markedAsReadStorage,
 			text: title,
 			rawSource,
+			fetched,
 		});
 	}
 
@@ -43,16 +45,14 @@ export default class PixivArticle extends Article {
 		else
 			this.bookmarked ||= newArticle.bookmarked;
 	}
-
-	getLiked(): boolean {
-		return this.liked;
-	}
-
-	getReposted(): boolean {
-		return !!this.bookmarked;
-	}
 }
 
 export interface PixivUser extends ArticleAuthor {
 	id: number
 }
+
+export type CachedPixivArticle = {
+	id: number
+	medias?: ArticleMedia[]
+	liked?: boolean
+};

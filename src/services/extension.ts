@@ -9,7 +9,7 @@ export type ExtensionContext =
 	| {
 		id: string
 		available: boolean
-	}
+	};
 
 const EXTENSION_ID_STORAGE_KEY = `${MAIN_STORAGE_KEY} Extension Id`;
 
@@ -96,9 +96,9 @@ export async function extensionCheck(): Promise<ExtensionContext> {
 }
 
 export type ExtensionFetchResponse<T> = {
-	json: T,
-	headers: Headers,
-}
+	json: T
+	headers: Headers
+};
 
 export async function tryInject(elementQuery: () => Element | null, delayMs = 500): Promise<Element> {
 	let attempts = 0;

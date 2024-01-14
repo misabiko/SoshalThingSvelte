@@ -43,7 +43,7 @@ export default abstract class WebSocketEndpoint extends Endpoint {
 }
 
 export type SetupData = {
-	initEndpoint: string,
-	responseIncludes: string,
-	gotoURL: string,
-}
+	initEndpoint: string
+	responseIncludes: string
+	gotoURL: string
+};

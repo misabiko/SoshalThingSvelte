@@ -3,7 +3,7 @@
     import { endpoints, type Endpoint } from 'services/endpoints';
     import { addArticles } from 'services/service';
     import { parseResponse } from 'services/twitter/pageAPI';
-    import type { TimelineData } from 'timelines';
+	import {addArticlesToTimeline, type TimelineData} from 'timelines';
 
 	export let timeline: TimelineData;
 	export let endpoint: Endpoint;
@@ -34,17 +34,7 @@
 		if (!Object.hasOwn(endpoints, endpoint.name))
 			endpoints[endpoint.name].set(endpoint);
 
-			if (articles.length) {
-			const newAddedIdPairs = articles.map(a => getRootArticle(a).idPair);
-			timeline.addedIdPairs.update(idPairs => {
-				idPairs.push(...newAddedIdPairs);
-				return idPairs;
-			});
-			timeline.articles.update(idPairs => {
-				idPairs.push(...newAddedIdPairs);
-				return idPairs;
-			});
-		}
+		addArticlesToTimeline(timeline, ...articles.map(a => getRootArticle(a).idPair));
 	}
 </script>
 

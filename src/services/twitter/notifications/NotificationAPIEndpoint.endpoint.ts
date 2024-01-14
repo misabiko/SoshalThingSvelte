@@ -38,6 +38,9 @@ export default class NotificationAPIEndpoint extends Endpoint {
 		const deleteInstructions = data.timeline.instructions.filter(i => i.removeEntries);
 		for (const deleteInstruction of deleteInstructions) {
 			for (const entryId of deleteInstruction.removeEntries!.entryIds) {
+				if (!Object.hasOwn(TwitterNotificationService.articles, entryId))
+					continue;
+
 				const article = getWritable<TwitterNotificationArticle>({service: TwitterNotificationService.name, id: entryId});
 				//Maybe we could cache deleted article id if we don't have them yet and mark them when we find them
 				article?.update(a => {
@@ -389,15 +392,15 @@ type NotificationResponse = {
 			retweeted: boolean
 			lang: string
 
-			retweeted_status?: any;
-			retweeted_status_id_str?: string;
+			retweeted_status?: any
+			retweeted_status_id_str?: string
 		}>
 		notifications: Record<string, {
 			id: string
 			timestampMs: string
 			icon: {
 				id: string // "heart_icon"
-			},
+			}
 			message: {
 				text: string
 				entities: {
@@ -408,21 +411,21 @@ type NotificationResponse = {
 							id: string
 						}
 					}
-				}[],
+				}[]
 				rtl: boolean
-			},
+			}
 			template: {
 				aggregateUserActionsV1: {
 					targetObjects: {
 						tweet: {
 							id: string
 						}
-					}[],
+					}[]
 					fromUsers: {
 						user: {
 							id: string
 						}
-					}[],
+					}[]
 					showAllLinkText?: 'Show all'
 				}
 			}

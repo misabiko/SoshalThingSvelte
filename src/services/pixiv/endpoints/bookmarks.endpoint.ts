@@ -1,11 +1,15 @@
 import {type EndpointConstructorInfo, LoadableEndpoint, PageEndpoint, RefreshType} from '../../endpoints';
 import type {ArticleWithRefs} from '~/articles';
 import {PixivService} from '../service';
-import PixivArticle from '../article';
+import PixivArticle, {type CachedPixivArticle} from '../article';
 import type {PixivUser} from '../article';
-import {getMarkedAsReadStorage} from '~/storages/serviceCache';
+import {getCachedArticlesStorage, getMarkedAsReadStorage} from '~/storages/serviceCache';
 import {getWritable, registerEndpointConstructor} from '../../service';
-import {getEachPageURL, getUserUrl, parseThumbnail, type BookmarkData} from './index';
+import {
+	getEachPageURL,
+	getUserUrl,
+	parseThumbnail, type PixivResponseWithWorks,
+} from './index';
 import {MediaLoadType, MediaType} from '~/articles/media';
 
 export default class BookmarkPageEndpoint extends PageEndpoint {
@@ -47,7 +51,7 @@ export default class BookmarkPageEndpoint extends PageEndpoint {
 			url.searchParams.set('is_first_page', this.hostPage.toString());
 			url.searchParams.set('lang', 'en`');
 
-			const response: FollowAjaxResponse = await PixivService.fetch(url.toString(), {headers: {'Accept': 'application/json'}});
+			const response: PixivResponseWithWorks = await PixivService.fetch(url.toString(), {headers: {Accept: 'application/json'}});
 			if (response?.body?.works) {
 				for (const work of Object.values(response.body.works))
 					getWritable<PixivArticle>({id: parseInt(work.id), service: PixivService.name})?.update(a => {
@@ -69,12 +73,13 @@ export default class BookmarkPageEndpoint extends PageEndpoint {
 		if (!thumbnails)
 			throw "Couldn't find thumbnails";
 		const markedAsReadStorage = getMarkedAsReadStorage(PixivService);
+		const cachedArticlesStorage = getCachedArticlesStorage<CachedPixivArticle>(PixivService);
 
-		return [...thumbnails].map(t => this.parseThumbnail(t, markedAsReadStorage)).filter(a => a !== null) as ArticleWithRefs[];
+		return [...thumbnails].map(t => this.parseThumbnail(t, markedAsReadStorage, cachedArticlesStorage)).filter(a => a !== null) as ArticleWithRefs[];
 	}
 
-	parseThumbnail(element: Element, markedAsReadStorage: string[]): ArticleWithRefs | null {
-		return parseThumbnail(element, markedAsReadStorage, this.user);
+	parseThumbnail(element: Element, markedAsReadStorage: string[], cachedArticlesStorage: Record<number, CachedPixivArticle | undefined>): ArticleWithRefs | null {
+		return parseThumbnail(element, markedAsReadStorage, cachedArticlesStorage, this.user);
 	}
 }
 
@@ -100,39 +105,42 @@ export class BookmarkAPIEndpoint extends LoadableEndpoint {
 	}
 
 	async _refresh(_refreshType: RefreshType): Promise<ArticleWithRefs[]> {
-		const url = new URL(`https://www.pixiv.net/ajax/user/${this.userId}/illusts/bookmarks?tag=&offset=0&limit=48&rest=hide&lang=en`);
+		const url = new URL(`https://www.pixiv.net/ajax/user/${this.userId}/illusts/bookmarks?tag=&limit=48&lang=en`);
 
-		//url.searchParams.set('tag', '')
-		//url.searchParams.set('offset', '')
-		//url.searchParams.set('limit', '')
+		url.searchParams.set('offset', (this.currentPage * 48).toString());
 		url.searchParams.set('rest', this.r18 ? 'hide' : 'show');
-		url.searchParams.set('lang', 'en');
 
-		const response: FollowAjaxResponse = await PixivService.fetch(url.toString(), {headers: {'Accept': 'application/json'}});
+		const response: PixivResponseWithWorks = await PixivService.fetch(url.toString(), {headers: {Accept: 'application/json'}});
 		if (response.error) {
 			console.error('Failed to fetch', response);
 			return [];
 		}
 
 		const markedAsReadStorage = getMarkedAsReadStorage(PixivService);
+		const cachedArticlesStorage = getCachedArticlesStorage<CachedPixivArticle>(PixivService);
 
 		//For now, I'm only parsing illusts, not novels
 		return Object.values(response.body.works).map(illust => {
+			const id = parseInt(illust.id);
+			const cached = cachedArticlesStorage[id];
+
+			const medias = cached?.medias ?? getEachPageURL(illust.url, illust.pageCount).map(src => ({
+				mediaType: MediaType.Image,
+				src,
+				ratio: null,
+				queueLoadInfo: MediaLoadType.Thumbnail,
+				offsetX: null,
+				offsetY: null,
+				cropRatio: null,
+			}));
+			const liked = cached?.liked ?? false;
 			const bookmarked = illust.bookmarkData !== null;
 
 			return {
 				type: 'normal',
 				article: new PixivArticle(
-					parseInt(illust.id),
-					getEachPageURL(illust.url, illust.pageCount).map(src => ({
-						mediaType: MediaType.Image,
-						src,
-						ratio: null,
-						queueLoadInfo: MediaLoadType.Thumbnail,
-						offsetX: null,
-						offsetY: null,
-						cropRatio: null,
-					})),
+					id,
+					medias,
 					illust.title,
 					{
 						id: parseInt(illust.userId),
@@ -144,7 +152,9 @@ export class BookmarkAPIEndpoint extends LoadableEndpoint {
 					new Date(illust.createDate),
 					markedAsReadStorage,
 					illust,
+					liked,
 					bookmarked,
+					cached?.medias !== undefined,
 				),
 			};
 		});
@@ -166,72 +176,6 @@ export class BookmarkAPIEndpoint extends LoadableEndpoint {
 }
 
 registerEndpointConstructor(BookmarkAPIEndpoint);
-
-//TODO Abstract responses
-type FollowAjaxResponse = {
-	error: boolean
-	message: string
-	body: {
-		works: {[id: string]: {
-				id: string
-				title: string
-				illustType: number
-				xRestrict: number
-				restrict: number
-				sl: number
-				url: string
-				description: string
-				tags: string[]
-				userId: string
-				userName: string
-				width: number
-				height: number
-				pageCount: number
-				isBookmarkable: boolean
-				bookmarkData: BookmarkData | null
-				alt: string
-				titleCaptionTranslation: {
-					workTitle: null
-					workCaption: null
-				}
-				createDate: string
-				updateDate: string
-				isUnlisted: boolean
-				isMasked: boolean
-				profileImageUrl: string
-		}}
-	}
-	zoneConfig: {
-		header: { url: string }
-		footer: { url: string }
-		logo: { url: string }
-		'500x500': { url: string }
-	}
-	extraData: {
-		meta: {
-			title: string
-			description: string
-			canonical: string
-			ogp: {
-				description: string
-				image: string
-				title: string
-				type: string
-			},
-			twitter: {
-				description: string
-				image: string
-				title: string
-				card: string
-			},
-			alternateLanguages: {
-				ja: string
-				en: string
-			},
-			descriptionHeader: string
-		}
-	}
-}
 
 export function avatarHighRes(url: string): string {
 	return url.replace(/_\d+\.(\w{3,4})$/, '_170.$1');

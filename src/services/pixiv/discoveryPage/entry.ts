@@ -1,19 +1,19 @@
-//TODO Figure out how to load endpoints
 import '~/services/pixiv/service';
 import '~/services/pixiv/endpoints/user.endpoint';
 import '~/services/pixiv/endpoints/ranking.endpoint';
 import '~/services/pixiv/endpoints/top.endpoint';
 import '~/services/pixiv/endpoints/discovery.endpoint';
 
-import FollowIllusts from './FollowIllusts.svelte';
+import Discovery from './Discovery.svelte';
 import {tryInject} from '~/services/extension';
 
-tryInject(() => document.querySelector('section ul'))
+//Could abstract with followIllusts' entry
+tryInject(() => document.querySelector('div.gtm-illust-recommend-zone ul'))
 	.then(element => {
-		const anchor = element.parentElement?.parentElement?.parentElement;
+		const anchor = element.parentElement?.parentElement?.parentElement?.parentElement;
 		const target = anchor?.parentElement;
 		if (!target)
 			throw new Error("Couldn't find ul");
 
-		new FollowIllusts({target, anchor});
+		new Discovery({target, anchor});
 	});

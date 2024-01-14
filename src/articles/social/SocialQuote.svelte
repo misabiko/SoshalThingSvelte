@@ -4,19 +4,28 @@
 	import SocialNav from './SocialNav.svelte';
 	import SocialMedia from './SocialMedia.svelte';
 	import {getReadable} from '~/services/service';
-	import {type Readable} from 'svelte/store';
+	import {derived, type Readable, writable, type Writable} from 'svelte/store';
+	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
 
 	export let idPair: ArticleIdPair;
 	export let timelineProps: TimelineArticleProps;
 	export let filteredOut: boolean;
 	export let modal: boolean;
-	export let showAllMedia: boolean;
 	export let compact: boolean | null;
 	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number;
 	export let onLogData: () => void;
 	export let onLogJSON: () => void;
 
 	let article: Readable<Article> = getReadable(idPair);
+
+	let showAllMedia = derived(timelineProps.showAllMediaArticles, articles => articles.has($article.idPairStr));
+
+	let loadingStates: Writable<Record<number, LoadingState>> = writable({});
+	$: {
+		$loadingStates = [];
+		for (let mediaIndex = 0; mediaIndex < Math.min($article.medias.length, !$showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : Infinity); ++mediaIndex)
+			$loadingStates[mediaIndex] = loadingStore.getLoadingState($article.idPair, mediaIndex, timelineProps.shouldLoadMedia);
+	}
 </script>
 
 <style>
@@ -74,11 +83,11 @@
 		{/if}
 		{#if !timelineProps.hideQuoteMedia}
 			<SocialMedia
-					bind:showAllMedia
 					{idPair}
 					{timelineProps}
-					onMediaClick={index => onMediaClick($article.idPair, index)}
+					onMediaClick='{index => onMediaClick($article.idPair, index)}'
 					{compact}
+					{loadingStates}
 			/>
 		{/if}
 	{/if}

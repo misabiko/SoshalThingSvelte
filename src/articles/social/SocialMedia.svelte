@@ -17,7 +17,7 @@
 
 	export let divRef: HTMLDivElement | null = null;
 	export let mediaRefs: Record<number, HTMLImageElement | HTMLVideoElement> = [];
-	export let loadingStates: Readable<LoadingState[]>;
+	export let loadingStates: Readable<Record<number, LoadingState>>;
 
 	export let compact: boolean | null;
 

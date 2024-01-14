@@ -198,6 +198,26 @@ export function articleWithRefToArray(articleWithRefs: ArticleWithRefs | Article
 	}
 }
 
+//Disgusting name
+//Also skipping ArticleWithRefs for now because the union type is annoying
+export function articleWithRefToWithRefArray(articleWithRefs: ArticleProps): ArticleProps[] {
+	switch (articleWithRefs.type) {
+		case 'normal':
+			return [articleWithRefs];
+		case 'repost':
+			return [articleWithRefs, ...articleWithRefToWithRefArray(articleWithRefs.reposted)];
+		case 'reposts':
+			return [...articleWithRefs.reposts.map(a => ({
+				...articleWithRefs,
+				type: 'repost',
+				article: a,
+				reposts: undefined,
+			} as ArticleProps)), ...articleWithRefToWithRefArray(articleWithRefs.reposted)];
+		case 'quote':
+			return [articleWithRefs, ...articleWithRefToWithRefArray(articleWithRefs.quoted)];
+	}
+}
+
 export function getActualArticleIdPair(article: Article): Readonly<ArticleIdPair> {
 	switch (article.refs?.type) {
 		case 'repost':

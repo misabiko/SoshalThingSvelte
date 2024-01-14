@@ -4,12 +4,13 @@
 	import {
 		type ArticleIdPair,
 		type ArticleProps,
-		type ArticleWithRefs, flatDeriveArticle, getActualArticleRefs, getIdServiceMediaStr
+		type ArticleWithRefs, articleWithRefToArray,
+		articleWithRefToWithRefArray,
+		flatDeriveArticle,
+		getActualArticleRefs,
+		getIdServiceMediaStr
 	} from '~/articles';
-	import {
-		articleWithRefToArray,
-		getRootArticle, idPairEqual,
-	} from '~/articles';
+	import {getRootArticle, idPairEqual} from '~/articles';
 	import {fetchArticle, getWritable} from '~/services/service';
 	import {addArticlesToTimeline, type FullscreenInfo, type TimelineData} from './index';
 	import {keepArticle} from '~/filters';
@@ -187,7 +188,6 @@
 		}
 	}
 
-	//TODO Is this the same as the other useFilters?
 	function useFilters(articleWithRefs: ArticleWithRefs, index: number) {
 		// const filteredOut =  !data.filters.every(f => !f.enabled || ((keepArticle(articleWithRefs, index, f.filter) ?? !f.inverted) !== f.inverted));
 		//Caching filters for debugging, could return to boolean later
@@ -210,28 +210,41 @@
 	else
 		articleCountLabel = 'No articles listed.';
 
+	//Pre-queuing media loads so they load in the right order
+	$: if (data.shouldLoadMedia && $filteredArticles.length) {
+		const articles = $filteredArticles.flatMap(articleWithRefToWithRefArray);
 
-	afterUpdate(() => {
-		if (data.shouldLoadMedia && $filteredArticles.length) {
-			for (const articleProps of $filteredArticles) {
-				const actualArticleProps = getActualArticleRefs(articleProps) as ArticleProps;
-				if (actualArticleProps.type === 'repost' || actualArticleProps.type === 'reposts')
-					throw new Error('Actual article is repost');
+		const promises = [];
+		const toRequest = [];
 
-				if (data.hideFilteredOutArticles && actualArticleProps.filteredOut)
-					continue;
-				if (!actualArticleProps.article.fetched)
-					fetchArticle(actualArticleProps.article.idPair);
-				if (data.shouldLoadMedia)
-					for (const article of articleWithRefToArray(articleProps)) {
-						const mediaCount = Math.min(actualArticleProps.article.medias.length, !$showAllMediaArticles.has(article.idPairStr) && data.maxMediaCount !== null ? data.maxMediaCount : Infinity);
-						for (let i = 0; i < mediaCount; ++i)
-							if (get(getWritable(article.idPair)).medias[i].loaded === false)
-								loadingStore.requestLoad(article.idPair, i);
-					}
+		for (const articleProps of articles) {
+			const actualArticleProps = getActualArticleRefs(articleProps) as ArticleProps;
+			if (actualArticleProps.type === 'repost' || actualArticleProps.type === 'reposts')
+				throw new Error('Actual article is repost');
+
+			if (data.hideFilteredOutArticles && actualArticleProps.filteredOut)
+				continue;
+
+			const articleStore = getWritable(actualArticleProps.article.idPair);
+			let article = get(articleStore);
+
+			if (!article.fetched)
+				promises.push(fetchArticle(article.idPair).then(() => {
+					let article = get(articleStore);
+					const mediaCount = Math.min(actualArticleProps.article.medias.length, !$showAllMediaArticles.has(article.idPairStr) && data.maxMediaCount !== null ? data.maxMediaCount : Infinity);
+					for (let i = 0; i < mediaCount; ++i)
+						loadingStore.getLoadingState(article.idPair, i, data.shouldLoadMedia);
+				}));
+			else {
+				const mediaCount = Math.min(actualArticleProps.article.medias.length, !$showAllMediaArticles.has(article.idPairStr) && data.maxMediaCount !== null ? data.maxMediaCount : Infinity);
+				for (let mediaIndex = 0; mediaIndex < mediaCount; ++mediaIndex)
+					toRequest.push({idPair: article.idPair, mediaIndex});
 			}
 		}
-	});
+
+		loadingStore.requestLoads(...toRequest);
+		const _ = Promise.allSettled(promises);
+	}
 
 	let availableRefreshTypes: Readable<Set<RefreshType>>;
 	$: availableRefreshTypes = derived(data.endpoints.flatMap(e => {
@@ -408,8 +421,11 @@
 	}
 </style>
 
-<div class='timeline' class:fullscreenTimeline={fullscreen !== null}
-	 style={modal ? '' : data.width > 1 ? `width: ${data.width * 500}px` : ''}>
+<div
+		class='timeline'
+		class:fullscreenTimeline={fullscreen !== null}
+		style={modal ? '' : data.width > 1 ? `width: ${data.width * 500}px` : ''}
+>
 	<TimelineHeader
 			bind:data
 			availableRefreshTypes={$availableRefreshTypes}

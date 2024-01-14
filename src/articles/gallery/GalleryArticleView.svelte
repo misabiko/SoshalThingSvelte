@@ -34,7 +34,7 @@
 
 	export let divRef: HTMLDivElement | null;
 	export let mediaRefs: Record<number, HTMLImageElement | HTMLVideoElement>;
-	export let loadingStates: Readable<LoadingState[]>;
+	export let loadingStates: Readable<Record<number, LoadingState>>;
 
 	let actions: [ArticleAction[], ArticleAction[]] = [...Object.values(getServices()[rootArticle.idPair.service].articleActions), ...getGenericActions(rootArticle)]
 		.sort((a, b) => a.index - b.index)

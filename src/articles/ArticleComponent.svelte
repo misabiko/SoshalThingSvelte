@@ -3,7 +3,7 @@
 	import {getWritable, toggleMarkAsRead} from '~/services/service';
 	import Article, {getActualArticle} from '../articles';
 	import type {ArticleProps, TimelineArticleProps} from './index';
-	import {afterUpdate, type ComponentType} from 'svelte';
+	import {afterUpdate, type ComponentType, onDestroy} from 'svelte';
 	import {getRootArticle} from './index';
 	import Modal from '../Modal.svelte';
 	import {MediaLoadType} from './media';
@@ -28,14 +28,14 @@
 
 	let divRef: HTMLDivElement | null = null;
 	let mediaRefs: Record<number, HTMLImageElement> = {};
-	let loadingStates: Writable<LoadingState[]> = writable([]);
+	let loadingStates: Writable<Record<number, LoadingState>> = writable({});
 	$: {
 		$loadingStates = [];
 		if (actualArticleProps.mediaIndex === null) {
 			for (let mediaIndex = 0; mediaIndex < Math.min(actualArticle.medias.length, !$showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : Infinity); ++mediaIndex)
-				$loadingStates.push(loadingStore.getLoadingState(actualArticle.idPair, mediaIndex, timelineProps.shouldLoadMedia));
+				$loadingStates[mediaIndex] = loadingStore.getLoadingState(actualArticle.idPair, mediaIndex, timelineProps.shouldLoadMedia);
 		}else
-			$loadingStates.push(loadingStore.getLoadingState(actualArticle.idPair, actualArticleProps.mediaIndex, timelineProps.shouldLoadMedia));
+			$loadingStates[actualArticleProps.mediaIndex] = loadingStore.getLoadingState(actualArticle.idPair, actualArticleProps.mediaIndex, timelineProps.shouldLoadMedia);
 	}
 
 	afterUpdate(() => {
@@ -67,6 +67,15 @@
 				if (mediaRefs[actualArticleProps.mediaIndex]?.complete)
 					loadingStore.mediaLoaded(actualArticle.idPair, actualArticleProps.mediaIndex);
 			}
+		}
+	});
+
+	onDestroy(() => {
+		if (actualArticleProps.mediaIndex === null) {
+			for (let i = 0; i < actualArticle.medias.length; ++i)
+				loadingStore.remove(actualArticle.idPair, i);
+		}else {
+			loadingStore.remove(actualArticle.idPair, actualArticleProps.mediaIndex);
 		}
 	});
 

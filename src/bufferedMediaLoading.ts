@@ -31,7 +31,14 @@ export const loadingStore = (() => {
 	return {
 		subscribe,
 		requestLoad(idPair: ArticleIdPair, mediaIndex: number) {
+			if (get(getWritable(idPair)).medias[mediaIndex].loaded)
+				return LoadingState.Loaded;
+
 			const key = hash(idPair, mediaIndex);
+			if (localLoadings.has(key))
+				return LoadingState.Loading;
+			if (localQueue.includes(key))
+				return LoadingState.NotLoaded;
 
 			if (localLoadings.size >= maxLoading) {
 				update(store => {
@@ -51,6 +58,37 @@ export const loadingStore = (() => {
 				return store;
 			});
 			return LoadingState.Loading;
+		},
+		requestLoads(...medias: {idPair: ArticleIdPair, mediaIndex: number}[]) {
+			const validMedias = medias
+				.filter(({idPair, mediaIndex}) => {
+					const idPairStr = hash(idPair, mediaIndex);
+					if (localLoadings.has(idPairStr) || localQueue.includes(idPairStr))
+						return false;
+
+					const loaded = get(getWritable(idPair)).medias[mediaIndex].loaded;
+					return loaded === false;
+				});
+
+			if (validMedias.length) {
+				update(store => {
+					for (const {idPair, mediaIndex} of validMedias) {
+						const idPairStr = hash(idPair, mediaIndex);
+						if (localLoadings.has(idPairStr) || localQueue.includes(idPairStr))
+							continue;
+
+						if (store.loadings.size >= maxLoading) {
+							if (!store.queue.includes(idPairStr))
+								store.queue.push(idPairStr);
+						} else
+							store.loadings.add(idPairStr);
+					}
+					localQueue = store.queue;
+					localLoadings = store.loadings;
+
+					return store;
+				});
+			}
 		},
 		getLoadingState(idPair: ArticleIdPair, mediaIndex: number, request = false): LoadingState {
 			const idPairStr = hash(idPair, mediaIndex);

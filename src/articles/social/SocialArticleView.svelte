@@ -24,7 +24,7 @@
 
 	export let divRef: HTMLDivElement | null;
 	export let mediaRefs: Record<number, HTMLImageElement>;
-	export let loadingStates: Readable<LoadingState[]>;
+	export let loadingStates: Readable<Record<number, LoadingState>>;
 
 	//TODO Propagate article compact to the timeline
 	let compact: boolean | null = null;

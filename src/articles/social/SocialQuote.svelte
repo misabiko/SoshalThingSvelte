@@ -20,11 +20,11 @@
 
 	let showAllMedia = derived(timelineProps.showAllMediaArticles, articles => articles.has($article.idPairStr));
 
-	let loadingStates: Writable<LoadingState[]> = writable([]);
+	let loadingStates: Writable<Record<number, LoadingState>> = writable({});
 	$: {
 		$loadingStates = [];
 		for (let mediaIndex = 0; mediaIndex < Math.min($article.medias.length, !$showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : Infinity); ++mediaIndex)
-			$loadingStates.push(loadingStore.getLoadingState($article.idPair, mediaIndex, timelineProps.shouldLoadMedia));
+			$loadingStates[mediaIndex] = loadingStore.getLoadingState($article.idPair, mediaIndex, timelineProps.shouldLoadMedia);
 	}
 </script>
 

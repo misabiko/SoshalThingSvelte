@@ -167,7 +167,7 @@ export async function fetchArticle(idPair: ArticleIdPair) {
 }
 
 export interface FetchingService<A extends Article = Article> {
-	fetchArticle: (store: Writable<A>) => void
+	fetchArticle: (store: Writable<A>) => Promise<void>
 	fetchedArticles: Set<ArticleId>
 	fetchedArticleQueue: number
 	fetchTimeout: undefined | number

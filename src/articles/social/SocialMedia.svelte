@@ -39,11 +39,11 @@
 
 	//Sloppy to make sure landscape single images aren't forced to square aspect ratio
 	let aspectRatio: number | undefined;
-	$: if ((compact ?? timelineProps.compact) && $article.medias.length === 1 && ($article.medias[0].ratio ?? 1) < 1) {
+	$: if ((compact ?? timelineProps.compact) && ($article.medias.length === 1 || mediaIndex !== null) && ($article.medias[0].ratio ?? 1) < 1) {
 		aspectRatio = 1 / ($article.medias[0]?.ratio ?? 1);
 	}
 	let aspectRatioThumbnail: number | undefined;
-	$: if ((compact ?? timelineProps.compact) && $article.medias.length === 1 && ($article.medias[0].thumbnail?.ratio ?? 1) < 1) {
+	$: if ((compact ?? timelineProps.compact) && ($article.medias.length === 1 || mediaIndex !== null) && ($article.medias[0].thumbnail?.ratio ?? 1) < 1) {
 		aspectRatioThumbnail = 1 / ($article.medias[0]?.thumbnail?.ratio ?? 1);
 	}
 
@@ -168,11 +168,11 @@
 			</video>
 		{/if}
 	{/each}
-	{#if !$showAllMedia && timelineProps.maxMediaCount !== null && $article.medias.length > timelineProps.maxMediaCount}
-		<div class='moreMedia'>
-			<button class='borderless-button' title='Load more medias' on:click={() => timelineProps.showAllMediaArticles.update(a => {a.add($article.idPairStr); return a;})}>
-				<Fa icon={faImages} size='2x'/>
-			</button>
-		</div>
-	{/if}
 </div>
+{#if !$showAllMedia && timelineProps.maxMediaCount !== null && $article.medias.length > timelineProps.maxMediaCount}
+	<div class='moreMedia'>
+		<button class='borderless-button' title='Load more medias' on:click={() => timelineProps.showAllMediaArticles.update(a => {a.add($article.idPairStr); return a;})}>
+			<Fa icon={faImages} size='2x'/>
+		</button>
+	</div>
+{/if}

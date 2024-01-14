@@ -19,6 +19,7 @@
 	import TimelineOptions from './TimelineOptions.svelte';
 	import {endpoints, refreshEndpoint, refreshEndpointName, RefreshType} from '~/services/endpoints';
 	import {loadingStore} from '~/bufferedMediaLoading';
+	import {afterUpdate} from 'svelte';
 
 	export let timelineId: string | null;
 	export let data: TimelineData;
@@ -93,7 +94,7 @@
 						(merged[index] as any).reposts.push(...a.reposts);
 					else
 						merged.push(a);
-				}else
+				} else
 					merged.push(a);
 			}
 
@@ -143,9 +144,12 @@
 					} as ArticleProps));
 				}
 				case 'reposts':
-					throw {message: 'Reposts should come from the timeline and not articles themselves', articleWithRefs};
+					throw {
+						message: 'Reposts should come from the timeline and not articles themselves',
+						articleWithRefs
+					};
 			}
-		}else {
+		} else {
 			return [addProps(articleWithRefs, index)];
 		}
 	}
@@ -206,25 +210,28 @@
 	else
 		articleCountLabel = 'No articles listed.';
 
-	$: if (data.shouldLoadMedia && $filteredArticles.length) {
-		for (const articleProps of $filteredArticles) {
-			const actualArticleProps = getActualArticleRefs(articleProps) as ArticleProps;
-			if (actualArticleProps.type === 'repost' || actualArticleProps.type === 'reposts')
-				throw new Error('Actual article is repost');
 
-			if (data.hideFilteredOutArticles && actualArticleProps.filteredOut)
-				continue;
-			if (!actualArticleProps.article.fetched)
-				fetchArticle(actualArticleProps.article.idPair);
-			if (data.shouldLoadMedia)
-				for (const article of articleWithRefToArray(articleProps)) {
-					const mediaCount = Math.min(actualArticleProps.article.medias.length, !$showAllMediaArticles.has(article.idPairStr) && data.maxMediaCount !== null ? data.maxMediaCount : Infinity);
-					for (let i = 0; i < mediaCount; ++i)
-						if (get(getWritable(article.idPair)).medias[i].loaded === false)
-							loadingStore.requestLoad(article.idPair, i);
-				}
+	afterUpdate(() => {
+		if (data.shouldLoadMedia && $filteredArticles.length) {
+			for (const articleProps of $filteredArticles) {
+				const actualArticleProps = getActualArticleRefs(articleProps) as ArticleProps;
+				if (actualArticleProps.type === 'repost' || actualArticleProps.type === 'reposts')
+					throw new Error('Actual article is repost');
+
+				if (data.hideFilteredOutArticles && actualArticleProps.filteredOut)
+					continue;
+				if (!actualArticleProps.article.fetched)
+					fetchArticle(actualArticleProps.article.idPair);
+				if (data.shouldLoadMedia)
+					for (const article of articleWithRefToArray(articleProps)) {
+						const mediaCount = Math.min(actualArticleProps.article.medias.length, !$showAllMediaArticles.has(article.idPairStr) && data.maxMediaCount !== null ? data.maxMediaCount : Infinity);
+						for (let i = 0; i < mediaCount; ++i)
+							if (get(getWritable(article.idPair)).medias[i].loaded === false)
+								loadingStore.requestLoad(article.idPair, i);
+					}
+			}
 		}
-	}
+	});
 
 	let availableRefreshTypes: Readable<Set<RefreshType>>;
 	$: availableRefreshTypes = derived(data.endpoints.flatMap(e => {
@@ -272,7 +279,7 @@
 			if (articleIndex === null)
 				articleIndex = get(articles).map(getIdServiceMediaStr);
 
-			let currentIndex = articleIndex.length,  randomIndex;
+			let currentIndex = articleIndex.length, randomIndex;
 
 			// While there remain elements to shuffle...
 			while (currentIndex != 0) {
@@ -370,9 +377,11 @@
 		flex-shrink: 0;
 		background-color: var(--main-background);
 	}
+
 	.timeline:first-child {
 		padding: 0;
 	}
+
 	.timeline.fullscreenTimeline {
 		flex-grow: 2;
 		width: unset;
@@ -399,40 +408,41 @@
 	}
 </style>
 
-<div class='timeline' class:fullscreenTimeline={fullscreen !== null} style={modal ? '' : data.width > 1 ? `width: ${data.width * 500}px` : ''}>
+<div class='timeline' class:fullscreenTimeline={fullscreen !== null}
+	 style={modal ? '' : data.width > 1 ? `width: ${data.width * 500}px` : ''}>
 	<TimelineHeader
-		bind:data
-		availableRefreshTypes={$availableRefreshTypes}
-		bind:containerRebalance
-		bind:showSidebar
-		bind:showOptions
-		bind:favviewerButtons
-		bind:favviewerHidden
-		bind:favviewerMaximized
-		{fullscreen}
-		{articleCountLabel}
+			bind:data
+			availableRefreshTypes={$availableRefreshTypes}
+			bind:containerRebalance
+			bind:showSidebar
+			bind:showOptions
+			bind:favviewerButtons
+			bind:favviewerHidden
+			bind:favviewerMaximized
+			{fullscreen}
+			{articleCountLabel}
 
-		{shuffle}
-		{autoscroll}
-		{refresh}
-		{toggleFullscreen}
+			{shuffle}
+			{autoscroll}
+			{refresh}
+			{toggleFullscreen}
 	/>
 	{#if showOptions}
 		<TimelineOptions
-			{timelineId}
-			bind:data
-			bind:fullscreen
-			{sortOnce}
-			{removeTimeline}
-			{articleCountLabel}
-			{removeFiltered}
+				{timelineId}
+				bind:data
+				bind:fullscreen
+				{sortOnce}
+				{removeTimeline}
+				{articleCountLabel}
+				{removeFiltered}
 		/>
 	{/if}
 	{#if $filteredArticles.length}
 		<svelte:component
-			this={fullscreen?.container ?? data.container}
-			bind:containerRef
-			props={containerProps}
+				this={fullscreen?.container ?? data.container}
+				bind:containerRef
+				props={containerProps}
 		/>
 	{:else}
 		<div class='articlesContainer'>

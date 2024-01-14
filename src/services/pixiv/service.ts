@@ -24,7 +24,7 @@ export const PixivService: PixivServiceType = {
 	...newFetchingService(),
 	async fetchArticle(store: Writable<PixivArticle>) {
 		const article = get(store);
-		const json: PagesResponse = await this.fetch(`https://www.pixiv.net/ajax/illust/${article.id}/pages`, {headers: {'Accept': 'application/json'}});
+		const json: PagesResponse = await this.fetch(`https://www.pixiv.net/ajax/illust/${article.id}/pages`, {headers: {Accept: 'application/json'}});
 
 		store.update(a => {
 			for (let i = 0; i < a.medias.length; ++i) {
@@ -71,7 +71,7 @@ export const PixivService: PixivServiceType = {
 					credentials: 'same-origin',
 					cache: 'no-cache',
 					headers: {
-						'Accept': 'application/json',
+						Accept: 'application/json',
 						'Content-Type': 'application/json',
 						'Cache-Control': 'no-cache',
 						'X-CSRF-TOKEN': csrfToken,
@@ -122,7 +122,7 @@ export const PixivService: PixivServiceType = {
 					credentials: 'same-origin',
 					cache: 'no-cache',
 					headers: {
-						'Accept': 'application/json',
+						Accept: 'application/json',
 						'Content-Type': 'application/json',
 						'Cache-Control': 'no-cache',
 						'X-CSRF-TOKEN': csrfToken,

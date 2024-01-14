@@ -21,7 +21,7 @@
 	let favviewerMaximized = mainStorage.maximized;
 
 	const timelines: TimelineCollection = {
-		'List': {
+		List: {
 			...defaultTimeline(),
 			title: 'List',
 			endpoints: [{

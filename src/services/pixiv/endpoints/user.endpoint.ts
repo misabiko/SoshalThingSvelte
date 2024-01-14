@@ -83,7 +83,7 @@ export class UserAPIEndpoint extends LoadableEndpoint {
 		let url = new URL(`https://www.pixiv.net/ajax/user/${this.userId}/profile/all`);
 		url.searchParams.set('p', (this.currentPage + 1).toString());
 		url.searchParams.set('lang', 'en`');
-		const listResponse: UserListAjaxResponse = await PixivService.fetch(url.toString(), {headers: {'Accept': 'application/json'}});
+		const listResponse: UserListAjaxResponse = await PixivService.fetch(url.toString(), {headers: {Accept: 'application/json'}});
 		const illustIds = Object.keys(listResponse.body.illusts);
 		//Decreasing order sort
 		illustIds.sort((a, b) => parseInt(b) - parseInt(a));
@@ -97,7 +97,7 @@ export class UserAPIEndpoint extends LoadableEndpoint {
 		url.searchParams.set('is_first_page', (this.currentPage === 0 ? 1 : 0).toString());
 		url.searchParams.set('lang', 'en');
 
-		const response: PixivResponseWithWorks = await PixivService.fetch(url.toString(), {headers: {'Accept': 'application/json'}});
+		const response: PixivResponseWithWorks = await PixivService.fetch(url.toString(), {headers: {Accept: 'application/json'}});
 		if (response.error) {
 			console.error('Failed to fetch', response);
 			return [];

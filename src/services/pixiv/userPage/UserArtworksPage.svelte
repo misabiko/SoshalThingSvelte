@@ -14,7 +14,7 @@
 	import {SortMethod} from '~/sorting';
 
 	const timelines: TimelineCollection = {
-		'User': {
+		User: {
 			...defaultTimeline(),
 			title: 'User',
 			endpoints: [{

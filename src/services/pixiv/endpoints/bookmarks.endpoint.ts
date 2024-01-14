@@ -51,7 +51,7 @@ export default class BookmarkPageEndpoint extends PageEndpoint {
 			url.searchParams.set('is_first_page', this.hostPage.toString());
 			url.searchParams.set('lang', 'en`');
 
-			const response: PixivResponseWithWorks = await PixivService.fetch(url.toString(), {headers: {'Accept': 'application/json'}});
+			const response: PixivResponseWithWorks = await PixivService.fetch(url.toString(), {headers: {Accept: 'application/json'}});
 			if (response?.body?.works) {
 				for (const work of Object.values(response.body.works))
 					getWritable<PixivArticle>({id: parseInt(work.id), service: PixivService.name})?.update(a => {
@@ -115,7 +115,7 @@ export class BookmarkAPIEndpoint extends LoadableEndpoint {
 		if (this.currentPage > 0)
 			url.searchParams.set('p', (this.currentPage + 1).toString());
 
-		const response: PixivResponseWithWorks = await PixivService.fetch(url.toString(), {headers: {'Accept': 'application/json'}});
+		const response: PixivResponseWithWorks = await PixivService.fetch(url.toString(), {headers: {Accept: 'application/json'}});
 		if (response.error) {
 			console.error('Failed to fetch', response);
 			return [];

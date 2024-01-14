@@ -250,7 +250,7 @@ export async function twitterFetch(url: RequestInfo | URL, init: RequestInit = {
 				fetchOptions: {
 					...init,
 					headers: {
-						'Authorization': 'Bearer ' + bearerToken,
+						Authorization: 'Bearer ' + bearerToken,
 						...((init as any).headers ?? {}),
 					},
 				}
@@ -306,7 +306,7 @@ export async function loadArticle(id: string): Promise<ArticleWithRefs | null> {
 
 	const response: { errors: ResponseSingleError[]; } | TweetDetailsResponse = await TwitterService.fetch(url, {
 		headers: {
-			'Accept': 'application/json',
+			Accept: 'application/json',
 		}
 	});
 

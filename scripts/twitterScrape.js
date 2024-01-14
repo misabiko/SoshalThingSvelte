@@ -280,7 +280,7 @@ async function twitterCommand(queryId, endpoint, bearer, csrfToken, tweetId) {
 
 			headers: {
 				'Content-Type': 'application/json',
-				'Authorization': 'Bearer ' + bearer,
+				Authorization: 'Bearer ' + bearer,
 				'X-Csrf-Token': csrfToken,
 			},
 

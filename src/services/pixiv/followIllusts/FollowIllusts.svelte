@@ -15,7 +15,7 @@
 	import {getCurrentPage} from '~/services/pixiv/endpoints';
 
 	const timelines: TimelineCollection = {
-		'Follows': {
+		Follows: {
 			...defaultTimeline(),
 			title: 'Follows',
 			endpoints: [{

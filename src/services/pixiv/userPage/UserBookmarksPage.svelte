@@ -14,7 +14,7 @@
 	import {getUserId} from '~/services/pixiv/endpoints/user.endpoint';
 
 	const timelines: TimelineCollection = {
-		'Bookmarks': {
+		Bookmarks: {
 			...defaultTimeline(),
 			title: 'Bookmarks',
 			endpoints: [{

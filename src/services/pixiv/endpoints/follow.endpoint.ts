@@ -76,7 +76,7 @@ export class FollowAPIEndpoint extends LoadableEndpoint {
 		const url = new URL('https://www.pixiv.net/ajax/follow_latest/illust');
 		url.searchParams.set('p', (this.currentPage + 1).toString());
 		url.searchParams.set('mode', this.r18 ? 'r18' : 'all');
-		const response: FollowAPIResponse = await PixivService.fetch(url.toString(), {headers: {'Accept': 'application/json'}});
+		const response: FollowAPIResponse = await PixivService.fetch(url.toString(), {headers: {Accept: 'application/json'}});
 
 		const markedAsReadStorage = getMarkedAsReadStorage(PixivService);
 		const cachedArticlesStorage = getCachedArticlesStorage<CachedPixivArticle>(PixivService);

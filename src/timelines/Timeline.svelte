@@ -11,7 +11,7 @@
 		getRootArticle, idPairEqual,
 	} from '~/articles';
 	import {fetchArticle, getWritable} from '~/services/service';
-	import type {FullscreenInfo, TimelineData} from './index';
+	import {addArticlesToTimeline, type FullscreenInfo, type TimelineData} from './index';
 	import {keepArticle} from '~/filters';
 	import {compare, SortMethod} from '~/sorting';
 	import type {ContainerProps} from '~/containers';
@@ -334,23 +334,7 @@
 				refreshEndpointName(timelineEndpoint.name, refreshType);
 			else
 				refreshEndpoint(timelineEndpoint.endpoint, refreshType)
-					.then(articles => {
-						if (articles.length) {
-							data.addedIdPairs.update(addedIdPairs => {
-								const newAddedIdPairs: ArticleIdPair[] = [];
-								for (const idPair of articles.map(a => getRootArticle(a).idPair))
-									if (!addedIdPairs.some(idp => idPairEqual(idPair, idp))) {
-										addedIdPairs.push(idPair);
-										newAddedIdPairs.push(idPair);
-									}
-								data.articles.update(actualIdPairs => {
-									actualIdPairs.push(...newAddedIdPairs);
-									return actualIdPairs;
-								});
-								return addedIdPairs;
-							});
-						}
-					});
+					.then(articles => addArticlesToTimeline(data, ...articles.map(a => getRootArticle(a).idPair)));
 	}
 
 	function sortOnce(method: SortMethod, reversed: boolean) {

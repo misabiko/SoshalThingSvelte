@@ -147,7 +147,11 @@ export type ArticleProps = ArticleWithRefs<{
 	mediaIndex: number | null	//Should be always null for reposts
 }>;
 
-export function getIdServiceMediaStr(articleProps: ArticleProps): string {
+export function getIdPairStr(ArticleIdPair: ArticleIdPair): ArticleIdPairStr {
+	return `${ArticleIdPair.service}/${ArticleIdPair.id}`;
+}
+
+export function getIdServiceMediaStr(articleProps: ArticleProps): ArticleIdPairStr {
 	return `${getRootArticle(articleProps).idPairStr}/${articleProps.mediaIndex}`;
 }
 
@@ -159,6 +163,8 @@ export interface ArticleIdPair {
 export function idPairEqual(a: ArticleIdPair, b: ArticleIdPair) {
 	return a.service === b.service && a.id === b.id;
 }
+
+export type ArticleIdPairStr = string;
 
 export type ArticleRefIdPair =
 	{
@@ -249,7 +255,7 @@ export type TimelineArticleProps = {
 	animatedAsGifs: boolean
 	muteVideos: boolean
 	compact: boolean
-	/// If true, the media stays full even when compact is true
+	// If true, the media stays full even when compact is true
 	fullMedia: number
 	hideQuoteMedia: boolean
 	hideText: boolean

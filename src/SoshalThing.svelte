@@ -2,7 +2,13 @@
 	import './partialGlobal.css';
 	import {setContext} from 'svelte';
 	import Sidebar from './sidebar/Sidebar.svelte';
-	import {defaultTimelineView, type TimelineCollection, type TimelineData, type TimelineView,} from './timelines';
+	import {
+		addArticlesToTimeline,
+		defaultTimelineView,
+		type TimelineCollection,
+		type TimelineData,
+		type TimelineView,
+	} from './timelines';
 	import TimelineContainer from './timelines/TimelineContainer.svelte';
 	import {notifications} from './notifications/store';
 	import Notification from './notifications/Notification.svelte';
@@ -109,19 +115,7 @@
 				else if (timelineEndpoint.endpoint?.refreshTypes && get(timelineEndpoint.endpoint.refreshTypes).has(RefreshType.RefreshStart))
 					refreshPromises.push(
 						refreshEndpoint(timelineEndpoint.endpoint as Endpoint, RefreshType.RefreshStart)
-							.then(articles => {
-								if (articles.length) {
-									const newAddedIdPairs = articles.map(a => getRootArticle(a).idPair);
-									timeline.addedIdPairs.update(idPairs => {
-										idPairs.push(...newAddedIdPairs);
-										return idPairs;
-									});
-									timeline.articles.update(idPairs => {
-										idPairs.push(...newAddedIdPairs);
-										return idPairs;
-									});
-								}
-							})
+							.then(articles => addArticlesToTimeline(timeline, ...articles.map(a => getRootArticle(a).idPair)))
 					);
 
 		for (const endpointName of endpointNames)

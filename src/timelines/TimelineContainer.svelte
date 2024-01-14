@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type {TimelineCollection, TimelineData, TimelineView} from './index';
+	import {addArticlesToTimeline, type TimelineCollection, type TimelineData, type TimelineView} from './index';
 	import Timeline from './Timeline.svelte';
 	import {afterUpdate, getContext, onMount} from 'svelte';
 	import {timelineEndpoints} from '~/services/endpoints';
@@ -38,22 +38,7 @@
 	$: {
 		const newTimelineEndpoints = timelineView.timelineIds.map(id => ({
 			endpoints: timelines[id].endpoints,
-			addArticles(newIdPairs: ArticleIdPair[]) {
-				if (newIdPairs.length)
-					timelines[id].addedIdPairs.update(addedIdPairs => {
-						const newAddedIdPairs: ArticleIdPair[] = [];
-						for (const idPair of newIdPairs)
-							if (!addedIdPairs.some(idp => idp.service === idPair.service && idp.id === idPair.id)) {
-								addedIdPairs.push(idPair);
-								newAddedIdPairs.push(idPair);
-							}
-						timelines[id].articles.update(actualIdPairs => {
-							actualIdPairs.push(...newAddedIdPairs);
-							return actualIdPairs;
-						});
-						return addedIdPairs;
-					});
-			}
+			addArticles: (newIdPairs: ArticleIdPair[]) => addArticlesToTimeline(timelines[id], ...newIdPairs),
 		}));
 
 		if (modalTimeline)
@@ -63,23 +48,7 @@
 					if (modalTimeline === null)
 						throw new Error('modalTimeline is null');
 
-					if (newIdPairs.length)
-						modalTimeline.addedIdPairs.update(addedIdPairs => {
-							if (modalTimeline === null)
-								throw new Error('modalTimeline is null');
-
-							const newAddedIdPairs: ArticleIdPair[] = [];
-							for (const idPair of newIdPairs)
-								if (!addedIdPairs.some(idp => idp.service === idPair.service && idp.id === idPair.id)) {
-									addedIdPairs.push(idPair);
-									newAddedIdPairs.push(idPair);
-								}
-							modalTimeline.articles.update(actualIdPairs => {
-								actualIdPairs.push(...newAddedIdPairs);
-								return actualIdPairs;
-							});
-							return addedIdPairs;
-						});
+					addArticlesToTimeline(modalTimeline, ...newIdPairs);
 				}
 			});
 

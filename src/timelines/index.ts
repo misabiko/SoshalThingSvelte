@@ -1,4 +1,9 @@
-import type { ArticleAuthor, ArticleIdPair } from '~/articles';
+import {
+	type ArticleAuthor,
+	type ArticleIdPair,
+	type ArticleIdPairStr,
+	getIdPairStr,
+} from '~/articles';
 import type {ComponentType} from 'svelte';
 import type { FilterInstance } from '~/filters';
 import { SortMethod, type SortInfo } from '~/sorting';
@@ -15,8 +20,8 @@ import { getServices } from '~/services/service';
 export type TimelineData = {
 	title: string
 	endpoints: TimelineEndpoint[]
-	//TODO Document why addedIdPairs is needed
-	addedIdPairs: Writable<ArticleIdPair[]>
+	//Keeps track of every added articles, so they're not added again once removed
+	addedIdPairs: Writable<Set<ArticleIdPairStr>>
 	//TODO Give timelines a list of article lists
 	articles: Writable<ArticleIdPair[]>
 	articlesOrder: Writable<null | string[]>
@@ -49,7 +54,7 @@ export function defaultTimeline(articles: ArticleIdPair[] = []): TimelineData {
 	return {
 		title: 'Timeline',
 		endpoints: [],
-		addedIdPairs: writable([...articles]),
+		addedIdPairs: writable(new Set([...articles].map(getIdPairStr))),
 		articles: writable(articles),
 		articlesOrder: writable(null),
 		section: { useSection: false, count: 100 },
@@ -79,6 +84,28 @@ export function defaultTimeline(articles: ArticleIdPair[] = []): TimelineData {
 		separateMedia: false,
 		muteVideos: false,
 	};
+}
+
+export function addArticlesToTimeline(data: TimelineData, ...articles: ArticleIdPair[]) {
+	if (!articles.length)
+		return;
+
+	data.addedIdPairs.update(addedIdPairs => {
+		const newAddedIdPairs: ArticleIdPair[] = [];
+		for (const idPair of articles) {
+			const idPairStr = getIdPairStr(idPair);
+			if (!addedIdPairs.has(idPairStr)) {
+				addedIdPairs.add(idPairStr);
+				newAddedIdPairs.push(idPair);
+			}
+		}
+		data.articles.update(actualIdPairs => {
+			actualIdPairs.push(...newAddedIdPairs);
+			return actualIdPairs;
+		});
+
+		return addedIdPairs;
+	});
 }
 
 export type TimelineCollection = { [id: string]: TimelineData; };

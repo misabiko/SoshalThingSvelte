@@ -7,5 +7,5 @@
 
 <label class='field'>
 	Twitter Bearer Token
-	<input value={twitterStorage.bearerToken || ''} on:change={e => updateServiceStorage(TwitterService.name, 'bearerToken', e.currentTarget.value)}/>
+	<input value="{twitterStorage.bearerToken || ''}" on:change="{e => updateServiceStorage(TwitterService.name, 'bearerToken', e.currentTarget.value)}"/>
 </label>

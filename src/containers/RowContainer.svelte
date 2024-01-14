@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang='ts'>
 	import ArticleComponent from '../articles/ArticleComponent.svelte';
 	import type {ContainerProps} from './index';
 	import {articlesWithUniqueKeys} from './index';
@@ -16,13 +16,13 @@
 	}
 </style>
 
-<div class='articlesContainer rowContainer' bind:this={containerRef} style:flex-direction={props.rtl ? 'row-reverse' : null}>
+<div class='articlesContainer rowContainer' bind:this={containerRef} style:flex-direction="{props.rtl ? 'row-reverse' : null}">
 	{#each articlesWithUniqueKeys(props.articles) as [articleProps, key] (key)}
 		<ArticleComponent
 			view={props.articleView}
 			{articleProps}
 			timelineProps={props.timelineArticleProps}
-			style={`width: calc(100% / ${props.columnCount})`}
+			style='{`width: calc(100% / ${props.columnCount})`}'
 		/>
 	{/each}
 </div>

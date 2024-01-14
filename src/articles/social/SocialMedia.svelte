@@ -110,44 +110,44 @@
 	}
 </style>
 
-<div class='socialMedia' class:socialMediaCompact={compact ?? timelineProps.compact} bind:this={divRef}>
+<div class='socialMedia' class:socialMediaCompact='{compact ?? timelineProps.compact}' bind:this={divRef}>
 	{#each medias as [media, index] (index)}
 		{@const isLoading = $loadingStates[index] === LoadingState.Loading}
 		{#if $loadingStates[index] === LoadingState.NotLoaded}
-			<div class='imagesHolder' class:socialMediaFull={index < timelineProps.fullMedia} style:aspect-ratio={aspectRatioThumbnail}>
-				<div class='imgPlaceHolder' style:aspect-ratio={1 / (media.ratio ?? 1)} style:display='none'></div>
+			<div class='imagesHolder' class:socialMediaFull='{index < timelineProps.fullMedia}' style:aspect-ratio={aspectRatioThumbnail}>
+				<div class='imgPlaceHolder' style:aspect-ratio='{1 / (media.ratio ?? 1)}' style:display='none'></div>
 				<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 				{#if media.thumbnail}
 					<img
 							class='articleMedia articleThumbnail'
-							alt={`${$article.idPairStr}/${index}`}
+							alt='{`${$article.idPairStr}/${index}`}'
 							src={media.thumbnail.src}
-							on:click={() => onMediaClick(index)}
+							on:click='{() => onMediaClick(index)}'
 					/>
 				{/if}
 			</div>
 		{:else if media.mediaType === MediaType.Image || media.mediaType === MediaType.Gif}
-			<div class='imagesHolder' class:socialMediaFull={index < timelineProps.fullMedia} style:aspect-ratio={aspectRatio}>
-				<div class='imgPlaceHolder' style:aspect-ratio={1 / (media.ratio ?? 1)} style:display='none'></div>
+			<div class='imagesHolder' class:socialMediaFull='{index < timelineProps.fullMedia}' style:aspect-ratio={aspectRatio}>
+				<div class='imgPlaceHolder' style:aspect-ratio='{1 / (media.ratio ?? 1)}' style:display='none'></div>
 				<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 				<img
 						class='articleMedia'
-						alt={`${$article.idPairStr}/${index}`}
+						alt='{`${$article.idPairStr}/${index}`}'
 						src={media.src}
-						on:click={() => onMediaClick(index)}
+						on:click='{() => onMediaClick(index)}'
 						bind:this={mediaRefs[index]}
-						on:load={() => isLoading ? loadingStore.mediaLoaded($article.idPair, index) : undefined}
+						on:load='{() => isLoading ? loadingStore.mediaLoaded($article.idPair, index) : undefined}'
 						class:articleMediaLoading={isLoading}
 				/>
 			</div>
 		{:else if !timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
 			<video
 					class='articleMedia'
-					class:socialMediaFull={index < timelineProps.fullMedia}
+					class:socialMediaFull='{index < timelineProps.fullMedia}'
 					controls
 					preload='auto'
 					muted={timelineProps.muteVideos}
-					on:click|preventDefault={() => onMediaClick(index)}
+					on:click|preventDefault='{() => onMediaClick(index)}'
 					bind:this={mediaRefs[index]}
 			>
 				<source src={media.src} type='video/mp4'/>
@@ -155,13 +155,13 @@
 		{:else if media.mediaType === MediaType.VideoGif || timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
 			<video
 					class='articleMedia'
-					class:socialMediaFull={index < timelineProps.fullMedia}
+					class:socialMediaFull='{index < timelineProps.fullMedia}'
 					controls
 					autoplay
 					loop
 					muted
 					preload='auto'
-					on:click|preventDefault={() => onMediaClick(index)}
+					on:click|preventDefault='{() => onMediaClick(index)}'
 					bind:this={mediaRefs[index]}
 			>
 				<source src={media.src} type='video/mp4'/>
@@ -171,7 +171,7 @@
 </div>
 {#if !$showAllMedia && timelineProps.maxMediaCount !== null && $article.medias.length > timelineProps.maxMediaCount}
 	<div class='moreMedia'>
-		<button class='borderless-button' title='Load more medias' on:click={() => timelineProps.showAllMediaArticles.update(a => {a.add($article.idPairStr); return a;})}>
+		<button class='borderless-button' title='Load more medias' on:click='{() => timelineProps.showAllMediaArticles.update(a => {a.add($article.idPairStr); return a;})}'>
 			<Fa icon={faImages} size='2x'/>
 		</button>
 	</div>

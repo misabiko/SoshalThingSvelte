@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang='ts'>
 	import type {ArticleMedia} from '../media';
 	import type {ArticleIdPair} from '../index';
 	import Article from '../index';
@@ -32,28 +32,28 @@
 
 {#if media.thumbnail}
 	{#if cropped}
-		<div class="articleMediaCrop" style:aspect-ratio={`${media.thumbnail.cropRatio}`}>
+		<div class='articleMediaCrop' style:aspect-ratio='{`${media.thumbnail.cropRatio}`}'>
 			<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 			<img
-				alt={`${actualArticle.idPair.id}/${mediaIndex} thumbnail`}
+				alt='{`${actualArticle.idPair.id}/${mediaIndex} thumbnail`}'
 				class='articleThumb articleMedia'
 				src={media.thumbnail.src}
-				on:click={() => onMediaClick(actualArticle.idPair, mediaIndex)}
-				style:object-fit={'cover'}
-				style:object-position={`${media.thumbnail.offsetX ?? 0} ${media.thumbnail.offsetY ?? 0}`}
-				style:aspect-ratio={`1 / ${media.thumbnail.ratio}`}
-				style:width={'100%'}
+				on:click='{() => onMediaClick(actualArticle.idPair, mediaIndex)}'
+				style:object-fit="{'cover'}"
+				style:object-position='{`${media.thumbnail.offsetX ?? 0} ${media.thumbnail.offsetY ?? 0}`}'
+				style:aspect-ratio='{`1 / ${media.thumbnail.ratio}`}'
+				style:width="{'100%'}"
 			/>
 		</div>
 	{:else}
 		<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 		<img
-			alt={`${actualArticle.idPair.id}/${mediaIndex} thumbnail`}
+			alt='{`${actualArticle.idPair.id}/${mediaIndex} thumbnail`}'
 			class='articleThumb articleMedia'
 			src={media.thumbnail.src}
-			on:click={() => onMediaClick(actualArticle.idPair, mediaIndex)}
+			on:click='{() => onMediaClick(actualArticle.idPair, mediaIndex)}'
 		/>
 	{/if}
 {:else}
-	<div class='imgPlaceHolder' style:aspect-ratio={1 / (media.ratio ?? 1)}></div>
+	<div class='imgPlaceHolder' style:aspect-ratio='{1 / (media.ratio ?? 1)}'></div>
 {/if}

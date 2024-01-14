@@ -172,4 +172,4 @@ type RankingResponse =
 	rank_total: number
 
 	error?: never
-} | { error: any; };
+} | { error: any };

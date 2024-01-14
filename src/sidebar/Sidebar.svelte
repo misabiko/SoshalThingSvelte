@@ -44,7 +44,7 @@
 		menu = menu === newMenu ? null : newMenu;
 	}
 
-	const buttons: {icon: IconDefinition; menu: ComponentType | SidebarMenu; title: string;}[] = [
+	const buttons: {icon: IconDefinition, menu: ComponentType | SidebarMenu, title: string}[] = [
 		{icon: faPlus, menu: SidebarMenu.TimelineEdit, title: 'Add new timeline'},
 		{icon: faBarsProgress, menu: Endpoints, title: 'Endpoints'},
 		{icon: faNewspaper, menu: LoadArticle, title: 'Load article'},
@@ -137,33 +137,33 @@
 	<div id='sidebarButtons'>
 		<div>
 			{#if menu !== null}
-				<button class='borderless-button' title="Expand sidebar" on:click='{() => menu = null}'>
+				<button class='borderless-button' title='Expand sidebar' on:click='{() => menu = null}'>
 					<Fa icon={faAngleDoubleLeft} size='2x'/>
 				</button>
 			{/if}
 			{#each buttons as {icon, menu, title}}
-				<button class='borderless-button' {title} on:click={() => toggleSidebarMenu(menu)}>
+				<button class='borderless-button' {title} on:click='{() => toggleSidebarMenu(menu)}'>
 					<Fa icon={icon} size='2x'/>
 				</button>
 			{/each}
 			{#each Object.entries(timelineViews) as [id, _]}
 				<button
 						class='borderless-button'
-						title={`Set view: ${id}`}
-						on:click={() => {
+						title='{`Set view: ${id}`}'
+						on:click="{() => {
 							timelineViewId = id;
 							updateMainStorage('currentTimelineView', timelineViewId);
-						}}
+						}}"
 				>
 					<Fa icon={faTableColumns} size='2x'/>
 				</button>
 			{/each}
 		</div>
 		<div>
-			<button class='borderless-button' title="Settings" on:click={() => toggleSidebarMenu(SettingsMenu)}>
+			<button class='borderless-button' title='Settings' on:click='{() => toggleSidebarMenu(SettingsMenu)}'>
 				<Fa icon={faCog} size='2x'/>
 			</button>
-			<a href="https://github.com/misabiko/SoshalThingSvelte" title="Github">
+			<a href='https://github.com/misabiko/SoshalThingSvelte' title='Github'>
 				<button class='borderless-button'>
 					<Fa icon={faGithub} size='2x'/>
 				</button>

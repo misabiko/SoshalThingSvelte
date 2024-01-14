@@ -11,7 +11,7 @@ type SessionCacheStorage = {
 		[name: string]: {
 			//Storing as strings until we parse bigint, a library could fix it though
 			articlesMarkedAsRead: string[]
-			cachedArticles: { [id: string]: any; }
+			cachedArticles: { [id: string]: any }
 		}
 	}
 };

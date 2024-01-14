@@ -4,7 +4,7 @@
 	import {
 		type ArticleIdPair,
 		type ArticleProps,
-		type ArticleWithRefs, articleWithRefToArray,
+		type ArticleWithRefs,
 		articleWithRefToWithRefArray,
 		flatDeriveArticle,
 		getActualArticleRefs,
@@ -20,7 +20,6 @@
 	import TimelineOptions from './TimelineOptions.svelte';
 	import {endpoints, refreshEndpoint, refreshEndpointName, RefreshType} from '~/services/endpoints';
 	import {loadingStore} from '~/bufferedMediaLoading';
-	import {afterUpdate} from 'svelte';
 
 	export let timelineId: string | null;
 	export let data: TimelineData;
@@ -423,8 +422,8 @@
 
 <div
 		class='timeline'
-		class:fullscreenTimeline={fullscreen !== null}
-		style={modal ? '' : data.width > 1 ? `width: ${data.width * 500}px` : ''}
+		class:fullscreenTimeline='{fullscreen !== null}'
+		style="{modal ? '' : data.width > 1 ? `width: ${data.width * 500}px` : ''}"
 >
 	<TimelineHeader
 			bind:data
@@ -456,7 +455,7 @@
 	{/if}
 	{#if $filteredArticles.length}
 		<svelte:component
-				this={fullscreen?.container ?? data.container}
+				this='{fullscreen?.container ?? data.container}'
 				bind:containerRef
 				props={containerProps}
 		/>

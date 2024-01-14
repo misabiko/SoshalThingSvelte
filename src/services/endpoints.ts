@@ -6,7 +6,7 @@ import {addArticles, getServices} from './service';
 import {get, writable} from 'svelte/store';
 import type {Writable} from 'svelte/store';
 
-export const endpoints: { [name: string]: Writable<Endpoint>; } = {};
+export const endpoints: { [name: string]: Writable<Endpoint> } = {};
 
 type TimelineEndpoints = {
 	endpoints: TimelineEndpoint[]
@@ -183,7 +183,7 @@ export async function addEndpointArticlesToTimeline(endpointName: string, articl
 				.find(es => (es.name ?? es.endpoint.name) === endpointName && (refreshType === undefined || es.refreshTypes.has(refreshType))),
 			addArticles: te.addArticles
 		}))
-		.filter(te => te.endpoint !== undefined) as { endpoint: TimelineEndpoint; addArticles: (idPairs: ArticleIdPair[]) => void; }[];
+		.filter(te => te.endpoint !== undefined) as { endpoint: TimelineEndpoint, addArticles: (idPairs: ArticleIdPair[]) => void }[];
 
 	for (const timelineEndpoint of matchingTimelineEndpoints) {
 		//TODO Exclude interval from endpoint filters

@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang='ts'>
 	import ArticleComponent from '~/articles/ArticleComponent.svelte';
 	import {type ArticleProps, getIdServiceMediaStr} from '~/articles';
 	import {getActualArticle, getRootArticle} from '~/articles';
@@ -9,7 +9,7 @@
 	let lastRebalanceTrigger = false;
 	let lastColumnCount = props.columnCount;
 
-	let uniqueArticles: Record<string, { articleProps: ArticleProps; index: number; mediaIndex: number | null; }>;
+	let uniqueArticles: Record<string, { articleProps: ArticleProps, index: number, mediaIndex: number | null }>;
 	$: if (props.separateMedia) {
 		uniqueArticles = Object.fromEntries(props.articles.map((articleProps, index) => [
 			getIdServiceMediaStr(articleProps),
@@ -30,7 +30,7 @@
 	//TODO Support duplicate articles
 	//Maybe by making a second MasonryContainer which refreshes every column every time
 
-	type Column = {idServiceMedias: string[]; ratio: number;};
+	type Column = {idServiceMedias: string[], ratio: number};
 	let columns: Column[] = [];
 
 	$: if (props.rebalanceTrigger !== lastRebalanceTrigger || props.columnCount !== lastColumnCount) {
@@ -45,7 +45,7 @@
 			columns = makeColumns();
 		}else {
 			const columnsChanged = new Set<number>();
-			const addedArticles: { idServiceMedia: string; index: number; }[] = [];
+			const addedArticles: { idServiceMedia: string, index: number }[] = [];
 
 			for (let i = 0; i < columns.length; ++i) {
 				for (let j = 0; j < columns[i].idServiceMedias.length;) {
@@ -132,9 +132,9 @@
 	}
 </style>
 
-<div class='articlesContainer masonryContainer' bind:this={containerRef} style:flex-direction={props.rtl ? 'row-reverse' : null}>
+<div class='articlesContainer masonryContainer' bind:this={containerRef} style:flex-direction="{props.rtl ? 'row-reverse' : null}">
 	{#each columns as column, i (i)}
-		<div class='masonryColumn' style:width={props.columnCount > 1 ? (100 / props.columnCount) + '%' : undefined}>
+		<div class='masonryColumn' style:width="{props.columnCount > 1 ? (100 / props.columnCount) + '%' : undefined}">
 <!--		<span>Ratio: {column.ratio}</span>-->
 <!--		TODO Find a way to share key among multiple columns?-->
 			{#each column.idServiceMedias as idServiceMedia (idServiceMedia)}

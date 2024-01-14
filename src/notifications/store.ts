@@ -14,7 +14,7 @@ export type Notification =
 		text: string
 	};
 
-const {subscribe, update} = writable<{[id: string]: Notification;}>({});
+const {subscribe, update} = writable<{[id: string]: Notification}>({});
 let ids: string[];
 subscribe(value => ids = Object.keys(value));
 

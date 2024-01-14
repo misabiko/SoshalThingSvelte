@@ -267,7 +267,7 @@ type Legacy = {
 	favorite_count: number
 	retweeted: boolean
 	retweet_count: number
-	retweeted_status_result?: { result: Result; }
+	retweeted_status_result?: { result: Result }
 	is_quote_status: boolean
 };
 

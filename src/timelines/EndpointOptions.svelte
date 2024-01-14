@@ -86,12 +86,12 @@
 					<input
 							type='checkbox'
 							checked={timelineEndpoint.refreshTypes.has(refreshType)}
-							on:change={e => onRefreshTypeChange(i, refreshType, e.currentTarget.checked)}
+							on:change='{e => onRefreshTypeChange(i, refreshType, e.currentTarget.checked)}'
 					/>
 				</label>
 			{/each}
 
-			<button on:click={() => removeEndpoint(i)}>Remove</button>
+			<button on:click='{() => removeEndpoint(i)}'>Remove</button>
 		</li>
 	{/each}
 </ul>
@@ -113,11 +113,11 @@
 		<label class='field'>
 			{key}
 			{#if typeof value === 'number'}
-				<input type='number' {value} on:change={e => params[key] = parseInt(e.currentTarget.value)}/>
+				<input type='number' {value} on:change='{e => params[key] = parseInt(e.currentTarget.value)}'/>
 			{:else if typeof value === 'boolean'}
-				<input type='checkbox' checked={value} on:change={e => params[key] = e.currentTarget.checked}/>
+				<input type='checkbox' checked={value} on:change='{e => params[key] = e.currentTarget.checked}'/>
 			{:else}
-				<input type='text' {value} on:change={e => params[key] = e.currentTarget.value}/>
+				<input type='text' {value} on:change='{e => params[key] = e.currentTarget.value}'/>
 			{/if}
 		</label>
 	{/each}

@@ -85,7 +85,7 @@
 			<SocialMedia
 					{idPair}
 					{timelineProps}
-					onMediaClick={index => onMediaClick($article.idPair, index)}
+					onMediaClick='{index => onMediaClick($article.idPair, index)}'
 					{compact}
 					{loadingStates}
 			/>

@@ -19,7 +19,7 @@
 <div class='notification'>
 	<span>{data.text}</span>
 
-	<button class='deleteButton borderless-button' on:click={() => notifications.delete(id)}>
+	<button class='deleteButton borderless-button' on:click='{() => notifications.delete(id)}'>
 		<span class='icon'>
 			<Fa icon={faCircleXmark}/>
 		</span>

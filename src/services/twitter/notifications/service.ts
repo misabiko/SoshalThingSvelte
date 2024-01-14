@@ -39,7 +39,7 @@ export const TwitterNotificationService: Service<TwitterNotificationArticle> = {
 			props: {},
 		},
 	},
-	keepArticle(articleWithRefs: ArticleWithRefs, _index: number, filter: Filter & {type: keyof typeof TwitterNotificationService.filterTypes;}): boolean {
+	keepArticle(articleWithRefs: ArticleWithRefs, _index: number, filter: Filter & {type: keyof typeof TwitterNotificationService.filterTypes}): boolean {
 		const rootArticle = getRootArticle(articleWithRefs) as TwitterNotificationArticle;
 
 		switch (filter.type) {

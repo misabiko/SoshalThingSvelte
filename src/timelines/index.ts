@@ -25,7 +25,7 @@ export type TimelineData = {
 	//TODO Give timelines a list of article lists
 	articles: Writable<ArticleIdPair[]>
 	articlesOrder: Writable<null | string[]>
-	section: { useSection: boolean; count: number; }
+	section: { useSection: boolean, count: number }
 	container: ComponentType
 	articleView: ComponentType
 	columnCount: number
@@ -108,7 +108,7 @@ export function addArticlesToTimeline(data: TimelineData, ...articles: ArticleId
 	});
 }
 
-export type TimelineCollection = { [id: string]: TimelineData; };
+export type TimelineCollection = { [id: string]: TimelineData };
 
 //Would've wanted to use a symbol, but then we need to stringify in json anyway
 export const defaultTimelineView = 'default';

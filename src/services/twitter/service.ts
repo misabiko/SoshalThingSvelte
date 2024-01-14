@@ -304,7 +304,7 @@ export async function loadArticle(id: string): Promise<ArticleWithRefs | null> {
 	url.searchParams.set('features', JSON.stringify(features));
 	url.searchParams.set('fieldToggles', JSON.stringify(fieldToggles));
 
-	const response: { errors: ResponseSingleError[]; } | TweetDetailsResponse = await TwitterService.fetch(url, {
+	const response: { errors: ResponseSingleError[] } | TweetDetailsResponse = await TwitterService.fetch(url, {
 		headers: {
 			Accept: 'application/json',
 		}

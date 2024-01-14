@@ -13,7 +13,7 @@ import type {ArticleAction} from './actions';
 import {fetchExtension} from './extension';
 import type {ComponentType} from 'svelte';
 
-const services: { [name: string]: Service<any>; } = {};
+const services: { [name: string]: Service<any> } = {};
 
 export interface Service<A extends Article = Article> {
 	readonly name: string
@@ -21,9 +21,9 @@ export interface Service<A extends Article = Article> {
 	readonly endpointConstructors: Record<string, EndpointConstructorInfo>
 	userEndpoint: ((author: ArticleAuthor) => Endpoint) | null
 	loadArticle: ((id: string) => Promise<ArticleWithRefs | null>) | null
-	articleActions: { [name: string]: ArticleAction<A>; }
+	articleActions: { [name: string]: ArticleAction<A> }
 	requestImageLoad?: (id: ArticleId, index: number) => void
-	getCachedArticles?: () => {[id: string]: object;}
+	getCachedArticles?: () => {[id: string]: object}
 	keepArticle(articleWithRefs: ArticleWithRefs | ArticleProps, index: number, filter: Filter): boolean
 	defaultFilter(filterType: string): Filter
 	filterTypes: Record<string, FilterInfo>
@@ -93,11 +93,11 @@ export function registerService(service: Service<any>) {
 }
 
 //Kinda wack typing
-export function registerEndpointConstructor(endpoint: (new (...args: any[]) => Endpoint) & { constructorInfo: EndpointConstructorInfo; service: string; }) {
+export function registerEndpointConstructor(endpoint: (new (...args: any[]) => Endpoint) & { constructorInfo: EndpointConstructorInfo, service: string }) {
 	services[endpoint.service].endpointConstructors[endpoint.constructorInfo.name] = endpoint.constructorInfo;
 }
 
-export function getServices(): Readonly<{ [name: string]: Service; }> {
+export function getServices(): Readonly<{ [name: string]: Service }> {
 	return services;
 }
 

@@ -1,8 +1,6 @@
 import {
-	Endpoint,
 	type EndpointConstructorInfo,
 	LoadableEndpoint,
-	LoadablePageEndpoint,
 	PageEndpoint,
 	RefreshType
 } from '../../endpoints';
@@ -190,8 +188,8 @@ export function getUserId() : number {
 }
 
 type UserListAjaxResponse = PixivResponse<{
-	illusts: { [id: string]: null; }
-	manga: { [id: string]: null; }
+	illusts: { [id: string]: null }
+	manga: { [id: string]: null }
 	novels: []
 	mangaSeries: [
 		{

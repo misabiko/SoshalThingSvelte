@@ -95,7 +95,7 @@ export function articleFromV1(json: TweetResponse, isRef = false, extraTweets?: 
 	};
 }
 
-export function parseText(rawText: string, entities: Entities, extendedEntities?: ExtendedEntities): { text: string; textHtml: string; } {
+export function parseText(rawText: string, entities: Entities, extendedEntities?: ExtendedEntities): { text: string, textHtml: string } {
 	let trimmedText = rawText;
 	const mediaUrls = extendedEntities?.media.map(media => media.url) || [];
 

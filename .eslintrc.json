@@ -38,8 +38,8 @@
 					"requireLast": true
 				},
 				"singleline": {
-					"delimiter": "semi",
-					"requireLast": true
+					"delimiter": "comma",
+					"requireLast": false
 				}
 			}
 		],
@@ -58,7 +58,15 @@
 				"argsIgnorePattern": "^_",
 				"varsIgnorePattern": "^_"
 			}
-		]
+		],
+		"svelte/require-store-reactive-access": "error",
+		"svelte/html-quotes": ["warn", {
+			"prefer": "single",
+			"dynamic": {
+				"quoted": false,
+				"avoidInvalidUnquotedInHTML": true
+			}
+		}]
     },
 	"ignorePatterns": ["**/dist*/*", "**/node_modules/*"]
 }

@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang='ts'>
 	import {addArticlesToTimeline, type TimelineCollection, type TimelineData, type TimelineView} from './index';
 	import Timeline from './Timeline.svelte';
 	import {afterUpdate, getContext, onMount} from 'svelte';
@@ -83,12 +83,12 @@
 <div id='timelineContainer'>
 	{#if modalTimeline !== null}
 	<!-- TODO Find way to get specific parent soshalthing -->
-		<Modal bind:active={modalTimelineActive} mountElement={document.getElementsByClassName('soshalthing')[0]}>
+		<Modal bind:active={modalTimelineActive} mountElement="{document.getElementsByClassName('soshalthing')[0]}">
 			<Timeline
 				timelineId={null}
 				data={modalTimeline}
 				{setModalTimeline}
-				removeTimeline={() => modalTimeline = null}
+				removeTimeline='{() => modalTimeline = null}'
 				modal={true}
 			/>
 		</Modal>
@@ -105,11 +105,11 @@
 					data={timelines[timelineView.timelineIds[timelineView.fullscreen.index]]}
 					{setModalTimeline}
 					bind:fullscreen={timelineView.fullscreen}
-					removeTimeline={() => timelineView.fullscreen.index !== null && removeTimeline(timelineView.timelineIds[timelineView.fullscreen.index])}
-					toggleFullscreen={() => {
+					removeTimeline='{() => timelineView.fullscreen.index !== null && removeTimeline(timelineView.timelineIds[timelineView.fullscreen.index])}'
+					toggleFullscreen='{() => {
 						timelineView.fullscreen.index = null;
 						updateFullscreenStorage(timelineView.fullscreen);
-					}}
+					}}'
 				/>
 			{:else}
 				<Timeline
@@ -117,11 +117,11 @@
 					data={timelines[timelineView.timelineIds[timelineView.fullscreen.index]]}
 					{setModalTimeline}
 					bind:fullscreen={timelineView.fullscreen}
-					removeTimeline={() => timelineView.fullscreen.index !== null && removeTimeline(timelineView.timelineIds[timelineView.fullscreen.index])}
-					toggleFullscreen={() => {
+					removeTimeline='{() => timelineView.fullscreen.index !== null && removeTimeline(timelineView.timelineIds[timelineView.fullscreen.index])}'
+					toggleFullscreen='{() => {
 						timelineView.fullscreen.index = null;
 						updateFullscreenStorage(timelineView.fullscreen);
-					}}
+					}}'
 				/>
 			{/if}
 		{/key}
@@ -136,16 +136,16 @@
 					bind:showSidebar
 					data={timelines[id]}
 					{setModalTimeline}
-					removeTimeline={() => removeTimeline(id)}
-					toggleFullscreen={() => {timelineView.fullscreen.index = i; updateFullscreenStorage(timelineView.fullscreen);}}
+					removeTimeline='{() => removeTimeline(id)}'
+					toggleFullscreen='{() => {timelineView.fullscreen.index = i; updateFullscreenStorage(timelineView.fullscreen);}}'
 				/>
 			{:else}
 				<Timeline
 					timelineId={id}
 					data={timelines[id]}
 					{setModalTimeline}
-					removeTimeline={() => removeTimeline(id)}
-					toggleFullscreen={() => {timelineView.fullscreen.index = i; updateFullscreenStorage(timelineView.fullscreen);}}
+					removeTimeline='{() => removeTimeline(id)}'
+					toggleFullscreen='{() => {timelineView.fullscreen.index = i; updateFullscreenStorage(timelineView.fullscreen);}}'
 				/>
 			{/if}
 		{/each}

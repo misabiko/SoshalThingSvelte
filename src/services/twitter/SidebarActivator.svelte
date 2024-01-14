@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang='ts'>
     import { faCrow } from '@fortawesome/free-solid-svg-icons';
 	import portal from '../../usePortal';
 	import Fa from 'svelte-fa';
@@ -32,28 +32,28 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
 <a
-	use:portal={{ target: activatorMount, insertBefore: sidebarMenuButton }}
-	id="favvieweractivator"
+	use:portal='{{ target: activatorMount, insertBefore: sidebarMenuButton }}'
+	id='favvieweractivator'
 	class={sampleMenuItem.className}
-	on:click={() => (favviewerHidden = !favviewerHidden)}
-	on:mouseenter={() => {hovered = true;}}
-	on:mouseleave={() => {hovered = false;}}
+	on:click='{() => (favviewerHidden = !favviewerHidden)}'
+	on:mouseenter='{() => {hovered = true;}}'
+	on:mouseleave='{() => {hovered = false;}}'
 >
 	<div
 		class={sampleMenuItem?.firstElementChild?.className}
 		class:soshalHovered={hovered}
 	>
-		<div class={sampleMenuItem?.firstElementChild?.firstElementChild?.className + ' twitterMenuIcon'}>
+		<div class="{sampleMenuItem?.firstElementChild?.firstElementChild?.className + ' twitterMenuIcon'}">
 			<Fa icon={faCrow} flip='horizontal'/>
 		</div>
 		<div
-			dir="ltr"
+			dir='ltr'
 			class={sampleMenuItem?.firstElementChild?.children[1]?.className}
-			style="text-overflow: unset;"
+			style='text-overflow: unset;'
 		>
 			<span
 				class={sampleMenuItem?.firstElementChild?.children[1]?.firstElementChild?.className}
-				style="text-overflow: unset;">SoshalThing</span
+				style='text-overflow: unset;'>SoshalThing</span
 			>
 		</div>
 	</div>

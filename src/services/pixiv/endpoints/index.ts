@@ -185,10 +185,10 @@ export type Illust = {
 };
 
 export type ZoneConfig = {
-	header: { url: string; }
-	footer: { url: string; }
-	logo: { url: string; }
-	'500x500': { url: string; }
+	header: { url: string }
+	footer: { url: string }
+	logo: { url: string }
+	'500x500': { url: string }
 };
 
 export function illustToArticle(illust: Illust, markedAsReadStorage: string[], cachedArticlesStorage: Record<string, CachedPixivArticle | undefined>): ArticleWithRefs {

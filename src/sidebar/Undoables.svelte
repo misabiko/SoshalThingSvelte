@@ -21,7 +21,7 @@
 	<!--TODO Add undoable ids-->
 	{#each [...$undoables] as undoable, index (`${undoable.text}/${index}`)}
 			<p>{undoable.text}</p>
-			<button on:click={() => undoables.toggleDo(index)}>
+			<button on:click='{() => undoables.toggleDo(index)}'>
 				{undoable.undid ? 'Redo' : 'Undo'}
 			</button>
 	{:else}

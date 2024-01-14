@@ -226,7 +226,7 @@ type PagesResponse = {
 type LikeResponse = {
 	error : boolean
 	message : string
-	body : { is_liked : boolean; }
+	body : { is_liked : boolean }
 };
 
 type BookmarkResponse = {

@@ -4,7 +4,7 @@ import PixivArticle from '../article';
 import {type ArticleMedia, MediaLoadType, MediaType} from '~/articles/media';
 import {avatarHighRes} from '~/services/pixiv/endpoints/bookmarks.endpoint';
 
-export function parseThumbnail(element: Element, markedAsReadStorage: string[], cachedArticlesStorage: Record<number, CachedPixivArticle | undefined>, user: PixivUser): ArticleWithRefs | null {
+export function getThumbnailId(element: Element): number | null {
 	const anchors = element.querySelectorAll('a');
 	const idStr = anchors[0]?.getAttribute('data-gtm-value');
 	if (!idStr) {
@@ -13,7 +13,13 @@ export function parseThumbnail(element: Element, markedAsReadStorage: string[], 
 		else
 			throw new Error("Couldn't find id");
 	}
-	const id = parseInt(idStr);
+	return parseInt(idStr);
+}
+
+export function parseThumbnail(element: Element, markedAsReadStorage: string[], cachedArticlesStorage: Record<number, CachedPixivArticle | undefined>, user: PixivUser): ArticleWithRefs | null {
+	const id = getThumbnailId(element);
+	if (id === null)
+		return null;
 
 	const thumbnailSrc = element.querySelector('img')?.src;
 	if (!thumbnailSrc) {
@@ -40,7 +46,7 @@ export function parseThumbnail(element: Element, markedAsReadStorage: string[], 
 			cropRatio: null,
 		}));
 
-	const title = anchors[1]?.textContent;
+	const title = element.querySelectorAll('a')[1]?.textContent;
 	if (!title)
 		throw new Error("Couldn't find title");
 

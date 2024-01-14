@@ -105,15 +105,10 @@ export class BookmarkAPIEndpoint extends LoadableEndpoint {
 	}
 
 	async _refresh(_refreshType: RefreshType): Promise<ArticleWithRefs[]> {
-		const url = new URL(`https://www.pixiv.net/ajax/user/${this.userId}/illusts/bookmarks?tag=&offset=0&limit=48&rest=hide&lang=en`);
+		const url = new URL(`https://www.pixiv.net/ajax/user/${this.userId}/illusts/bookmarks?tag=&limit=48&lang=en`);
 
-		//url.searchParams.set('tag', '')
-		//url.searchParams.set('offset', '')
-		//url.searchParams.set('limit', '')
+		url.searchParams.set('offset', (this.currentPage * 48).toString());
 		url.searchParams.set('rest', this.r18 ? 'hide' : 'show');
-		url.searchParams.set('lang', 'en');
-		if (this.currentPage > 0)
-			url.searchParams.set('p', (this.currentPage + 1).toString());
 
 		const response: PixivResponseWithWorks = await PixivService.fetch(url.toString(), {headers: {Accept: 'application/json'}});
 		if (response.error) {

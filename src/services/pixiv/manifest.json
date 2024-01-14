@@ -9,5 +9,10 @@
 			"https://*.pixiv.net/bookmark_new_illust.php*",
 			"https://*.pixiv.net/bookmark_new_illust_r18.php*"
 		]
+	},
+	"discoveryPage": {
+		"matches": [
+			"https://*.pixiv.net/discovery*"
+		]
 	}
 }

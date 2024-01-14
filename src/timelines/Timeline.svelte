@@ -242,7 +242,7 @@
 		}
 
 		loadingStore.requestLoads(...toRequest);
-		const _ = Promise.allSettled(promises);
+		Promise.allSettled(promises).then();
 	}
 
 	let availableRefreshTypes: Readable<Set<RefreshType>>;

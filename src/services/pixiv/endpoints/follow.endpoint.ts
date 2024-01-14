@@ -7,8 +7,7 @@ import {
 	getCurrentPage,
 	getUserUrl,
 	parseThumbnail,
-	type Illust,
-	illustToArticle
+	illustToArticle, type PixivResponseWithPage
 } from './index';
 import {registerEndpointConstructor} from '../../service';
 
@@ -31,7 +30,7 @@ export class FollowPageEndpoint extends PageEndpoint {
 	parsePage(document: HTMLElement): ArticleWithRefs[] {
 		const thumbnails = document.querySelector('section ul')?.children;
 		if (!thumbnails)
-			throw "Couldn't find thumbnails";
+			throw 'Couldn\'t find thumbnails';
 		const markedAsReadStorage = getMarkedAsReadStorage(PixivService);
 		const cachedArticlesStorage = getCachedArticlesStorage<CachedPixivArticle>(PixivService);
 
@@ -102,33 +101,8 @@ export class FollowAPIEndpoint extends LoadableEndpoint {
 
 registerEndpointConstructor(FollowAPIEndpoint);
 
-type FollowAPIResponse = {
-	error: boolean
-	message: string
-	body: {
-		page: {
-			ids: number[]
-			isLastPage: boolean
-			tags: []
-		}
-		tagTranslation: {
-			[tag: string]: {
-				[key in 'en' | 'ko' | 'zh' | 'zh_tw' | 'romaji']: string
-			}
-		}
-		thumbnails: {
-			illust: Illust[]
-			novel: []
-			novelSeries: []
-			novelDraft: []
-		}
-		illustSeries: []
-		requests: []
-		users: []
-		zoneConfig: {
-			[key in 'header' | 'footer' | 'logo']: {
-				url: string
-			}
-		}
-	}
-}
+type FollowAPIResponse = PixivResponseWithPage<{
+	ids: number[]
+	isLastPage: boolean
+	tags: []
+}>;

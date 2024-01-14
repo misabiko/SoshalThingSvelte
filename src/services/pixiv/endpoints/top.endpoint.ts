@@ -1,9 +1,6 @@
 import {Endpoint, type EndpointConstructorInfo, RefreshType} from '~/services/endpoints';
 import {getServices, registerEndpointConstructor} from '~/services/service';
-import {
-	type Illust,
-	illustToArticle
-} from '~/services/pixiv/endpoints/index';
+import {illustToArticle, type PixivResponseWithPage} from '~/services/pixiv/endpoints/index';
 import {getCachedArticlesStorage, getMarkedAsReadStorage} from '~/storages/serviceCache';
 import {PixivService} from '~/services/pixiv/service';
 import {type CachedPixivArticle} from '~/services/pixiv/article';
@@ -77,78 +74,52 @@ export class TopAPIEndpoint extends Endpoint {
 
 registerEndpointConstructor(TopAPIEndpoint);
 
-//Probably has big overlaps with FollowAPIResponse
-type TopResponse = {
-	error: boolean
-	message: string
-	body: {
-		page: {
-			tags: {
-				tag: string
-				ids: number[]
-			}[]
-			follow: number[]
-			mypixiv: []
-			recommend: {
-				ids: string[]
-				details: Record<string, Detail>
-			}
-			recommendByTag: {
-				tag: string
-				ids: string[]
-				details: Record<string, Detail>
-			}[]
-			ranking: {
-				items: {
-					rank: string
-					id: string
-				}[]
-				date: string
-			}
-			pixivision: {
-				id: string
-				title: string
-				thumbnailUrl: string
-				url: string
-			}[]
-			// recommendUser: {
-			// 	id: number
-			// 	illustIds: string[]
-			// 	novelIds: string[]
-			// }[]
-			// contestOngoing: {}[]
-			// contestResult: []
-			// editorRecommend: []
-			// boothFollowItemIds: []
-			// sketchLiveFollowIds: []
-			// sketchLivePopularIds: []
-			// myFavoriteTags: []
-			// newPost: []
-			// trendingTags: []
-			// completeRequestIds: []
-			// userEventIds: []
-		}
-		tagTranslation: {
-			[tag: string]: {
-				[key in 'en' | 'ko' | 'zh' | 'zh_tw' | 'romaji']: string
-			}
-		}
-		thumbnails: {
-			illust: Illust[]
-			novel: []
-			novelSeries: []
-			novelDraft: []
-		}
-		illustSeries: []
-		requests: []
-		users: []
-		zoneConfig: {
-			[key in 'header' | 'footer' | 'logo']: {
-				url: string
-			}
-		}
+type TopResponse = PixivResponseWithPage<{
+	tags: {
+		tag: string
+		ids: number[]
+	}[]
+	follow: number[]
+	mypixiv: []
+	recommend: {
+		ids: string[]
+		details: Record<string, Detail>
 	}
-}
+	recommendByTag: {
+		tag: string
+		ids: string[]
+		details: Record<string, Detail>
+	}[]
+	ranking: {
+		items: {
+			rank: string
+			id: string
+		}[]
+		date: string
+	}
+	pixivision: {
+		id: string
+		title: string
+		thumbnailUrl: string
+		url: string
+	}[]
+	// recommendUser: {
+	// 	id: number
+	// 	illustIds: string[]
+	// 	novelIds: string[]
+	// }[]
+	// contestOngoing: {}[]
+	// contestResult: []
+	// editorRecommend: []
+	// boothFollowItemIds: []
+	// sketchLiveFollowIds: []
+	// sketchLivePopularIds: []
+	// myFavoriteTags: []
+	// newPost: []
+	// trendingTags: []
+	// completeRequestIds: []
+	// userEventIds: []
+}>
 
 type Detail = {
 	methods: string[]

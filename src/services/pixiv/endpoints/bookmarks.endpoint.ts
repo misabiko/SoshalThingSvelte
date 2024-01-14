@@ -5,7 +5,11 @@ import PixivArticle, {type CachedPixivArticle} from '../article';
 import type {PixivUser} from '../article';
 import {getCachedArticlesStorage, getMarkedAsReadStorage} from '~/storages/serviceCache';
 import {getWritable, registerEndpointConstructor} from '../../service';
-import {getEachPageURL, getUserUrl, parseThumbnail, type BookmarkData} from './index';
+import {
+	getEachPageURL,
+	getUserUrl,
+	parseThumbnail, type PixivResponseWithWorks,
+} from './index';
 import {MediaLoadType, MediaType} from '~/articles/media';
 
 export default class BookmarkPageEndpoint extends PageEndpoint {
@@ -47,7 +51,7 @@ export default class BookmarkPageEndpoint extends PageEndpoint {
 			url.searchParams.set('is_first_page', this.hostPage.toString());
 			url.searchParams.set('lang', 'en`');
 
-			const response: FollowAjaxResponse = await PixivService.fetch(url.toString(), {headers: {'Accept': 'application/json'}});
+			const response: PixivResponseWithWorks = await PixivService.fetch(url.toString(), {headers: {'Accept': 'application/json'}});
 			if (response?.body?.works) {
 				for (const work of Object.values(response.body.works))
 					getWritable<PixivArticle>({id: parseInt(work.id), service: PixivService.name})?.update(a => {
@@ -111,7 +115,7 @@ export class BookmarkAPIEndpoint extends LoadableEndpoint {
 		if (this.currentPage > 0)
 			url.searchParams.set('p', (this.currentPage + 1).toString());
 
-		const response: FollowAjaxResponse = await PixivService.fetch(url.toString(), {headers: {'Accept': 'application/json'}});
+		const response: PixivResponseWithWorks = await PixivService.fetch(url.toString(), {headers: {'Accept': 'application/json'}});
 		if (response.error) {
 			console.error('Failed to fetch', response);
 			return [];
@@ -177,72 +181,6 @@ export class BookmarkAPIEndpoint extends LoadableEndpoint {
 }
 
 registerEndpointConstructor(BookmarkAPIEndpoint);
-
-//TODO Abstract responses
-type FollowAjaxResponse = {
-	error: boolean
-	message: string
-	body: {
-		works: {[id: string]: {
-				id: string
-				title: string
-				illustType: number
-				xRestrict: number
-				restrict: number
-				sl: number
-				url: string
-				description: string
-				tags: string[]
-				userId: string
-				userName: string
-				width: number
-				height: number
-				pageCount: number
-				isBookmarkable: boolean
-				bookmarkData: BookmarkData | null
-				alt: string
-				titleCaptionTranslation: {
-					workTitle: null
-					workCaption: null
-				}
-				createDate: string
-				updateDate: string
-				isUnlisted: boolean
-				isMasked: boolean
-				profileImageUrl: string
-		}}
-	}
-	zoneConfig: {
-		header: { url: string }
-		footer: { url: string }
-		logo: { url: string }
-		'500x500': { url: string }
-	}
-	extraData: {
-		meta: {
-			title: string
-			description: string
-			canonical: string
-			ogp: {
-				description: string
-				image: string
-				title: string
-				type: string
-			},
-			twitter: {
-				description: string
-				image: string
-				title: string
-				card: string
-			},
-			alternateLanguages: {
-				ja: string
-				en: string
-			},
-			descriptionHeader: string
-		}
-	}
-}
 
 export function avatarHighRes(url: string): string {
 	return url.replace(/_\d+\.(\w{3,4})$/, '_170.$1');

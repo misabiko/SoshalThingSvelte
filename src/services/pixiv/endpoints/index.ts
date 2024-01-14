@@ -88,6 +88,58 @@ export function getCurrentPage(): number {
 	return p === null ? 0 : parseInt(p) - 1;
 }
 
+
+export type PixivResponse<Body> = {
+	error: boolean
+	message: string
+	body: Body
+}
+
+export type PixivResponseWithPage<Page> = PixivResponse<{
+	page: Page
+	tagTranslation: Record<string, Record<'en' | 'ko' | 'zh' | 'zh_tw' | 'romaji', string>>
+	thumbnails: {
+		illust: Illust[]
+		novel: []
+		novelSeries: []
+		novelDraft: []
+	}
+	illustSeries: []
+	requests: []
+	users: []
+	zoneConfig: ZoneConfig
+}>
+
+export type PixivResponseWithWorks = PixivResponse<{
+	works: Record<string, Illust>
+}> & {
+	zoneConfig: ZoneConfig
+	extraData: {
+		meta: {
+			title: string
+			description: string
+			canonical: string
+			ogp: {
+				description: string
+				image: string
+				title: string
+				type: string
+			},
+			twitter: {
+				description: string
+				image: string
+				title: string
+				card: string
+			},
+			alternateLanguages: {
+				ja: string
+				en: string
+			},
+			descriptionHeader: string
+		}
+	}
+}
+
 export type BookmarkData = {
 	id: string
 	private: boolean
@@ -124,6 +176,13 @@ export type Illust = {
 		[key in '250x250' | '360x360' | '540x540']: string
 	}
 	profileImageUrl: string
+}
+
+export type ZoneConfig = {
+	header: { url: string }
+	footer: { url: string }
+	logo: { url: string }
+	'500x500': { url: string }
 }
 
 export function illustToArticle(illust: Illust, markedAsReadStorage: string[], cachedArticlesStorage: Record<string, CachedPixivArticle | undefined>): ArticleWithRefs {

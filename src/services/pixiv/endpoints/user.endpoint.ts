@@ -4,7 +4,12 @@ import {PixivService} from '../service';
 import PixivArticle, {type CachedPixivArticle} from '../article';
 import type {PixivUser} from '../article';
 import {getCachedArticlesStorage, getMarkedAsReadStorage} from '~/storages/serviceCache';
-import {getEachPageURL, getUserUrl, parseThumbnail, type BookmarkData} from './index';
+import {
+	getEachPageURL,
+	getUserUrl,
+	parseThumbnail,
+	type PixivResponse, type PixivResponseWithWorks,
+} from './index';
 import {MediaLoadType, MediaType} from '~/articles/media';
 import {avatarHighRes} from './bookmarks.endpoint';
 import {getServices, registerEndpointConstructor} from '../../service';
@@ -92,7 +97,7 @@ export class UserAPIEndpoint extends LoadableEndpoint {
 		url.searchParams.set('is_first_page', (this.currentPage === 0 ? 1 : 0).toString());
 		url.searchParams.set('lang', 'en');
 
-		const response: UserAjaxResponse = await PixivService.fetch(url.toString(), {headers: {'Accept': 'application/json'}});
+		const response: PixivResponseWithWorks = await PixivService.fetch(url.toString(), {headers: {'Accept': 'application/json'}});
 		if (response.error) {
 			console.error('Failed to fetch', response);
 			return [];
@@ -163,118 +168,49 @@ export function getUserId() : number {
 	return parseInt(window.location.pathname.split('/')[3]);
 }
 
-type UserListAjaxResponse = {
-	error: false,
-	message: '',
-	body: {
-		illusts: { [id: string]: null }
-		manga: { [id: string]: null }
-		novels: []
-		mangaSeries: [
-			{
-				id: string
-				userId: string
-				title: string
-				description: string
-				caption: string
-				total: number
-				content_order: null
-				url: string
-				coverImageSl: number
-				firstIllustId: string
-				latestIllustId: string
-				createDate: string
-				updateDate: string
-				watchCount: null
-				isWatched: boolean
-				isNotifying: boolean
-			}
-		],
-		novelSeries: []
-		pickup: any[],
-		bookmarkCount: {
-			[key in 'public' | 'private']: {
-				illust: number
-				novel: number
-			}
-		},
-		externalSiteWorksStatus: {
-			booth: boolean
-			sketch: boolean
-			vroidHub: boolean
-		},
-		request: {
-			showRequestTab: boolean
-			showRequestSentTab: boolean
-			postWorks: {
-				artworks: []
-				novels: []
-			}
-		}
-	}
-}
-
-type UserAjaxResponse = {
-	error: boolean
-	message: string
-	body: {
-		works: {[id: string]: {
-				id: string
-				title: string
-				illustType: number
-				xRestrict: number
-				restrict: number
-				sl: number
-				url: string
-				description: string
-				tags: string[]
-				userId: string
-				userName: string
-				width: number
-				height: number
-				pageCount: number
-				isBookmarkable: boolean
-				bookmarkData: BookmarkData | null
-				alt: string
-				titleCaptionTranslation: {
-					workTitle: null
-					workCaption: null
-				}
-				createDate: string
-				updateDate: string
-				isUnlisted: boolean
-				isMasked: boolean
-				profileImageUrl: string
-		}}
-	}
-	zoneConfig: {
-		header: { url: string }
-		footer: { url: string }
-		logo: { url: string }
-		'500x500': { url: string }
-	}
-	extraData: {
-		meta: {
+type UserListAjaxResponse = PixivResponse<{
+	illusts: { [id: string]: null }
+	manga: { [id: string]: null }
+	novels: []
+	mangaSeries: [
+		{
+			id: string
+			userId: string
 			title: string
 			description: string
-			canonical: string
-			ogp: {
-				description: string
-				image: string
-				title: string
-				type: string
-			},
-			twitter: {
-				description: string
-				image: string
-				title: string
-				card: string
-			},
-			alternateLanguages: {
-				ja: string
-				en: string
-			},
-			descriptionHeader: string
+			caption: string
+			total: number
+			content_order: null
+			url: string
+			coverImageSl: number
+			firstIllustId: string
+			latestIllustId: string
+			createDate: string
+			updateDate: string
+			watchCount: null
+			isWatched: boolean
+			isNotifying: boolean
+		}
+	],
+	novelSeries: []
+	pickup: any[],
+	bookmarkCount: {
+		[key in 'public' | 'private']: {
+			illust: number
+			novel: number
+		}
+	},
+	externalSiteWorksStatus: {
+		booth: boolean
+		sketch: boolean
+		vroidHub: boolean
+	},
+	request: {
+		showRequestTab: boolean
+		showRequestSentTab: boolean
+		postWorks: {
+			artworks: []
+			novels: []
 		}
 	}
-}
+}>

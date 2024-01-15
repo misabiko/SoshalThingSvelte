@@ -10,7 +10,7 @@
 	import SoshalThing from '~/SoshalThing.svelte';
 
 	const searchParams = new URLSearchParams(window.location.search);
-	const mode = searchParams.get('mode') as Mode;
+	const mode = searchParams.get('mode') as Mode ?? Mode.All;
 
 	const timelines: TimelineCollection = {
 		Follows: {

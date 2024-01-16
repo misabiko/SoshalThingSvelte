@@ -328,6 +328,15 @@
 				Split articles per media
 			</label>
 		</div>
+		<div class='field'>
+			<label>
+				<input type='checkbox'
+					bind:checked={data.shouldLoadMedia}
+					on:change="{() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'shouldLoadMedia', data.shouldLoadMedia)}"
+				/>
+				Load media
+			</label>
+		</div>
 	</section>
 	<section>
 		<h1>Endpoints</h1>

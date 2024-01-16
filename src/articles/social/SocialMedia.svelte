@@ -39,13 +39,13 @@
 
 	//Sloppy to make sure landscape single images aren't forced to square aspect ratio
 	let aspectRatio: number | undefined;
-	$: if ((compact ?? timelineProps.compact) && ($article.medias.length === 1 || mediaIndex !== null) && ($article.medias[0].ratio ?? 1) < 1) {
+	$: //if ((compact ?? timelineProps.compact) && ($article.medias.length === 1 || mediaIndex !== null) && ($article.medias[0].ratio ?? 1) < 1) {
 		aspectRatio = 1 / ($article.medias[0]?.ratio ?? 1);
-	}
-	let aspectRatioThumbnail: number | undefined;
-	$: if ((compact ?? timelineProps.compact) && ($article.medias.length === 1 || mediaIndex !== null) && ($article.medias[0].thumbnail?.ratio ?? 1) < 1) {
-		aspectRatioThumbnail = 1 / ($article.medias[0]?.thumbnail?.ratio ?? 1);
-	}
+	// }
+	// let aspectRatioThumbnail: number | undefined;
+	// $: //if ((compact ?? timelineProps.compact) && ($article.medias.length === 1 || mediaIndex !== null) && ($article.medias[0].thumbnail?.ratio ?? 1) < 1) {
+	// 	aspectRatioThumbnail = 1 / ($article.medias[0]?.thumbnail?.ratio ?? 1);
+	// // }
 
 	let medias: [ArticleMedia, number][];
 	$: medias = mediaIndex === null
@@ -74,6 +74,7 @@
 		display: flex;
 		justify-content: center;
 		border-radius: 8px;
+		position: relative;
 	}
 
 	.socialMediaCompact .imagesHolder:not(.socialMediaFull), .socialMediaCompact video.articleMedia:not(.socialMediaFull) {
@@ -90,7 +91,7 @@
 	}
 
 	.imagesHolder img {
-		align-self: center;
+		align-self: flex-start;
 		width: 100%;
 	}
 
@@ -108,13 +109,19 @@
 		margin-right: auto;
 		padding-top: 5px;
 	}
+
+	img.articleMediaLoading {
+		position: absolute;
+		left: 0;
+		top: 0;
+	}
 </style>
 
 <div class='socialMedia' class:socialMediaCompact='{compact ?? timelineProps.compact}' bind:this={divRef}>
 	{#each medias as [media, index] (index)}
 		{@const isLoading = $loadingStates[index] === LoadingState.Loading}
 		{#if $loadingStates[index] === LoadingState.NotLoaded}
-			<div class='imagesHolder' class:socialMediaFull='{index < timelineProps.fullMedia}' style:aspect-ratio={aspectRatioThumbnail}>
+			<div class='imagesHolder' class:socialMediaFull='{index < timelineProps.fullMedia}' style:aspect-ratio={aspectRatio}>
 				<div class='imgPlaceHolder' style:aspect-ratio='{1 / (media.ratio ?? 1)}' style:display='none'></div>
 				<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 				{#if media.thumbnail}
@@ -128,7 +135,6 @@
 			</div>
 		{:else if media.mediaType === MediaType.Image || media.mediaType === MediaType.Gif}
 			<div class='imagesHolder' class:socialMediaFull='{index < timelineProps.fullMedia}' style:aspect-ratio={aspectRatio}>
-				<div class='imgPlaceHolder' style:aspect-ratio='{1 / (media.ratio ?? 1)}' style:display='none'></div>
 				<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 				<img
 						class='articleMedia'
@@ -139,6 +145,19 @@
 						on:load='{() => isLoading ? loadingStore.mediaLoaded($article.idPair, index) : undefined}'
 						class:articleMediaLoading={isLoading}
 				/>
+				{#if isLoading}
+					{#if media.thumbnail}
+						<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
+						<img
+								class='articleMedia articleThumb'
+								alt='{`${$article.idPairStr}/${index}`}'
+								src={media.thumbnail.src}
+								on:click='{() => onMediaClick(index)}'
+						/>
+					{:else}
+						<div class='imgPlaceHolder' style:aspect-ratio='{1 / (media.ratio ?? 1)}'></div>
+					{/if}
+				{/if}
 			</div>
 		{:else if !timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
 			<video

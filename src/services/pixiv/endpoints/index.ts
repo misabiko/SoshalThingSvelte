@@ -195,15 +195,15 @@ export function illustToArticle(illust: Illust, markedAsReadStorage: string[], c
 	const id = parseInt(illust.id);
 	const cached = cachedArticlesStorage[id];
 
-	const medias = cached?.medias ?? getEachPageURL(illust.url, illust.pageCount).map(src => ({
+	const medias = cached?.medias ?? getEachPageURL(illust.url, illust.pageCount).map((src, i) => ({
 		mediaType: MediaType.Image,
 		src,
-		ratio: null,
+		ratio: i === 0 ? illust.height / illust.width : null,
 		queueLoadInfo: MediaLoadType.Thumbnail,
 		offsetX: null,
 		offsetY: null,
 		cropRatio: null,
-	}));
+	} satisfies ArticleMedia));
 	const liked = cached?.liked ?? false;
 	const bookmarked = illust.bookmarkData !== null;
 

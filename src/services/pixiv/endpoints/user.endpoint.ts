@@ -2,11 +2,15 @@ import {type EndpointConstructorInfo, LoadableEndpoint, PageEndpoint, RefreshTyp
 import type {ArticleWithRefs} from '~/articles';
 import {PixivService} from '../service';
 import type {PixivUser} from '../article';
-import PixivArticle, {type CachedPixivArticle} from '../article';
+import {type CachedPixivArticle} from '../article';
 import {getCachedArticlesStorage, getMarkedAsReadStorage} from '~/storages/serviceCache';
-import {getEachPageURL, getUserUrl, parseThumbnail, type PixivResponse, type PixivResponseWithWorks,} from './index';
-import {MediaLoadType, MediaType} from '~/articles/media';
-import {avatarHighRes} from './bookmarks.endpoint';
+import {
+	getUserUrl,
+	illustToArticle,
+	parseThumbnail,
+	type PixivResponse,
+	type PixivResponseWithWorks,
+} from './index';
 import {getServices, registerEndpointConstructor} from '../../service';
 
 export default class UserPageEndpoint extends PageEndpoint {
@@ -114,44 +118,7 @@ export class UserAPIEndpoint extends LoadableEndpoint {
 			const markedAsReadStorage = getMarkedAsReadStorage(PixivService);
 			const cachedArticlesStorage = getCachedArticlesStorage<CachedPixivArticle>(PixivService);
 
-			return Object.values(response.body.works).map(illust => {
-				const id = parseInt(illust.id);
-				const cached = cachedArticlesStorage[id];
-
-				const medias = cached?.medias ?? getEachPageURL(illust.url, illust.pageCount).map(src => ({
-					mediaType: MediaType.Image,
-					src,
-					ratio: null,
-					queueLoadInfo: MediaLoadType.Thumbnail,
-					offsetX: null,
-					offsetY: null,
-					cropRatio: null,
-				}));
-				const liked = cached?.liked ?? false;
-				const bookmarked = illust.bookmarkData !== null;
-
-				return {
-					type: 'normal',
-					article: new PixivArticle(
-						id,
-						medias,
-						illust.title,
-						{
-							id: parseInt(illust.userId),
-							url: getUserUrl(illust.userId),
-							username: illust.userName,
-							name: illust.userName,
-							avatarUrl: avatarHighRes(illust.profileImageUrl),
-						},
-						new Date(illust.createDate),
-						markedAsReadStorage,
-						illust,
-						liked,
-						bookmarked,
-						cached?.medias !== undefined,
-					),
-				} satisfies ArticleWithRefs;
-			});
+			return Object.values(response.body.works).map(illust => illustToArticle(illust, markedAsReadStorage, cachedArticlesStorage));
 		}
 
 		return [];

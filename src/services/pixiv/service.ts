@@ -100,10 +100,8 @@ export const PixivService: PixivServiceType = {
 			key: 'bookmark',
 			name: 'Bookmark',
 			actionedName: null,
-			listAsDropdown: false,
 			icon: STANDARD_ACTIONS.like.icon,
 			actionedIcon: STANDARD_ACTIONS.like.actionedIcon,
-			listAsIcon: true,
 			color: STANDARD_ACTIONS.like.color,
 			togglable: false,
 			disabled: null,
@@ -146,6 +144,12 @@ export const PixivService: PixivServiceType = {
 				});
 			},
 			actioned(article) { return article.bookmarked === true; },
+			views: {
+				default: {
+					listAsIcon: true,
+					listAsDropdown: false,
+				}
+			}
 		}
 	},
 	getCachedArticles() {

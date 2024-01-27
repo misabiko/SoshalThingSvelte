@@ -129,8 +129,7 @@ export function loadTimelines(): TimelineCollection {
 		defaulted.filters = parseFilters(defaulted.filters ?? []);
 
 		//TODO Do wee need the ?? if defaulted has the values?
-		return [id, {
-			...defaultTimeline(),
+		return [id, defaultTimeline({
 			title: defaulted.title,
 			endpoints,
 			section: defaulted.section ?? {
@@ -157,7 +156,7 @@ export function loadTimelines(): TimelineCollection {
 			showArticleCount: defaulted.showArticleCount ?? false,
 			maxMediaCount: defaulted.maxMediaCount ?? 4,
 			separateMedia: defaulted.separateMedia ?? false,
-		}];
+		})];
 	}));
 }
 
@@ -170,7 +169,7 @@ export function updateTimelinesStorage(timelines: TimelineCollection) {
 		endpoints: endpointsToStorage(t.endpoints),
 		columnCount: t.columnCount,
 		width: t.width,
-		filters: t.filters,
+		filters: get(t.filters),
 		sortInfo: sortInfoToStorage(t.sortInfo),
 		compact: t.compact,
 		fullMedia: t.fullMedia,

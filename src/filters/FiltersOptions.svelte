@@ -5,12 +5,13 @@
 	import {defaultFilter} from './index';
 	import {getServices} from '~/services/service';
 	import {updateTimelinesStorageValue} from '~/storages';
+	import type {Writable} from 'svelte/store';
 
 	export let timelineId: string | null;
-	export let instances: FilterInstance[];
+	export let instances: Writable<FilterInstance[]>;
 	$: {
 		if (timelineId !== null)
-			updateTimelinesStorageValue(timelineId, 'filters', instances);
+			updateTimelinesStorageValue(timelineId, 'filters', $instances);
 	}
 
 	const serviceFilterTypes: {
@@ -24,21 +25,25 @@
 	})));
 
 	function addFilter(filterType: Filter['type'], inverted: boolean, service: string | null = null) {
-		instances.push({
-			filter: defaultFilter(filterType, service),
-			enabled: true,
-			inverted
+		instances.update(i => {
+			i.push({
+				filter: defaultFilter(filterType, service),
+				enabled: true,
+				inverted
+			});
+			return i;
 		});
-		instances = instances;
 	}
 
 	function removeFilter(index: number) {
-		instances.splice(index, 1);
-		instances = instances;
+		instances.update(i => {
+			i.splice(index, 1);
+			return i;
+		});
 	}
 </script>
 
-{#each instances as instance, index (`${JSON.stringify(instance)}/${index}`)}
+{#each $instances as instance, index (`${JSON.stringify(instance)}/${index}`)}
 	{@const filterTypeInfo = instance.filter.service === null
 		? genericFilterTypes[instance.filter.type]
 		: getServices()[instance.filter.service].filterTypes[instance.filter.type]
@@ -56,10 +61,10 @@
 					instance.inverted
 				)
 			}
-			<button class='button' class:is-success={instance.enabled} on:click='{() => instance.enabled = !instance.enabled}'>
+			<button class='button' class:is-success={instance.enabled} on:click='{() => $instances[index].enabled = !instance.enabled}'>
 				{instance.enabled ? 'Enabled' : 'Disabled'}
 			</button>
-			<button class='button' class:is-info={instance.inverted} on:click='{() => instance.inverted = !instance.inverted}'>
+			<button class='button' class:is-info={instance.inverted} on:click='{() => $instances[index].inverted = !instance.inverted}'>
 				{instance.inverted ? 'Inverted' : 'Normal'}
 			</button>
 			<button class='button' on:click='{() => removeFilter(index)}'>
@@ -85,9 +90,9 @@
 						value="{instance.filter.props[propName] ?? ''}"
 						on:change="{e => {
 							if (propType.optional && e.currentTarget.value === '')
-								delete instance.filter.props[propName];
+								delete $instances[index].filter.props[propName];
 							else
-								instance.filter.props[propName] = Number(e.currentTarget.value);
+								$instances[index].filter.props[propName] = Number(e.currentTarget.value);
 						}}"
 						min={propType.min}
 						max={propType.max}
@@ -99,9 +104,9 @@
 						value="{instance.filter.props[propName] ?? ''}"
 						on:change="{e => {
 							if (propType.optional && e.currentTarget.value === '')
-								delete instance.filter.props[propName];
+								delete $instances[index].filter.props[propName];
 							else
-								instance.filter.props[propName] = e.currentTarget.value;
+								$instances[index].filter.props[propName] = e.currentTarget.value;
 						}}"
 						required={!propType.optional}
 					/>

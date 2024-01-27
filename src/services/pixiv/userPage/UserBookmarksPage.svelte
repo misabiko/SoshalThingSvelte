@@ -14,8 +14,7 @@
 	import {getUserId} from '~/services/pixiv/endpoints/user.endpoint';
 
 	const timelines: TimelineCollection = {
-		Bookmarks: {
-			...defaultTimeline(),
+		Bookmarks: defaultTimeline({
 			title: 'Bookmarks',
 			endpoints: [{
 				endpoint: new BookmarkAPIEndpoint(getUserId(), new URLSearchParams(window.location.search).get('rest') === 'hide'),
@@ -32,7 +31,7 @@
 			},
 			compact: true,
 			fullMedia: 1,
-		}
+		})
 	};
 
 	const mainStorage = loadMainStorage();

@@ -15,8 +15,7 @@
 	import {getCurrentPage} from '~/services/pixiv/endpoints';
 
 	const timelines: TimelineCollection = {
-		Follows: {
-			...defaultTimeline(),
+		Follows: defaultTimeline({
 			title: 'Follows',
 			endpoints: [{
 				endpoint: new FollowAPIEndpoint(getCurrentPage()),
@@ -33,7 +32,7 @@
 			},
 			compact: true,
 			fullMedia: 1,
-		}
+		})
 	};
 
 	const mainStorage = loadMainStorage();

@@ -21,8 +21,7 @@
 	let favviewerMaximized = mainStorage.maximized;
 
 	const timelines: TimelineCollection = {
-		List: {
-			...defaultTimeline(),
+		List: defaultTimeline({
 			title: 'List',
 			endpoints: [{
 				endpoint: new ListAPI(listId),
@@ -37,7 +36,7 @@
 				customMethod: null,
 				reversed: true,
 			},
-		}
+		})
 	};
 
 	const timelineViews: Record<string, TimelineView> = {

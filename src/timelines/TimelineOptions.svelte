@@ -346,7 +346,7 @@
 		/>
 	</section>
 	<section>
-		<FiltersOptions {timelineId} bind:instances={data.filters}/>
+		<FiltersOptions {timelineId} instances={data.filters}/>
 		<button on:click={removeFiltered}>Remove filtered articles</button>
 	</section>
 	<section>

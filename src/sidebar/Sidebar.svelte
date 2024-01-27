@@ -24,6 +24,7 @@
 	import TimelineViewEdit from './TimelineViewEdit.svelte';
 	import {updateMainStorage} from '~/storages';
 	import LoadArticle from './LoadArticle.svelte';
+	import type {Writable} from 'svelte/store';
 
 	enum SidebarMenu {
 		TimelineEdit,
@@ -36,7 +37,7 @@
 	export let setModalTimeline: (data: TimelineData, width?: number) => void;
 	export let addTimeline: (data: TimelineData) => void;
 	export let timelines: TimelineCollection;
-	export let batchActionFilters: FilterInstance[];
+	export let batchActionFilters: Writable<FilterInstance[]>;
 	export let timelineViews: Record<string, TimelineView>;
 	export let timelineViewId: string;
 

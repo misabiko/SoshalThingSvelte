@@ -13,8 +13,7 @@
 	const mode = searchParams.get('mode') as Mode ?? Mode.All;
 
 	const timelines: TimelineCollection = {
-		Follows: {
-			...defaultTimeline(),
+		Follows: defaultTimeline({
 			title: 'Discovery',
 			endpoints: [{
 				endpoint: new DiscoveryEndpoint(getCurrentPage(), mode),
@@ -31,7 +30,7 @@
 			},
 			compact: true,
 			fullMedia: 1,
-		}
+		})
 	};
 
 	const mainStorage = loadMainStorage();

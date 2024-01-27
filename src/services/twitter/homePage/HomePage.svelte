@@ -38,8 +38,7 @@
 	let favviewerMaximized = mainStorage.maximized;
 
 	const timelines: TimelineCollection = {
-		Home: {
-			...defaultTimeline(),
+		Home: defaultTimeline({
 			title: 'Home',
 			endpoints,
 			container: MasonryContainer,
@@ -50,7 +49,7 @@
 				customMethod: null,
 				reversed: true,
 			},
-		}
+		})
 	};
 
 	const timelineViews: Record<string, TimelineView> = {

@@ -56,6 +56,11 @@ export type PropType =
 	type: 'number'
 	min?: number
 	max?: number
+}
+| {
+	type: 'select'
+	options: Record<string, string>
+	multiple: boolean
 }) & {
 	optional: boolean
 };

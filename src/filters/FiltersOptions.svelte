@@ -98,6 +98,19 @@
 						max={propType.max}
 						required={!propType.optional}
 					/>
+				{:else if propType.type === 'select'}
+					<select
+						on:change='{e => $instances[index].filter.props[propName] = [...e.currentTarget.selectedOptions].map(o => o.value)}'
+						multiple={propType.multiple}
+						required={!propType.optional}
+					>
+						{#each Object.entries(propType.options) as [option, optionName]}
+							<option
+								value={option}
+								selected={instance.filter.props[propName]?.includes(option)}
+							>{optionName}</option>
+						{/each}
+					</select>
 				{:else}
 					<!--TODO Enforce required-->
 					<input

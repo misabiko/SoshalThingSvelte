@@ -6,11 +6,9 @@ import type {PixivUser} from '../article';
 import {getCachedArticlesStorage, getMarkedAsReadStorage} from '~/storages/serviceCache';
 import {getWritable, registerEndpointConstructor} from '../../service';
 import {
-	getEachPageURL,
-	getUserUrl,
+	getUserUrl, illustToArticle,
 	parseThumbnail, type PixivResponseWithWorks,
 } from './index';
-import {MediaLoadType, MediaType} from '~/articles/media';
 
 export default class BookmarkPageEndpoint extends PageEndpoint {
 	readonly name = 'Bookmark Endpoint';
@@ -120,44 +118,8 @@ export class BookmarkAPIEndpoint extends LoadableEndpoint {
 		const cachedArticlesStorage = getCachedArticlesStorage<CachedPixivArticle>(PixivService);
 
 		//For now, I'm only parsing illusts, not novels
-		return Object.values(response.body.works).map(illust => {
-			const id = parseInt(illust.id);
-			const cached = cachedArticlesStorage[id];
-
-			const medias = cached?.medias ?? getEachPageURL(illust.url, illust.pageCount).map(src => ({
-				mediaType: MediaType.Image,
-				src,
-				ratio: null,
-				queueLoadInfo: MediaLoadType.Thumbnail,
-				offsetX: null,
-				offsetY: null,
-				cropRatio: null,
-			}));
-			const liked = cached?.liked ?? false;
-			const bookmarked = illust.bookmarkData !== null;
-
-			return {
-				type: 'normal',
-				article: new PixivArticle(
-					id,
-					medias,
-					illust.title,
-					{
-						id: parseInt(illust.userId),
-						url: getUserUrl(illust.userId),
-						username: illust.userName,
-						name: illust.userName,
-						avatarUrl: avatarHighRes(illust.profileImageUrl),
-					},
-					new Date(illust.createDate),
-					markedAsReadStorage,
-					illust,
-					liked,
-					bookmarked,
-					cached?.medias !== undefined,
-				),
-			};
-		});
+		return Object.values(response.body.works)
+			.map(illust => illustToArticle(illust, markedAsReadStorage, cachedArticlesStorage));
 	}
 
 	matchParams(params: any): boolean {

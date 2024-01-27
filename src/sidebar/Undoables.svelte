@@ -6,11 +6,11 @@
 	export let setModalTimeline: (data: TimelineData, width?: number) => void;
 
 	function modalTimeline() {
-		setModalTimeline({
-			...defaultTimeline(get(undoables).map(u => u.articleIdPair)),
+		setModalTimeline(defaultTimeline({
+			articles: get(undoables).map(u => u.articleIdPair),
 			title: 'Undoables',
 			filters: [],
-		});
+		}));
 	}
 </script>
 

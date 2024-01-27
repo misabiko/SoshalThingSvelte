@@ -14,8 +14,7 @@
 	import {SortMethod} from '~/sorting';
 
 	const timelines: TimelineCollection = {
-		User: {
-			...defaultTimeline(),
+		User: defaultTimeline({
 			title: 'User',
 			endpoints: [{
 				endpoint: new UserAPIEndpoint(getUserId()),
@@ -32,7 +31,7 @@
 			},
 			compact: true,
 			fullMedia: 1,
-		}
+		})
 	};
 
 	const mainStorage = loadMainStorage();

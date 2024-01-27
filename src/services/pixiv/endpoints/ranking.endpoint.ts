@@ -63,7 +63,7 @@ export class RankingAPIEndpoint extends LoadableEndpoint {
 		const markedAsReadStorage = getMarkedAsReadStorage(PixivService);
 		const cachedArticlesStorage = getCachedArticlesStorage<CachedPixivArticle>(PixivService);
 
-		return response.contents.map(c => {
+		const articles = response.contents.map(c => {
 			const cached = cachedArticlesStorage[c.illust_id];
 
 			const medias: ArticleMedia[] = cached?.medias ?? [{
@@ -98,8 +98,12 @@ export class RankingAPIEndpoint extends LoadableEndpoint {
 					c.is_bookmarked,
 					cached?.medias !== undefined,
 				),
-			};
+			} satisfies ArticleWithRefs;
 		});
+
+		articles.reverse();
+
+		return articles;
 	}
 
 	matchParams(params: any): boolean {

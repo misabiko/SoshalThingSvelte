@@ -32,7 +32,7 @@ export type TimelineData = {
 	rtl: boolean
 	// TODO Add option to set flex-grow: 1 instead of fixed width
 	width: number
-	filters: FilterInstance[]
+	filters: Writable<FilterInstance[]>
 	sortInfo: SortInfo
 	animatedAsGifs: boolean
 	muteVideos: boolean
@@ -50,20 +50,29 @@ export type TimelineData = {
 	separateMedia: boolean
 };
 
-export function defaultTimeline(articles: ArticleIdPair[] = []): TimelineData {
+type TimelineDataPartial = Partial<Omit<TimelineData,
+	| 'addedIdPairs'
+	| 'articles'
+	| 'articlesOrder'
+	| 'filters'
+	| 'showAllMediaArticles'
+> & {
+	articles: ArticleIdPair[]
+	filters: FilterInstance[]
+	articlesOrder: string[]
+	showAllMediaArticles: Set<string>
+}>;
+
+export function defaultTimeline(data: TimelineDataPartial): TimelineData {
 	return {
 		title: 'Timeline',
 		endpoints: [],
-		addedIdPairs: writable(new Set([...articles].map(getIdPairStr))),
-		articles: writable(articles),
-		articlesOrder: writable(null),
 		section: { useSection: false, count: 100 },
 		container: ColumnContainer,
 		articleView: SocialArticleView,
 		columnCount: 1,
 		rtl: false,
 		width: 1,
-		filters: defaultFilterInstances,
 		sortInfo: {
 			method: SortMethod.Date,
 			customMethod: null,
@@ -80,9 +89,14 @@ export function defaultTimeline(articles: ArticleIdPair[] = []): TimelineData {
 		mergeReposts: true,
 		showArticleCount: false,
 		maxMediaCount: 4,
-		showAllMediaArticles: writable(new Set()),
 		separateMedia: false,
 		muteVideos: false,
+		...data,
+		addedIdPairs: writable(new Set([...data.articles ?? []].map(getIdPairStr))),
+		articles: writable(data.articles ?? []),
+		articlesOrder: writable(data.articlesOrder ?? null),
+		filters: writable(data.filters ?? defaultFilterInstances),
+		showAllMediaArticles: writable(data.showAllMediaArticles ?? new Set()),
 	};
 }
 
@@ -140,8 +154,7 @@ export function newUserTimeline(serviceName: string, author: ArticleAuthor): Tim
 	if (endpointConstructor === null)
 		return null;
 
-	return {
-		...defaultTimeline(),
+	return defaultTimeline({
 		title: author.name,
 		endpoints: [{
 			endpoint: endpointConstructor(author),
@@ -171,5 +184,5 @@ export function newUserTimeline(serviceName: string, author: ArticleAuthor): Tim
 		],
 		container: MasonryContainer,
 		columnCount: 3,
-	};
+	});
 }

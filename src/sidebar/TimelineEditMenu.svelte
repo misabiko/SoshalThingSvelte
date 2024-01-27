@@ -37,10 +37,9 @@
 	function getTimelineData() {
 		switch (timelineAddType) {
 			case TimelineAddTypes.Empty:
-				return {
-					...defaultTimeline(),
+				return defaultTimeline({
 					title,
-				};
+				});
 			case TimelineAddTypes.User:
 				return newUserTimeline(userService, JSON.parse(username));
 		}

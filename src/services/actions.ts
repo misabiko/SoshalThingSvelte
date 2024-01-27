@@ -40,8 +40,15 @@ export type ArticleAction<A extends Article = Article> = (
 	color: string | null
 	count: ((article: A) => number) | null
 	index: number
-	listAsIcon: boolean
-	listAsDropdown: boolean
+	views: Partial<Record<'GalleryArticleView' | 'SocialArticleView', {
+			listAsIcon?: boolean
+			listAsDropdown?: boolean
+	}>> & {
+		default: {
+			listAsIcon: boolean
+			listAsDropdown: boolean
+		}
+	}
 };
 
 type StandardAction<A extends Article> = Omit<ArticleAction<A>, 'action' | 'href'>;
@@ -51,29 +58,37 @@ export const STANDARD_ACTIONS = {
 		key: 'like',
 		name: 'Like',
 		actionedName: 'Unlike',
-		listAsDropdown: false,
 		icon: faHeartReg,
 		actionedIcon: faHeart,
-		listAsIcon: true,
 		color: '#e0245e',
 		togglable: true,
 		disabled: null,
 		count: null,
 		index: 2,
+		views: {
+			default: {
+				listAsIcon: true,
+				listAsDropdown: false,
+			}
+		},
 	},
 	repost: {
 		key: 'repost',
 		name: 'Repost',
 		actionedName: null,
-		listAsDropdown: false,
 		icon: faRetweet,
 		actionedIcon: null,
-		listAsIcon: true,
 		color: '#17bf63',
 		togglable: false,
 		disabled: null,
 		count: null,
 		index: 1,
+		views: {
+			default: {
+				listAsIcon: true,
+				listAsDropdown: false,
+			}
+		},
 	},
 } satisfies { [key: string]: StandardAction<Article> };
 
@@ -113,8 +128,16 @@ export function getGenericActions(article: Article): ArticleAction[] {
 			color: null,
 			count: null,
 			index: 3,
-			listAsIcon: true,
-			listAsDropdown: false,
+			views: {
+				default: {
+					listAsIcon: true,
+					listAsDropdown: false,
+				},
+				GalleryArticleView: {
+					listAsIcon: false,
+					listAsDropdown: true,
+				}
+			}
 		},
 	];
 	if (article.url)
@@ -126,8 +149,16 @@ export function getGenericActions(article: Article): ArticleAction[] {
 			color: null,
 			count: null,
 			index: 6,
-			listAsIcon: true,
-			listAsDropdown: false,
+			views: {
+				default: {
+					listAsIcon: true,
+					listAsDropdown: false,
+				},
+				GalleryArticleView: {
+					listAsIcon: false,
+					listAsDropdown: true,
+				},
+			},
 		});
 	if (('fetchArticle' in getServices()[article.idPair.service])/* && !article.fetched*/)
 		genericActions.push({
@@ -143,8 +174,12 @@ export function getGenericActions(article: Article): ArticleAction[] {
 			color: null,
 			count: null,
 			index: 5,
-			listAsIcon: false,
-			listAsDropdown: true,
+			views: {
+				default: {
+					listAsIcon: false,
+					listAsDropdown: true,
+				},
+			},
 		});
 	if (article.medias.length)
 		genericActions.push({
@@ -164,8 +199,12 @@ export function getGenericActions(article: Article): ArticleAction[] {
 			color: null,
 			count: null,
 			index: 4,
-			listAsIcon: false,
-			listAsDropdown: true,
+			views: {
+				default: {
+					listAsIcon: false,
+					listAsDropdown: true,
+				},
+			},
 		});
 
 	return genericActions;

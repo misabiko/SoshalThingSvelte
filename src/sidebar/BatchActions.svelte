@@ -3,7 +3,7 @@
 	import FiltersOptions from '../filters/FiltersOptions.svelte';
 	import {type FilterInstance, useFilters} from '~/filters';
 	import type {TimelineCollection} from '~/timelines';
-	import {derived, type Readable, readonly} from 'svelte/store';
+	import {derived, type Readable, readonly, type Writable} from 'svelte/store';
 	import  {
 		type ArticleIdPair,
 		type ArticleWithRefs, flatDeriveArticle, getRootArticle,
@@ -11,7 +11,7 @@
 	import {articleAction, STANDARD_ACTIONS} from '~/services/actions';
 
 	export let timelines: TimelineCollection;
-	export let filterInstances: FilterInstance[];
+	export let filterInstances: Writable<FilterInstance[]>;
 
 	let timelineId: string = Object.keys(timelines)[0];
 	let action = 'markAsRead';
@@ -27,10 +27,10 @@
 
 	let filteredArticles: Readable<ArticleWithRefs[]>;
 	$: filteredArticles = derived(
-		articlesWithRefs,
-		articlesWithRefs => useFilters(articlesWithRefs, [
+		[articlesWithRefs, filterInstances, timelines[timelineId].filters],
+		([articlesWithRefs, filterInstances, filters]) => useFilters(articlesWithRefs, [
 			...filterInstances,
-			...(onlyListedArticles ? timelines[timelineId].filters : [])
+			...(onlyListedArticles ? filters : [])
 		])
 	);
 
@@ -51,7 +51,7 @@
 </label>
 
 <div class='block'>
-	<FiltersOptions timelineId={null} bind:instances={filterInstances}/>
+	<FiltersOptions timelineId={null} instances={filterInstances}/>
 </div>
 
 <label class='field'>

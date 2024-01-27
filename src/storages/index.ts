@@ -12,11 +12,10 @@ import MasonryContainer from '~/containers/MasonryContainer.svelte';
 import SocialArticleView from '~/articles/social/SocialArticleView.svelte';
 import GalleryArticleView from '~/articles/gallery/GalleryArticleView.svelte';
 import {getServices} from '~/services/service';
-import {type FilterInstance, genericFilterTypes} from '~/filters';
+import {defaultFilterInstances, type FilterInstance, genericFilterTypes} from '~/filters';
 import type {SortInfo} from '~/sorting';
 import {SortMethod} from '~/sorting';
 import {defaultTimeline} from '~/timelines';
-import {defaultFilterInstances} from '~/filters';
 import {
 	addEndpoint,
 	Endpoint,
@@ -115,22 +114,29 @@ export function loadTimelines(): TimelineCollection {
 
 	return Object.fromEntries(Object.entries(storage).map(([id, t]) => {
 		const defaulted: TimelineStorage = {
-			...DEFAULT_TIMELINE_STORAGE,
+			...({
+				title: 'Timeline',
+				endpoints: [],
+				filters: defaultFilterInstances,
+				sortInfo: {
+					method: null,
+					reversed: false,
+				}
+			}),
 			...t,
 		};
 
 		const endpoints: TimelineEndpoint[] = [];
 		for (const endpointStorage of defaulted.endpoints) {
-			const endpoint = parseAndLoadEndpoint(endpointStorage);
-			if (endpoint !== undefined && !endpoints.find(e => e.name === endpoint.name))
-				endpoints.push(endpoint);
-		}
+				const endpoint = parseAndLoadEndpoint(endpointStorage);
+				if (endpoint !== undefined && !endpoints.find(e => e.name === endpoint.name))
+					endpoints.push(endpoint);
+			}
 
 		defaulted.filters = parseFilters(defaulted.filters ?? []);
 
-		//TODO Do wee need the ?? if defaulted has the values?
-		return [id, {
-			...defaultTimeline(),
+		//TODO Try to avoid defaulted, while passing tests
+		const timeline = defaultTimeline({
 			title: defaulted.title,
 			endpoints,
 			section: defaulted.section ?? {
@@ -157,7 +163,9 @@ export function loadTimelines(): TimelineCollection {
 			showArticleCount: defaulted.showArticleCount ?? false,
 			maxMediaCount: defaulted.maxMediaCount ?? 4,
 			separateMedia: defaulted.separateMedia ?? false,
-		}];
+		});
+
+		return [id, timeline];
 	}));
 }
 
@@ -170,7 +178,7 @@ export function updateTimelinesStorage(timelines: TimelineCollection) {
 		endpoints: endpointsToStorage(t.endpoints),
 		columnCount: t.columnCount,
 		width: t.width,
-		filters: t.filters,
+		filters: get(t.filters),
 		sortInfo: sortInfoToStorage(t.sortInfo),
 		compact: t.compact,
 		fullMedia: t.fullMedia,
@@ -476,16 +484,6 @@ type TimelineStorage = {
 	showArticleCount?: boolean
 	maxMediaCount?: number | null
 	separateMedia?: boolean
-};
-
-const DEFAULT_TIMELINE_STORAGE: TimelineStorage = {
-	title: 'Timeline',
-	endpoints: [],
-	filters: defaultFilterInstances,
-	sortInfo: {
-		method: null,
-		reversed: false,
-	}
 };
 
 type EndpointStorage = {

@@ -16,7 +16,7 @@
 	import type {FilterInstance} from './filters';
 	import {getRootArticle} from './articles';
 	import {updateTimelinesStorage} from '~/storages';
-	import {get} from 'svelte/store';
+	import {get, type Writable, writable} from 'svelte/store';
 	import {FetchType, getServices} from './services/service';
 	import {fetchExtension} from './services/extension';
 
@@ -50,7 +50,7 @@
 	let modalTimeline: TimelineData | null = null;
 	let modalTimelineActive = false;
 
-	let batchActionFilters: FilterInstance[] = [];
+	let batchActionFilters: Writable<FilterInstance[]> = writable([]);
 
 	setContext('isInjected', isInjected);
 	let showSidebar = !isInjected && favviewerMaximized !== true;

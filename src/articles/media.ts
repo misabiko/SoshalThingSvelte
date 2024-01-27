@@ -1,20 +1,19 @@
 export type ArticleMedia = (
 | {
-	src: string
-	ratio: ValidRatio | null
 	queueLoadInfo: MediaLoadType.DirectLoad | MediaLoadType.Thumbnail
-	mediaType: MediaType
 	thumbnail?: never
 	loaded?: never
-} | {
-	src: string
-	ratio: ValidRatio | null
+}
+| {
 	queueLoadInfo: MediaLoadType.LazyLoad
-	mediaType: MediaType
 	thumbnail: ArticleThumbnail | null
 	loaded: boolean
 }
 ) & {
+	src: string
+	mediaType: MediaType
+	//Height divided by width
+	ratio: ValidRatio | null
 	cropRatio: ValidRatio | null
 	offsetX: string | null
 	offsetY: string | null

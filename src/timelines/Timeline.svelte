@@ -13,7 +13,7 @@
 	import {getRootArticle, idPairEqual} from '~/articles';
 	import {fetchArticle, getWritable} from '~/services/service';
 	import {addArticlesToTimeline, type FullscreenInfo, type TimelineData} from './index';
-	import {keepArticle} from '~/filters';
+	import {type FilterInstance, keepArticle} from '~/filters';
 	import {compare, SortMethod} from '~/sorting';
 	import type {ContainerProps} from '~/containers';
 	import TimelineHeader from './TimelineHeader.svelte';
@@ -42,15 +42,15 @@
 	let articlesOrder = readonly(data.articlesOrder);
 
 	let showAllMediaArticles = data.showAllMediaArticles;
+	let filters = data.filters;
 
 	let preOrderArticles: Readable<Record<string, ArticleProps>>;
 	$: {
 		//Get flat article ref store array per idPair, derive each then discard the refs, then add props for each
-		preOrderArticles = derived($articleIdPairs
-				.map(idPair => derived(flatDeriveArticle(idPair), articles => articles[0])),
+		preOrderArticles = derived([filters, ...$articleIdPairs.map(idPair => derived(flatDeriveArticle(idPair), articles => articles[0]))], ([filters, ...articles]) =>
 			//Might have to give in to using .find if we want to keep duplicate articles
-			articles => Object.fromEntries(articles
-				.flatMap((a, i) => addPropsRoot(a.getArticleWithRefs(), i))
+			Object.fromEntries(articles
+				.flatMap((a, i) => addPropsRoot(a.getArticleWithRefs(), i, filters))
 				.map(a => [getIdServiceMediaStr(a), a]))
 		);
 	}
@@ -114,12 +114,12 @@
 		return articleProps;
 	});
 
-	function addPropsRoot(articleWithRefs: ArticleWithRefs, index: number): ArticleProps[] {
+	function addPropsRoot(articleWithRefs: ArticleWithRefs, index: number, filters: FilterInstance[]): ArticleProps[] {
 		if (data.separateMedia) {
 			switch (articleWithRefs.type) {
 				case 'normal':
 				case 'quote': {
-					const articleProps = addProps(articleWithRefs, index);
+					const articleProps = addProps(articleWithRefs, index, filters);
 					if (articleProps.type === 'reposts' || articleProps.type === 'repost')
 						throw new Error('addProps({type: normal|quote}) returned a repost');
 
@@ -132,8 +132,8 @@
 						: [articleProps];
 				}
 				case 'repost': {
-					const splitReposted = addPropsRoot(articleWithRefs.reposted, index);
-					const {filteredOut, nonKeepFilters} = useFilters(articleWithRefs, index);
+					const splitReposted = addPropsRoot(articleWithRefs.reposted, index, filters);
+					const {filteredOut, nonKeepFilters} = useFilters(articleWithRefs, index, filters);
 					return splitReposted.map(reposted => ({
 						type: 'reposts',
 						reposts: [articleWithRefs.article],
@@ -150,12 +150,12 @@
 					};
 			}
 		} else {
-			return [addProps(articleWithRefs, index)];
+			return [addProps(articleWithRefs, index, filters)];
 		}
 	}
 
-	function addProps(articleWithRefs: ArticleWithRefs, index: number): ArticleProps {
-		const {filteredOut, nonKeepFilters} = useFilters(articleWithRefs, index);
+	function addProps(articleWithRefs: ArticleWithRefs, index: number, filters: FilterInstance[]): ArticleProps {
+		const {filteredOut, nonKeepFilters} = useFilters(articleWithRefs, index, filters);
 
 		switch (articleWithRefs.type) {
 			case 'normal':
@@ -171,7 +171,7 @@
 					reposts: [articleWithRefs.article],
 					filteredOut,
 					nonKeepFilters,
-					reposted: addProps(articleWithRefs.reposted, index),
+					reposted: addProps(articleWithRefs.reposted, index, filters),
 					mediaIndex: null,
 				} as ArticleProps;
 			case 'quote':
@@ -179,7 +179,7 @@
 					...articleWithRefs,
 					filteredOut,
 					nonKeepFilters,
-					quoted: addProps(articleWithRefs.quoted, index),
+					quoted: addProps(articleWithRefs.quoted, index, filters),
 					mediaIndex: null,
 				} as ArticleProps;
 			case 'reposts':
@@ -187,11 +187,11 @@
 		}
 	}
 
-	function useFilters(articleWithRefs: ArticleWithRefs, index: number) {
-		// const filteredOut =  !data.filters.every(f => !f.enabled || ((keepArticle(articleWithRefs, index, f.filter) ?? !f.inverted) !== f.inverted));
+	function useFilters(articleWithRefs: ArticleWithRefs, index: number, filters: FilterInstance[]) {
+		// const filteredOut =  !filters.every(f => !f.enabled || ((keepArticle(articleWithRefs, index, f.filter) ?? !f.inverted) !== f.inverted));
 		//Caching filters for debugging, could return to boolean later
 		const nonKeepFilters = [];
-		for (const instance of data.filters) {
+		for (const instance of filters) {
 			if (!(!instance.enabled || (keepArticle(articleWithRefs, index, instance.filter) ?? !instance.inverted) !== instance.inverted))
 				nonKeepFilters.push(instance);
 		}
@@ -369,7 +369,7 @@
 		data.articles.set(
 			get(articles)
 				.filter((a, i) =>
-					data.filters.every(f =>
+					$filters.every(f =>
 						!f.enabled || (keepArticle(a, i, f.filter) !== f.inverted)
 					)
 				)

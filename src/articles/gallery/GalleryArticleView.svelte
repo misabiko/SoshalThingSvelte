@@ -39,9 +39,9 @@
 	let actions: [ArticleAction[], ArticleAction[]] = [...Object.values(getServices()[rootArticle.idPair.service].articleActions), ...getGenericActions(rootArticle)]
 		.sort((a, b) => a.index - b.index)
 		.reduce(([icons, dropdown], action) => {
-			if (action.listAsIcon)
+			if (action.views.GalleryArticleView?.listAsIcon ?? action.views.default.listAsIcon)
 				icons.push(action);
-			if (action.listAsDropdown)
+			if (action.views.GalleryArticleView?.listAsDropdown ?? action.views.default.listAsDropdown)
 				dropdown.push(action);
 			return [icons, dropdown];
 		}, [[], []] as [ArticleAction[], ArticleAction[]]);
@@ -230,14 +230,6 @@
 						</a>
 					{/if}
 				{/each}
-				{#if actualArticle.url}
-					<a
-						class='dropdown-item'
-						href='{ actualArticle.url }'
-					>
-						External Link
-					</a>
-				{/if}
 				<button class='dropdown-item' on:click={onLogData}>
 					Log Data
 				</button>

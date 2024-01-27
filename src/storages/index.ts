@@ -12,7 +12,7 @@ import MasonryContainer from '~/containers/MasonryContainer.svelte';
 import SocialArticleView from '~/articles/social/SocialArticleView.svelte';
 import GalleryArticleView from '~/articles/gallery/GalleryArticleView.svelte';
 import {getServices} from '~/services/service';
-import {type FilterInstance, genericFilterTypes} from '~/filters';
+import {defaultFilterInstances, type FilterInstance, genericFilterTypes} from '~/filters';
 import type {SortInfo} from '~/sorting';
 import {SortMethod} from '~/sorting';
 import {defaultTimeline} from '~/timelines';
@@ -113,22 +113,56 @@ export function loadTimelines(): TimelineCollection {
 	}
 
 	return Object.fromEntries(Object.entries(storage).map(([id, t]) => {
+		const defaulted: TimelineStorage = {
+			...({
+				title: 'Timeline',
+				endpoints: [],
+				filters: defaultFilterInstances,
+				sortInfo: {
+					method: null,
+					reversed: false,
+				}
+			}),
+			...t,
+		};
+
 		const endpoints: TimelineEndpoint[] = [];
-		if (t.endpoints) {
-			for (const endpointStorage of t.endpoints) {
+		for (const endpointStorage of defaulted.endpoints) {
 				const endpoint = parseAndLoadEndpoint(endpointStorage);
 				if (endpoint !== undefined && !endpoints.find(e => e.name === endpoint.name))
 					endpoints.push(endpoint);
 			}
-		}
 
+		defaulted.filters = parseFilters(defaulted.filters ?? []);
+
+		//TODO Try to avoid defaulted, while passing tests
 		const timeline = defaultTimeline({
-			...t,
+			title: defaulted.title,
 			endpoints,
-			filters: parseFilters(t.filters ?? []),
-			container: parseContainer(t.container),
-			articleView: parseArticleView(t.articleView),
-			sortInfo: t.sortInfo ? parseSortInfo(t.sortInfo) : undefined,
+			section: defaulted.section ?? {
+				useSection: false,
+				count: 100
+			},
+			container: parseContainer(defaulted.container),
+			articleView: parseArticleView(defaulted.articleView),
+			columnCount: defaulted.columnCount ?? 1,
+			rtl: defaulted.rtl ?? false,
+			width: defaulted.width ?? 1,
+			filters: defaulted.filters,
+			sortInfo: parseSortInfo(defaulted.sortInfo),
+			animatedAsGifs: defaulted.animatedAsGifs ?? false,
+			muteVideos: defaulted.muteVideos ?? false,
+			scrollSpeed: defaulted.scrollSpeed ?? 3,
+			hideText: defaulted.hideText ?? false,
+			compact: defaulted.compact ?? false,
+			fullMedia: defaulted.fullMedia ?? 0,
+			hideQuoteMedia: defaulted.hideQuoteMedia ?? false,
+			shouldLoadMedia: defaulted.shouldLoadMedia ?? true,
+			hideFilteredOutArticles: defaulted.hideFilteredOutArticles ?? true,
+			mergeReposts: defaulted.mergeReposts ?? true,
+			showArticleCount: defaulted.showArticleCount ?? false,
+			maxMediaCount: defaulted.maxMediaCount ?? 4,
+			separateMedia: defaulted.separateMedia ?? false,
 		});
 
 		return [id, timeline];

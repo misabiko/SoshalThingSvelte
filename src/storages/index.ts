@@ -16,7 +16,6 @@ import {type FilterInstance, genericFilterTypes} from '~/filters';
 import type {SortInfo} from '~/sorting';
 import {SortMethod} from '~/sorting';
 import {defaultTimeline} from '~/timelines';
-import {defaultFilterInstances} from '~/filters';
 import {
 	addEndpoint,
 	Endpoint,
@@ -114,49 +113,25 @@ export function loadTimelines(): TimelineCollection {
 	}
 
 	return Object.fromEntries(Object.entries(storage).map(([id, t]) => {
-		const defaulted: TimelineStorage = {
-			...DEFAULT_TIMELINE_STORAGE,
-			...t,
-		};
-
 		const endpoints: TimelineEndpoint[] = [];
-		for (const endpointStorage of defaulted.endpoints) {
-			const endpoint = parseAndLoadEndpoint(endpointStorage);
-			if (endpoint !== undefined && !endpoints.find(e => e.name === endpoint.name))
-				endpoints.push(endpoint);
+		if (t.endpoints) {
+			for (const endpointStorage of t.endpoints) {
+				const endpoint = parseAndLoadEndpoint(endpointStorage);
+				if (endpoint !== undefined && !endpoints.find(e => e.name === endpoint.name))
+					endpoints.push(endpoint);
+			}
 		}
 
-		defaulted.filters = parseFilters(defaulted.filters ?? []);
-
-		//TODO Do wee need the ?? if defaulted has the values?
-		return [id, defaultTimeline({
-			title: defaulted.title,
+		const timeline = defaultTimeline({
+			...t,
 			endpoints,
-			section: defaulted.section ?? {
-				useSection: false,
-				count: 100
-			},
-			container: parseContainer(defaulted.container),
-			articleView: parseArticleView(defaulted.articleView),
-			columnCount: defaulted.columnCount ?? 1,
-			rtl: defaulted.rtl ?? false,
-			width: defaulted.width ?? 1,
-			filters: defaulted.filters,
-			sortInfo: parseSortInfo(defaulted.sortInfo),
-			animatedAsGifs: defaulted.animatedAsGifs ?? false,
-			muteVideos: defaulted.muteVideos ?? false,
-			scrollSpeed: defaulted.scrollSpeed ?? 3,
-			hideText: defaulted.hideText ?? false,
-			compact: defaulted.compact ?? false,
-			fullMedia: defaulted.fullMedia ?? 0,
-			hideQuoteMedia: defaulted.hideQuoteMedia ?? false,
-			shouldLoadMedia: defaulted.shouldLoadMedia ?? true,
-			hideFilteredOutArticles: defaulted.hideFilteredOutArticles ?? true,
-			mergeReposts: defaulted.mergeReposts ?? true,
-			showArticleCount: defaulted.showArticleCount ?? false,
-			maxMediaCount: defaulted.maxMediaCount ?? 4,
-			separateMedia: defaulted.separateMedia ?? false,
-		})];
+			filters: parseFilters(t.filters ?? []),
+			container: parseContainer(t.container),
+			articleView: parseArticleView(t.articleView),
+			sortInfo: t.sortInfo ? parseSortInfo(t.sortInfo) : undefined,
+		});
+
+		return [id, timeline];
 	}));
 }
 
@@ -475,16 +450,6 @@ type TimelineStorage = {
 	showArticleCount?: boolean
 	maxMediaCount?: number | null
 	separateMedia?: boolean
-};
-
-const DEFAULT_TIMELINE_STORAGE: TimelineStorage = {
-	title: 'Timeline',
-	endpoints: [],
-	filters: defaultFilterInstances,
-	sortInfo: {
-		method: null,
-		reversed: false,
-	}
 };
 
 type EndpointStorage = {

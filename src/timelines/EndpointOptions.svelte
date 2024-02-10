@@ -1,9 +1,17 @@
 <script lang='ts'>
 	import {get} from 'svelte/store';
-	import {getServices} from '~/services/service';
-	import type {TimelineData} from './index';
-	import {endpoints, everyRefreshType, RefreshType} from '~/services/endpoints';
+	import {addArticles, getServices} from '~/services/service';
+	import {type TimelineData, type TimelineEndpoint} from './index';
+	import {
+		addEndpointArticlesToTimeline, Endpoint,
+		endpoints,
+		everyRefreshType,
+		LoadableEndpoint,
+		LoadablePageEndpoint,
+		RefreshType
+	} from '~/services/endpoints';
 	import {updateTimelinesStorageEndpoints} from '~/storages';
+	import {getRootArticle} from '~/articles';
 
 	export let timelineId: string | null;
 	export let data: TimelineData;
@@ -62,6 +70,51 @@
 	};
 
 	//TODO Add auto refresh option
+
+	async function loadRandomPage(timelineEndpoint: TimelineEndpoint) {
+			let endpoint: Endpoint;
+
+		if (timelineEndpoint.name !== undefined)
+			endpoint = get(endpoints[timelineEndpoint.name]);
+		else
+			endpoint = timelineEndpoint.endpoint;
+
+		if (!(endpoint instanceof LoadableEndpoint || endpoint instanceof LoadablePageEndpoint))
+			throw new Error('Endpoint is not loadable');
+		if (endpoint.lastPage === null)
+			throw new Error('Endpoint does not have a last page');
+
+		//TODO Have a loadPage(pageNum) function, also keep track of loaded pages
+		endpoint.currentPage = Math.floor(Math.random() * endpoint.lastPage);
+		console.log('Loading page', endpoint.currentPage);
+
+		let articles;
+		try {
+			articles = await endpoint.refresh(RefreshType.Refresh);
+		}catch (e) {
+			console.error(`Error refreshing ${endpoint.name}`, e);
+			return [];
+		}
+
+		if (!articles.length)
+			return [];
+
+		//Filtering articles the endpoint already has
+		//TODO Update current articles
+		endpoint.articleIdPairs.push(...articles
+			.map(a => getRootArticle(a).idPair)
+			.filter(idPair => !endpoint.articleIdPairs
+				.some(pair =>
+					pair.service === idPair.service &&
+					pair.id === idPair.id,
+				)
+			)
+		);
+
+		addArticles(false, ...articles);
+
+		await addEndpointArticlesToTimeline(endpoint.name, articles, RefreshType.Refresh);
+	}
 </script>
 
 <style>
@@ -90,6 +143,10 @@
 					/>
 				</label>
 			{/each}
+
+			{#if (endpoint instanceof LoadablePageEndpoint || endpoint instanceof LoadableEndpoint) && endpoint.lastPage}
+				<button on:click='{() => loadRandomPage(timelineEndpoint)}'>Load Random</button>
+			{/if}
 
 			<button on:click='{() => removeEndpoint(i)}'>Remove</button>
 		</li>

@@ -98,6 +98,29 @@
 						max={propType.max}
 						required={!propType.optional}
 					/>
+				{:else if propType.type === 'order'}
+					<select
+						value="{instance.filter.props[propName]?.comparator ?? '='}"
+						on:change='{e => $instances[index].filter.props[propName].comparator = e.currentTarget.value}'
+						required={true}
+					>
+						{#each ['=', '!=', '>', '>=', '<', '<='] as comparator}
+							<option value={comparator}>{comparator}</option>
+						{/each}
+					</select>
+					<input
+						type='number'
+						value="{instance.filter.props[propName].value ?? ''}"
+						on:change="{e => {
+							if (propType.optional && e.currentTarget.value === '')
+								delete $instances[index].filter.props[propName].value;
+							else
+								$instances[index].filter.props[propName].value = Number(e.currentTarget.value);
+						}}"
+						min={propType.min}
+						max={propType.max}
+						required={true}
+					/>
 				{:else if propType.type === 'select'}
 					<select
 						on:change='{e => $instances[index].filter.props[propName] = [...e.currentTarget.selectedOptions].map(o => o.value)}'

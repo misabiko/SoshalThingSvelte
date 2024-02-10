@@ -54,6 +54,36 @@ export const TwitterService: Service<TwitterArticle> = {
 			case 'retweeted':
 				return (articleWithRefToArray(articleWithRefs) as TwitterArticle[])
 					.some(a => a.retweeted);
+			case 'likes':
+				switch (filter.props.compare.comparator) {
+					case '=':
+						return (getRootArticle(articleWithRefs) as TwitterArticle).likeCount === filter.props.compare.value;
+					case '>':
+						return (getRootArticle(articleWithRefs) as TwitterArticle).likeCount > filter.props.compare.value;
+					case '>=':
+						return (getRootArticle(articleWithRefs) as TwitterArticle).likeCount >= filter.props.compare.value;
+					case '<':
+						return (getRootArticle(articleWithRefs) as TwitterArticle).likeCount < filter.props.compare.value;
+					case '<=':
+						return (getRootArticle(articleWithRefs) as TwitterArticle).likeCount <= filter.props.compare.value;
+					default:
+						throw new Error('Unknown comparator: ' + filter.props.compare.comparator);
+				}
+			case 'retweets':
+				switch (filter.props.compare.comparator) {
+					case '=':
+						return (getRootArticle(articleWithRefs) as TwitterArticle).retweetCount === filter.props.compare.value;
+					case '>':
+						return (getRootArticle(articleWithRefs) as TwitterArticle).retweetCount > filter.props.compare.value;
+					case '>=':
+						return (getRootArticle(articleWithRefs) as TwitterArticle).retweetCount >= filter.props.compare.value;
+					case '<':
+						return (getRootArticle(articleWithRefs) as TwitterArticle).retweetCount < filter.props.compare.value;
+					case '<=':
+						return (getRootArticle(articleWithRefs) as TwitterArticle).retweetCount <= filter.props.compare.value;
+					default:
+						throw new Error('Unknown comparator: ' + filter.props.compare.comparator);
+				}
 			default:
 				throw new Error('Unknown filter type: ' + filter.type);
 		}
@@ -98,6 +128,62 @@ export const TwitterService: Service<TwitterArticle> = {
 			invertedName: 'Not deleted',
 			props: {},
 		},
+		likes: {
+			type: 'likes',
+			name: 'Likes',
+			invertedName: 'Likes',
+			props: {
+				compare: {
+					type: 'order',
+					optional: false,
+					min: 0,
+				}
+			},
+		},
+		retweets: {
+			type: 'retweets',
+			name: 'Retweets',
+			invertedName: 'Retweets',
+			props: {
+				compare: {
+					type: 'order',
+					optional: false,
+					min: 0,
+				}
+			},
+		},
+	},
+	defaultFilter(filterType: string) {
+		switch (filterType) {
+			case 'likes':
+				return {
+					type: 'likes',
+					service: 'Twitter',
+					props: {
+						compare: {
+							comparator: '>=',
+							value: 0,
+						}
+					},
+				};
+			case 'retweets':
+				return {
+					type: 'retweets',
+					service: 'Twitter',
+					props: {
+						compare: {
+							comparator: '>=',
+							value: 0,
+						}
+					},
+				};
+			default:
+				return {
+					type: filterType,
+					service: 'Gelbooru',
+					props: {},
+				};
+		}
 	},
 	isOnDomain: globalThis.window?.location?.hostname === 'twitter.com'
 		|| globalThis.window?.location?.hostname === 'x.com',

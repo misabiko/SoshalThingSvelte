@@ -43,14 +43,26 @@ export function getRatio(width: number, height: number): ValidRatio {
 }
 
 export enum MediaType {
-	Image,
-	Video,
-	VideoGif,
-	Gif,
+	Image = 'Image',
+	Video = 'Video',
+	VideoGif = 'VideoGif',
+	Gif = 'Gif',
 }
 
 export enum MediaLoadType {
 	DirectLoad = 'DirectLoad',
 	Thumbnail = 'Thumbnail',
 	LazyLoad = 'LazyLoad',
+}
+
+export function extensionToMediaType(extension: string): MediaType {
+	switch (extension) {
+		case 'mp4':
+		case 'webm':
+			return MediaType.Video;
+		case 'gif':
+			return MediaType.Gif;
+		default:
+			return MediaType.Image;
+	}
 }

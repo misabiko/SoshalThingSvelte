@@ -154,7 +154,7 @@ export type BookmarkData = {
 export type Illust = {
 	id: string
 	title: string
-	illustType: number //enum
+	illustType: IllustType
 	xRestrict: number
 	restrict: number
 	sl: number
@@ -191,12 +191,28 @@ export type ZoneConfig = {
 	'500x500': { url: string }
 };
 
+export enum IllustType {
+	Illust = 0,
+	// Manga = 1,?
+	Ugoira = 2,
+}
+
 export function illustToArticle(illust: Illust, markedAsReadStorage: string[], cachedArticlesStorage: Record<string, CachedPixivArticle | undefined>): ArticleWithRefs {
 	const id = parseInt(illust.id);
 	const cached = cachedArticlesStorage[id];
 
+	let mediaType: MediaType;
+	switch (illust.illustType) {
+		case IllustType.Ugoira:
+			mediaType = MediaType.Gif;
+			break;
+		default:
+			mediaType = MediaType.Image;
+			break;
+	}
+
 	const medias = cached?.medias ?? getEachPageURL(illust.url, illust.pageCount).map((src, i) => ({
-		mediaType: MediaType.Image,
+		mediaType,
 		src,
 		ratio: i === 0 ? illust.height / illust.width : null,
 		queueLoadInfo: MediaLoadType.Thumbnail,

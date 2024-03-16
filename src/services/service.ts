@@ -1,7 +1,7 @@
 import type Article from '~/articles';
-import type { ArticleRefIdPair } from '~/articles';
-import type { ArticleAuthor } from '~/articles';
-import type { ArticleId, ArticleIdPair, ArticleWithRefs, ArticleProps } from '~/articles';
+import type {ArticleRefIdPair} from '~/articles';
+import type {ArticleAuthor} from '~/articles';
+import type {ArticleId, ArticleIdPair, ArticleWithRefs, ArticleProps} from '~/articles';
 import {articleWithRefToArray, getRootArticle} from '~/articles';
 import {get, type Readable, readonly, type Writable} from 'svelte/store';
 import {writable} from 'svelte/store';
@@ -12,8 +12,13 @@ import type {Filter, FilterInfo} from '~/filters';
 import type {ArticleAction} from './actions';
 import {fetchExtension} from './extension';
 import type {ComponentType} from 'svelte';
+import type {TimelineTemplate} from '~/timelines';
+import {getServiceStorage} from '~/storages';
 
 const services: { [name: string]: Service<any> } = {};
+
+(window as any).soshalthing ??= {};
+(window as any).soshalthing.services = services;
 
 export interface Service<A extends Article = Article> {
 	readonly name: string
@@ -23,9 +28,12 @@ export interface Service<A extends Article = Article> {
 	loadArticle: ((id: string) => Promise<ArticleWithRefs | null>) | null
 	articleActions: { [name: string]: ArticleAction<A> }
 	requestImageLoad?: (id: ArticleId, index: number) => void
-	getCachedArticles?: () => {[id: string]: object}
+	getCachedArticles?: () => { [id: string]: object }
+
 	keepArticle(articleWithRefs: ArticleWithRefs | ArticleProps, index: number, filter: Filter): boolean
+
 	defaultFilter(filterType: string): Filter
+
 	filterTypes: Record<string, FilterInfo>
 	sortMethods: Record<string, SortMethodInfo>
 	//Might have to move to per-endpoint
@@ -33,18 +41,20 @@ export interface Service<A extends Article = Article> {
 	fetch: (url: RequestInfo | URL, init?: RequestInit) => Promise<any>
 	isOnDomain: boolean | null
 	settings: ComponentType | null
+	//TODO Update from storage
+	timelineTemplates: Record<string, TimelineTemplate>
 }
 
 export type FetchInfo =
-| {
+	| {
 	type: FetchType.OnDomainOnly
 	tabInfo?: never
 }
-| {
+	| {
 	type: FetchType.Extension
 	tabInfo?: never
 }
-| {
+	| {
 	type: FetchType.Tab
 	tabInfo: {
 		tabId: Writable<number | null>
@@ -79,7 +89,7 @@ export function addArticles(ignoreRefs: boolean, ...articlesWithRefs: ArticleWit
 				a.update(article);
 				return a;
 			});
-		}else {
+		} else {
 			//https://github.com/microsoft/TypeScript/issues/46395
 			service.articles[article.idPair.id as string] = [writable(article), article.refs];
 		}
@@ -93,7 +103,10 @@ export function registerService(service: Service<any>) {
 }
 
 //Kinda wack typing
-export function registerEndpointConstructor(endpoint: (new (...args: any[]) => Endpoint) & { constructorInfo: EndpointConstructorInfo, service: string }) {
+export function registerEndpointConstructor(endpoint: (new (...args: any[]) => Endpoint) & {
+	constructorInfo: EndpointConstructorInfo
+	service: string
+}) {
 	services[endpoint.service].endpointConstructors[endpoint.constructorInfo.name] = endpoint.constructorInfo;
 }
 
@@ -173,25 +186,37 @@ export interface FetchingService<A extends Article = Article> {
 	fetchTimeout: undefined | number
 }
 
-export function newService<A extends Article = Article>(name: string): Service<A> {
+export function newService<A extends Article = Article>(data: Partial<Service<A>> & { name: string }): Service<A> {
+	const storage = getServiceStorage(data.name);
+	data.timelineTemplates ??= {};
+	if (storage.timelineTemplates !== undefined)
+		for (const t in storage.timelineTemplates) {
+			if (storage.timelineTemplates[t].filters !== undefined) {
+				storage.timelineTemplates[t].filters = writable(storage.timelineTemplates[t].filters);
+			}
+			data.timelineTemplates[t] = storage.timelineTemplates[t];
+		}
+	delete storage.timelineTemplates;
+
 	return {
-		name,
 		articles: {},
 		endpointConstructors: {},
 		userEndpoint: null,
 		loadArticle: null,
 		articleActions: {},
-		keepArticle() { return true; },
+		keepArticle() {
+			return true;
+		},
 		defaultFilter(filterType: string) {
 			return {
 				type: filterType,
-				service: name,
+				service: data.name,
 				props: {},
-			};
+			} satisfies Filter;
 		},
 		filterTypes: {},
 		sortMethods: {},
-		fetchInfo: { type: FetchType.OnDomainOnly },
+		fetchInfo: {type: FetchType.OnDomainOnly},
 		async fetch(url, init) {
 			if (this.isOnDomain) {
 				const response = await fetch(url, init);
@@ -200,7 +225,7 @@ export function newService<A extends Article = Article>(name: string): Service<A
 					return await response.json();
 				else
 					return await response.text();
-			}else if (this.fetchInfo.type === FetchType.Extension) {
+			} else if (this.fetchInfo.type === FetchType.Extension) {
 				const response = await fetchExtension('extensionFetch', {
 					soshalthing: true,
 					//TODO Use Content-Type to determine fetchJson or fetchText
@@ -213,7 +238,7 @@ export function newService<A extends Article = Article>(name: string): Service<A
 					return JSON.parse(response as string);
 				else
 					return response;
-			}else if (this.fetchInfo.type === FetchType.Tab) {
+			} else if (this.fetchInfo.type === FetchType.Tab) {
 				let tabId = get(this.fetchInfo.tabInfo.tabId);
 				if (tabId === null) {
 					this.fetchInfo.tabInfo.tabId.set(tabId = await fetchExtension('getTabId', {
@@ -231,19 +256,30 @@ export function newService<A extends Article = Article>(name: string): Service<A
 						fetchOptions: init
 					}
 				});
-			}else {
+			} else {
 				throw new Error('Service is not on domain and has no tab info');
 			}
 		},
 		isOnDomain: null,
 		settings: null,
+		timelineTemplates: {},
+
+		...data,
+		...storage,
 	};
 }
 
-export function newFetchingService<A extends Article = Article>(): Omit<FetchingService<A>, 'fetchArticle'> {
+export function newFetchingService<A extends Article = Article>(
+	data: Partial<FetchingService<A>>
+		& { fetchArticle: (store: Writable<A>) => Promise<void> }
+		& Service<A>
+): FetchingService<A>
+	& { fetchArticle: (store: Writable<A>) => Promise<void> }
+	& Service<A> {
 	return {
 		fetchedArticles: new Set(),
 		fetchedArticleQueue: 0,
 		fetchTimeout: undefined,
+		...data,
 	};
 }

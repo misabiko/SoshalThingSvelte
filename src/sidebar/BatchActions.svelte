@@ -51,7 +51,10 @@
 </label>
 
 <div class='block'>
-	<FiltersOptions timelineId={null} instances={filterInstances}/>
+	<FiltersOptions
+		onInstancesUpdate='{() => {}}'
+		instances={filterInstances}
+	/>
 </div>
 
 <label class='field'>

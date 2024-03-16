@@ -81,7 +81,7 @@
 				{/if}
 			</p>
 		{/if}
-		{#if !timelineProps.hideQuoteMedia}
+		{#if !timelineProps.hideQuoteMedia && $article.medias.length}
 			<SocialMedia
 					{idPair}
 					{timelineProps}

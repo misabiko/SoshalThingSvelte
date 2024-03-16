@@ -9,7 +9,7 @@ import {
 	getActualArticle,
 	getRootArticle
 } from '~/articles';
-import type {Filter} from '~/filters';
+import {defaultFilterInstances, type Filter} from '~/filters';
 import {
 	type FavoriteResponse,
 	type Instruction,
@@ -21,10 +21,12 @@ import {getCookie, getServiceStorage} from '~/storages';
 import {fetchExtension} from '~/services/extension';
 import {get, writable} from 'svelte/store';
 import ServiceSettings from './ServiceSettings.svelte';
+import MasonryContainer from '~/containers/MasonryContainer.svelte';
+import {SortMethod} from '~/sorting';
 
 //TODO Twitter conversation timeline
-export const TwitterService: Service<TwitterArticle> = {
-	...newService('Twitter'),
+export const TwitterService: Service<TwitterArticle> = newService({
+	name: 'Twitter',
 	loadArticle,
 	articleActions: {
 		[STANDARD_ACTIONS.like.key]: {
@@ -196,7 +198,31 @@ export const TwitterService: Service<TwitterArticle> = {
 		}
 	},
 	settings: ServiceSettings,
-};
+	timelineTemplates: {
+		home: {
+			title: 'Home',
+			container: MasonryContainer,
+			animatedAsGifs: true,
+			sortInfo: {
+				method: SortMethod.Date,
+				customMethod: null,
+				reversed: true,
+			},
+			filters: writable([
+				...defaultFilterInstances,
+				{
+					filter: {
+						type: 'liked',
+						service: 'Twitter',
+						props: {},
+					},
+					enabled: true,
+					inverted: true,
+				}
+			])
+		}
+	}
+});
 
 registerService(TwitterService);
 

@@ -4,15 +4,11 @@
 	import {genericFilterTypes} from './index';
 	import {defaultFilter} from './index';
 	import {getServices} from '~/services/service';
-	import {updateTimelinesStorageValue} from '~/storages';
 	import type {Writable} from 'svelte/store';
 
-	export let timelineId: string | null;
+	export let onInstancesUpdate: (i: FilterInstance[]) => void;
 	export let instances: Writable<FilterInstance[]>;
-	$: {
-		if (timelineId !== null)
-			updateTimelinesStorageValue(timelineId, 'filters', $instances);
-	}
+	$: onInstancesUpdate($instances);
 
 	const serviceFilterTypes: {
 		service: string

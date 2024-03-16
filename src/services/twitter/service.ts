@@ -199,7 +199,7 @@ export const TwitterService: Service<TwitterArticle> = newService({
 	},
 	settings: ServiceSettings,
 	timelineTemplates: {
-		home: {
+		main: {
 			title: 'Home',
 			container: MasonryContainer,
 			animatedAsGifs: true,
@@ -208,18 +208,6 @@ export const TwitterService: Service<TwitterArticle> = newService({
 				customMethod: null,
 				reversed: true,
 			},
-			filters: writable([
-				...defaultFilterInstances,
-				{
-					filter: {
-						type: 'liked',
-						service: 'Twitter',
-						props: {},
-					},
-					enabled: true,
-					inverted: true,
-				}
-			])
 		}
 	}
 });

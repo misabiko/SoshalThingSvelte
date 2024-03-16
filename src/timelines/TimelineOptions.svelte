@@ -57,14 +57,9 @@
 	const template = data.serviceTemplate !== null
 		? getServices()[data.serviceTemplate.service].timelineTemplates[data.serviceTemplate.templateId]
 		: null;
-	const templateFilters = template?.filters ?? null;
-	currentLayer.subscribe(() => {
-		console.log({
-			serviceTemplate: data.serviceTemplate !== null ? getServices()[data.serviceTemplate.service].timelineTemplates : null,
-			timeline: get(data.filters),
-			template: templateFilters ? get(templateFilters) : null,
-		});
-	});
+	let templateFilters = template?.filters ?? null;
+	if (templateFilters === null && template !== null)
+		template.filters = templateFilters = writable(structuredClone(get(data.filters)));
 </script>
 
 <style>

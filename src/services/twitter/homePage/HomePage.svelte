@@ -38,15 +38,13 @@
 
 	const timelines: TimelineCollection = {
 		Home: defaultTimeline({
-				serviceTemplate: {
-					service: 'Twitter',
-					templateId: 'home'
-				},
-				endpoints,
-				columnCount: favviewerMaximized ? 4 : 2,
+			endpoints,
+			columnCount: favviewerMaximized ? 4 : 2,
+			serviceTemplate: {
+				service: TwitterService.name,
+				templateId: 'main',
 			},
-			TwitterService.timelineTemplates.home,
-		)
+		})
 	};
 
 	const timelineViews: Record<string, TimelineView> = {

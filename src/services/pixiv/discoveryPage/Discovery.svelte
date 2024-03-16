@@ -4,10 +4,9 @@
 	import {getCurrentPage} from '~/services/pixiv/endpoints';
 	import {everyRefreshType} from '~/services/endpoints';
 	import portal from '~/usePortal';
-	import MasonryContainer from '~/containers/MasonryContainer.svelte';
-	import {SortMethod} from '~/sorting';
 	import {loadMainStorage} from '~/storages';
 	import SoshalThing from '~/SoshalThing.svelte';
+	import {PixivService} from '~/services/pixiv/service';
 
 	const searchParams = new URLSearchParams(window.location.search);
 	const mode = searchParams.get('mode') as Mode ?? Mode.All;
@@ -20,16 +19,10 @@
 				refreshTypes: everyRefreshType,
 				filters: [],
 			}],
-			container: MasonryContainer,
-			columnCount: 4,
-			animatedAsGifs: true,
-			sortInfo: {
-				method: SortMethod.Id,
-				customMethod: null,
-				reversed: true,
+			serviceTemplate: {
+				service: PixivService.name,
+				templateId: 'main',
 			},
-			compact: true,
-			fullMedia: 1,
 		})
 	};
 

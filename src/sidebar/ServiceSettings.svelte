@@ -14,6 +14,8 @@
 			matchUrl: service.fetchInfo.tabInfo.matchUrl,
 		}));
 	}
+
+	//TODO Add option to reset template storage
 </script>
 
 <style>

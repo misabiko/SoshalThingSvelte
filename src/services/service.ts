@@ -194,7 +194,10 @@ export function newService<A extends Article = Article>(data: Partial<Service<A>
 			if (storage.timelineTemplates[t].filters !== undefined) {
 				storage.timelineTemplates[t].filters = writable(storage.timelineTemplates[t].filters);
 			}
-			data.timelineTemplates[t] = storage.timelineTemplates[t];
+			data.timelineTemplates[t] = {
+				...data.timelineTemplates[t],
+				...storage.timelineTemplates[t],
+			};
 		}
 	delete storage.timelineTemplates;
 

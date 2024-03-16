@@ -11,8 +11,8 @@
     import { everyRefreshType } from '~/services/endpoints';
     import UserTweetsAPI, { TimelineType } from '~/services/twitter/endpoints/domainEndpoints/UserTweetsAPI.endpoint';
     import ColumnContainer from '~/containers/ColumnContainer.svelte';
-    import { SortMethod } from '~/sorting';
     import SidebarActivator from '../SidebarActivator.svelte';
+	import {TwitterService} from '~/services/twitter/service';
 
 	const split = location.pathname.split('/');
 	const username = split[1];
@@ -53,12 +53,9 @@
 			title: username,
 			endpoints,
 			container: favviewerMaximized ? MasonryContainer : ColumnContainer,
-			columnCount: 4,
-			animatedAsGifs: true,
-			sortInfo: {
-				method: SortMethod.Date,
-				customMethod: null,
-				reversed: true,
+			serviceTemplate: {
+				service: TwitterService.name,
+				templateId: 'main',
 			},
 		})
 	};

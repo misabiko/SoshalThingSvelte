@@ -76,7 +76,8 @@ export type TimelineTemplate = Partial<Omit<TimelineData,
 	showAllMediaArticles: Set<string>
 }>;
 
-export function defaultTimeline(data: TimelineDataPartial, template: TimelineTemplate | Record<string, never> = {}): TimelineData {
+export function defaultTimeline(data: TimelineDataPartial): TimelineData {
+	const template = data.serviceTemplate ? getServices()[data.serviceTemplate.service].timelineTemplates[data.serviceTemplate.templateId] : {};
 	return {
 		title: 'Timeline',
 		serviceTemplate: null,

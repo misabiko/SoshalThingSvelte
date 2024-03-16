@@ -9,15 +9,17 @@ import {
 	registerService,
 	type Service
 } from '../service';
-import {get, type Writable} from 'svelte/store';
+import {get, writable, type Writable} from 'svelte/store';
 import {type ArticleIdPair, type ArticleWithRefs, articleWithRefToArray} from '~/articles';
 import {STANDARD_ACTIONS} from '../actions';
 import {getServiceStorage} from '~/storages';
 import {getRatio, MediaLoadType} from '~/articles/media';
 import {faFaceSmile} from '@fortawesome/free-solid-svg-icons';
-import type {Filter} from '~/filters';
+import {defaultFilterInstances, type Filter} from '~/filters';
 import ServiceSettings from './ServiceSettings.svelte';
 import {updateCachedArticlesStorage} from '~/storages/serviceCache';
+import MasonryContainer from '~/containers/MasonryContainer.svelte';
+import {SortMethod} from '~/sorting';
 
 export const PixivService: PixivServiceType = {
 	...newFetchingService({
@@ -152,7 +154,21 @@ export const PixivService: PixivServiceType = {
 			fetchInfo: {
 				//Pixiv's images don't allow CORS
 				type: FetchType.OnDomainOnly,
-			}
+			},
+			timelineTemplates: {
+				main: {
+					container: MasonryContainer,
+					columnCount: 4,
+					animatedAsGifs: true,
+					sortInfo: {
+						method: SortMethod.Id,
+						customMethod: null,
+						reversed: true,
+					},
+					compact: true,
+					fullMedia: 1,
+				}
+			},
 		}),
 		async fetchArticle(store: Writable<PixivArticle>) {
 			const article = get(store);

@@ -40,16 +40,6 @@
 		}
 	});
 
-	//Sloppy to make sure landscape single images aren't forced to square aspect ratio
-	let aspectRatio: number | undefined;
-	$: //if ((compact ?? timelineProps.compact) && ($article.medias.length === 1 || mediaIndex !== null) && ($article.medias[0].ratio ?? 1) < 1) {
-		aspectRatio = 1 / ($article.medias[0]?.ratio ?? 1);
-	// }
-	// let aspectRatioThumbnail: number | undefined;
-	// $: //if ((compact ?? timelineProps.compact) && ($article.medias.length === 1 || mediaIndex !== null) && ($article.medias[0].thumbnail?.ratio ?? 1) < 1) {
-	// 	aspectRatioThumbnail = 1 / ($article.medias[0]?.thumbnail?.ratio ?? 1);
-	// // }
-
 	let medias: [ArticleMedia, number][];
 	$: medias = mediaIndex === null
 		? $article.medias.slice(0, !$showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined)
@@ -139,6 +129,7 @@
 <div class='socialMedia' class:socialMediaCompact='{compact ?? timelineProps.compact}' bind:this={divRef}>
 	{#each medias as [media, index] (index)}
 		{@const isLoading = $loadingStates[index] === LoadingState.Loading}
+		{@const aspectRatio = 1 / (media.ratio ?? 1)}
 		{#if $loadingStates[index] === LoadingState.NotLoaded}
 			<div class='imagesHolder' class:socialMediaFull='{index < timelineProps.fullMedia}' style:aspect-ratio={aspectRatio}>
 				<div class='imgPlaceHolder' style:aspect-ratio='{1 / (media.ratio ?? 1)}' style:display='none'></div>

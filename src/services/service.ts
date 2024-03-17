@@ -17,8 +17,10 @@ import {getServiceStorage} from '~/storages';
 
 const services: { [name: string]: Service<any> } = {};
 
-(window as any).soshalthing ??= {};
-(window as any).soshalthing.services = services;
+if (globalThis.window) {
+	(globalThis.window as any).soshalthing ??= {};
+	(globalThis.window as any).soshalthing.services = services;
+}
 
 export interface Service<A extends Article = Article> {
 	readonly name: string

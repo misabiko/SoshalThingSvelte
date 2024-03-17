@@ -1,6 +1,6 @@
 <script lang='ts'>
-	import {FetchType, type Service} from '../services/service';
-	import {fetchExtension} from '../services/extension';
+	import {FetchType, type Service} from '~/services/service';
+	import {fetchExtension} from '~/services/extension';
 
 	export let service: Service;
 	let tabId = service.fetchInfo.tabInfo?.tabId;

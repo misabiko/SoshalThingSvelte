@@ -9,13 +9,13 @@ import {
 	registerService,
 	type Service
 } from '../service';
-import {get, writable, type Writable} from 'svelte/store';
+import {get, type Writable} from 'svelte/store';
 import {type ArticleIdPair, type ArticleWithRefs, articleWithRefToArray} from '~/articles';
 import {STANDARD_ACTIONS} from '../actions';
 import {getServiceStorage} from '~/storages';
 import {getRatio, MediaLoadType} from '~/articles/media';
 import {faFaceSmile} from '@fortawesome/free-solid-svg-icons';
-import {defaultFilterInstances, type Filter} from '~/filters';
+import type {Filter} from '~/filters';
 import ServiceSettings from './ServiceSettings.svelte';
 import {updateCachedArticlesStorage} from '~/storages/serviceCache';
 import MasonryContainer from '~/containers/MasonryContainer.svelte';

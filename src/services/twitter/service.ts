@@ -9,7 +9,7 @@ import {
 	getActualArticle,
 	getRootArticle
 } from '~/articles';
-import {defaultFilterInstances, type Filter} from '~/filters';
+import type {Filter} from '~/filters';
 import {
 	type FavoriteResponse,
 	type Instruction,

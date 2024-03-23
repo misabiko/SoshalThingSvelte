@@ -3,13 +3,7 @@ import {PixivService} from '~/services/pixiv/service';
 import type {ArticleWithRefs} from '~/articles';
 import {getCachedArticlesStorage, getMarkedAsReadStorage} from '~/storages/serviceCache';
 import type {CachedPixivArticle} from '~/services/pixiv/article';
-import {illustToArticle, type PixivResponseWithPage} from '~/services/pixiv/endpoints/index';
-
-export enum Mode {
-	All = 'all',
-	AllAges = 'safe',
-	R18 = 'r18'
-}
+import {illustToArticle, Mode, type PixivResponseWithPage} from '~/services/pixiv/endpoints/index';
 
 export default class DiscoveryEndpoint extends LoadableEndpoint {
 	readonly name = 'Pixiv Discovery Endpoint';

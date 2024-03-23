@@ -162,7 +162,7 @@ export const everyRefreshType = new Set([
 	RefreshType.LoadTop,
 ]);
 
-type ParamType = string | number | boolean;
+type ParamType = string | number | boolean | null;
 
 //Format specific to Twitter
 export type RateLimitInfo = {

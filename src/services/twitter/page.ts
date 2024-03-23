@@ -63,7 +63,7 @@ export function parseHTMLArticle(article: HTMLElement): ArticleWithRefs | null {
 			0,
 			false,
 			0,
-			article,
+			[article],
 		),
 	};
 }

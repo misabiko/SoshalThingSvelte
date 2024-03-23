@@ -68,7 +68,7 @@ export function parseThumbnail(element: Element, markedAsReadStorage: string[], 
 			user,
 			undefined,
 			markedAsReadStorage,
-			element,
+			[element],
 			liked,
 			bookmarked,
 			cached?.medias !== undefined,
@@ -219,15 +219,43 @@ export function illustToArticle(illust: Illust, markedAsReadStorage: string[], c
 			break;
 	}
 
-	const medias = cached?.medias ?? getEachPageURL(illust.url, illust.pageCount).map((src, i) => ({
-		mediaType,
-		src,
-		ratio: i === 0 ? illust.height / illust.width : null,
-		queueLoadInfo: MediaLoadType.Thumbnail,
-		offsetX: null,
-		offsetY: null,
-		cropRatio: null,
-	} satisfies ArticleMedia));
+	const medias = cached?.medias ?? getEachPageURL(illust.url, illust.pageCount).map((src, i) => {
+		//TODO Try loading image and trying different extension on fail
+		// if (mediaType === MediaType.Gif) {
+			return {
+				mediaType,
+				src,
+				ratio: i === 0 ? illust.height / illust.width : null,
+				queueLoadInfo: MediaLoadType.Thumbnail,
+				offsetX: null,
+				offsetY: null,
+				cropRatio: null,
+			} satisfies ArticleMedia;
+		// }else {
+		// 	const fullSrc = new URL(src);
+		// 	fullSrc.pathname = fullSrc.pathname.replace(/\/img-master\//, '/img-original/');
+		// 	fullSrc.pathname = fullSrc.pathname.replace(/_square1200/, '');
+		// 	console.log(src + '\n' + fullSrc.toString());
+		// 	const ratio = i === 0 ? illust.height / illust.width : null;
+		// 	return {
+		// 		mediaType,
+		// 		src: fullSrc.toString(),
+		// 		ratio,
+		// 		queueLoadInfo: MediaLoadType.LazyLoad,
+		// 		offsetX: null,
+		// 		offsetY: null,
+		// 		cropRatio: null,
+		// 		loaded: false,
+		// 		thumbnail: {
+		// 			src,
+		// 			ratio,
+		// 			offsetX: null,
+		// 			offsetY: null,
+		// 			cropRatio: null,
+		// 		},
+		// 	} satisfies ArticleMedia;
+		// }
+	});
 	const liked = cached?.liked ?? false;
 	const bookmarked = illust.bookmarkData !== null;
 
@@ -246,7 +274,7 @@ export function illustToArticle(illust: Illust, markedAsReadStorage: string[], c
 			},
 			new Date(illust.createDate),
 			markedAsReadStorage,
-			illust,
+			[illust],
 			liked,
 			bookmarked,
 			cached?.medias !== undefined,

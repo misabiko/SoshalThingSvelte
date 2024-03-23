@@ -328,11 +328,15 @@ export const PixivService: PixivServiceType = {
 				throw {message: 'No preload data', doc};
 			const preloadDataJson: PreloadData = JSON.parse(preloadData);
 			logPreloadDataTypes(preloadDataJson);
+			//TODO Try loading jpg and then png, instead of fetching through api
 			const pagesJson: PagesResponse = await PixivService.fetch(`https://www.pixiv.net/ajax/illust/${article.id}/pages`, {headers: {Accept: 'application/json'}});
 
 			store.update(a => {
 				a.liked = preloadDataJson.illust[article.id].likeData;
 				a.bookmarked = preloadDataJson.illust[article.id].bookmarkData !== null;
+				a.likeCount = preloadDataJson.illust[article.id].likeCount;
+				a.bookmarkCount = preloadDataJson.illust[article.id].bookmarkCount;
+
 				for (let i = 0; i < a.medias.length; ++i) {
 					const page = pagesJson.body[i];
 					a.medias[i] = {
@@ -354,6 +358,7 @@ export const PixivService: PixivServiceType = {
 					};
 				}
 
+				a.rawSource.push(preloadDataJson/*, pagesJson*/);
 				a.fetched = true;
 				PixivService.fetchedArticles.delete(article.idPair.id);
 

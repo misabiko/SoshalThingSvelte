@@ -93,7 +93,7 @@ export class RankingAPIEndpoint extends LoadableEndpoint {
 					},
 					new Date(c.illust_upload_timestamp),
 					markedAsReadStorage,
-					c,
+					[c],
 					liked,
 					c.is_bookmarked,
 					cached?.medias !== undefined,

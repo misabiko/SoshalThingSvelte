@@ -17,7 +17,7 @@ export default class TwitterNotificationArticle extends Article {
 		markedAsRead: boolean,
 		markedAsReadStorage: string[],
 		refs: ArticleRefIdPair | null,
-		rawSource: any,
+		rawSource: any[],
 	) {
 		super({
 			id,

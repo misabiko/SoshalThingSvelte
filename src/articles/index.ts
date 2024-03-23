@@ -24,7 +24,7 @@ export default abstract class Article {
 	readonly refs: ArticleRefIdPair | null;
 
 	fetched: boolean;
-	rawSource: any;
+	rawSource: any[];
 
 	protected constructor(params: {
 		id: ArticleId
@@ -37,7 +37,7 @@ export default abstract class Article {
 		markedAsReadStorage: string[]
 		refs?: ArticleRefIdPair | null
 		fetched?: boolean
-		rawSource?: any
+		rawSource?: any[]
 	}) {
 		this.text = params.text;
 		this.textHtml = params.textHtml;
@@ -46,7 +46,7 @@ export default abstract class Article {
 		this.markedAsRead = params.markedAsRead || params.markedAsReadStorage.includes(params.id.toString());
 		this.refs = params.refs ?? null;
 		this.fetched = params.fetched ?? false;
-		this.rawSource = params.rawSource;
+		this.rawSource = params.rawSource ?? [];
 
 		this.idPair = {
 			service: (this.constructor as typeof Article).service,

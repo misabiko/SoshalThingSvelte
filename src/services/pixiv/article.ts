@@ -17,7 +17,7 @@ export default class PixivArticle extends Article {
 		readonly author: PixivUser,
 		public creationTime: Date | undefined,
 		markedAsReadStorage: string[],
-		rawSource: any | undefined,
+		rawSource: any[],
 		public liked: boolean,
 		public bookmarked: boolean | null,
 		fetched: boolean,
@@ -29,7 +29,7 @@ export default class PixivArticle extends Article {
 			markedAsRead: false,
 			markedAsReadStorage,
 			text: title,
-			rawSource,
+			rawSource: rawSource,
 			fetched,
 		});
 	}

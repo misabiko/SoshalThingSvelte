@@ -171,10 +171,10 @@ export default class NotificationAPIEndpoint extends Endpoint {
 											type: 'quote',
 											quoted: quoted.article.idPair,
 										},
-										{
+										[{
 											entry,
 											notification,
-										}
+										}]
 									),
 									quoted,
 								});
@@ -191,10 +191,10 @@ export default class NotificationAPIEndpoint extends Endpoint {
 										false,
 										markedAsReads,
 										null,
-										{
+										[{
 											entry,
 											notification,
-										}
+										}]
 									),
 								});
 							}
@@ -256,10 +256,10 @@ export default class NotificationAPIEndpoint extends Endpoint {
 										type: 'quote',
 										quoted: quoted.article.idPair,
 									},
-									{
+									[{
 										entry,
 										tweet,
-									},
+									}],
 								),
 								quoted,
 							});

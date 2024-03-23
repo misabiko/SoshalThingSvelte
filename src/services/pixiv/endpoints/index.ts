@@ -132,8 +132,8 @@ export type Illust = {
 	id: string
 	title: string
 	illustType: IllustType
-	xRestrict: number
-	restrict: number
+	xRestrict: 0 | 1
+	restrict: 0 | 1
 	sl: number
 	url: string
 	description: string
@@ -154,6 +154,7 @@ export type Illust = {
 	updateDate: string
 	isUnlisted: boolean
 	isMasked: boolean
+	aiType: AIType
 	urls: {
 		//Didn't confirm those were the only sizes
 		[key in '250x250' | '360x360' | '540x540']: string
@@ -200,6 +201,9 @@ export enum IllustType {
 	// Manga = 1,?
 	Ugoira = 2,
 }
+
+//Should upgrade to enum, probably 0 | 1 | 2
+export type AIType = number;
 
 export function illustToArticle(illust: Illust, markedAsReadStorage: string[], cachedArticlesStorage: Record<string, CachedPixivArticle | undefined>): ArticleWithRefs {
 	const id = parseInt(illust.id);

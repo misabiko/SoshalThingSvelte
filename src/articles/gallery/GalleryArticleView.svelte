@@ -202,7 +202,7 @@
 				{#each actions[1] as action (action.key)}
 					{#if action.action}
 						{@const actionFunc = action.action}
-						{@const count = action.count ? action.count(rootArticle) : 0}
+						{@const count = action.count ? action.count(rootArticle) ?? 0 : 0}
 						{@const disabled = action.disabled ? action.disabled(rootArticle) : false}
 						{@const actioned = action.actioned(rootArticle)}
 						<button

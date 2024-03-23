@@ -56,6 +56,7 @@ export const TwitterService: Service<TwitterArticle> = newService({
 			case 'retweeted':
 				return (articleWithRefToArray(articleWithRefs) as TwitterArticle[])
 					.some(a => a.retweeted);
+			//TODO Add filter templates
 			case 'likes':
 				switch (filter.props.compare.comparator) {
 					case '=':
@@ -92,6 +93,7 @@ export const TwitterService: Service<TwitterArticle> = newService({
 	},
 	fetch: twitterFetch,
 	sortMethods: {
+		//TODO Add sort method templates
 		likes: {
 			name: 'Likes',
 			compare(a, b) {
@@ -182,7 +184,7 @@ export const TwitterService: Service<TwitterArticle> = newService({
 			default:
 				return {
 					type: filterType,
-					service: 'Gelbooru',
+					service: 'Twitter',
 					props: {},
 				};
 		}

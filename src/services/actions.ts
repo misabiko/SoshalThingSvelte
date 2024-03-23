@@ -38,7 +38,7 @@ export type ArticleAction<A extends Article = Article> = (
 	name: string
 	icon: IconDefinition | null
 	color: string | null
-	count: ((article: A) => number) | null
+	count: ((article: A) => number | null) | null
 	index: number
 	views: Partial<Record<'GalleryArticleView' | 'SocialArticleView', {
 			listAsIcon?: boolean

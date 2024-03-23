@@ -5,6 +5,9 @@ import type {ArticleMedia} from '~/articles/media';
 export default class PixivArticle extends Article {
 	static service = 'Pixiv';
 
+	likeCount: number | null = null;
+	bookmarkCount: number | null = null;
+
 	//TODO Add tags
 
 	constructor(
@@ -55,4 +58,6 @@ export type CachedPixivArticle = {
 	id: number
 	medias?: ArticleMedia[]
 	liked?: boolean
+	likeCount?: number
+	bookmarkCount?: number
 };

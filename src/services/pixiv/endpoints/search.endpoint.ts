@@ -96,7 +96,7 @@ export class SearchAPIEndpoint extends LoadableEndpoint {
 
 		//TODO Add popular to separate list
 
-		return response.body.illustManga.data.map(i => illustToArticle(i,	getMarkedAsReadStorage(PixivService), getCachedArticlesStorage(PixivService)));
+		return response.body.illustManga.data.map(i => illustToArticle(i, getMarkedAsReadStorage(PixivService), getCachedArticlesStorage(PixivService)));
 	}
 
 	matchParams(params: any): boolean {

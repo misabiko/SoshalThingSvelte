@@ -153,6 +153,7 @@ export const PixivService: PixivServiceType = {
 					case 'liked':
 						return (articleWithRefToArray(articleWithRefs) as PixivArticle[])
 							.some(a => a.liked);
+					//TODO Option to include null or not
 					case 'likes': {
 						const likeCount = (getRootArticle(articleWithRefs) as PixivArticle).likeCount;
 						if (likeCount === null)

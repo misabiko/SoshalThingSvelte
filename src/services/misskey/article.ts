@@ -20,7 +20,7 @@ export default class MisskeyArticle extends Article {
 		readonly author: MisskeyUser,
 		refs: ArticleRefIdPair | null,
 		markedAsReadStorage: string[],
-		rawSource: any
+		rawSource: any[]
 	) {
 		super({
 			id,
@@ -103,7 +103,7 @@ export function fromAPI(
 			author,
 			refs,
 			markedAsReadStorage,
-			note,
+			[note],
 		);
 
 	if (note.renote !== undefined) {

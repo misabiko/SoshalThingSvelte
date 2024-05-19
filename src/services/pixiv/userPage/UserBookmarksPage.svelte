@@ -6,12 +6,12 @@
 		type TimelineView,
 	} from '~/timelines';
 	import {defaultTimeline} from '~/timelines';
-	import MasonryContainer from '~/containers/MasonryContainer.svelte';
 	import {loadMainStorage} from '~/storages';
 	import {everyRefreshType} from '~/services/endpoints';
 	import portal from '~/usePortal';
 	import {BookmarkAPIEndpoint} from '~/services/pixiv/endpoints/bookmarks.endpoint';
 	import {getUserId} from '~/services/pixiv/endpoints/user.endpoint';
+	import {PixivService} from '~/services/pixiv/service';
 
 	const timelines: TimelineCollection = {
 		Bookmarks: defaultTimeline({
@@ -21,16 +21,10 @@
 				refreshTypes: everyRefreshType,
 				filters: [],
 			}],
-			container: MasonryContainer,
-			columnCount: 4,
-			animatedAsGifs: true,
-			sortInfo: {
-				method: null,
-				customMethod: null,
-				reversed: false,
+			serviceTemplate: {
+				service: PixivService.name,
+				templateId: 'main',
 			},
-			compact: true,
-			fullMedia: 1,
 		})
 	};
 

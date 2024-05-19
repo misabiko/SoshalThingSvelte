@@ -20,7 +20,7 @@ export default class TwitterArticle extends Article {
 		public likeCount: number,
 		public retweeted: boolean,
 		public retweetCount: number,
-		rawSource: any
+		rawSource: any[]
 	) {
 		super({
 			id,

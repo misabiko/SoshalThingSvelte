@@ -119,6 +119,7 @@ export class BookmarkAPIEndpoint extends LoadableEndpoint {
 
 		//For now, I'm only parsing illusts, not novels
 		return Object.values(response.body.works)
+			.filter(illust => !illust.isMasked)
 			.map(illust => illustToArticle(illust, markedAsReadStorage, cachedArticlesStorage));
 	}
 

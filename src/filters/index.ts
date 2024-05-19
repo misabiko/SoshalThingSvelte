@@ -53,7 +53,7 @@ export type PropType =
 	type: 'string' | 'boolean' | 'string[]'
 }
 | {
-	type: 'number'
+	type: 'number' | 'order'
 	min?: number
 	max?: number
 }

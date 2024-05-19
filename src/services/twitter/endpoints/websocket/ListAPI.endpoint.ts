@@ -13,7 +13,7 @@ export default class TwitterListAPIEndpoint extends WebSocketPageEndpoint {
 		super({
 			initEndpoint: name,
 			responseIncludes: '/ListLatestTweetsTimeline',
-			gotoURL: `https://twitter.com/i/lists/${listId}`,
+			gotoURL: `https://x.com/i/lists/${listId}`,
 		});
 
 		this.name = name;

@@ -1,5 +1,5 @@
 import {writable} from 'svelte/store';
-import {MAIN_STORAGE_KEY} from '../storages';
+import {MAIN_STORAGE_KEY} from '~/storages';
 
 export type ExtensionContext =
 	| {
@@ -100,13 +100,13 @@ export type ExtensionFetchResponse<T> = {
 	headers: Headers
 };
 
-export async function tryInject(elementQuery: () => Element | null, delayMs = 500): Promise<Element> {
+export async function tryInject(elementQuery: () => Element | null | undefined, delayMs = 500): Promise<Element> {
 	let attempts = 0;
 	let element: Element | null = null;
 	return new Promise((resolve, reject) => {
 		const intervalId = setInterval(() => {
 			console.log('Check if we can inject...');
-			element = elementQuery();
+			element = elementQuery() ?? null;
 			if (element !== null) {
 				clearInterval(intervalId);
 				console.log('Injecting soshalthing...');

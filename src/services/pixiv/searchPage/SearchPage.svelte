@@ -1,21 +1,23 @@
 <script lang='ts'>
 	import {defaultTimeline, defaultTimelineView, type TimelineCollection, type TimelineView} from '~/timelines';
-	import DiscoveryEndpoint from '~/services/pixiv/endpoints/discovery.endpoint';
-	import {getCurrentPage, Mode} from '~/services/pixiv/endpoints';
+	import {Mode} from '~/services/pixiv/endpoints';
+	import {SearchAPIEndpoint} from '~/services/pixiv/endpoints/search.endpoint';
+	import {getCurrentPage} from '~/services/pixiv/endpoints';
 	import {everyRefreshType} from '~/services/endpoints';
 	import portal from '~/usePortal';
 	import {loadMainStorage} from '~/storages';
 	import SoshalThing from '~/SoshalThing.svelte';
 	import {PixivService} from '~/services/pixiv/service';
 
+	const query = window.location.pathname.split('/')[3];
 	const searchParams = new URLSearchParams(window.location.search);
 	const mode = searchParams.get('mode') as Mode ?? Mode.All;
 
 	const timelines: TimelineCollection = {
 		Follows: defaultTimeline({
-			title: 'Discovery',
+			title: 'Search',
 			endpoints: [{
-				endpoint: new DiscoveryEndpoint(getCurrentPage(), mode),
+				endpoint: new SearchAPIEndpoint(query, mode, getCurrentPage()),
 				refreshTypes: everyRefreshType,
 				filters: [],
 			}],
@@ -68,12 +70,21 @@
 				overflow-y: hidden;
 				max-height: 100vh;
 			}
+
+			.charcoal-token > div > div:nth-child(3) > div > div {
+				height: 100vh;
+			}
+
+			.charcoal-token > div > div:nth-child(2), .charcoal-token > div > div:nth-child(3) > div > div > :not(.soshalthing) {
+				display: none;
+			}
 		</style>
 	{:else}
 		<style>
-			#root section ul {
+			#root section ul, .charcoal-token > div > div:nth-child(3) > div > div > div:nth-last-child(2) {
 				display: none;
 			}
+
 			.soshalthing {
 				overflow-y: visible
 			}

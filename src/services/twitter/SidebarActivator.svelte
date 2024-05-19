@@ -9,10 +9,10 @@
 	if (activatorMount === null)
 		throw new Error('Could not find activator mount');
 	const sidebarMenuButton = document.querySelector(
-		'div[data-testid="AppTabBar_More_Menu"]'
+		'*[data-testid="AppTabBar_More_Menu"]'
 	);
 	if (sidebarMenuButton === null)
-		throw new Error('Could not find sidebar menu button');
+		throw new Error('Could not find sidebar menu button with "*[data-testid=AppTabBar_More_Menu]" selector');
 
 	let hovered = false;
 

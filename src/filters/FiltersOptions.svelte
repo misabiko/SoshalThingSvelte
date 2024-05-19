@@ -4,15 +4,11 @@
 	import {genericFilterTypes} from './index';
 	import {defaultFilter} from './index';
 	import {getServices} from '~/services/service';
-	import {updateTimelinesStorageValue} from '~/storages';
 	import type {Writable} from 'svelte/store';
 
-	export let timelineId: string | null;
+	export let onInstancesUpdate: (i: FilterInstance[]) => void;
 	export let instances: Writable<FilterInstance[]>;
-	$: {
-		if (timelineId !== null)
-			updateTimelinesStorageValue(timelineId, 'filters', $instances);
-	}
+	$: onInstancesUpdate($instances);
 
 	const serviceFilterTypes: {
 		service: string
@@ -97,6 +93,29 @@
 						min={propType.min}
 						max={propType.max}
 						required={!propType.optional}
+					/>
+				{:else if propType.type === 'order'}
+					<select
+						value="{instance.filter.props[propName]?.comparator ?? '='}"
+						on:change='{e => $instances[index].filter.props[propName].comparator = e.currentTarget.value}'
+						required={true}
+					>
+						{#each ['=', '!=', '>', '>=', '<', '<='] as comparator}
+							<option value={comparator}>{comparator}</option>
+						{/each}
+					</select>
+					<input
+						type='number'
+						value="{instance.filter.props[propName].value ?? ''}"
+						on:change="{e => {
+							if (propType.optional && e.currentTarget.value === '')
+								delete $instances[index].filter.props[propName].value;
+							else
+								$instances[index].filter.props[propName].value = Number(e.currentTarget.value);
+						}}"
+						min={propType.min}
+						max={propType.max}
+						required={true}
 					/>
 				{:else if propType.type === 'select'}
 					<select

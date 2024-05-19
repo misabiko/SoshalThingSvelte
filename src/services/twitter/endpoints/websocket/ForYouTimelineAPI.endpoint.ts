@@ -12,7 +12,7 @@ export default class TwitterForYouTimelineAPIEndpoint extends WebSocketPageEndpo
 		super({
 			initEndpoint: 'TwitterForYouTimelineAPIEndpoint',
 				responseIncludes: '/HomeTimeline',
-				gotoURL: 'https://twitter.com/home',
+				gotoURL: 'https://x.com/home',
 		});
 	}
 

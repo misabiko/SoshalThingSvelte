@@ -14,7 +14,7 @@ export default class LikesAPI extends APIEndpoint<LikesResponse> {
 		super();
 
 		this.name = 'LikesAPI(' + userId + ')';
-		this.endpointPath = 'NpYLg91N41FVTp-5l4Ntow/Likes';
+		this.endpointPath = 'cBm2Rtb426W3LIWEE_FM6w/Likes';
 
 		this.params = {
 			userId,

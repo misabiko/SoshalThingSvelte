@@ -16,11 +16,11 @@ export default class TimelineAPI extends APIEndpoint<HomeTimelineResponse> {
 		switch (timelineType) {
 			case TimelineType.ForYou:
 				this.name = 'ForYouTimelineAPI';
-				this.endpointPath = 'QwrCVrjexN3CAvAAVDU5iw/HomeTimeline';
+				this.endpointPath = 'TBGRFiS6zbCjuufpVDkFGw/HomeTimeline';
 				break;
 			case TimelineType.Following:
 				this.name = 'FollowingTimelineAPI';
-				this.endpointPath = 'Qe2CCi4SE0Dvsb1TYrDfKQ/HomeLatestTimeline';
+				this.endpointPath = 'DMcXrg09aYpRMKk7PekcBg/HomeLatestTimeline';
 				break;
 			default:
 				throw new Error('Unsupported timeline type');

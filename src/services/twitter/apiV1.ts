@@ -29,7 +29,7 @@ export function articleFromV1(json: TweetResponse, isRef = false, extraTweets?: 
 		json.favorite_count,
 		json.retweeted,
 		json.retweet_count,
-		json,
+		[json],
 	);
 
 	if (

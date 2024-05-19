@@ -1,9 +1,11 @@
 <script lang='ts'>
-	import type {ArticleMedia} from '../media';
+	import {type ArticleMedia, extensionToMediaType, MediaType} from '../media';
 	import type {ArticleIdPair} from '../index';
 	import Article from '../index';
 	import {loadingStore} from '~/bufferedMediaLoading';
 	import GalleryThumbnail from './GalleryThumbnail.svelte';
+	import {faCirclePlay} from '@fortawesome/free-regular-svg-icons';
+	import Fa from 'svelte-fa';
 
 	export let actualArticle: Readonly<Article>;
 	export let mediaIndex: number;
@@ -13,6 +15,9 @@
 	export let ref;
 
 	const cropped = !!(media.offsetX || media.offsetY);
+
+	let firstMediaExtension = media.src.split('.').at(-1);
+	let isFakeGif = firstMediaExtension && media.mediaType === MediaType.Gif && extensionToMediaType(firstMediaExtension) === MediaType.Image;
 </script>
 
 <style>
@@ -28,6 +33,19 @@
 
 	.articleMediaCrop {
 		overflow-y: hidden;
+	}
+
+	.fakeGifPlayButton {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		opacity: 0.5;
+		transform: translate(-50%, -50%);
+		pointer-events: none;
+	}
+
+	:global(.fakeGifPlayButton > svg) {
+		color: grey;
 	}
 </style>
 
@@ -55,6 +73,11 @@
 				{onMediaClick}
 			/>
 		{/if}
+		{#if isFakeGif}
+			<div class='fakeGifPlayButton'>
+				<Fa icon={faCirclePlay} size='6x'/>
+			</div>
+		{/if}
 	</div>
 {:else}
 	<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
@@ -74,5 +97,8 @@
 				{media}
 				{onMediaClick}
 		/>
+	{/if}
+	{#if isFakeGif}
+		<Fa icon={faCirclePlay} size='2x' class='fakeGifPlayButton'/>
 	{/if}
 {/if}

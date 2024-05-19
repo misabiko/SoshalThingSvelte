@@ -4,7 +4,9 @@ import {newService, registerService} from '../service';
 import type {APIClient} from 'misskey-js/built/api';
 
 export const MisskeyService: MisskeyServiceType = {
-	...newService('Misskey'),
+	...newService({
+		name: 'Misskey',
+	}),
 	emojis: null, //TODO Fetch from localStorage
 };
 

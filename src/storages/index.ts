@@ -62,16 +62,22 @@ export function getServiceStorage(service: string): { [key: string]: any } {
 	return item ? JSON.parse(item) : {};
 }
 
-export function updateServiceStorage(service: string, key: string, value: any) {
+export function updateServiceStorage<V>(service: string, key: string, updater: (oldValue: V) => V) {
 	const storageKey = `${MAIN_STORAGE_KEY} ${service}`;
 	const item = localStorage.getItem(storageKey);
 	const storage = item ? JSON.parse(item) : {};
+
+	const value = updater(storage[key]);
 	if (value === undefined)
 		delete storage[key];
 	else
 		storage[key] = value;
 
 	localStorage.setItem(storageKey, JSON.stringify(storage));
+}
+
+export function setServiceStorage(service: string, key: string, value: any) {
+	updateServiceStorage(service, key, () => value);
 }
 
 export function updateMainStorage(key: string, value: any) {
@@ -199,6 +205,20 @@ export function updateTimelinesStorageValue<K extends keyof TimelineStorage>(tim
 	storage[timelineId][key] = value;
 
 	localStorage.setItem(TIMELINE_STORAGE_KEY, JSON.stringify(storage));
+}
+
+export function updateServiceTemplateStorageValue<K extends keyof TimelineStorage>(service: string, templateId: string, key: K, value: TimelineStorage[K]) {
+	updateServiceStorage(service, 'timelineTemplates', (templates: any) => {
+		templates ??= {};
+		templates[templateId] ??= {};
+
+		if (value === undefined)
+			delete templates[templateId][key];
+		else
+			templates[templateId][key] = value;
+
+		return templates;
+	});
 }
 
 export function updateTimelinesStorageEndpoints(timelineId: string, endpoints: TimelineEndpoint[]) {

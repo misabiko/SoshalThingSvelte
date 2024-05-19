@@ -6,12 +6,11 @@
 		type TimelineView
 	} from '~/timelines';
 	import {defaultTimeline} from '~/timelines';
-	import MasonryContainer from '~/containers/MasonryContainer.svelte';
 	import {loadMainStorage} from '~/storages';
     import TimelineAPI, { TimelineType } from '~/services/twitter/endpoints/domainEndpoints/TimelineAPI.endpoint';
     import { everyRefreshType } from '~/services/endpoints';
-    import { SortMethod } from '~/sorting';
     import SidebarActivator from '../SidebarActivator.svelte';
+	import {TwitterService} from '~/services/twitter/service';
 
 	let currentTimeline: TimelineType | null;
 	switch (document.querySelector('div[role="presentation"] > a[aria-selected="true"] span')!.textContent) {
@@ -39,15 +38,11 @@
 
 	const timelines: TimelineCollection = {
 		Home: defaultTimeline({
-			title: 'Home',
 			endpoints,
-			container: MasonryContainer,
 			columnCount: favviewerMaximized ? 4 : 2,
-			animatedAsGifs: true,
-			sortInfo: {
-				method: SortMethod.Date,
-				customMethod: null,
-				reversed: true,
+			serviceTemplate: {
+				service: TwitterService.name,
+				templateId: 'main',
 			},
 		})
 	};

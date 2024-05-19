@@ -70,6 +70,7 @@ export abstract class PageEndpoint extends Endpoint {
 
 export abstract class LoadablePageEndpoint extends PageEndpoint {
 	abstract currentPage: number;
+	lastPage: number | null = null;
 
 	//Need a way to add RefreshType.LoadTop if currentPage > 0
 	protected constructor(refreshTypes = new Set<RefreshType>([
@@ -107,6 +108,7 @@ export abstract class LoadablePageEndpoint extends PageEndpoint {
 //Maybe could use mixins to avoid duplicating Loadable part
 export abstract class LoadableEndpoint extends Endpoint {
 	abstract currentPage: number;
+	lastPage: number | null = null;
 
 	protected constructor(refreshTypes = new Set<RefreshType>([
 		RefreshType.RefreshStart,
@@ -160,7 +162,7 @@ export const everyRefreshType = new Set([
 	RefreshType.LoadTop,
 ]);
 
-type ParamType = string | number | boolean;
+type ParamType = string | number | boolean | null;
 
 //Format specific to Twitter
 export type RateLimitInfo = {

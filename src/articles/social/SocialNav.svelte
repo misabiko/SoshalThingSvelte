@@ -123,7 +123,7 @@
 		{#each actions[0] as action (action.key)}
 			{#if action.action}
 				{@const actionFunc = action.action}
-				{@const count = action.count ? action.count($article) : 0}
+				{@const count = action.count ? action.count($article) ?? 0 : 0}
 				{@const disabled = action.disabled ? action.disabled($article) : false}
 				{@const actioned = action.actioned($article)}
 				{@const isHovered = hoveredActions.has(action.key)}
@@ -148,7 +148,7 @@
 					{/if}
 				</button>
 			{:else}
-				{@const count = action.count ? action.count($article) : 0}
+				{@const count = action.count ? action.count($article) ?? 0 : 0}
 				{@const isHovered = hoveredActions.has(action.key)}
 				<!-- svelte-ignore a11y-mouse-events-have-key-events -->
 				<a
@@ -189,7 +189,7 @@
 			{#each actions[1] as action (action.key)}
 				{#if action.action}
 					{@const actionFunc = action.action}
-					{@const count = action.count ? action.count($article) : 0}
+					{@const count = action.count ? action.count($article) ?? 0 : 0}
 					{@const disabled = action.disabled ? action.disabled($article) : false}
 					{@const actioned = action.actioned($article)}
 					<button

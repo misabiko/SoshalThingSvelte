@@ -5,16 +5,16 @@ import {writable} from 'svelte/store';
 import {type ArticleWithRefs, getRootArticle} from '~/articles';
 import type {Filter} from '~/filters';
 
-export const TwitterNotificationService: Service<TwitterNotificationArticle> = {
-	...newService('TwitterNotification'),
+export const TwitterNotificationService: Service<TwitterNotificationArticle> = newService({
+	name: 'TwitterNotification',
 	fetch: twitterFetch,
 	isOnDomain: globalThis.window?.location?.hostname === 'twitter.com'
 		|| globalThis.window?.location?.hostname === 'x.com',
 	fetchInfo: {
 		type: FetchType.Tab,
 		tabInfo: {
-			url: 'https://twitter.com',
-			matchUrl: ['*://twitter.com/*'],
+			url: 'https://x.com',
+			matchUrl: ['*://x.com/*'],
 			tabId: writable(null),
 		}
 	},
@@ -61,6 +61,6 @@ export const TwitterNotificationService: Service<TwitterNotificationArticle> = {
 				throw new Error('Unknown filter type: ' + filter.type);
 		}
 	},
-};
+});
 
 registerService(TwitterNotificationService);

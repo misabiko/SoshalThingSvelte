@@ -5,6 +5,9 @@ import type {ArticleMedia} from '~/articles/media';
 export default class PixivArticle extends Article {
 	static service = 'Pixiv';
 
+	likeCount: number | null = null;
+	bookmarkCount: number | null = null;
+
 	//TODO Add tags
 
 	constructor(
@@ -14,7 +17,7 @@ export default class PixivArticle extends Article {
 		readonly author: PixivUser,
 		public creationTime: Date | undefined,
 		markedAsReadStorage: string[],
-		rawSource: any | undefined,
+		rawSource: any[],
 		public liked: boolean,
 		public bookmarked: boolean | null,
 		fetched: boolean,
@@ -26,7 +29,7 @@ export default class PixivArticle extends Article {
 			markedAsRead: false,
 			markedAsReadStorage,
 			text: title,
-			rawSource,
+			rawSource: rawSource,
 			fetched,
 		});
 	}
@@ -55,4 +58,6 @@ export type CachedPixivArticle = {
 	id: number
 	medias?: ArticleMedia[]
 	liked?: boolean
+	likeCount?: number
+	bookmarkCount?: number
 };

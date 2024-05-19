@@ -4,12 +4,15 @@
 	import {getReadable, getWritable} from '~/services/service';
 	import Fa from 'svelte-fa';
 	import {faImages} from '@fortawesome/free-solid-svg-icons';
-	import {type ArticleMedia, MediaType} from '../media';
+	import {type ArticleMedia, extensionToMediaType, MediaType} from '../media';
 	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
 	import {derived, type Readable} from 'svelte/store';
+	import {faCirclePlay} from '@fortawesome/free-regular-svg-icons';
 
 	export let idPair: ArticleIdPair;
 	let article = getReadable(idPair);
+	if ($article.medias.length === 0)
+		throw {message: 'Article has no media', article: $article};
 	export let mediaIndex: number | null = null;
 	export let timelineProps: TimelineArticleProps;
 	export let onMediaClick: (index: number) => void;
@@ -37,21 +40,14 @@
 		}
 	});
 
-	//Sloppy to make sure landscape single images aren't forced to square aspect ratio
-	let aspectRatio: number | undefined;
-	$: //if ((compact ?? timelineProps.compact) && ($article.medias.length === 1 || mediaIndex !== null) && ($article.medias[0].ratio ?? 1) < 1) {
-		aspectRatio = 1 / ($article.medias[0]?.ratio ?? 1);
-	// }
-	// let aspectRatioThumbnail: number | undefined;
-	// $: //if ((compact ?? timelineProps.compact) && ($article.medias.length === 1 || mediaIndex !== null) && ($article.medias[0].thumbnail?.ratio ?? 1) < 1) {
-	// 	aspectRatioThumbnail = 1 / ($article.medias[0]?.thumbnail?.ratio ?? 1);
-	// // }
-
 	let medias: [ArticleMedia, number][];
 	$: medias = mediaIndex === null
 		? $article.medias.slice(0, !$showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined)
 			.map((m, i) => [m, i])
 		: [[$article.medias[mediaIndex], mediaIndex]];
+
+	let firstMediaExtension = $article.medias[0].src.split('.').at(-1);
+	let isFakeGif = firstMediaExtension && $article.medias[0].mediaType === MediaType.Gif && extensionToMediaType(firstMediaExtension) === MediaType.Image;
 </script>
 
 <style>
@@ -115,11 +111,25 @@
 		left: 0;
 		top: 0;
 	}
+
+	.fakeGifPlayButton {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		opacity: 0.5;
+		transform: translate(-50%, -50%);
+		pointer-events: none;
+	}
+
+	:global(.fakeGifPlayButton > svg) {
+		color: grey;
+	}
 </style>
 
 <div class='socialMedia' class:socialMediaCompact='{compact ?? timelineProps.compact}' bind:this={divRef}>
 	{#each medias as [media, index] (index)}
 		{@const isLoading = $loadingStates[index] === LoadingState.Loading}
+		{@const aspectRatio = 1 / (media.ratio ?? 1)}
 		{#if $loadingStates[index] === LoadingState.NotLoaded}
 			<div class='imagesHolder' class:socialMediaFull='{index < timelineProps.fullMedia}' style:aspect-ratio={aspectRatio}>
 				<div class='imgPlaceHolder' style:aspect-ratio='{1 / (media.ratio ?? 1)}' style:display='none'></div>
@@ -145,6 +155,11 @@
 						on:load='{() => isLoading ? loadingStore.mediaLoaded($article.idPair, index) : undefined}'
 						class:articleMediaLoading={isLoading}
 				/>
+				{#if isFakeGif}
+					<div class='fakeGifPlayButton'>
+						<Fa icon={faCirclePlay} size='6x'/>
+					</div>
+				{/if}
 				{#if isLoading}
 					{#if media.thumbnail}
 						<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->

@@ -11,7 +11,7 @@ import ColumnContainer from '~/containers/ColumnContainer.svelte';
 import SocialArticleView from '~/articles/social/SocialArticleView.svelte';
 import { defaultFilterInstances } from '~/filters';
 import type { Endpoint, RefreshType } from '~/services/endpoints';
-import type { Writable } from 'svelte/store';
+import {get, type Writable} from 'svelte/store';
 import { writable } from 'svelte/store';
 import { everyRefreshType } from '~/services/endpoints';
 import MasonryContainer from '~/containers/MasonryContainer.svelte';
@@ -19,6 +19,7 @@ import { getServices } from '~/services/service';
 
 export type TimelineData = {
 	title: string
+	serviceTemplate: { service: string, templateId: string } | null
 	endpoints: TimelineEndpoint[]
 	//Keeps track of every added articles, so they're not added again once removed
 	addedIdPairs: Writable<Set<ArticleIdPairStr>>
@@ -63,9 +64,23 @@ type TimelineDataPartial = Partial<Omit<TimelineData,
 	showAllMediaArticles: Set<string>
 }>;
 
+export type TimelineTemplate = Partial<Omit<TimelineData,
+	| 'serviceTemplate'
+	| 'addedIdPairs'
+	| 'articles'
+	| 'articlesOrder'
+	| 'showAllMediaArticles'
+> & {
+	articles: ArticleIdPair[]
+	articlesOrder: string[]
+	showAllMediaArticles: Set<string>
+}>;
+
 export function defaultTimeline(data: TimelineDataPartial): TimelineData {
+	const template = data.serviceTemplate ? getServices()[data.serviceTemplate.service].timelineTemplates[data.serviceTemplate.templateId] : {};
 	return {
 		title: 'Timeline',
+		serviceTemplate: null,
 		endpoints: [],
 		section: { useSection: false, count: 100 },
 		container: ColumnContainer,
@@ -92,10 +107,12 @@ export function defaultTimeline(data: TimelineDataPartial): TimelineData {
 		separateMedia: false,
 		muteVideos: false,
 		...data,
+		...template,
 		addedIdPairs: writable(new Set([...data.articles ?? []].map(getIdPairStr))),
 		articles: writable(data.articles ?? []),
 		articlesOrder: writable(data.articlesOrder ?? null),
-		filters: writable(data.filters ?? defaultFilterInstances),
+		//TODO Reconsider copying template filters once we actually have layered settings
+		filters: writable(data.filters ?? structuredClone((template.filters ? get(template.filters) : undefined) ?? defaultFilterInstances)),
 		showAllMediaArticles: writable(data.showAllMediaArticles ?? new Set()),
 	};
 }

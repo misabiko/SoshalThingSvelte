@@ -14,5 +14,10 @@
 		"matches": [
 			"https://*.pixiv.net/discovery*"
 		]
+	},
+	"searchPage": {
+		"matches": [
+			"https://*.pixiv.net/en/tags/*"
+		]
 	}
 }

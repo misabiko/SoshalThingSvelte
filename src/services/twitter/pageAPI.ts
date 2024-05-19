@@ -93,7 +93,7 @@ export function articleFromResult(result: Result): ArticleWithRefs {
 		result.legacy.favorite_count,
 		result.legacy.retweeted,
 		result.legacy.retweet_count,
-		result,
+		[result],
 	);
 
 	if (result.legacy.retweeted_status_result !== undefined) {

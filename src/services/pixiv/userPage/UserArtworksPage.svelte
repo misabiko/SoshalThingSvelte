@@ -6,12 +6,11 @@
 		type TimelineView,
 	} from '~/timelines';
 	import {defaultTimeline} from '~/timelines';
-	import MasonryContainer from '~/containers/MasonryContainer.svelte';
 	import {loadMainStorage} from '~/storages';
 	import {getUserId, UserAPIEndpoint} from '~/services/pixiv/endpoints/user.endpoint';
 	import {everyRefreshType} from '~/services/endpoints';
 	import portal from '~/usePortal';
-	import {SortMethod} from '~/sorting';
+	import {PixivService} from '~/services/pixiv/service';
 
 	const timelines: TimelineCollection = {
 		User: defaultTimeline({
@@ -21,16 +20,10 @@
 				refreshTypes: everyRefreshType,
 				filters: [],
 			}],
-			container: MasonryContainer,
-			columnCount: 4,
-			animatedAsGifs: true,
-			sortInfo: {
-				method: SortMethod.Id,
-				customMethod: null,
-				reversed: true,
+			serviceTemplate: {
+				service: PixivService.name,
+				templateId: 'main',
 			},
-			compact: true,
-			fullMedia: 1,
 		})
 	};
 

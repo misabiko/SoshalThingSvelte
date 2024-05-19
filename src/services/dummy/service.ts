@@ -4,8 +4,8 @@ import type DummyArticle from './article';
 import type {ArticleIdPair} from '~/articles';
 import {STANDARD_ACTIONS} from '../actions';
 
-export const DummyService: Service<DummyArticle> = {
-	...newService('Dummy'),
+export const DummyService: Service<DummyArticle> = newService({
+	name: 'Dummy',
 	articleActions: {
 		[STANDARD_ACTIONS.like.key]: {
 			...STANDARD_ACTIONS.like,
@@ -18,7 +18,7 @@ export const DummyService: Service<DummyArticle> = {
 			actioned(article) { return article.reposted; },
 		},
 	},
-};
+});
 
 registerService(DummyService);
 

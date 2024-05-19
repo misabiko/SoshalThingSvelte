@@ -11,11 +11,8 @@ import UserBookmarksPage from './UserBookmarksPage.svelte';
 const path = window.location.pathname.split('/');
 if (path.length === 4 || path[4] === 'illustrations' || path[4] === 'artworks') {
 	tryInject(() => {
-		const element = document.querySelector('section > div > div > ul');
-		if (element?.children.length)
-			return element;
-		else
-			return null;
+		const thumbnail = document.querySelector('div[type="illust"]');
+		return thumbnail?.parentElement?.parentElement?.parentElement?.parentElement?.parentElement ?? null;
 	})
 	.then(element => {
 		const anchor = element.parentElement?.parentElement;

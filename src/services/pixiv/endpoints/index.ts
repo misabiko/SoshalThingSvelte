@@ -68,7 +68,7 @@ export function parseThumbnail(element: Element, markedAsReadStorage: string[], 
 			user,
 			undefined,
 			markedAsReadStorage,
-			element,
+			[element],
 			liked,
 			bookmarked,
 			cached?.medias !== undefined,
@@ -103,7 +103,7 @@ export type PixivResponse<Body> = {
 
 export type PixivResponseWithPage<Page> = PixivResponse<{
 	page: Page
-	tagTranslation: Record<string, Record<'en' | 'ko' | 'zh' | 'zh_tw' | 'romaji', string>>
+	tagTranslation: TagTranslation
 	thumbnails: {
 		illust: Illust[]
 		novel: []
@@ -120,30 +120,7 @@ export type PixivResponseWithWorks = PixivResponse<{
 	works: Record<string, Illust>
 }> & {
 	zoneConfig: ZoneConfig
-	extraData: {
-		meta: {
-			title: string
-			description: string
-			canonical: string
-			ogp: {
-				description: string
-				image: string
-				title: string
-				type: string
-			}
-			twitter: {
-				description: string
-				image: string
-				title: string
-				card: string
-			}
-			alternateLanguages: {
-				ja: string
-				en: string
-			}
-			descriptionHeader: string
-		}
-	}
+	extraData: ExtraData
 };
 
 export type BookmarkData = {
@@ -154,9 +131,9 @@ export type BookmarkData = {
 export type Illust = {
 	id: string
 	title: string
-	illustType: number //enum
-	xRestrict: number
-	restrict: number
+	illustType: IllustType
+	xRestrict: 0 | 1
+	restrict: 0 | 1
 	sl: number
 	url: string
 	description: string
@@ -177,12 +154,15 @@ export type Illust = {
 	updateDate: string
 	isUnlisted: boolean
 	isMasked: boolean
+	aiType: AIType
 	urls: {
 		//Didn't confirm those were the only sizes
 		[key in '250x250' | '360x360' | '540x540']: string
 	}
 	profileImageUrl: string
 };
+
+export type TagTranslation = Record<string, Record<'en' | 'ko' | 'zh' | 'zh_tw' | 'romaji', string>>;
 
 export type ZoneConfig = {
 	header: { url: string }
@@ -191,19 +171,91 @@ export type ZoneConfig = {
 	'500x500': { url: string }
 };
 
+export type ExtraData = {
+	meta: {
+		title: string
+		description: string
+		canonical: string
+		ogp: {
+			description: string
+			image: string
+			title: string
+			type: string
+		}
+		twitter: {
+			description: string
+			image: string
+			title: string
+			card: string
+		}
+		alternateLanguages: {
+			ja: string
+			en: string
+		}
+		descriptionHeader: string
+	}
+};
+
+export enum IllustType {
+	Illust = 0,
+	// Manga = 1,?
+	Ugoira = 2,
+}
+
+//Should upgrade to enum, probably 0 | 1 | 2
+export type AIType = number;
+
 export function illustToArticle(illust: Illust, markedAsReadStorage: string[], cachedArticlesStorage: Record<string, CachedPixivArticle | undefined>): ArticleWithRefs {
 	const id = parseInt(illust.id);
 	const cached = cachedArticlesStorage[id];
 
-	const medias = cached?.medias ?? getEachPageURL(illust.url, illust.pageCount).map((src, i) => ({
-		mediaType: MediaType.Image,
-		src,
-		ratio: i === 0 ? illust.height / illust.width : null,
-		queueLoadInfo: MediaLoadType.Thumbnail,
-		offsetX: null,
-		offsetY: null,
-		cropRatio: null,
-	} satisfies ArticleMedia));
+	let mediaType: MediaType;
+	switch (illust.illustType) {
+		case IllustType.Ugoira:
+			mediaType = MediaType.Gif;
+			break;
+		default:
+			mediaType = MediaType.Image;
+			break;
+	}
+
+	const medias = cached?.medias ?? getEachPageURL(illust.url, illust.pageCount).map((src, i) => {
+		//TODO Try loading image and trying different extension on fail
+		// if (mediaType === MediaType.Gif) {
+			return {
+				mediaType,
+				src,
+				ratio: i === 0 ? illust.height / illust.width : null,
+				queueLoadInfo: MediaLoadType.Thumbnail,
+				offsetX: null,
+				offsetY: null,
+				cropRatio: null,
+			} satisfies ArticleMedia;
+		// }else {
+		// 	const fullSrc = new URL(src);
+		// 	fullSrc.pathname = fullSrc.pathname.replace(/\/img-master\//, '/img-original/');
+		// 	fullSrc.pathname = fullSrc.pathname.replace(/_square1200/, '');
+		// 	console.log(src + '\n' + fullSrc.toString());
+		// 	const ratio = i === 0 ? illust.height / illust.width : null;
+		// 	return {
+		// 		mediaType,
+		// 		src: fullSrc.toString(),
+		// 		ratio,
+		// 		queueLoadInfo: MediaLoadType.LazyLoad,
+		// 		offsetX: null,
+		// 		offsetY: null,
+		// 		cropRatio: null,
+		// 		loaded: false,
+		// 		thumbnail: {
+		// 			src,
+		// 			ratio,
+		// 			offsetX: null,
+		// 			offsetY: null,
+		// 			cropRatio: null,
+		// 		},
+		// 	} satisfies ArticleMedia;
+		// }
+	});
 	const liked = cached?.liked ?? false;
 	const bookmarked = illust.bookmarkData !== null;
 
@@ -222,10 +274,16 @@ export function illustToArticle(illust: Illust, markedAsReadStorage: string[], c
 			},
 			new Date(illust.createDate),
 			markedAsReadStorage,
-			illust,
+			[illust],
 			liked,
 			bookmarked,
 			cached?.medias !== undefined,
 		),
 	};
+}
+
+export enum Mode {
+	All = 'all',
+	AllAges = 'safe',
+	R18 = 'r18'
 }

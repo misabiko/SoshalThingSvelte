@@ -14,7 +14,7 @@ export default class SearchAPI extends APIEndpoint<SearchTimelineResponse> {
 		super();
 
 		this.name = 'SearchAPI(' + query + ')';
-		this.endpointPath = 'Aj1nGkALq99Xg3XI0OZBtw/SearchTimeline';
+		this.endpointPath = 'Ow4YOCqr4TR1W5vDqb0HAw/SearchTimeline';
 
 		this.params = {
 			query,

@@ -15,7 +15,7 @@ export default class TwitterUserTweetsAPIEndpoint extends WebSocketPageEndpoint 
 		super({
 			initEndpoint: name,
 			responseIncludes: '/UserTweets',
-			gotoURL: 'https://twitter.com/' + username
+			gotoURL: 'https://x.com/' + username
 		});
 
 		this.name = name;

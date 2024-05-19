@@ -17,11 +17,11 @@ export default class UserTweetsAPI extends APIEndpoint<UserTweetsResponse> {
 		switch (timelineType) {
 			case TimelineType.Tweets:
 				this.name = 'UserTweetsAPI(' + username + ')';
-				this.endpointPath = 'VgitpdpNZ-RUIp5D1Z_D-A/UserTweets';
+				this.endpointPath = 'dqhyWBre4x9vdn60mIoexw/UserTweets';
 				break;
 			case TimelineType.Media:
 				this.name = 'UserMediaAPI(' + username + ')';
-				this.endpointPath = '7_ZP_xN3Bcq1I2QkK5yc2w/UserMedia';
+				this.endpointPath = 'ISn-t16yb39STOwUeKQ0pw/UserMedia';
 				break;
 			default:
 				throw new Error('Unsupported timeline type');

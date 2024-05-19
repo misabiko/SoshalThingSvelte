@@ -12,7 +12,7 @@ export default class TwitterFollowingTimelineAPIEndpoint extends WebSocketPageEn
 		super({
 			initEndpoint: 'TwitterFollowingTimelineAPIEndpoint',
 			responseIncludes: '/HomeLatestTimeline',
-			gotoURL: 'https://twitter.com/home',
+			gotoURL: 'https://x.com/home',
 		});
 	}
 

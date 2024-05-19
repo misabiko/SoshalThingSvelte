@@ -13,7 +13,7 @@ export default class TwitterUserMediaAPIEndpoint extends WebSocketPageEndpoint {
 		super({
 			initEndpoint: name,
 			responseIncludes: '/UserMedia',
-			gotoURL: `https://twitter.com/${username}/media`,
+			gotoURL: `https://x.com/${username}/media`,
 		});
 
 		this.name = name;

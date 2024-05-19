@@ -32,7 +32,7 @@ export default class NotificationAPIEndpoint extends Endpoint {
 				break;
 		}
 
-		const data: NotificationResponse = await TwitterNotificationService.fetch('https://twitter.com/i/api/2/notifications/all.json' + (cursor ? '?cursor=' + cursor : ''));
+		const data: NotificationResponse = await TwitterNotificationService.fetch('https://x.com/i/api/2/notifications/all.json' + (cursor ? '?cursor=' + cursor : ''));
 		const markedAsReads = getMarkedAsReadStorage(TwitterNotificationService);
 
 		const deleteInstructions = data.timeline.instructions.filter(i => i.removeEntries);
@@ -104,7 +104,7 @@ export default class NotificationAPIEndpoint extends Endpoint {
 							let quotedTweets;
 							if (notification.template.aggregateUserActionsV1.showAllLinkText !== undefined) {
 								//TODO Probably should put a option for this
-								const showAllResponse: NotificationResponse = await TwitterNotificationService.fetch(`https://twitter.com/i/api/2/notifications/view/${id}.json`);
+								const showAllResponse: NotificationResponse = await TwitterNotificationService.fetch(`https://x.com/i/api/2/notifications/view/${id}.json`);
 								quotedTweets = showAllResponse.timeline.instructions
 									.filter((i: any) => i.addEntries?.entries)
 									.flatMap((i: any) => i.addEntries!.entries

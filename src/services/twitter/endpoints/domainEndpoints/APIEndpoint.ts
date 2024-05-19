@@ -36,7 +36,7 @@ export default abstract class APIEndpoint<Response extends APIResponse> extends 
 			+ '&features='
 			+ encodeURIComponent(JSON.stringify(features));
 
-		const data: Response | ResponseError = await TwitterService.fetch(`https://twitter.com/i/api/graphql/${this.endpointPath}${params}`, {});
+		const data: Response | ResponseError = await TwitterService.fetch(`https://x.com/i/api/graphql/${this.endpointPath}${params}`, {});
 
 		if ('errors' in data)
 			throw new Error('Error fetching tweets:\n' + data.errors.map(e => e.message).join('\n'));
@@ -94,26 +94,29 @@ export default abstract class APIEndpoint<Response extends APIResponse> extends 
 				includePromotedContent: false,
 			},
 			features: {
+				rweb_tipjar_consumption_enabled: true,
 				responsive_web_graphql_exclude_directive_enabled: true,
 				verified_phone_label_enabled: false,
-				responsive_web_home_pinned_timelines_enabled: true,
-				creator_subscriptions_tweet_preview_api_enabled: true,
+				creator_subscriptions_tweet_preview_api_enabled: false,
 				responsive_web_graphql_timeline_navigation_enabled: true,
 				responsive_web_graphql_skip_user_profile_image_extensions_enabled: false,
+				communities_web_enable_tweet_community_results_fetch: true,
 				c9s_tweet_anatomy_moderator_badge_enabled: true,
+				articles_preview_enabled: false,
 				tweetypie_unmention_optimization_enabled: true,
 				responsive_web_edit_tweet_api_enabled: true,
 				graphql_is_translatable_rweb_tweet_is_translatable_enabled: true,
 				view_counts_everywhere_api_enabled: true,
 				longform_notetweets_consumption_enabled: true,
-				responsive_web_twitter_article_tweet_consumption_enabled: false,
+				responsive_web_twitter_article_tweet_consumption_enabled: true,
 				tweet_awards_web_tipping_enabled: false,
+				creator_subscriptions_quote_tweet_preview_enabled: false,
 				freedom_of_speech_not_reach_fetch_enabled: true,
 				standardized_nudges_misinfo: true,
 				tweet_with_visibility_results_prefer_gql_limited_actions_policy_enabled: true,
+				rweb_video_timestamps_enabled: true,
 				longform_notetweets_rich_text_read_enabled: true,
 				longform_notetweets_inline_media_enabled: true,
-				responsive_web_media_download_video_enabled: false,
 				responsive_web_enhance_cards_enabled: false,
 			}
 		};
@@ -130,13 +133,16 @@ export type APIParams = {
 		[other: string]: any
 	}
 	features: {
+		rweb_tipjar_consumption_enabled: boolean
 		responsive_web_graphql_exclude_directive_enabled: boolean
 		verified_phone_label_enabled: boolean
-		responsive_web_home_pinned_timelines_enabled: boolean
+		// responsive_web_home_pinned_timelines_enabled: boolean
 		creator_subscriptions_tweet_preview_api_enabled: boolean
 		responsive_web_graphql_timeline_navigation_enabled: boolean
 		responsive_web_graphql_skip_user_profile_image_extensions_enabled: boolean
+		communities_web_enable_tweet_community_results_fetch: boolean
 		c9s_tweet_anatomy_moderator_badge_enabled: boolean
+		articles_preview_enabled: boolean
 		tweetypie_unmention_optimization_enabled: boolean
 		responsive_web_edit_tweet_api_enabled: boolean
 		graphql_is_translatable_rweb_tweet_is_translatable_enabled: boolean
@@ -144,12 +150,13 @@ export type APIParams = {
 		longform_notetweets_consumption_enabled: boolean
 		responsive_web_twitter_article_tweet_consumption_enabled: boolean
 		tweet_awards_web_tipping_enabled: boolean
+		creator_subscriptions_quote_tweet_preview_enabled: boolean
 		freedom_of_speech_not_reach_fetch_enabled: boolean
 		standardized_nudges_misinfo: boolean
 		tweet_with_visibility_results_prefer_gql_limited_actions_policy_enabled: boolean
 		longform_notetweets_rich_text_read_enabled: boolean
 		longform_notetweets_inline_media_enabled: boolean
-		responsive_web_media_download_video_enabled: boolean
+		// responsive_web_media_download_video_enabled: boolean
 		responsive_web_enhance_cards_enabled: boolean
 
 		//SearchTimeline

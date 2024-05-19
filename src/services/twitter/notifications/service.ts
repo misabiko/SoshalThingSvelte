@@ -13,8 +13,8 @@ export const TwitterNotificationService: Service<TwitterNotificationArticle> = n
 	fetchInfo: {
 		type: FetchType.Tab,
 		tabInfo: {
-			url: 'https://twitter.com',
-			matchUrl: ['*://twitter.com/*'],
+			url: 'https://x.com',
+			matchUrl: ['*://x.com/*'],
 			tabId: writable(null),
 		}
 	},

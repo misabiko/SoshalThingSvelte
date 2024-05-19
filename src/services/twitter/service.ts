@@ -204,6 +204,7 @@ export const TwitterService: Service<TwitterArticle> = newService({
 		main: {
 			title: 'Home',
 			container: MasonryContainer,
+			columnCount: 4,
 			animatedAsGifs: true,
 			sortInfo: {
 				method: SortMethod.Date,

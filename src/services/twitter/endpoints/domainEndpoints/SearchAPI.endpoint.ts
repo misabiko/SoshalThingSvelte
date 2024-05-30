@@ -7,14 +7,12 @@ import {TwitterService} from '../../service';
 export default class SearchAPI extends APIEndpoint<SearchTimelineResponse> {
 	static service = TwitterService.name;
 	readonly name: string;
-	readonly endpointPath: string;
 	readonly params;
 
 	constructor(readonly query: string) {
-		super();
+		super('SearchTimeline');
 
 		this.name = 'SearchAPI(' + query + ')';
-		this.endpointPath = 'Ow4YOCqr4TR1W5vDqb0HAw/SearchTimeline';
 
 		this.params = {
 			query,

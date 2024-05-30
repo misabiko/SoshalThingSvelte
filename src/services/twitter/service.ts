@@ -212,7 +212,7 @@ export const TwitterService: Service<TwitterArticle> = newService({
 				reversed: true,
 			},
 		}
-	}
+	},
 });
 
 registerService(TwitterService);
@@ -302,7 +302,7 @@ export async function retweetPage(idPair: ArticleIdPair) {
 }
 
 async function pageRequest<T>(queryId: string, endpoint: string, tweetId: string): Promise<T> {
-	return await TwitterService.fetch(`https://x.com/i/api/graphql/${queryId}/${endpoint}`, {
+	return await TwitterService.fetch(`https://${location.hostname}/i/api/graphql/${queryId}/${endpoint}`, {
 		method: 'POST',
 
 		headers: {
@@ -406,7 +406,7 @@ export async function loadArticle(id: string): Promise<ArticleWithRefs | null> {
 		withArticleRichContentState: false,
 	};
 
-	const url = new URL('https://x.com/i/api/graphql/-H4B_lJDEA-O_7_qWaRiyg/TweetDetail');
+	const url = new URL(`https://${location.hostname}/i/api/graphql/-H4B_lJDEA-O_7_qWaRiyg/TweetDetail`);
 	url.searchParams.set('variables', JSON.stringify(variables));
 	url.searchParams.set('features', JSON.stringify(features));
 	url.searchParams.set('fieldToggles', JSON.stringify(fieldToggles));

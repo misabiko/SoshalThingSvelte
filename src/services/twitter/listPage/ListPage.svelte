@@ -19,14 +19,21 @@
 	let favviewerHidden = false;
 	let favviewerMaximized = mainStorage.maximized;
 
+	const endpoints = [];
+	try {
+		endpoints.push({
+			endpoint: new ListAPI(listId),
+			refreshTypes: everyRefreshType,
+			filters: [],
+		});
+	}catch(e) {
+		console.error(e);
+	}
+
 	const timelines: TimelineCollection = {
 		List: defaultTimeline({
 			title: 'List',
-			endpoints: [{
-				endpoint: new ListAPI(listId),
-				refreshTypes: everyRefreshType,
-				filters: [],
-			}],
+			endpoints,
 			columnCount: favviewerMaximized ? 4 : 2,
 			serviceTemplate: {
 				service: TwitterService.name,

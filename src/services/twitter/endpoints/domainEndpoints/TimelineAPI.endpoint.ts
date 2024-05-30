@@ -7,20 +7,17 @@ import {TwitterService} from '../../service';
 export default class TimelineAPI extends APIEndpoint<HomeTimelineResponse> {
 	static service = TwitterService.name;
 	readonly name: string;
-	readonly endpointPath: string;
 	readonly params;
 
 	constructor(readonly timelineType: TimelineType) {
-		super();
+		super(queryName[timelineType]);
 
 		switch (timelineType) {
 			case TimelineType.ForYou:
 				this.name = 'ForYouTimelineAPI';
-				this.endpointPath = 'TBGRFiS6zbCjuufpVDkFGw/HomeTimeline';
 				break;
 			case TimelineType.Following:
 				this.name = 'FollowingTimelineAPI';
-				this.endpointPath = 'DMcXrg09aYpRMKk7PekcBg/HomeLatestTimeline';
 				break;
 			default:
 				throw new Error('Unsupported timeline type');
@@ -56,6 +53,10 @@ export enum TimelineType {
 	ForYou,
 	Following,
 }
+const queryName = {
+	[TimelineType.ForYou]: 'HomeTimeline',
+	[TimelineType.Following]: 'HomeLatestTimeline',
+};
 
 type HomeTimelineResponse = {
 	data: {

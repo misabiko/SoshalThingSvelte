@@ -37,16 +37,22 @@
 	else
 		userId = JSON.parse(profileSchema).author.identifier;
 
-	const endpoints = currentTimeline === null || userId === null ? [] : [{
-		endpoint: new UserTweetsAPI(currentTimeline, username, userId),
-		refreshTypes: everyRefreshType,
-		filters: [],
-	}];
-
 	const mainStorage = loadMainStorage();
 
 	let favviewerHidden = currentTimeline === null || userId === null;
 	let favviewerMaximized = mainStorage.maximized;
+
+	const endpoints = [];
+	try {
+		if (currentTimeline !== null && userId !== null)
+			endpoints.push({
+				endpoint: new UserTweetsAPI(currentTimeline, username, userId),
+				refreshTypes: everyRefreshType,
+				filters: [],
+			});
+	}catch(e) {
+		console.error(e);
+	}
 
 	const timelines: TimelineCollection = {
 		username: defaultTimeline({

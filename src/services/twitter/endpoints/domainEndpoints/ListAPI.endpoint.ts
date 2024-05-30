@@ -7,14 +7,12 @@ import {TwitterService} from '../../service';
 export default class ListAPI extends APIEndpoint<ListLatestTweetsTimelineResponse> {
 	static service = TwitterService.name;
 	readonly name: string;
-	readonly endpointPath: string;
 	readonly params;
 
 	constructor(readonly listId: string) {
-		super();
+		super('ListLatestTweetsTimeline');
 
 		this.name = 'ListAPI(' + listId + ')';
-		this.endpointPath = 'd1mUZHaqFMxe0xHI3rVc-w/ListLatestTweetsTimeline';
 
 		this.params = {
 			listId,

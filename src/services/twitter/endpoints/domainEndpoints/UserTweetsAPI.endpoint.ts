@@ -8,20 +8,17 @@ import type {TwitterUser} from '../../article';
 export default class UserTweetsAPI extends APIEndpoint<UserTweetsResponse> {
 	static service = TwitterService.name;
 	readonly name: string;
-	readonly endpointPath: string;
 	readonly params;
 
 	constructor(readonly timelineType: TimelineType, readonly username: string, readonly userId: string) {
-		super();
+		super(queryName[timelineType]);
 
 		switch (timelineType) {
 			case TimelineType.Tweets:
 				this.name = 'UserTweetsAPI(' + username + ')';
-				this.endpointPath = 'dqhyWBre4x9vdn60mIoexw/UserTweets';
 				break;
 			case TimelineType.Media:
 				this.name = 'UserMediaAPI(' + username + ')';
-				this.endpointPath = 'ISn-t16yb39STOwUeKQ0pw/UserMedia';
 				break;
 			default:
 				throw new Error('Unsupported timeline type');
@@ -82,6 +79,11 @@ export enum TimelineType {
 	Media,
 	//Likes,
 }
+
+const queryName = {
+	[TimelineType.Tweets]: 'UserTweets',
+	[TimelineType.Media]: 'UserMedia',
+};
 
 type UserTweetsResponse = {
 	data: {

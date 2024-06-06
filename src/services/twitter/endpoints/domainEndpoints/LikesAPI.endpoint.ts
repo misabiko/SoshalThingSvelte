@@ -49,7 +49,7 @@ export default class LikesAPI extends APIEndpoint<LikesResponse> {
 	};
 }
 
-registerEndpointConstructor(LikesAPI);
+// registerEndpointConstructor(LikesAPI);
 
 type LikesResponse = {
 	data: {

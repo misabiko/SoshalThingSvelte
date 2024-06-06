@@ -45,7 +45,7 @@ export default class ListAPI extends APIEndpoint<ListLatestTweetsTimelineRespons
 	};
 }
 
-registerEndpointConstructor(ListAPI);
+// registerEndpointConstructor(ListAPI);
 
 type ListLatestTweetsTimelineResponse = {
 	data: {

@@ -50,7 +50,7 @@ export default class SearchAPI extends APIEndpoint<SearchTimelineResponse> {
 	};
 }
 
-registerEndpointConstructor(SearchAPI);
+// registerEndpointConstructor(SearchAPI);
 
 type SearchTimelineResponse = {
 	data: {

@@ -70,8 +70,8 @@ export default class UserTweetsAPI extends APIEndpoint<UserTweetsResponse> {
 	};
 }
 
-registerEndpointConstructor(UserTweetsAPI);
-getServices()[TwitterService.name].userEndpoint = user => new UserTweetsAPI(TimelineType.Media, user.username, (user as TwitterUser).id);
+// registerEndpointConstructor(UserTweetsAPI);
+// getServices()[TwitterService.name].userEndpoint = user => new UserTweetsAPI(TimelineType.Media, user.username, (user as TwitterUser).id);
 
 export enum TimelineType {
 	Tweets,

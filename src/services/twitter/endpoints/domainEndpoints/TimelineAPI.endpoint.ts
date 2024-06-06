@@ -47,7 +47,7 @@ export default class TimelineAPI extends APIEndpoint<HomeTimelineResponse> {
 	};
 }
 
-registerEndpointConstructor(TimelineAPI);
+// registerEndpointConstructor(TimelineAPI);
 
 export enum TimelineType {
 	ForYou,

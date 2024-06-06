@@ -215,9 +215,11 @@ export const TwitterService: Service<TwitterArticle> = newService({
 	},
 });
 
-registerService(TwitterService);
+// registerService(TwitterService);
 
 export async function toggleLikePage(idPair: ArticleIdPair) {
+	throw new Error('Twitter disabled');
+
 	const writable = getWritable<TwitterArticle>(idPair);
 	const liked = get(writable).liked;
 	const [queryId, endpoint] = liked
@@ -269,6 +271,8 @@ export async function toggleLikePage(idPair: ArticleIdPair) {
 }
 
 export async function retweetPage(idPair: ArticleIdPair) {
+	throw new Error('Twitter disabled');
+
 	const writable = TwitterService.articles[idPair.id as string][0];
 	if (get(writable).retweeted)
 		return;
@@ -302,6 +306,8 @@ export async function retweetPage(idPair: ArticleIdPair) {
 }
 
 async function pageRequest<T>(queryId: string, endpoint: string, tweetId: string): Promise<T> {
+	throw new Error('Twitter disabled');
+
 	return await TwitterService.fetch(`https://${location.hostname}/i/api/graphql/${queryId}/${endpoint}`, {
 		method: 'POST',
 
@@ -319,6 +325,8 @@ async function pageRequest<T>(queryId: string, endpoint: string, tweetId: string
 }
 
 export async function twitterFetch(url: RequestInfo | URL, init: RequestInit = {}) {
+	throw new Error('Twitter disabled');
+
 	const bearerToken = getServiceStorage(TwitterService.name).bearerToken;
 	if (!bearerToken)
 		throw new Error('Bearer token not found');
@@ -365,6 +373,8 @@ export async function twitterFetch(url: RequestInfo | URL, init: RequestInit = {
 }
 
 export async function loadArticle(id: string): Promise<ArticleWithRefs | null> {
+	throw new Error('Twitter disabled');
+
 	//TODO Reuse code from APIEndpoint
 	const variables = {
 		focalTweetId: id,

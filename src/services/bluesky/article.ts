@@ -7,17 +7,20 @@ export default class BlueskyArticle extends Article {
 	static service = 'Bluesky';
 	//TODO support null numberId
 	numberId = 0;
+	readonly uri: string;
 	readonly author: BlueskyAuthor;
 	readonly creationTime: Date;
+	likeURI: string | null;
+	likeCount: number | null;
+	repostURI: string | null;
+	repostCount: number | null;
 
 	constructor(post: PostView, markedAsReadStorage: string[]) {
 		super({
-			//TODO cid vs url id
 			id: post.cid,
 			text: post.record['text'],
 			textHtml: post.record['text'],
-			//TODO uri vs url
-			url: post.uri,
+			url: `https://bsky.app/profile/${post.author.handle}/post/${post.uri.split('/').at(-1)}`,
 			medias: post.embed?.images?.map((image: ViewImage) => {
 				const ratio = getRatio(image.aspectRatio?.width, image.aspectRatio?.height);
 				return ({
@@ -40,6 +43,8 @@ export default class BlueskyArticle extends Article {
 			rawSource: [post],
 		});
 
+		this.uri = post.uri;
+
 		this.author = {
 			username: post.author.handle,
 			name: post.author.displayName ?? post.author.handle,
@@ -48,6 +53,19 @@ export default class BlueskyArticle extends Article {
 		};
 
 		this.creationTime = new Date(post.record['createdAt']);
+
+		this.likeURI = post.viewer?.like ?? null;
+		this.likeCount = post.likeCount ?? null;
+		this.repostURI = post.viewer?.repost ?? null;
+		this.repostCount = post.repostCount ?? null;
+	}
+
+	get liked() {
+		return !!this.likeURI;
+	}
+
+	get reposted() {
+		return !!this.repostURI;
 	}
 }
 

@@ -1,7 +1,7 @@
 import Article, {type ArticleAuthor} from '~/articles';
 import type {PostView} from '@atproto/api/dist/client/types/app/bsky/feed/defs';
 import type {ViewImage} from '@atproto/api/src/client/types/app/bsky/embed/images';
-import {getRatio, MediaType} from '~/articles/media';
+import {getRatio, MediaLoadType, MediaType} from '~/articles/media';
 
 export default class BlueskyArticle extends Article {
 	static service = 'Bluesky';
@@ -18,11 +18,11 @@ export default class BlueskyArticle extends Article {
 	constructor(post: PostView, markedAsReadStorage: string[]) {
 		super({
 			id: post.cid,
-			text: post.record['text'],
-			textHtml: post.record['text'],
+			text: (post.record as any)['text'],
+			textHtml: (post.record as any)['text'],
 			url: `https://bsky.app/profile/${post.author.handle}/post/${post.uri.split('/').at(-1)}`,
-			medias: post.embed?.images?.map((image: ViewImage) => {
-				const ratio = getRatio(image.aspectRatio?.width, image.aspectRatio?.height);
+			medias: (post.embed?.images as ViewImage[] | undefined)?.map((image: ViewImage) => {
+				const ratio = image.aspectRatio?.width && image.aspectRatio?.height ? getRatio(image.aspectRatio?.width, image.aspectRatio?.height) : null;
 				return ({
 					src: image.fullsize,
 					mediaType: MediaType.Image,
@@ -36,7 +36,9 @@ export default class BlueskyArticle extends Article {
 						offsetY: null,
 						ratio,
 						cropRatio: null,
-					}
+					},
+					queueLoadInfo: MediaLoadType.LazyLoad,
+					loaded: false,
 				});
 			}) ?? [],
 			markedAsReadStorage,
@@ -52,7 +54,7 @@ export default class BlueskyArticle extends Article {
 			avatarUrl: post.author.avatar,
 		};
 
-		this.creationTime = new Date(post.record['createdAt']);
+		this.creationTime = new Date((post.record as any)['createdAt']);
 
 		this.likeURI = post.viewer?.like ?? null;
 		this.likeCount = post.likeCount ?? null;

@@ -19,18 +19,29 @@ export class TimelineEndpoint extends Endpoint {
 		]));
 	}
 
-	async refresh(_refreshType: RefreshType): Promise<ArticleWithRefs[]> {
+	async refresh(refreshType: RefreshType): Promise<ArticleWithRefs[]> {
 		//TODO Move login to service
 		const {identifier, password} = getServiceStorage(BlueskyService.name);
 		await BlueskyService.agent.login({
 			identifier,
 			password,
 		});
-		const {data} = await BlueskyService.agent.getTimeline();
-		this.cursor = data.cursor ?? null;
+		const {data} = await BlueskyService.agent.getTimeline({
+			cursor: refreshType === RefreshType.LoadBottom ? this.cursor ?? undefined : undefined,
+		});
+		const {feed, cursor} = data;
+		if (!!this.cursor != !!cursor)
+			this.refreshTypes.update(r => {
+				if (cursor === null)
+					r.delete(RefreshType.LoadBottom);
+				else
+					r.add(RefreshType.LoadBottom);
+				return r;
+			});
+		this.cursor = cursor ?? null;
 
 		const markedAsReadStorage = getMarkedAsReadStorage(BlueskyService);
-		return data.feed.map(({post}) => ({
+		return feed.map(({post}) => ({
 			type: 'normal',
 			article: new BlueskyArticle(post, markedAsReadStorage),
 		}));

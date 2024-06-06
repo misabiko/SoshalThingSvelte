@@ -1,8 +1,10 @@
 import type BlueskyArticle from '~/services/bluesky/article';
 import {getWritable, newService, registerService, type Service} from '~/services/service';
-import {type AtpSessionData, type AtpSessionEvent, BskyAgent} from '@atproto/api';
+import {BskyAgent} from '@atproto/api';
 import {STANDARD_ACTIONS} from '~/services/actions';
 import {get} from 'svelte/store';
+import {type ArticleWithRefs, articleWithRefToArray, getActualArticle, getRootArticle} from '~/articles';
+import type {Filter} from '~/filters';
 
 export const BlueskyService: BlueskyServiceType = {
 	...newService({
@@ -55,14 +57,123 @@ export const BlueskyService: BlueskyServiceType = {
 				disabled: null,
 				count(article) { return article.repostCount; },
 			},
-		}
+		},
+		keepArticle(articleWithRefs: ArticleWithRefs, index: number, filter: Filter): boolean {
+			//TODO Label filter
+			switch (filter.type) {
+				case 'liked':
+					return (articleWithRefToArray(articleWithRefs) as BlueskyArticle[])
+						.some(a => a.liked);
+				case 'reposted':
+					return (articleWithRefToArray(articleWithRefs) as BlueskyArticle[])
+						.some(a => a.reposted);
+				//TODO Add filter templates
+				case 'likes': {
+					const likeCount = (getRootArticle(articleWithRefs) as BlueskyArticle).likeCount;
+					if (likeCount === null)
+						return false;
+					switch (filter.props.compare.comparator) {
+						case '=':
+							return likeCount === filter.props.compare.value;
+						case '>':
+							return likeCount > filter.props.compare.value;
+						case '>=':
+							return likeCount >= filter.props.compare.value;
+						case '<':
+							return likeCount < filter.props.compare.value;
+						case '<=':
+							return likeCount <= filter.props.compare.value;
+						default:
+							throw new Error('Unknown comparator: ' + filter.props.compare.comparator);
+					}
+				}case 'reposts': {
+					const repostCount = (getRootArticle(articleWithRefs) as BlueskyArticle).repostCount;
+					if (repostCount === null)
+						return false;
+					switch (filter.props.compare.comparator) {
+						case '=':
+							return repostCount === filter.props.compare.value;
+						case '>':
+							return repostCount > filter.props.compare.value;
+						case '>=':
+							return repostCount >= filter.props.compare.value;
+						case '<':
+							return repostCount < filter.props.compare.value;
+						case '<=':
+							return repostCount <= filter.props.compare.value;
+						default:
+							throw new Error('Unknown comparator: ' + filter.props.compare.comparator);
+					}
+				}default:
+					throw new Error('Unknown filter type: ' + filter.type);
+			}
+		},
+		sortMethods: {
+			//TODO Add sort method templates
+			likes: {
+				name: 'Likes',
+				compare(a, b) {
+					return ((getActualArticle(a) as BlueskyArticle).likeCount || 0) - ((getActualArticle(b) as BlueskyArticle).likeCount || 0);
+				},
+				directionLabel(reversed: boolean): string {
+					return reversed ? 'Descending' : 'Ascending';
+				}
+			},
+			reposts: {
+				name: 'Reposts',
+				compare(a, b) {
+					return ((getActualArticle(a) as BlueskyArticle).repostCount || 0) - ((getActualArticle(b) as BlueskyArticle).repostCount || 0);
+				},
+				directionLabel(reversed: boolean): string {
+					return reversed ? 'Descending' : 'Ascending';
+				}
+			}
+		},
+		filterTypes: {
+			liked: {
+				type: 'liked',
+				name: 'Liked',
+				invertedName: 'Not liked',
+				props: {},
+			},
+			reposted: {
+				type: 'reposted',
+				name: 'Reposted',
+				invertedName: 'Not reposted',
+				props: {},
+			},
+			likes: {
+				type: 'likes',
+				name: 'Likes',
+				invertedName: 'Likes',
+				props: {
+					compare: {
+						type: 'order',
+						optional: false,
+						min: 0,
+					}
+				},
+			},
+			reposts: {
+				type: 'reposts',
+				name: 'Reposts',
+				invertedName: 'Reposts',
+				props: {
+					compare: {
+						type: 'order',
+						optional: false,
+						min: 0,
+					}
+				},
+			},
+		},
 	}),
 	agent: new BskyAgent({
-		//TODO Look into persistSession
 		service: 'https://bsky.social',
-		persistSession(evt: AtpSessionEvent, sess?: AtpSessionData) {
-			console.log('Persisting session', evt, sess);
-		}
+		// persistSession(evt: AtpSessionEvent, sess?: AtpSessionData) {
+		// 	//TODO Look into persistSession
+		// 	console.log('Persisting session', evt, sess);
+		// }
 	}),
 };
 

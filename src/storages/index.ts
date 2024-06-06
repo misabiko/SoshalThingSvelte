@@ -55,25 +55,39 @@ export function loadMainStorage() {
 	return mainStorage as MainStorageParsed;
 }
 
+type ServiceStorage = Record<string, any>;
+
 //TODO Type storage per service
-export function getServiceStorage(service: string): { [key: string]: any } {
+export function getServiceStorage(service: string): ServiceStorage {
 	const storageKey = `${MAIN_STORAGE_KEY} ${service}`;
 	const item = localStorage.getItem(storageKey);
 	return item ? JSON.parse(item) : {};
 }
 
-export function updateServiceStorage<V>(service: string, key: string, updater: (oldValue: V) => V) {
+export function getServiceStorageCallback<V>(service: string, callback: (storage: ServiceStorage) => V) {
+	return callback(getServiceStorage(service));
+}
+
+export function updateServiceStorageCallback(service: string, callback: (storage: ServiceStorage) => ServiceStorage) {
 	const storageKey = `${MAIN_STORAGE_KEY} ${service}`;
 	const item = localStorage.getItem(storageKey);
 	const storage = item ? JSON.parse(item) : {};
 
-	const value = updater(storage[key]);
-	if (value === undefined)
-		delete storage[key];
-	else
-		storage[key] = value;
+	callback(storage);
 
 	localStorage.setItem(storageKey, JSON.stringify(storage));
+}
+
+export function updateServiceStorage<V>(service: string, key: string, updater: (oldValue: V) => V) {
+	updateServiceStorageCallback(service, storage => {
+		const value = updater(storage[key]);
+		if (value === undefined)
+			delete storage[key];
+		else
+			storage[key] = value;
+
+		return storage;
+	});
 }
 
 export function setServiceStorage(service: string, key: string, value: any) {

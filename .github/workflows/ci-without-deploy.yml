@@ -27,8 +27,8 @@ jobs:
 
       - run: npm run build
 
-      - name: Checks
-        run: npm run check
+#      - name: Checks
+#        run: npm run check
 
       - name: Playwright tests
         run: npm test

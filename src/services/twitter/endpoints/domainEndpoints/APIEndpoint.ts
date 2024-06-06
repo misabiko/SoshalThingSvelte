@@ -2,16 +2,22 @@ import type { ArticleWithRefs } from '~/articles';
 import { Endpoint, RefreshType } from '~/services/endpoints';
 import { parseResponse, type Instruction, type ResponseError, type AddEntriesInstruction } from '~/services/twitter/pageAPI';
 import { TwitterService } from '~/services/twitter/service';
+import {getServiceStorageCallback} from '~/storages';
 
 export default abstract class APIEndpoint<Response extends APIResponse> extends Endpoint {
 	abstract readonly name: string;
-	abstract readonly endpointPath: string;
+	readonly endpointPath: string;
 
 	topCursor: string | null = null;
 	bottomCursor: string | null = null;
 
-	constructor() {
+	constructor(queryName: string) {
 		super(new Set([RefreshType.RefreshStart, RefreshType.Refresh]));
+
+		const queryId = getServiceStorageCallback(TwitterService.name, storage => storage.queryIds?.[queryName]);
+		if (!queryId)
+			throw new Error(`Twitter query id for '${queryName}' not found.`);
+		this.endpointPath = `${queryId}/${queryName}`;
 	}
 
 	async refresh(refreshType: RefreshType): Promise<ArticleWithRefs[]> {
@@ -36,7 +42,7 @@ export default abstract class APIEndpoint<Response extends APIResponse> extends 
 			+ '&features='
 			+ encodeURIComponent(JSON.stringify(features));
 
-		const data: Response | ResponseError = await TwitterService.fetch(`https://x.com/i/api/graphql/${this.endpointPath}${params}`, {});
+		const data: Response | ResponseError = await TwitterService.fetch(`https://${location.hostname}/i/api/graphql/${this.endpointPath}${params}`, {});
 
 		if ('errors' in data)
 			throw new Error('Error fetching tweets:\n' + data.errors.map(e => e.message).join('\n'));

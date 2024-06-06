@@ -7,14 +7,12 @@ import {TwitterService} from '../../service';
 export default class LikesAPI extends APIEndpoint<LikesResponse> {
 	static service = TwitterService.name;
 	readonly name: string;
-	readonly endpointPath: string;
 	readonly params;
 
 	constructor(readonly userId: string) {
-		super();
+		super('Likes');
 
 		this.name = 'LikesAPI(' + userId + ')';
-		this.endpointPath = 'cBm2Rtb426W3LIWEE_FM6w/Likes';
 
 		this.params = {
 			userId,
@@ -51,7 +49,7 @@ export default class LikesAPI extends APIEndpoint<LikesResponse> {
 	};
 }
 
-registerEndpointConstructor(LikesAPI);
+// registerEndpointConstructor(LikesAPI);
 
 type LikesResponse = {
 	data: {

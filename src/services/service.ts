@@ -109,7 +109,16 @@ export function registerEndpointConstructor(endpoint: (new (...args: any[]) => E
 	constructorInfo: EndpointConstructorInfo
 	service: string
 }) {
-	services[endpoint.service].endpointConstructors[endpoint.constructorInfo.name] = endpoint.constructorInfo;
+	if (!Object.hasOwn(services, endpoint.service)) {
+		console.error(`Service ${endpoint.service} not found`);
+		return;
+	}
+
+	try {
+		services[endpoint.service].endpointConstructors[endpoint.constructorInfo.name] = endpoint.constructorInfo;
+	}catch (e) {
+		console.error(e);
+	}
 }
 
 export function getServices(): Readonly<{ [name: string]: Service }> {

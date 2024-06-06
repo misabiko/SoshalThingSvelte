@@ -25,11 +25,17 @@
 			break;
 	}
 
-	const endpoints = currentTimeline === null ? [] : [{
-		endpoint: new TimelineAPI(currentTimeline),
-		refreshTypes: everyRefreshType,
-		filters: [],
-	}];
+	const endpoints = [];
+	try {
+		if (currentTimeline !== null)
+			endpoints.push({
+				endpoint: new TimelineAPI(currentTimeline),
+				refreshTypes: everyRefreshType,
+				filters: [],
+			});
+	}catch(e) {
+		console.error(e);
+	}
 
 	const mainStorage = loadMainStorage();
 

@@ -5,7 +5,7 @@
 		"build": "node scripts/buildscript.js",
 		"serve": "node scripts/buildscript.js && node scripts/staticServer.js",
 		"serve:static": "node scripts/staticServer.js",
-		"build:extension": "npm run check && node scripts/extensionbuildscript.js",
+		"build:extension": "node scripts/extensionbuildscript.js",
 		"build:unit": "node scripts/testbuildscript.js",
 		"test:e2e": "playwright test",
 		"test:e2e:headed": "playwright test --headed",

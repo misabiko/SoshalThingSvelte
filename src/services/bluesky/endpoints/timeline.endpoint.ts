@@ -41,6 +41,7 @@ export class TimelineEndpoint extends Endpoint {
 		this.cursor = cursor ?? null;
 
 		const markedAsReadStorage = getMarkedAsReadStorage(BlueskyService);
+		//TODO +1 Parse repost and replies
 		return feed.map(({post}) => ({
 			type: 'normal',
 			article: new BlueskyArticle(post, markedAsReadStorage),

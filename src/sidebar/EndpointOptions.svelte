@@ -7,6 +7,7 @@
 </script>
 
 <div class='block endpointOptions'>
+	<!-- TODO Prepend name with service (or sort by service) -->
 	{$endpoint.name}
 	{#if $endpoint.rateLimitInfo !== null}
 		{@const timeLeft = Math.ceil((($endpoint.rateLimitInfo.reset * 1000) - Date.now()) / 60000)}

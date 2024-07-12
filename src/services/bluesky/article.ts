@@ -1,13 +1,15 @@
-import Article, {type ArticleAuthor} from '~/articles';
-import type {PostView} from '@atproto/api/dist/client/types/app/bsky/feed/defs';
+import Article, {type ArticleAuthor, type ArticleRefIdPair, type ArticleWithRefs} from '~/articles';
+import type {ArticleMedia} from '~/articles/media';
+import type {FeedViewPost, PostView, ReasonRepost} from '@atproto/api/dist/client/types/app/bsky/feed/defs';
 import type {ViewImage} from '@atproto/api/src/client/types/app/bsky/embed/images';
 import {getRatio, MediaLoadType, MediaType} from '~/articles/media';
+import type { AppBskyActorDefs } from '@atproto/api';
 
 export default class BlueskyArticle extends Article {
 	static service = 'Bluesky';
 	//TODO support null numberId
 	numberId = 0;
-	readonly uri: string;
+	readonly uri: string | null;
 	readonly author: BlueskyAuthor;
 	readonly creationTime: Date;
 	likeURI: string | null;
@@ -15,11 +17,129 @@ export default class BlueskyArticle extends Article {
 	repostURI: string | null;
 	repostCount: number | null;
 
-	constructor(post: PostView, markedAsReadStorage: string[]) {
-		super({
-			id: post.cid,
+	constructor(
+		id: string,
+		markedAsReadStorage: string[],
+		params: BlueskyParams,
+		rawSource: any[],
+	) {
+		super(params.type === 'post' ? {
+			id,
+			text: params.text,
+			textHtml: params.text,
+			url: params.url,
+			medias: params.medias,
+			markedAsReadStorage,
+			rawSource,
+		} : {
+			id,
+			medias: [],
+			markedAsReadStorage,
+			refs: params.refs,
+			rawSource,
+		});
+
+		this.creationTime = params.creationTime;
+		this.author = params.author;
+
+		if (params.type === 'post') {
+			this.uri = params.uri;
+
+			this.likeURI = params.likeURI;
+			this.likeCount = params.likeCount;
+			this.repostURI = params.repostURI;
+			this.repostCount = params.repostCount;
+		}else {
+			this.uri = null;
+			this.likeURI = null;
+			this.likeCount = null;
+			this.repostURI = null;
+			this.repostCount = null;
+		}
+	}
+
+	get liked() {
+		return !!this.likeURI;
+	}
+
+	get reposted() {
+		return !!this.repostURI;
+	}
+}
+
+interface BlueskyAuthor extends ArticleAuthor {
+
+}
+
+type BlueskyParams = {
+	type: 'post'
+	text: string
+	url: string
+	medias: ArticleMedia[]
+	author: BlueskyAuthor
+	creationTime: Date
+	uri: string
+	likeURI: string | null
+	likeCount: number | null
+	repostURI: string | null
+	repostCount: number | null
+} | {
+	type: 'repost'
+	refs: ArticleRefIdPair
+	author: BlueskyAuthor
+	creationTime: Date
+};
+
+export function parseFeedViewPost(feedViewPost: FeedViewPost, markedAsReadStorage: string[]): ArticleWithRefs {
+	const post = {
+		type: 'normal',
+		article: BlueskyPostToArticle(feedViewPost.post, markedAsReadStorage),
+	} satisfies ArticleWithRefs;
+
+	if (feedViewPost.reason?.$type === 'app.bsky.feed.defs#reasonRepost') {
+		const reason = feedViewPost.reason as ReasonRepost;
+		const by = reason.by as AppBskyActorDefs.ProfileViewBasic;
+		return {
+			type: 'repost',
+			article: new BlueskyArticle(
+				feedViewPost.post.cid + '-repostBy-' + (by.handle),
+				markedAsReadStorage,
+				{
+					type: 'repost',
+					refs: {
+						type: 'repost',
+						reposted: post.article.idPair,
+					},
+					author: {
+						username: by.handle,
+						name: by.displayName ?? by.handle,
+						url: 'https://bsky.app/profile/' + by.handle,
+						avatarUrl: by.avatar,
+					},
+					creationTime: new Date(reason.indexedAt)
+				},
+				[feedViewPost],),
+			reposted: post,
+		};
+	}
+	else if (feedViewPost.reason !== undefined){
+		console.error({
+			message: 'Unknown reason type',
+			feedViewPost,
+		});
+		return post;
+	}else {
+		return post;
+	}
+}
+
+export function BlueskyPostToArticle(post: PostView, markedAsReadStorage: string[]): BlueskyArticle {
+	return new BlueskyArticle(
+		post.cid,
+		markedAsReadStorage,
+		{
+			type: 'post',
 			text: (post.record as any)['text'],
-			textHtml: (post.record as any)['text'],
 			url: `https://bsky.app/profile/${post.author.handle}/post/${post.uri.split('/').at(-1)}`,
 			medias: (post.embed?.images as ViewImage[] | undefined)?.map((image: ViewImage) => {
 				const ratio = image.aspectRatio?.width && image.aspectRatio?.height ? getRatio(image.aspectRatio?.width, image.aspectRatio?.height) : null;
@@ -41,36 +161,21 @@ export default class BlueskyArticle extends Article {
 					loaded: false,
 				});
 			}) ?? [],
-			markedAsReadStorage,
-			rawSource: [post],
-		});
+			author: {
+				username: post.author.handle,
+				name: post.author.displayName ?? post.author.handle,
+				url: 'https://bsky.app/profile/' + post.author.handle,
+				avatarUrl: post.author.avatar,
+			},
+			creationTime: new Date((post.record as any)['createdAt']),
 
-		this.uri = post.uri;
+			uri: post.uri,
 
-		this.author = {
-			username: post.author.handle,
-			name: post.author.displayName ?? post.author.handle,
-			url: 'https://bsky.app/profile/' + post.author.handle,
-			avatarUrl: post.author.avatar,
-		};
-
-		this.creationTime = new Date((post.record as any)['createdAt']);
-
-		this.likeURI = post.viewer?.like ?? null;
-		this.likeCount = post.likeCount ?? null;
-		this.repostURI = post.viewer?.repost ?? null;
-		this.repostCount = post.repostCount ?? null;
-	}
-
-	get liked() {
-		return !!this.likeURI;
-	}
-
-	get reposted() {
-		return !!this.repostURI;
-	}
-}
-
-interface BlueskyAuthor extends ArticleAuthor {
-
+			likeURI: post.viewer?.like ?? null,
+			likeCount: post.likeCount ?? null,
+			repostURI: post.viewer?.repost ?? null,
+			repostCount: post.repostCount ?? null,
+		},
+		[post],
+	);
 }

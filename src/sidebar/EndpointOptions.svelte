@@ -4,11 +4,12 @@
 	import type {Writable} from 'svelte/store';
 
 	export let endpoint: Writable<Endpoint>;
+
+	let service = ($endpoint.constructor as typeof Endpoint).service;
 </script>
 
 <div class='block endpointOptions'>
-	<!-- TODO Prepend name with service (or sort by service) -->
-	{$endpoint.name}
+	{service} {$endpoint.name}
 	{#if $endpoint.rateLimitInfo !== null}
 		{@const timeLeft = Math.ceil((($endpoint.rateLimitInfo.reset * 1000) - Date.now()) / 60000)}
 		<progress class='progress' value={$endpoint.rateLimitInfo.remaining} max={$endpoint.rateLimitInfo.limit}>

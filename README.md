@@ -39,3 +39,6 @@ TODO Rename favviewer to injected
 TODO Print vscode's problems
 TODO Go through project's TODOs
 TODO "Third-party cookie will be blocked in future Chrome versions as part of Privacy Sandbox."
+TODO Filter for "article from X service"
+TODO Persist auto refresh
+TODO Port to bun

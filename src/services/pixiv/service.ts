@@ -322,7 +322,6 @@ export const PixivService: PixivServiceType = {
 		async fetchArticle(store: Writable<PixivArticle>) {
 			const article = get(store);
 			const htmlPage: string = await PixivService.fetch(`https://www.pixiv.net/en/artworks/${article.id}`, {headers: {Accept: 'text/html'}});
-			//TODO Replace htmls with DOMParser
 			const doc = new DOMParser().parseFromString(htmlPage, 'text/html');
 			const preloadData = doc.querySelector('meta[name="preload-data"]')?.getAttribute('content');
 			if (!preloadData)

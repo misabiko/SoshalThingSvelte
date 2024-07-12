@@ -3,7 +3,7 @@ import type {ArticleWithRefs} from '~/articles';
 import {getServiceStorage} from '~/storages';
 import {BlueskyService} from '~/services/bluesky/service';
 import {registerEndpointConstructor} from '~/services/service';
-import BlueskyArticle from '~/services/bluesky/article';
+import { parseFeedViewPost } from '~/services/bluesky/article';
 import {getMarkedAsReadStorage} from '~/storages/serviceCache';
 
 export class TimelineEndpoint extends Endpoint {
@@ -41,10 +41,7 @@ export class TimelineEndpoint extends Endpoint {
 		this.cursor = cursor ?? null;
 
 		const markedAsReadStorage = getMarkedAsReadStorage(BlueskyService);
-		return feed.map(({post}) => ({
-			type: 'normal',
-			article: new BlueskyArticle(post, markedAsReadStorage),
-		}));
+		return feed.map(fvp => parseFeedViewPost(fvp, markedAsReadStorage));
 	}
 
 	matchParams(_params: any): boolean {

@@ -62,10 +62,10 @@ export abstract class PageEndpoint extends Endpoint {
 	}
 
 	hostPageRefresh(_refreshType: RefreshType): ArticleWithRefs[] {
-		return this.parsePage(document.documentElement);
+		return this.parsePage(document);
 	}
 
-	abstract parsePage(document: HTMLElement): ArticleWithRefs[];
+	abstract parsePage(document: Document): ArticleWithRefs[];
 }
 
 export abstract class LoadablePageEndpoint extends PageEndpoint {
@@ -102,7 +102,7 @@ export abstract class LoadablePageEndpoint extends PageEndpoint {
 			return this.parsePage(await this.loadPage());
 	}
 
-	abstract loadPage(): Promise<HTMLElement>;
+	abstract loadPage(): Promise<Document>;
 }
 
 //Maybe could use mixins to avoid duplicating Loadable part

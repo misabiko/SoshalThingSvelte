@@ -25,6 +25,17 @@
 				service: PixivService.name,
 				templateId: 'main',
 			},
+			filters: [
+				{
+					filter: {
+						service: null,
+						type: 'notMarkedAsRead',
+						props: {},
+					},
+					enabled: true,
+					inverted: false,
+				}
+			],
 		})
 	};
 

@@ -67,7 +67,7 @@ export default class BlueskyArticle extends Article {
 	}
 }
 
-interface BlueskyAuthor extends ArticleAuthor {
+export interface BlueskyAuthor extends ArticleAuthor {
 
 }
 

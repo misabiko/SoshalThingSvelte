@@ -1,23 +1,26 @@
 import {Endpoint, type EndpointConstructorInfo, RefreshType} from '~/services/endpoints';
-import type {ArticleWithRefs} from '~/articles';
-import {getServiceStorage} from '~/storages';
 import {BlueskyService} from '~/services/bluesky/service';
-import {registerEndpointConstructor} from '~/services/service';
-import { parseFeedViewPost } from '~/services/bluesky/article';
+import type {ArticleWithRefs} from '~/articles';
 import {getMarkedAsReadStorage} from '~/storages/serviceCache';
+import {type BlueskyAuthor, parseFeedViewPost} from '~/services/bluesky/article';
+import {getServiceStorage} from '~/storages';
+import {getServices, registerEndpointConstructor} from '~/services/service';
 
-//TODO Rename to FollowingFeed
-export class TimelineEndpoint extends Endpoint {
-	readonly name = 'Timeline';
+export class UserEndpoint extends Endpoint {
+	readonly name = 'User';
 	static service = BlueskyService.name;
-	params = {};
+	readonly params;
 	cursor: string | null = null;
 
-	constructor() {
+	constructor(actor: string) {
 		super(new Set([
 			RefreshType.RefreshStart,
 			RefreshType.Refresh,
 		]));
+
+		this.params = {
+			actor,
+		};
 	}
 
 	async refresh(refreshType: RefreshType): Promise<ArticleWithRefs[]> {
@@ -27,7 +30,8 @@ export class TimelineEndpoint extends Endpoint {
 			identifier,
 			password,
 		});
-		const {data} = await BlueskyService.agent.getTimeline({
+		const {data} = await BlueskyService.agent.getAuthorFeed({
+			actor: this.params.actor,
 			cursor: refreshType === RefreshType.LoadBottom ? this.cursor ?? undefined : undefined,
 		});
 		const {feed, cursor} = data;
@@ -45,15 +49,16 @@ export class TimelineEndpoint extends Endpoint {
 		return feed.map(fvp => parseFeedViewPost(fvp, markedAsReadStorage));
 	}
 
-	matchParams(_params: any): boolean {
-		return true;
+	matchParams(params: any): boolean {
+		return params.actor === this.params.actor;
 	}
 
 	static readonly constructorInfo: EndpointConstructorInfo = {
-		name: 'Timeline',
-		paramTemplate: [],
-		constructor: () => new TimelineEndpoint()
+		name: 'User',
+		paramTemplate: [['user', '']],
+		constructor: params => new UserEndpoint(params.user as string),
 	};
 }
 
-registerEndpointConstructor(TimelineEndpoint);
+registerEndpointConstructor(UserEndpoint);
+getServices()[BlueskyService.name].userEndpoint = user => new UserEndpoint((user as BlueskyAuthor).username);

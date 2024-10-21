@@ -63,6 +63,10 @@ test('missing optional props field should be added', async ({page}) => {
 	await page.click('.timeline button[title = "Expand options"]');
 });
 
-test.skip('repost by username', async () => {});
+test.skip('repost by username', async () => {
+	//TODO
+});
 
-test.skip('quote by username', async () => {});
+test.skip('quote by username', async () => {
+	//TODO
+});

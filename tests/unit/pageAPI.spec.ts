@@ -772,17 +772,17 @@ test('result.tweet', () => {
 
 	globalThis.localStorage = {
 		getItem(_key: string) { return null; },
-		setItem(_key: string, _value: string) {},
-		removeItem(_key: string) {},
-		clear() {},
+		setItem(_key: string, _value: string) { /*stub*/ },
+		removeItem(_key: string) { /*stub*/ },
+		clear() { /*stub*/ },
 		length: 0,
 		key(_index: number) { return null; },
 	};
 	globalThis.sessionStorage = {
 		getItem(_key: string) { return null; },
-		setItem(_key: string, _value: string) {},
-		removeItem(_key: string) {},
-		clear() {},
+		setItem(_key: string, _value: string) { /*stub*/ },
+		removeItem(_key: string) { /*stub*/ },
+		clear() { /*stub*/ },
 		length: 0,
 		key(_index: number) { return null; },
 	};

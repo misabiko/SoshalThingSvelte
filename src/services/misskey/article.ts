@@ -35,10 +35,11 @@ export default class MisskeyArticle extends Article {
 		});
 	}
 
-	get numberId() {
-		//TODO Make id sorting per service and dissolve numberId
-		return 0;
-	}
+	readonly numberId = 0;
+	// get numberId() {
+	// 	//TODO Make id sorting per service and dissolve numberId
+	// 	return 0;
+	// }
 }
 
 interface MisskeyUser extends ArticleAuthor {

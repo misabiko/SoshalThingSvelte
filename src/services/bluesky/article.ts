@@ -67,7 +67,7 @@ export default class BlueskyArticle extends Article {
 	}
 }
 
-interface BlueskyAuthor extends ArticleAuthor {
+export interface BlueskyAuthor extends ArticleAuthor {
 
 }
 
@@ -91,9 +91,10 @@ type BlueskyParams = {
 };
 
 export function parseFeedViewPost(feedViewPost: FeedViewPost, markedAsReadStorage: string[]): ArticleWithRefs {
+	const rawSource = [feedViewPost];
 	const post = {
 		type: 'normal',
-		article: BlueskyPostToArticle(feedViewPost.post, markedAsReadStorage),
+		article: BlueskyPostToArticle(feedViewPost.post, markedAsReadStorage, rawSource),
 	} satisfies ArticleWithRefs;
 
 	if (feedViewPost.reason?.$type === 'app.bsky.feed.defs#reasonRepost') {
@@ -118,7 +119,8 @@ export function parseFeedViewPost(feedViewPost: FeedViewPost, markedAsReadStorag
 					},
 					creationTime: new Date(reason.indexedAt)
 				},
-				[feedViewPost],),
+				rawSource,
+			),
 			reposted: post,
 		};
 	}
@@ -133,7 +135,7 @@ export function parseFeedViewPost(feedViewPost: FeedViewPost, markedAsReadStorag
 	}
 }
 
-export function BlueskyPostToArticle(post: PostView, markedAsReadStorage: string[]): BlueskyArticle {
+export function BlueskyPostToArticle(post: PostView, markedAsReadStorage: string[], rawSource: any[]): BlueskyArticle {
 	return new BlueskyArticle(
 		post.cid,
 		markedAsReadStorage,
@@ -176,6 +178,6 @@ export function BlueskyPostToArticle(post: PostView, markedAsReadStorage: string
 			repostURI: post.viewer?.repost ?? null,
 			repostCount: post.repostCount ?? null,
 		},
-		[post],
+		rawSource,
 	);
 }

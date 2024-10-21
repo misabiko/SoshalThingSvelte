@@ -27,7 +27,7 @@ export class FollowPageEndpoint extends PageEndpoint {
 		return true;
 	}
 
-	parsePage(document: HTMLElement): ArticleWithRefs[] {
+	parsePage(document: Document): ArticleWithRefs[] {
 		const thumbnails = document.querySelector('section ul')?.children;
 		if (!thumbnails)
 			throw 'Couldn\'t find thumbnails';

@@ -35,6 +35,7 @@ type GenericFilter =
 	| 'interval'
 	| 'section';
 //TODO Number of medias (with equal, less than, greater than, etc)
+//TODO(2) Date between
 
 export type FilterInfo<S extends string = string> = {
 	type: S

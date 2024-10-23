@@ -5,6 +5,7 @@ import '~/services/pixiv/endpoints/ranking.endpoint';
 import '~/services/pixiv/endpoints/top.endpoint';
 import '~/services/pixiv/endpoints/discovery.endpoint';
 import '~/services/pixiv/endpoints/search.endpoint';
+import { mount } from 'svelte';
 
 import SearchPage from './SearchPage.svelte';
 import {tryInject} from '~/services/extension';
@@ -15,5 +16,5 @@ tryInject(() => [...document.getElementsByTagName('section')].at(-1))
 		if (!target)
 			throw new Error("Couldn't find target");
 
-		new SearchPage({target});
+		mount(SearchPage, {target});
 	});

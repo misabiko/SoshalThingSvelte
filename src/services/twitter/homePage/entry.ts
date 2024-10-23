@@ -1,5 +1,6 @@
 import '~/services/twitter/service.ts';
 import '~/services/twitter/endpoints/domainEndpoints/UserTweetsAPI.endpoint';
+import { mount } from 'svelte';
 
 import { tryInject } from '~/services/extension';
 import HomePage from './HomePage.svelte';
@@ -16,5 +17,5 @@ tryInject(() => {
 		if (!anchor)
 			throw new Error("Couldn't find anchor");
 
-		new HomePage({ target, anchor });
+		mount(HomePage, { target, anchor });
 	});

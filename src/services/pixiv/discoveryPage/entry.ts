@@ -3,6 +3,7 @@ import '~/services/pixiv/endpoints/user.endpoint';
 import '~/services/pixiv/endpoints/ranking.endpoint';
 import '~/services/pixiv/endpoints/top.endpoint';
 import '~/services/pixiv/endpoints/discovery.endpoint';
+import { mount } from 'svelte';
 
 import Discovery from './Discovery.svelte';
 import {tryInject} from '~/services/extension';
@@ -15,5 +16,5 @@ tryInject(() => document.querySelector('div.gtm-illust-recommend-zone ul'))
 		if (!target)
 			throw new Error("Couldn't find ul");
 
-		new Discovery({target, anchor});
+		mount(Discovery, {target, anchor});
 	});

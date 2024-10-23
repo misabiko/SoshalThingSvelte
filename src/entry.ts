@@ -1,5 +1,6 @@
 import './services/**/service.ts';
 import './services/**/*.endpoint.ts';
+import { mount } from 'svelte';
 
 import {getServices} from './services/service';
 console.debug('Loaded services and endpoints:', Object.fromEntries(Object.values(getServices()).map(service => [service.name, Object.keys(service.endpointConstructors)])));
@@ -25,7 +26,7 @@ const searchParamsFullscreen = parseFullscreen(searchParams);
 if (searchParamsFullscreen !== null)
 	timelineViews[timelineViewId].fullscreen = searchParamsFullscreen;
 
-new SoshalThing({
+mount(SoshalThing, {
 	target: document.body,
 	props: {
 		isInjected: false,

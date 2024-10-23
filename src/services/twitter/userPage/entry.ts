@@ -1,5 +1,6 @@
 import '~/services/twitter/service.ts';
 import '~/services/twitter/endpoints/domainEndpoints/UserTweetsAPI.endpoint';
+import { mount } from 'svelte';
 
 import { tryInject } from '~/services/extension';
 import UserPage from './UserPage.svelte';
@@ -10,5 +11,5 @@ tryInject(() => document.querySelector('nav[aria-label="Profile timelines"]')?.p
 		if (!target)
 			throw new Error("Couldn't find target");
 
-		new UserPage({ target, anchor });
+		mount(UserPage, { target, anchor });
 	});

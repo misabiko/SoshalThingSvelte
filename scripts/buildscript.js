@@ -1,7 +1,7 @@
 import fs from 'fs';
 import esbuild from 'esbuild';
 import * as svelte from 'svelte/compiler';
-import sveltePreprocess from 'svelte-preprocess';
+import { sveltePreprocess } from 'svelte-preprocess';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import EsbuildPluginImportGlob from 'esbuild-plugin-import-glob';
@@ -40,6 +40,7 @@ const SveltePlugin = {
 				let { js, warnings } = svelte.compile(preprocessed, {
 					filename,
 					dev: process.env.NODE_ENV === 'development',
+					css: 'injected',
 				});
 				const contents = js.code + '//# sourceMappingURL=' + js.map.toUrl();
 

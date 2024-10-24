@@ -4,21 +4,28 @@ runs:
   using: "composite"
   steps:
     - uses: oven-sh/setup-bun@v2
+      shell: bash
       with:
         bun-version: latest
 
     - run: bun install
+      shell: bash
     - name: Install Playwright
+      shell: bash
       run: bunx playwright install --with-deps
 
     - run: bun run build
+      shell: bash
 
     - name: Checks
+      shell: bash
       run: bun run check
 
     - name: Playwright tests
+      shell: bash
       run: bun test
     - name: Upload Playwright test results
+      shell: bash
       if: always()
       uses: actions/upload-artifact@v4
       with:

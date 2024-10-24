@@ -174,12 +174,3 @@ test.describe('autoscroll', () => {
 		expect(await container.evaluate(c => c.scrollTop)).toBeLessThan(scrollTop);
 	});
 });
-
-test.skip('modal timeline is full height', async ({page}) => {
-	//TODO Open modal timeline
-
-	const modalContent = page.locator('.modal-content');
-	await expect(modalContent.locator('.timeline')).toHaveCount(1);
-
-	expect(await modalContent.evaluate(e => e.scrollHeight - e.clientHeight)).toStrictEqual(0);
-});

@@ -1,14 +1,7 @@
 name: Build-Test
 
-on:
-  workflow_call
-
-permissions:
-  contents: write
-
-jobs:
-  build-test-deploy:
-    runs-on: ubuntu-latest
+runs:
+	using: "composite"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

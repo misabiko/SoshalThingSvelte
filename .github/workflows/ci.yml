@@ -11,7 +11,7 @@ jobs:
   build-test-deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/workflows/build-test.yml
+      - uses: ./.github/build-test
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4

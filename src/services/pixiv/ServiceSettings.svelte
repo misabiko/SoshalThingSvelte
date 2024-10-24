@@ -9,12 +9,12 @@
 <label class='field'>
 	Pixiv token
 	<input value="{pixivStorage.csrfToken ?? ''}"
-		on:change="{e => setServiceStorage(PixivService.name, 'csrfToken', e.target.value)}"
+		onchange="{e => setServiceStorage(PixivService.name, 'csrfToken', e.target.value)}"
 	/>
 </label>
 <label class='field'>
 	<input type='checkbox' checked='{pixivStorage.privateBookmark ?? false}'
-		on:input="{e => setServiceStorage(PixivService.name, 'privateBookmark', e.target.checked)}"
+		oninput="{e => setServiceStorage(PixivService.name, 'privateBookmark', e.target.checked)}"
 	/>
 	Pixiv bookmark as private
 </label>

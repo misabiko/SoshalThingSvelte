@@ -132,10 +132,10 @@
 					class='articleButton borderless-button'
 					class:actioned
 					title={action.name}
-					on:click='{() => actionFunc(idPair)}'
+					onclick='{() => actionFunc(idPair)}'
 					disabled='{disabled || (actioned && !action.togglable)}'
-					on:mouseover='{() => updateActionHover(action.key, true)}'
-					on:mouseout='{() => updateActionHover(action.key, false)}'
+					onmouseover='{() => updateActionHover(action.key, true)}'
+					onmouseout='{() => updateActionHover(action.key, false)}'
 				>
 					<span class='icon'>
 						<Fa
@@ -155,8 +155,8 @@
 						class='articleButton borderless-button'
 						title={action.name}
 						href={action.href}
-						on:mouseover='{() => updateActionHover(action.key, true)}'
-						on:mouseout='{() => updateActionHover(action.key, false)}'
+						onmouseover='{() => updateActionHover(action.key, true)}'
+						onmouseout='{() => updateActionHover(action.key, false)}'
 				>
 					<span class='icon'>
 						<Fa
@@ -174,7 +174,7 @@
 			<button
 				class='articleButton borderless-button'
 				title='Expand article as modal'
-				on:click='{() => modal = true}'
+				onclick='{() => modal = true}'
 			>
 				<span class='icon'>
 					<Fa icon={faExpandAlt}/>
@@ -194,7 +194,7 @@
 					{@const actioned = action.actioned($article)}
 					<button
 							class='dropdown-item'
-							on:click='{() => actionFunc(idPair)}'
+							onclick='{() => actionFunc(idPair)}'
 							disabled='{disabled || (actioned && !action.togglable)}'
 					>
 						{#if action.actionedName && actioned}
@@ -218,10 +218,10 @@
 				{/if}
 			{/each}
 			{#if !isQuoted}
-				<button class='dropdown-item' on:click={onLogData}>
+				<button class='dropdown-item' onclick={onLogData}>
 					Log Data
 				</button>
-				<button class='dropdown-item' on:click={onLogJSON}>
+				<button class='dropdown-item' onclick={onLogJSON}>
 					Log Json Data
 				</button>
 			{/if}

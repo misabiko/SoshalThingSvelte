@@ -35,9 +35,9 @@
 	use:portal='{{ target: activatorMount, insertBefore: sidebarMenuButton }}'
 	id='favvieweractivator'
 	class={sampleMenuItem.className}
-	on:click='{() => (favviewerHidden = !favviewerHidden)}'
-	on:mouseenter='{() => {hovered = true;}}'
-	on:mouseleave='{() => {hovered = false;}}'
+	onclick='{() => (favviewerHidden = !favviewerHidden)}'
+	onmouseenter='{() => {hovered = true;}}'
+	onmouseleave='{() => {hovered = false;}}'
 >
 	<div
 		class={sampleMenuItem?.firstElementChild?.className}

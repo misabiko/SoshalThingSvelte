@@ -27,14 +27,14 @@
 
 <label class='field'>
 	Twitter Bearer Token
-	<input value="{twitterStorage.bearerToken || ''}" on:change="{e => setServiceStorage(TwitterService.name, 'bearerToken', e.currentTarget.value)}"/>
+	<input value="{twitterStorage.bearerToken || ''}" onchange="{e => setServiceStorage(TwitterService.name, 'bearerToken', e.currentTarget.value)}"/>
 </label>
 
 <div id='twitterEndpointQueryIds'>
 	{#each queryNames as queryName}
 		<label class='field'>
 			{queryName}
-			<input value="{twitterStorage.queryIds?.[queryName] || ''}" on:change='{e => updateQueryId(queryName, e.currentTarget.value)}'/>
+			<input value="{twitterStorage.queryIds?.[queryName] || ''}" onchange='{e => updateQueryId(queryName, e.currentTarget.value)}'/>
 		</label>
 	{/each}
 </div>

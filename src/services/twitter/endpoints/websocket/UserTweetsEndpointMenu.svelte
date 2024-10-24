@@ -38,4 +38,4 @@
 	}
 </script>
 
-<button on:click={parseAPI}>Boop</button>
+<button onclick={parseAPI}>Boop</button>

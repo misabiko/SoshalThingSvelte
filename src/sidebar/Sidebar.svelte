@@ -138,12 +138,12 @@
 	<div id='sidebarButtons'>
 		<div>
 			{#if menu !== null}
-				<button class='borderless-button' title='Expand sidebar' on:click='{() => menu = null}'>
+				<button class='borderless-button' title='Expand sidebar' onclick='{() => menu = null}'>
 					<Fa icon={faAngleDoubleLeft} size='2x'/>
 				</button>
 			{/if}
 			{#each buttons as {icon, menu, title}}
-				<button class='borderless-button' {title} on:click='{() => toggleSidebarMenu(menu)}'>
+				<button class='borderless-button' {title} onclick='{() => toggleSidebarMenu(menu)}'>
 					<Fa icon={icon} size='2x'/>
 				</button>
 			{/each}
@@ -151,7 +151,7 @@
 				<button
 						class='borderless-button'
 						title='{`Set view: ${id}`}'
-						on:click="{() => {
+						onclick="{() => {
 							timelineViewId = id;
 							updateMainStorage('currentTimelineView', timelineViewId);
 						}}"
@@ -161,7 +161,7 @@
 			{/each}
 		</div>
 		<div>
-			<button class='borderless-button' title='Settings' on:click='{() => toggleSidebarMenu(SettingsMenu)}'>
+			<button class='borderless-button' title='Settings' onclick='{() => toggleSidebarMenu(SettingsMenu)}'>
 				<Fa icon={faCog} size='2x'/>
 			</button>
 			<a href='https://github.com/misabiko/SoshalThingSvelte' title='Github'>

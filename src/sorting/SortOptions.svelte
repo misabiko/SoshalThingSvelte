@@ -52,7 +52,7 @@
 				{#each [false, true] as reversed}
 					<button
 						class='dropdown-item'
-						on:click='{() => {
+						onclick='{() => {
 							sortInfo.method = method;
 							sortInfo.customMethod = null;
 							sortInfo.reversed = reversed;
@@ -67,7 +67,7 @@
 				{#each [false, true] as reversed}
 					<button
 						class='dropdown-item'
-						on:click='{() => {
+						onclick='{() => {
 							sortInfo.method = SortMethod.Custom;
 							sortInfo.customMethod = {
 								method: method.method,
@@ -81,14 +81,14 @@
 					</button>
 				{/each}
 			{/each}
-			<button class='dropdown-item' on:click='{() => {
+			<button class='dropdown-item' onclick='{() => {
 				sortInfo.method = null;
 				$articlesOrder = null;
 			}}'>
 				Unsorted
 			</button>
 		</Dropdown>
-		<button class='button' on:click='{() => sortInfo.reversed = !sortInfo.reversed}'>
+		<button class='button' onclick='{() => sortInfo.reversed = !sortInfo.reversed}'>
 			{#if sortInfo.method !== null}
 				{directionLabel(sortInfo.method, sortInfo.reversed)}
 			{:else}
@@ -98,10 +98,10 @@
 		{#if sortInfo.method === null}
 			<Dropdown labelText='Sort once'>
 				{#each genericSortMethods as method}
-					<button class='dropdown-item' on:click='{() => sortOnce(method, false)}'>
+					<button class='dropdown-item' onclick='{() => sortOnce(method, false)}'>
 						{ `${methodName(method)} - ${directionLabel(method, false)}` }
 					</button>
-					<button class='dropdown-item' on:click='{() => sortOnce(method, true)}'>
+					<button class='dropdown-item' onclick='{() => sortOnce(method, true)}'>
 						{ `${methodName(method)} - ${directionLabel(method, true)}` }
 					</button>
 				{/each}

@@ -12,7 +12,7 @@
 	<label class='field'>
 		Extension Id
 		<input type='text' bind:value={$extensionContextStore.id} placeholder='Extension Id'/>
-		<button on:click={extensionCheck}>Check Extension</button>
+		<button onclick={extensionCheck}>Check Extension</button>
 	</label>
 
 	<div class='field'>
@@ -24,7 +24,7 @@
 		<input
 			type='checkbox'
 			bind:checked={mainStorage.markAsReadLocal}
-			on:input="{e => updateMainStorage('markAsReadLocal', e.currentTarget.checked)}"
+			oninput="{e => updateMainStorage('markAsReadLocal', e.currentTarget.checked)}"
 		/>
 	</label>
 </section>

@@ -139,7 +139,7 @@
 							class='articleMedia articleThumbnail'
 							alt='{`${$article.idPairStr}/${index}`}'
 							src={media.thumbnail.src}
-							on:click='{() => onMediaClick(index)}'
+							onclick='{() => onMediaClick(index)}'
 					/>
 				{/if}
 			</div>
@@ -150,9 +150,9 @@
 						class='articleMedia'
 						alt='{`${$article.idPairStr}/${index}`}'
 						src={media.src}
-						on:click='{() => onMediaClick(index)}'
+						onclick='{() => onMediaClick(index)}'
 						bind:this={mediaRefs[index]}
-						on:load='{() => isLoading ? loadingStore.mediaLoaded($article.idPair, index) : undefined}'
+						onload='{() => isLoading ? loadingStore.mediaLoaded($article.idPair, index) : undefined}'
 						class:articleMediaLoading={isLoading}
 				/>
 				{#if isFakeGif}
@@ -167,7 +167,7 @@
 								class='articleMedia articleThumb'
 								alt='{`${$article.idPairStr}/${index}`}'
 								src={media.thumbnail.src}
-								on:click='{() => onMediaClick(index)}'
+								onclick='{() => onMediaClick(index)}'
 						/>
 					{:else}
 						<div class='imgPlaceHolder' style:aspect-ratio='{1 / (media.ratio ?? 1)}'></div>
@@ -181,7 +181,7 @@
 					controls
 					preload='auto'
 					muted={timelineProps.muteVideos}
-					on:click|preventDefault='{() => onMediaClick(index)}'
+					onclick|preventDefault='{() => onMediaClick(index)}'
 					bind:this={mediaRefs[index]}
 			>
 				<source src={media.src} type='video/mp4'/>
@@ -195,7 +195,7 @@
 					loop
 					muted
 					preload='auto'
-					on:click|preventDefault='{() => onMediaClick(index)}'
+					onclick|preventDefault='{() => onMediaClick(index)}'
 					bind:this={mediaRefs[index]}
 			>
 				<source src={media.src} type='video/mp4'/>
@@ -205,7 +205,7 @@
 </div>
 {#if !$showAllMedia && timelineProps.maxMediaCount !== null && $article.medias.length > timelineProps.maxMediaCount}
 	<div class='moreMedia'>
-		<button class='borderless-button' title='Load more medias' on:click='{() => timelineProps.showAllMediaArticles.update(a => {a.add($article.idPairStr); return a;})}'>
+		<button class='borderless-button' title='Load more medias' onclick='{() => timelineProps.showAllMediaArticles.update(a => {a.add($article.idPairStr); return a;})}'>
 			<Fa icon={faImages} size='2x'/>
 		</button>
 	</div>

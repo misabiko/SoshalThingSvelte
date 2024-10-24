@@ -88,6 +88,8 @@ export const buildOptions = {
 		SveltePlugin,
 		EsbuildPluginImportGlob.default(),
 	],
+	//TODO I feel like I should get a better global dev flag, maybe when we switch to bun
+	conditions: process.env.NODE_ENV === 'development' ? ['development'] : [],
 };
 
 export const errorHandler = (error, location) => {

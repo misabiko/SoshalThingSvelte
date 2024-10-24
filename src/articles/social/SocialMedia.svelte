@@ -1,6 +1,5 @@
 <script lang='ts'>
 	import type {ArticleIdPair, TimelineArticleProps} from '../index';
-	import {afterUpdate} from 'svelte';
 	import {getReadable, getWritable} from '~/services/service';
 	import Fa from 'svelte-fa';
 	import {faImages} from '@fortawesome/free-solid-svg-icons';
@@ -8,6 +7,7 @@
 	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
 	import {derived, type Readable} from 'svelte/store';
 	import {faCirclePlay} from '@fortawesome/free-regular-svg-icons';
+	import {tick} from 'svelte';
 
 	export let idPair: ArticleIdPair;
 	let article = getReadable(idPair);
@@ -24,7 +24,7 @@
 
 	export let compact: boolean | null;
 
-	afterUpdate(() => {
+	tick().then(() => {
 		const articleMediaEls = divRef?.querySelectorAll('.articleMedia:not(.articleThumbnail)');
 		if (articleMediaEls) {
 			const modifiedMedias: [number, number][] = [];

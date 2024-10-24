@@ -3,7 +3,7 @@
 	import {getWritable, toggleMarkAsRead} from '~/services/service';
 	import Article, {getActualArticle} from '../articles';
 	import type {ArticleProps, TimelineArticleProps} from './index';
-	import {afterUpdate, type ComponentType, onDestroy} from 'svelte';
+	import {type ComponentType, onDestroy, tick} from 'svelte';
 	import {getRootArticle} from './index';
 	import Modal from '../Modal.svelte';
 	import {MediaLoadType} from './media';
@@ -38,7 +38,7 @@
 			$loadingStates[actualArticleProps.mediaIndex] = loadingStore.getLoadingState(actualArticle.idPair, actualArticleProps.mediaIndex, timelineProps.shouldLoadMedia);
 	}
 
-	afterUpdate(() => {
+	tick().then(() => {
 		{
 			const modifiedMedias: [number, number][] = [];
 			for (const [iStr, _mediaRef] of Object.entries(mediaRefs)) {

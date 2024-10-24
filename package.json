@@ -11,8 +11,7 @@
 		"test:e2e:headed": "playwright test --headed",
 		"test:unit": "bun run build:unit && playwright test -c playwright.config.unit.ts",
 		"test": "bun run test:e2e && bun run test:unit",
-		"check": "tsc --noEmit && svelte-check && eslint .  --ignore-pattern \"chrome extension/dist/\" --ignore-pattern \"dist/\" --ignore-pattern \"dist-test/\"",
-		"check:notsc": "svelte-check && eslint .  --ignore-pattern \"chrome extension/dist/\" --ignore-pattern \"dist/\" --ignore-pattern \"dist-test/\""
+		"check": "tsc --noEmit && svelte-check && eslint .  --ignore-pattern \"chrome extension/dist/\" --ignore-pattern \"dist/\" --ignore-pattern \"dist-test/\""
 	},
 	"type": "module",
 	"devDependencies": {

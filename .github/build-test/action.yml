@@ -1,28 +1,26 @@
 name: Build-Test
 
 runs:
-	using: "composite"
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '16'
-          cache: 'npm'
+  using: "composite"
+  steps:
+    - uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: latest
 
-      - run: npm ci
-      - name: Install Playwright
-        run: npx playwright install --with-deps
+    - run: bun install
+    - name: Install Playwright
+      run: bunx playwright install --with-deps
 
-      - run: npm run build
+    - run: bun run build
 
-      - name: Checks
-        run: npm run check
+    - name: Checks
+      run: bun run check
 
-      - name: Playwright tests
-        run: npm test
-      - name: Upload Playwright test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-results
-          path: test-results
+    - name: Playwright tests
+      run: bun test
+    - name: Upload Playwright test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-results
+        path: test-results

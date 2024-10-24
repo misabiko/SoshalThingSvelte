@@ -12,6 +12,7 @@
 		User,
 	}
 
+	//TODO Should be a store
 	let timelineAddType = TimelineAddTypes.Empty;
 	let addDisabled = false;
 	$: {

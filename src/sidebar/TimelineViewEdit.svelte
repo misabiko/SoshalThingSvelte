@@ -89,8 +89,8 @@
 			</label>
 			{#each view.timelineIds as id, index (id)}
 				<label>
-					<select value={id} onchange='{e => replaceTimeline(viewName, index, e.currentTarget.value)}'>
-						<option value={id}>{id}</option>
+					<select onchange='{e => replaceTimeline(viewName, index, e.currentTarget.value)}'>
+						<option value={id} selected>{id}</option>
 						{#each newTimelines as newTimeline}
 							<option value={newTimeline}>{newTimeline}</option>
 						{/each}

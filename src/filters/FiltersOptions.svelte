@@ -96,12 +96,11 @@
 					/>
 				{:else if propType.type === 'order'}
 					<select
-						value="{instance.filter.props[propName]?.comparator ?? '='}"
 						onchange='{e => $instances[index].filter.props[propName].comparator = e.currentTarget.value}'
 						required={true}
 					>
 						{#each ['=', '!=', '>', '>=', '<', '<='] as comparator}
-							<option value={comparator}>{comparator}</option>
+							<option value={comparator} selected={comparator === (instance.filter.props[propName]?.comparator ?? '=')}>{comparator}</option>
 						{/each}
 					</select>
 					<input

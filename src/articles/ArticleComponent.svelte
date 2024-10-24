@@ -31,6 +31,8 @@
 	let loadingStates: Writable<Record<number, LoadingState>> = writable({});
 	$: {
 		$loadingStates = [];
+		//TODO Remove after porting to runes
+		// svelte-ignore reactive_declaration_non_reactive_property
 		if (actualArticleProps.mediaIndex === null) {
 			for (let mediaIndex = 0; mediaIndex < Math.min(actualArticle.medias.length, !$showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : Infinity); ++mediaIndex)
 				$loadingStates[mediaIndex] = loadingStore.getLoadingState(actualArticle.idPair, mediaIndex, timelineProps.shouldLoadMedia);

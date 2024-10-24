@@ -2,16 +2,17 @@
 	"name": "soshalthing-svelte",
 	"private": true,
 	"scripts": {
-		"build": "node scripts/buildscript.js",
-		"serve": "node scripts/buildscript.js && node scripts/staticServer.js",
-		"serve:static": "node scripts/staticServer.js",
-		"build:extension": "node -C development scripts/extensionbuildscript.js",
-		"build:unit": "node scripts/testbuildscript.js",
+		"build": "bun scripts/buildscript.js",
+		"serve": "bun scripts/buildscript.js && bun scripts/staticServer.js",
+		"serve:static": "bun scripts/staticServer.js",
+		"build:extension": "bun scripts/extensionbuildscript.js",
+		"build:unit": "bun scripts/testbuildscript.js",
 		"test:e2e": "playwright test",
 		"test:e2e:headed": "playwright test --headed",
-		"test:unit": "npm run build:unit && playwright test -c playwright.config.unit.ts",
-		"test": "npm run test:e2e && npm run test:unit",
-		"check": "tsc --noEmit && svelte-check && eslint .  --ignore-pattern \"chrome extension/dist/\" --ignore-pattern \"dist/\" --ignore-pattern \"dist-test/\""
+		"test:unit": "bun run build:unit && playwright test -c playwright.config.unit.ts",
+		"test": "bun run test:e2e && bun run test:unit",
+		"check": "tsc --noEmit && svelte-check && eslint .  --ignore-pattern \"chrome extension/dist/\" --ignore-pattern \"dist/\" --ignore-pattern \"dist-test/\"",
+		"check:notsc": "svelte-check && eslint .  --ignore-pattern \"chrome extension/dist/\" --ignore-pattern \"dist/\" --ignore-pattern \"dist-test/\""
 	},
 	"type": "module",
 	"devDependencies": {

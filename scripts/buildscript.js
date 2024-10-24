@@ -86,7 +86,8 @@ export const buildOptions = {
 	// watch: process.argv.includes('--watch'),
 	plugins: [
 		SveltePlugin,
-		EsbuildPluginImportGlob.default(),
+		//To glob service imports
+		EsbuildPluginImportGlob(),
 	],
 	//TODO I feel like I should get a better global dev flag, maybe when we switch to bun
 	conditions: process.env.NODE_ENV === 'development' ? ['development'] : [],

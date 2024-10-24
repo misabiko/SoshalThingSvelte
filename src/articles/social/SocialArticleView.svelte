@@ -152,7 +152,7 @@
 	<div class='repostLabel'>
 		{#if articleProps.type === 'reposts' && rootArticle.author}
 			{@const timestamp = rootArticle.creationTime && (' - ' + shortTimestamp(rootArticle.creationTime))}
-			<a href={rootArticle.author.url} target='_blank' rel='noreferrer' onclick|preventDefault='{() => onUsernameClick(rootArticle)}'>
+			<a href={rootArticle.author.url} target='_blank' rel='noreferrer' onclick='{e => {e.preventDefault(); onUsernameClick(rootArticle)}}'>
 				{#if articleProps.reposts.length > 1}
 					{articleProps.reposts.map(r => r.author?.name).filter(n => n).join(', ')} reposted{timestamp}
 				{:else}
@@ -181,7 +181,7 @@
 						href={actualArticle.author?.url}
 						target='_blank'
 						rel='noreferrer'
-						onclick|preventDefault='{() => onUsernameClick(actualArticle)}'
+						onclick='{e => {e.preventDefault(); onUsernameClick(actualArticle)}}'
 					>
 						<strong>{ actualArticle.author?.name }</strong>
 						<small>@{ actualArticle.author?.username }</small>

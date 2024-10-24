@@ -151,7 +151,7 @@
 					controls
 					preload='auto'
 					muted={timelineProps.muteVideos}
-					onclick|preventDefault='{() => onMediaClick(actualArticle.idPair, i)}'
+					onclick='{e => {e.preventDefault(); onMediaClick(actualArticle.idPair, i);}}'
 					onloadeddata='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}'
 					onload='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}'
 				>
@@ -165,7 +165,7 @@
 					loop
 					muted
 					preload='auto'
-					onclick|preventDefault='{() => onMediaClick(actualArticle.idPair, i)}'
+					onclick='{e => {e.preventDefault(); onMediaClick(actualArticle.idPair, i)}}'
 					onloadeddata='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}'
 					onload='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}'
 				>

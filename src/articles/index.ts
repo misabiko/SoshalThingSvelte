@@ -147,6 +147,9 @@ export type ArticleProps = ArticleWithRefs<{
 	mediaIndex: number | null	//Should be always null for reposts
 }>;
 
+//TODO Make ArticleViewProps type
+export type ArticleViewProps = any;
+
 export function getIdPairStr(ArticleIdPair: ArticleIdPair): ArticleIdPairStr {
 	return `${ArticleIdPair.service}/${ArticleIdPair.id}`;
 }

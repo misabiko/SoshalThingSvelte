@@ -1,9 +1,9 @@
 <script lang='ts'>
-	import {type ArticleIdPair, getActualArticleRefs} from './index';
+	import {type ArticleIdPair, type ArticleViewProps, getActualArticleRefs} from './index';
 	import {getWritable, toggleMarkAsRead} from '~/services/service';
 	import Article, {getActualArticle} from '../articles';
 	import type {ArticleProps, TimelineArticleProps} from './index';
-	import {type ComponentType, onDestroy, tick} from 'svelte';
+	import {type Component, onDestroy, tick} from 'svelte';
 	import {getRootArticle} from './index';
 	import Modal from '../Modal.svelte';
 	import {MediaLoadType} from './media';
@@ -13,7 +13,7 @@
 	export let articleProps: ArticleProps;
 	let actualArticleProps = getActualArticleRefs(articleProps) as ArticleProps;
 	export let timelineProps: TimelineArticleProps;
-	export let view: ComponentType;
+	export let view: Component<ArticleViewProps>;
 	export let style = ''; style;
 	let modal = false;
 

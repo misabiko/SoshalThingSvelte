@@ -1,10 +1,10 @@
 import {
 	type ArticleAuthor,
 	type ArticleIdPair,
-	type ArticleIdPairStr,
+	type ArticleIdPairStr, type ArticleViewProps,
 	getIdPairStr,
 } from '~/articles';
-import type {ComponentType} from 'svelte';
+import type {Component} from 'svelte';
 import type { FilterInstance } from '~/filters';
 import { SortMethod, type SortInfo } from '~/sorting';
 import ColumnContainer from '~/containers/ColumnContainer.svelte';
@@ -16,6 +16,7 @@ import { writable } from 'svelte/store';
 import { everyRefreshType } from '~/services/endpoints';
 import MasonryContainer from '~/containers/MasonryContainer.svelte';
 import { getServices } from '~/services/service';
+import type {ActualContainerProps} from '~/containers';
 
 export type TimelineData = {
 	title: string
@@ -27,8 +28,8 @@ export type TimelineData = {
 	articles: Writable<ArticleIdPair[]>
 	articlesOrder: Writable<null | string[]>
 	section: { useSection: boolean, count: number }
-	container: ComponentType
-	articleView: ComponentType
+	container: Component<ActualContainerProps, any, any>
+	articleView: Component<ArticleViewProps, any, any>
 	columnCount: number
 	rtl: boolean
 	// TODO Add option to set flex-grow: 1 instead of fixed width
@@ -163,7 +164,7 @@ export type TimelineEndpoint = {
 export type FullscreenInfo = {
 	index: number | null
 	columnCount: number | null
-	container: ComponentType | null
+	container: Component | null
 };
 
 export function newUserTimeline(serviceName: string, author: ArticleAuthor): TimelineData | null {

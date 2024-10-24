@@ -5,7 +5,7 @@ import {
 	type TimelineEndpoint,
 	type TimelineView,
 } from '~/timelines';
-import type {ComponentType} from 'svelte';
+import type {Component} from 'svelte';
 import ColumnContainer from '~/containers/ColumnContainer.svelte';
 import RowContainer from '~/containers/RowContainer.svelte';
 import MasonryContainer from '~/containers/MasonryContainer.svelte';
@@ -25,6 +25,8 @@ import {
 } from '~/services/endpoints';
 import type {EndpointConstructorParams} from '~/services/endpoints';
 import {derived, get} from 'svelte/store';
+import type {ArticleViewProps} from '~/articles';
+import type {ActualContainerProps} from '~/containers';
 
 export const MAIN_STORAGE_KEY = 'SoshalThingSvelte';
 export const TIMELINE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Timelines';
@@ -254,7 +256,7 @@ export function getCookie(name: string): string | null {
 		return null;
 }
 
-function parseContainer(container: string | undefined): ComponentType {
+function parseContainer(container: string | undefined): Component<ActualContainerProps> {
 	switch (container) {
 		case 'Row':
 		case 'RowContainer':
@@ -269,7 +271,7 @@ function parseContainer(container: string | undefined): ComponentType {
 	}
 }
 
-function parseArticleView(articleView: string | undefined): ComponentType {
+function parseArticleView(articleView: string | undefined): Component<ArticleViewProps> {
 	switch (articleView) {
 		case 'Gallery':
 		case 'GalleryArticle':

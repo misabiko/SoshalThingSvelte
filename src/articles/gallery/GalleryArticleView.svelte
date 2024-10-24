@@ -240,33 +240,35 @@
 		</div>
 		<div class='holderBox holderBoxBottom'>
 			{#each actions[0] as action (action.key)}
-				{#if action.action}
-					{@const actionFunc = action.action}
-					{@const actioned = action.actioned(rootArticle)}
-					{@const disabled = action.disabled ? action.disabled(rootArticle) : false}
-					{#if !actioned || action.togglable}
-						<button
+				{#if action.icon}
+					{#if action.action}
+						{@const actionFunc = action.action}
+						{@const actioned = action.actioned(rootArticle)}
+						{@const disabled = action.disabled ? action.disabled(rootArticle) : false}
+						{#if !actioned || action.togglable}
+							<button
+								class='button'
+								class:actioned
+								title={action.name}
+								onclick='{() => actionFunc(rootArticle.idPair)}'
+								{disabled}
+							>
+								<span class='icon darkIcon'>
+									<Fa icon='{action.actionedIcon && actioned ? action.actionedIcon : action.icon}' class='is-small'/>
+								</span>
+							</button>
+						{/if}
+					{:else}
+						<a
 							class='button'
-							class:actioned
 							title={action.name}
-							onclick='{() => actionFunc(rootArticle.idPair)}'
-							{disabled}
+							href={action.href}
 						>
 							<span class='icon darkIcon'>
-								<Fa icon='{action.actionedIcon && actioned ? action.actionedIcon : action.icon}' class='is-small'/>
+								<Fa icon={action.icon} class='is-small'/>
 							</span>
-						</button>
+						</a>
 					{/if}
-				{:else}
-					<a
-						class='button'
-						title={action.name}
-						href={action.href}
-					>
-						<span class='icon darkIcon'>
-							<Fa icon={action.icon} class='is-small'/>
-						</span>
-					</a>
 				{/if}
 			{/each}
 		</div>

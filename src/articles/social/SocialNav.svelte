@@ -46,7 +46,7 @@
 		genericActions.push({
 			href: repost.url,
 			key: 'repostExternalLink',
-			name: "Repost's external Link",
+			name: 'Repost\'s external Link',
 			icon: faUpRightFromSquare,
 			color: null,
 			count: null,
@@ -71,6 +71,7 @@
 		}, [[], []] as [ArticleAction[], ArticleAction[]]);
 
 	let hoveredActions = new Set<string>();
+
 	function updateActionHover(key: string, hovered: boolean) {
 		if (hovered)
 			hoveredActions.add(key);
@@ -102,9 +103,11 @@
 		color: var(--light);
 		font-size: unset;
 	}
+
 	.articleButton:focus {
 		outline: none;
 	}
+
 	.articleButton:hover span {
 		color: var(--primary);
 	}
@@ -121,60 +124,62 @@
 <nav>
 	<div>
 		{#each actions[0] as action (action.key)}
-			{#if action.action}
-				{@const actionFunc = action.action}
-				{@const count = action.count ? action.count($article) ?? 0 : 0}
-				{@const disabled = action.disabled ? action.disabled($article) : false}
-				{@const actioned = action.actioned($article)}
-				{@const isHovered = hoveredActions.has(action.key)}
-				<!-- svelte-ignore a11y-mouse-events-have-key-events -->
-				<button
-					class='articleButton borderless-button'
-					class:actioned
-					title={action.name}
-					onclick='{() => actionFunc(idPair)}'
-					disabled='{disabled || (actioned && !action.togglable)}'
-					onmouseover='{() => updateActionHover(action.key, true)}'
-					onmouseout='{() => updateActionHover(action.key, false)}'
-				>
-					<span class='icon'>
-						<Fa
-							icon='{action.actionedIcon && actioned ? action.actionedIcon : action.icon}'
-							color='{!disabled && (actioned || isHovered) ? action.color : undefined}'
-						/>
-					</span>
-					{#if count}
-						<span style:color="{!disabled && (actioned || isHovered) ? action.color : 'inherit'}">{count}</span>
-					{/if}
-				</button>
-			{:else}
-				{@const count = action.count ? action.count($article) ?? 0 : 0}
-				{@const isHovered = hoveredActions.has(action.key)}
-				<!-- svelte-ignore a11y-mouse-events-have-key-events -->
-				<a
-						class='articleButton borderless-button'
-						title={action.name}
-						href={action.href}
-						onmouseover='{() => updateActionHover(action.key, true)}'
-						onmouseout='{() => updateActionHover(action.key, false)}'
-				>
-					<span class='icon'>
-						<Fa
-								icon={action.icon}
-								color='{isHovered ? action.color ?? undefined : undefined}'
-						/>
-					</span>
-					{#if count}
-						<span style:color="{isHovered ? action.color ?? undefined : 'inherit'}">{count}</span>
-					{/if}
-				</a>
+			{#if action.icon}
+				{#if action.action}
+					{@const actionFunc = action.action}
+					{@const count = action.count ? action.count($article) ?? 0 : 0}
+					{@const disabled = action.disabled ? action.disabled($article) : false}
+					{@const actioned = action.actioned($article)}
+					{@const isHovered = hoveredActions.has(action.key)}
+					<!-- svelte-ignore a11y-mouse-events-have-key-events -->
+					<button
+							class='articleButton borderless-button'
+							class:actioned
+							title={action.name}
+							onclick='{() => actionFunc(idPair)}'
+							disabled='{disabled || (actioned && !action.togglable)}'
+							onmouseover='{() => updateActionHover(action.key, true)}'
+							onmouseout='{() => updateActionHover(action.key, false)}'
+					>
+						<span class='icon'>
+							<Fa
+									icon='{action.actionedIcon && actioned ? action.actionedIcon : action.icon}'
+									color='{action.color && !disabled && (actioned || isHovered) ? action.color : undefined}'
+							/>
+						</span>
+						{#if count}
+							<span style:color="{!disabled && (actioned || isHovered) ? action.color : 'inherit'}">{count}</span>
+						{/if}
+					</button>
+				{:else}
+					{@const count = action.count ? action.count($article) ?? 0 : 0}
+					{@const isHovered = hoveredActions.has(action.key)}
+					<!-- svelte-ignore a11y-mouse-events-have-key-events -->
+					<a
+							class='articleButton borderless-button'
+							title={action.name}
+							href={action.href}
+							onmouseover='{() => updateActionHover(action.key, true)}'
+							onmouseout='{() => updateActionHover(action.key, false)}'
+					>
+						<span class='icon'>
+							<Fa
+									icon={action.icon}
+									color='{isHovered ? action.color ?? undefined : undefined}'
+							/>
+						</span>
+						{#if count}
+							<span style:color="{isHovered ? action.color ?? undefined : 'inherit'}">{count}</span>
+						{/if}
+					</a>
+				{/if}
 			{/if}
 		{/each}
 		{#if !isQuoted && !modal}
 			<button
-				class='articleButton borderless-button'
-				title='Expand article as modal'
-				onclick='{() => modal = true}'
+					class='articleButton borderless-button'
+					title='Expand article as modal'
+					onclick='{() => modal = true}'
 			>
 				<span class='icon'>
 					<Fa icon={faExpandAlt}/>
@@ -208,10 +213,10 @@
 					</button>
 				{:else}
 					<a
-						class='dropdown-item'
-						href={action.href}
-						target='_blank'
-						rel='noreferrer'
+							class='dropdown-item'
+							href={action.href}
+							target='_blank'
+							rel='noreferrer'
 					>
 						{action.name}
 					</a>

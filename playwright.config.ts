@@ -14,6 +14,7 @@ const config: PlaywrightTestConfig = {
 	//Unit tests are built separately, and ran from /dist-test
 	testDir: 'tests/e2e/',
 	forbidOnly: !!process.env.CI,
+	timeout: 3000,
 };
 
 export default config;

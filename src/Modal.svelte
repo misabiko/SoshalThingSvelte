@@ -1,20 +1,34 @@
 <script lang='ts'>
 	//https://github.com/c0bra/svelma/blob/master/src/components/Modal/Modal.svelte
 	//https://svelte.dev/examples/modal
-	export let active: boolean;
-	export let mountElement: Element | null = null;
+	import {onDestroy, type Snippet} from 'svelte';
+
+	let {
+		active = $bindable(),
+		mountElement,
+		children,
+	}: {
+		active: boolean;
+		mountElement: Element | null;
+		children: Snippet;
+	} = $props();
 
 	let modal: HTMLDivElement;
 
-	$: {
+	$effect(() => {
 		if (modal && active && mountElement) {
 			mountElement.appendChild(modal);
 		}
-	}
+	});
 
 	function close() {
+		modal.remove();
 		active = false;
 	}
+
+	onDestroy(() => {
+		close();
+	});
 </script>
 
 <style>
@@ -58,9 +72,9 @@
 </style>
 
 <div class='modal' class:active={active} bind:this={modal}>
-	<!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
+	<!-- svelte-ignore a11y_no_static_element_interactions, a11y_click_events_have_key_events -->
 	<div class='modal-background' onclick={close}></div>
 	<div class='modal-content'>
-		<slot/>
+		{@render children()}
 	</div>
 </div>

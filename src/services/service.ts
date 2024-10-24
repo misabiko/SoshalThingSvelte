@@ -11,7 +11,7 @@ import {undoables} from '~/undo';
 import type {Filter, FilterInfo} from '~/filters';
 import type {ArticleAction} from './actions';
 import {fetchExtension} from './extension';
-import type {ComponentType} from 'svelte';
+import type {Component} from 'svelte';
 import type {TimelineTemplate} from '~/timelines';
 import {getServiceStorage} from '~/storages';
 
@@ -42,7 +42,7 @@ export interface Service<A extends Article = Article> {
 	fetchInfo: FetchInfo
 	fetch: (url: RequestInfo | URL, init?: RequestInit) => Promise<any>
 	isOnDomain: boolean | null
-	settings: ComponentType | null
+	settings: Component | null
 	//TODO Update from storage
 	timelineTemplates: Record<string, TimelineTemplate>
 }

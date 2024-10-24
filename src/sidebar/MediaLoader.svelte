@@ -2,11 +2,11 @@
 	import {loadingStore} from '~/bufferedMediaLoading';
 	import {derived} from 'svelte/store';
 
-	$: queueLength = derived(loadingStore, $loadingStore => $loadingStore.queue.length);
+	$: queueLength = derived(loadingStore, $loadingStoree => $loadingStoree.queue.length);
 </script>
 
-<button on:click={loadingStore.clearLoadings}>Clear loadings</button>
-<button on:click={loadingStore.clearQueue}>Clear queue</button>
+<button onclick={loadingStore.clearLoadings}>Clear loadings</button>
+<button onclick={loadingStore.clearQueue}>Clear queue</button>
 <section>
 	{#if $loadingStore.loadings.size}
 		Currently loading:

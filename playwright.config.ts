@@ -2,7 +2,7 @@ import type { PlaywrightTestConfig } from '@playwright/test';
 
 const config: PlaywrightTestConfig = {
 	webServer: {
-		command: 'npm run build -- --entry ../tests/e2e/entry.ts && npm run serve:static -- --port 8089',
+		command: 'bun run build -- --entry ../tests/e2e/entry.ts && bun run serve:static -- --port 8089',
 		port: 8089,
 		reuseExistingServer: !process.env.CI,
 	},

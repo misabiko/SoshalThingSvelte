@@ -38,7 +38,7 @@
 				alt='{`${actualArticle.idPair.id}/${mediaIndex} thumbnail`}'
 				class='articleThumb articleMedia'
 				src={media.thumbnail.src}
-				on:click='{() => onMediaClick(actualArticle.idPair, mediaIndex)}'
+				onclick='{() => onMediaClick(actualArticle.idPair, mediaIndex)}'
 				style:object-fit="{'cover'}"
 				style:object-position='{`${media.thumbnail.offsetX ?? 0} ${media.thumbnail.offsetY ?? 0}`}'
 				style:aspect-ratio='{`1 / ${media.thumbnail.ratio}`}'
@@ -51,7 +51,7 @@
 			alt='{`${actualArticle.idPair.id}/${mediaIndex} thumbnail`}'
 			class='articleThumb articleMedia'
 			src={media.thumbnail.src}
-			on:click='{() => onMediaClick(actualArticle.idPair, mediaIndex)}'
+			onclick='{() => onMediaClick(actualArticle.idPair, mediaIndex)}'
 		/>
 	{/if}
 {:else}

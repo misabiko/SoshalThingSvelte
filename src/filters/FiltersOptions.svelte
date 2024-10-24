@@ -57,13 +57,13 @@
 					instance.inverted
 				)
 			}
-			<button class='button' class:is-success={instance.enabled} on:click='{() => $instances[index].enabled = !instance.enabled}'>
+			<button class='button' class:is-success={instance.enabled} onclick='{() => $instances[index].enabled = !instance.enabled}'>
 				{instance.enabled ? 'Enabled' : 'Disabled'}
 			</button>
-			<button class='button' class:is-info={instance.inverted} on:click='{() => $instances[index].inverted = !instance.inverted}'>
+			<button class='button' class:is-info={instance.inverted} onclick='{() => $instances[index].inverted = !instance.inverted}'>
 				{instance.inverted ? 'Inverted' : 'Normal'}
 			</button>
-			<button class='button' on:click='{() => removeFilter(index)}'>
+			<button class='button' onclick='{() => removeFilter(index)}'>
 				Remove
 			</button>
 		</label>
@@ -84,7 +84,7 @@
 					<input
 						type='number'
 						value="{instance.filter.props[propName] ?? ''}"
-						on:change="{e => {
+						onchange="{e => {
 							if (propType.optional && e.currentTarget.value === '')
 								delete $instances[index].filter.props[propName];
 							else
@@ -96,18 +96,17 @@
 					/>
 				{:else if propType.type === 'order'}
 					<select
-						value="{instance.filter.props[propName]?.comparator ?? '='}"
-						on:change='{e => $instances[index].filter.props[propName].comparator = e.currentTarget.value}'
+						onchange='{e => $instances[index].filter.props[propName].comparator = e.currentTarget.value}'
 						required={true}
 					>
 						{#each ['=', '!=', '>', '>=', '<', '<='] as comparator}
-							<option value={comparator}>{comparator}</option>
+							<option value={comparator} selected={comparator === (instance.filter.props[propName]?.comparator ?? '=')}>{comparator}</option>
 						{/each}
 					</select>
 					<input
 						type='number'
 						value="{instance.filter.props[propName].value ?? ''}"
-						on:change="{e => {
+						onchange="{e => {
 							if (propType.optional && e.currentTarget.value === '')
 								delete $instances[index].filter.props[propName].value;
 							else
@@ -119,7 +118,7 @@
 					/>
 				{:else if propType.type === 'select'}
 					<select
-						on:change='{e => $instances[index].filter.props[propName] = [...e.currentTarget.selectedOptions].map(o => o.value)}'
+						onchange='{e => $instances[index].filter.props[propName] = [...e.currentTarget.selectedOptions].map(o => o.value)}'
 						multiple={propType.multiple}
 						required={!propType.optional}
 					>
@@ -134,7 +133,7 @@
 					<!--TODO Enforce required-->
 					<input
 						value="{instance.filter.props[propName] ?? ''}"
-						on:change="{e => {
+						onchange="{e => {
 							if (propType.optional && e.currentTarget.value === '')
 								delete $instances[index].filter.props[propName];
 							else
@@ -151,24 +150,24 @@
 
 <Dropdown labelText='New Filter'>
 	{#each Object.entries(genericFilterTypes) as [filterType, filterTypeInfo]}
-		<button class='dropdown-item' on:click='{() => addFilter(filterType, false)}'>
+		<button class='dropdown-item' onclick='{() => addFilter(filterType, false)}'>
 			{ filterTypeInfo.name }
 		</button>
 	{/each}
 	{#each serviceFilterTypes as filterType}
-		<button class='dropdown-item' on:click='{() => addFilter(filterType.filter, false, filterType.service)}'>
+		<button class='dropdown-item' onclick='{() => addFilter(filterType.filter, false, filterType.service)}'>
 			{ filterType.service }: { filterType.filterTypeInfo.name }
 		</button>
 	{/each}
 </Dropdown>
 <Dropdown labelText='New Inverted Filter'>
 	{#each Object.entries(genericFilterTypes) as [filterType, filterTypeInfo]}
-		<button class='dropdown-item' on:click='{() => addFilter(filterType, true)}'>
+		<button class='dropdown-item' onclick='{() => addFilter(filterType, true)}'>
 			{ filterTypeInfo.invertedName }
 		</button>
 	{/each}
 	{#each serviceFilterTypes as filterType}
-		<button class='dropdown-item' on:click='{() => addFilter(filterType.filter, true, filterType.service)}'>
+		<button class='dropdown-item' onclick='{() => addFilter(filterType.filter, true, filterType.service)}'>
 			{ filterType.service }: { filterType.filterTypeInfo.invertedName }
 		</button>
 	{/each}

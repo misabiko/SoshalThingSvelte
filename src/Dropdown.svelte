@@ -85,7 +85,7 @@
 	class:is-right={isRight}
 >
 	<div class='{`dropdown-trigger ${triggerClasses}`}'>
-		<button bind:this={triggerRef} class='{`button ${labelClasses}`}' on:click='{() => isActive = !isActive}'>
+		<button bind:this={triggerRef} class='{`button ${labelClasses}`}' onclick='{() => isActive = !isActive}'>
 			{#if $$slots.triggerIcon}
 				<slot name='triggerIcon'></slot>
 			{:else}
@@ -95,7 +95,7 @@
 		</button>
 	</div>
 	<div class='dropdown-menu'>
-		<div class='dropdown-content' on:auxclick={close}>
+		<div class='dropdown-content' onauxclick={close}>
 			<slot></slot>
 		</div>
 	</div>

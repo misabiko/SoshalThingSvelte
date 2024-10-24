@@ -86,7 +86,7 @@
 		use:portal='{{ target: activatorMount }}'
 		id='favvieweractivator'
 		class={activatorMount.children[0].className}
-		on:click='{() => favviewerHidden = !favviewerHidden}'
+		onclick='{() => favviewerHidden = !favviewerHidden}'
 >
 	SoshalThing
 </a>

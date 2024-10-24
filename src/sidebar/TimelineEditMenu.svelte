@@ -12,6 +12,7 @@
 		User,
 	}
 
+	//TODO Should be a store
 	let timelineAddType = TimelineAddTypes.Empty;
 	let addDisabled = false;
 	$: {
@@ -63,13 +64,13 @@
 		<input bind:value={username} name='username'/>
 	{/if}
 	<button
-		on:click='{() => {const data = getTimelineData(); if (data) setModalTimeline(data);}}'
+		onclick='{() => {const data = getTimelineData(); if (data) setModalTimeline(data);}}'
 		disabled={addDisabled}
 	>
 		Add Modal Timeline
 	</button>
 	<button
-		on:click='{() => {const data = getTimelineData(); if (data) addTimeline(data);}}'
+		onclick='{() => {const data = getTimelineData(); if (data) addTimeline(data);}}'
 		disabled={addDisabled}
 	>
 		Add Timeline

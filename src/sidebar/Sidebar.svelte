@@ -14,7 +14,7 @@
 	import MediaLoader from './MediaLoader.svelte';
 	import Undoables from './Undoables.svelte';
 	import Endpoints from './Endpoints.svelte';
-	import type {ComponentType} from 'svelte';
+	import type {Component} from 'svelte';
 	import SettingsMenu from './SettingsMenu.svelte';
 	import TimelineEditMenu from './TimelineEditMenu.svelte';
 	import BatchActions from './BatchActions.svelte';
@@ -32,7 +32,7 @@
 		Undoables,
 	}
 
-	let menu: ComponentType | SidebarMenu | null = null;
+	let menu: Component | SidebarMenu | null = null;
 
 	export let setModalTimeline: (data: TimelineData, width?: number) => void;
 	export let addTimeline: (data: TimelineData) => void;
@@ -41,11 +41,11 @@
 	export let timelineViews: Record<string, TimelineView>;
 	export let timelineViewId: string;
 
-	function toggleSidebarMenu(newMenu: ComponentType | SidebarMenu) {
+	function toggleSidebarMenu(newMenu: Component | SidebarMenu) {
 		menu = menu === newMenu ? null : newMenu;
 	}
 
-	const buttons: {icon: IconDefinition, menu: ComponentType | SidebarMenu, title: string}[] = [
+	const buttons: {icon: IconDefinition, menu: Component | SidebarMenu, title: string}[] = [
 		{icon: faPlus, menu: SidebarMenu.TimelineEdit, title: 'Add new timeline'},
 		{icon: faBarsProgress, menu: Endpoints, title: 'Endpoints'},
 		{icon: faNewspaper, menu: LoadArticle, title: 'Load article'},
@@ -138,12 +138,12 @@
 	<div id='sidebarButtons'>
 		<div>
 			{#if menu !== null}
-				<button class='borderless-button' title='Expand sidebar' on:click='{() => menu = null}'>
+				<button class='borderless-button' title='Expand sidebar' onclick='{() => menu = null}'>
 					<Fa icon={faAngleDoubleLeft} size='2x'/>
 				</button>
 			{/if}
 			{#each buttons as {icon, menu, title}}
-				<button class='borderless-button' {title} on:click='{() => toggleSidebarMenu(menu)}'>
+				<button class='borderless-button' {title} onclick='{() => toggleSidebarMenu(menu)}'>
 					<Fa icon={icon} size='2x'/>
 				</button>
 			{/each}
@@ -151,7 +151,7 @@
 				<button
 						class='borderless-button'
 						title='{`Set view: ${id}`}'
-						on:click="{() => {
+						onclick="{() => {
 							timelineViewId = id;
 							updateMainStorage('currentTimelineView', timelineViewId);
 						}}"
@@ -161,7 +161,7 @@
 			{/each}
 		</div>
 		<div>
-			<button class='borderless-button' title='Settings' on:click='{() => toggleSidebarMenu(SettingsMenu)}'>
+			<button class='borderless-button' title='Settings' onclick='{() => toggleSidebarMenu(SettingsMenu)}'>
 				<Fa icon={faCog} size='2x'/>
 			</button>
 			<a href='https://github.com/misabiko/SoshalThingSvelte' title='Github'>

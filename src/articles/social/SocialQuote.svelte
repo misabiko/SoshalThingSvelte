@@ -49,7 +49,8 @@
 	.quotedPost .names:hover > * {
 		text-decoration: underline;
 	}
-	.quotedPost span * {
+	/*Timestamp*/
+	.quotedPost :global(span *) {
 		vertical-align: middle;
 	}
 	.quotedPost p {

@@ -1,21 +1,7 @@
 import esbuild from 'esbuild';
 import {buildOptions, errorHandler} from './buildscript.js';
 import fs from 'fs';
-import path from 'path';
 import fastGlob from 'fast-glob';
-
-//From https://github.com/evanw/esbuild/issues/2093#issuecomment-1062461380
-//To make sure Soshal library uses the same svelte runtime as this one
-const DedupSvelteInternalPlugin = {
-	name: 'dedup-svelte',
-	async setup({ onResolve }) {
-		const svelteInternal = path.join(process.cwd(), '/node_modules/svelte/src/runtime/internal/index.js');
-		const svelte = path.join(process.cwd(), '/node_modules/svelte/src/runtime/index.js');
-
-		onResolve({ filter: /^svelte\/internal$/ }, () => ({ path: svelteInternal }));
-		onResolve({ filter: /^svelte$/ }, () => ({ path: svelte }));
-	},
-};
 
 const outdir = './chrome extension/dist';
 
@@ -30,7 +16,7 @@ const extensionBuildOptions = {
 	outdir,
 	splitting: false,
 	format: 'esm',
-	plugins: [...buildOptions.plugins, DedupSvelteInternalPlugin],
+	plugins: [...buildOptions.plugins],
 };
 
 if (!fs.existsSync(outdir))

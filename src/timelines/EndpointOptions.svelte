@@ -139,27 +139,27 @@
 					<input
 							type='checkbox'
 							checked={timelineEndpoint.refreshTypes.has(refreshType)}
-							on:change='{e => onRefreshTypeChange(i, refreshType, e.currentTarget.checked)}'
+							onchange='{e => onRefreshTypeChange(i, refreshType, e.currentTarget.checked)}'
 					/>
 				</label>
 			{/each}
 
 			{#if (endpoint instanceof LoadablePageEndpoint || endpoint instanceof LoadableEndpoint) && endpoint.lastPage}
-				<button on:click='{() => loadRandomPage(timelineEndpoint)}'>Load Random</button>
+				<button onclick='{() => loadRandomPage(timelineEndpoint)}'>Load Random</button>
 			{/if}
 
-			<button on:click='{() => removeEndpoint(i)}'>Remove</button>
+			<button onclick='{() => removeEndpoint(i)}'>Remove</button>
 		</li>
 	{/each}
 </ul>
 
 {#if newEndpointServices.length > 0}
-	<select bind:value={newEndpointService} on:change={updateParams}>
+	<select bind:value={newEndpointService} onchange={updateParams}>
 		{#each newEndpointServices as service}
 			<option value={service.name}>{service.name}</option>
 		{/each}
 	</select>
-	<select bind:value={newEndpoint} on:change={updateParams}>
+	<select bind:value={newEndpoint} onchange={updateParams}>
 		{#each Object.values(getServices()[newEndpointService].endpointConstructors) as endpoint}
 			<option value={endpoint.name}>{endpoint.name}</option>
 		{/each}
@@ -170,15 +170,15 @@
 		<label class='field'>
 			{key}
 			{#if typeof value === 'number'}
-				<input type='number' {value} on:change='{e => params[key] = parseInt(e.currentTarget.value)}'/>
+				<input type='number' {value} onchange='{e => params[key] = parseInt(e.currentTarget.value)}'/>
 			{:else if typeof value === 'boolean'}
-				<input type='checkbox' checked={value} on:change='{e => params[key] = e.currentTarget.checked}'/>
+				<input type='checkbox' checked={value} onchange='{e => params[key] = e.currentTarget.checked}'/>
 			{:else}
-				<input type='text' {value} on:change='{e => params[key] = e.currentTarget.value}'/>
+				<input type='text' {value} onchange='{e => params[key] = e.currentTarget.value}'/>
 			{/if}
 		</label>
 	{/each}
 	<br/>
 
-	<button on:click={addEndpoint}>New Endpoint</button>
+	<button onclick={addEndpoint}>New Endpoint</button>
 {/if}

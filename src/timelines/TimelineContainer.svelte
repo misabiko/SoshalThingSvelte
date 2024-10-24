@@ -1,7 +1,7 @@
 <script lang='ts'>
 	import {addArticlesToTimeline, type TimelineCollection, type TimelineData, type TimelineView} from './index';
 	import Timeline from './Timeline.svelte';
-	import {afterUpdate, getContext, onMount} from 'svelte';
+	import {getContext, onMount, tick} from 'svelte';
 	import {timelineEndpoints} from '~/services/endpoints';
     import Modal from '~/Modal.svelte';
     import type { ArticleIdPair } from '~/articles';
@@ -55,7 +55,7 @@
 		timelineEndpoints.set(newTimelineEndpoints);
 	}
 
-	afterUpdate(() => {
+	tick().then(() => {
 		//Workaround for https://github.com/sveltejs/svelte/issues/5268
 		//During Modal's close transition, the child Timeline still calls reactive statements for modalTimeline
 		if (!modalTimelineActive)

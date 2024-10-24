@@ -84,28 +84,28 @@
 		<div class='timelineViewEdit'>
 			{viewName}
 			<label class='field'>
-				<button on:click='{() => setView(viewName)}'>Set View</button>
-				<button on:click='{() => removeView(viewName)}'>Remove View</button>
+				<button onclick='{() => setView(viewName)}'>Set View</button>
+				<button onclick='{() => removeView(viewName)}'>Remove View</button>
 			</label>
 			{#each view.timelineIds as id, index (id)}
 				<label>
-					<select value={id} on:change='{e => replaceTimeline(viewName, index, e.currentTarget.value)}'>
-						<option value={id}>{id}</option>
+					<select onchange='{e => replaceTimeline(viewName, index, e.currentTarget.value)}'>
+						<option value={id} selected>{id}</option>
 						{#each newTimelines as newTimeline}
 							<option value={newTimeline}>{newTimeline}</option>
 						{/each}
 					</select>
 					{#if view.timelineIds.length > 1}
-						<button on:click='{() => moveTimeline(viewName, index, false)}' disabled='{index === view.timelineIds.length - 1}'>↓</button>
-						<button on:click='{() => moveTimeline(viewName, index, true)}' disabled='{index === 0}'>↑</button>
+						<button onclick='{() => moveTimeline(viewName, index, false)}' disabled='{index === view.timelineIds.length - 1}'>↓</button>
+						<button onclick='{() => moveTimeline(viewName, index, true)}' disabled='{index === 0}'>↑</button>
 					{/if}
-					<button on:click='{() => removeTimeline(viewName, index)}'>Remove</button>
+					<button onclick='{() => removeTimeline(viewName, index)}'>Remove</button>
 				</label>
 			{/each}
 			{#if newTimelines.length}
 				<Dropdown labelText='New timeline'>
 					{#each newTimelines as id}
-						<button on:click='{() => addTimeline(viewName, id)}'>{id}</button>
+						<button onclick='{() => addTimeline(viewName, id)}'>{id}</button>
 					{/each}
 				</Dropdown>
 			{/if}
@@ -114,6 +114,6 @@
 
 	<div>
 		<input bind:value={newViewName} placeholder='Timeline View Name'/>
-		<button on:click={addView} disabled='{newViewName.length === 0 || Object.hasOwn(timelineViews, newViewName)}'>Add new view</button>
+		<button onclick={addView} disabled='{newViewName.length === 0 || Object.hasOwn(timelineViews, newViewName)}'>Add new view</button>
 	</div>
 </div>

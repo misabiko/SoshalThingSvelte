@@ -15,13 +15,13 @@
 </script>
 
 <section>
-	<button on:click={modalTimeline}>
+	<button onclick={modalTimeline}>
 		Open Timeline
 	</button>
 	<!--TODO Add undoable ids-->
 	{#each [...$undoables] as undoable, index (`${undoable.text}/${index}`)}
 			<p>{undoable.text}</p>
-			<button on:click='{() => undoables.toggleDo(index)}'>
+			<button onclick='{() => undoables.toggleDo(index)}'>
 				{undoable.undid ? 'Redo' : 'Undo'}
 			</button>
 	{:else}

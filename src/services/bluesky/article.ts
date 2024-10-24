@@ -1,9 +1,7 @@
 import Article, {type ArticleAuthor, type ArticleRefIdPair, type ArticleWithRefs} from '~/articles';
 import type {ArticleMedia} from '~/articles/media';
-import type {FeedViewPost, PostView, ReasonRepost} from '@atproto/api/dist/client/types/app/bsky/feed/defs';
-import type {ViewImage} from '@atproto/api/src/client/types/app/bsky/embed/images';
 import {getRatio, MediaLoadType, MediaType} from '~/articles/media';
-import type { AppBskyActorDefs } from '@atproto/api';
+import {type AppBskyActorDefs, AppBskyEmbedImages, type AppBskyFeedDefs, AppBskyFeedPost} from '@atproto/api';
 
 export default class BlueskyArticle extends Article {
 	static service = 'Bluesky';
@@ -67,9 +65,10 @@ export default class BlueskyArticle extends Article {
 	}
 }
 
-export interface BlueskyAuthor extends ArticleAuthor {
-
-}
+export type BlueskyAuthor = ArticleAuthor;
+// export interface BlueskyAuthor extends ArticleAuthor {
+//
+// }
 
 type BlueskyParams = {
 	type: 'post'
@@ -90,7 +89,7 @@ type BlueskyParams = {
 	creationTime: Date
 };
 
-export function parseFeedViewPost(feedViewPost: FeedViewPost, markedAsReadStorage: string[]): ArticleWithRefs {
+export function parseFeedViewPost(feedViewPost: AppBskyFeedDefs.FeedViewPost, markedAsReadStorage: string[]): ArticleWithRefs {
 	const rawSource = [feedViewPost];
 	const post = {
 		type: 'normal',
@@ -98,7 +97,7 @@ export function parseFeedViewPost(feedViewPost: FeedViewPost, markedAsReadStorag
 	} satisfies ArticleWithRefs;
 
 	if (feedViewPost.reason?.$type === 'app.bsky.feed.defs#reasonRepost') {
-		const reason = feedViewPost.reason as ReasonRepost;
+		const reason = feedViewPost.reason as AppBskyFeedDefs.ReasonRepost;
 		const by = reason.by as AppBskyActorDefs.ProfileViewBasic;
 		return {
 			type: 'repost',
@@ -135,15 +134,15 @@ export function parseFeedViewPost(feedViewPost: FeedViewPost, markedAsReadStorag
 	}
 }
 
-export function BlueskyPostToArticle(post: PostView, markedAsReadStorage: string[], rawSource: any[]): BlueskyArticle {
+export function BlueskyPostToArticle(post: AppBskyFeedDefs.PostView, markedAsReadStorage: string[], rawSource: any[]): BlueskyArticle {
 	return new BlueskyArticle(
 		post.cid,
 		markedAsReadStorage,
 		{
 			type: 'post',
-			text: (post.record as any)['text'],
+			text: (post.record as AppBskyFeedPost.Record).text,
 			url: `https://bsky.app/profile/${post.author.handle}/post/${post.uri.split('/').at(-1)}`,
-			medias: (post.embed?.images as ViewImage[] | undefined)?.map((image: ViewImage) => {
+			medias: (post.embed?.images as AppBskyEmbedImages.ViewImage[] | undefined)?.map((image: AppBskyEmbedImages.ViewImage) => {
 				const ratio = image.aspectRatio?.width && image.aspectRatio?.height ? getRatio(image.aspectRatio?.width, image.aspectRatio?.height) : null;
 				return ({
 					src: image.fullsize,
@@ -169,7 +168,7 @@ export function BlueskyPostToArticle(post: PostView, markedAsReadStorage: string
 				url: 'https://bsky.app/profile/' + post.author.handle,
 				avatarUrl: post.author.avatar,
 			},
-			creationTime: new Date((post.record as any)['createdAt']),
+			creationTime: new Date((post.record as AppBskyFeedPost.Record).createdAt),
 
 			uri: post.uri,
 

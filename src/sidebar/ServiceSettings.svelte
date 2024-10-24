@@ -29,7 +29,7 @@
 {#if service.fetchInfo.tabInfo}
 	Tab Id: {$tabId}
 	<br/>
-	<button on:click={getTabId}>
+	<button onclick={getTabId}>
 		Get tab id
 	</button>
 	<br/>

@@ -1,3 +1,3 @@
-export let localStorage = {
+export const localStorage = {
 	getItem: () => '',
 };

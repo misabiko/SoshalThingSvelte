@@ -1,12 +1,12 @@
 import type {ArticleAuthor, ArticleWithRefs} from '~/articles';
 import Article, {getRootArticle} from '~/articles';
 import type {ArticleRefIdPair} from '~/articles';
-import type {Note, User} from 'misskey-js/built/entities';
 import type {ArticleMedia} from '~/articles/media';
 import {getRatio, MediaLoadType, MediaType} from '~/articles/media';
 import * as mfm from 'mfm-js';
-import type {MfmNode} from 'mfm-js/built/node';
 import {MisskeyService} from './service';
+import type { entities } from 'misskey-js';
+import type {MfmNode} from 'mfm-js';
 
 export default class MisskeyArticle extends Article {
 	static service = 'Misskey';
@@ -35,19 +35,19 @@ export default class MisskeyArticle extends Article {
 		});
 	}
 
-	get numberId() {
-		//TODO Make id sorting per service and dissolve numberId
-		return 0;
-	}
+	readonly numberId = 0;
+	// get numberId() {
+	// 	//TODO Make id sorting per service and dissolve numberId
+	// 	return 0;
+	// }
 }
 
 interface MisskeyUser extends ArticleAuthor {
-	id: User['id']
-	avatarUrl: User['avatarUrl']
+	id: entities.User['id']
 }
 
 export function fromAPI(
-	note: Note,
+	note: entities.Note,
 	markedAsReadStorage: string[],
 	_isRef = false,
 ): ArticleWithRefs {
@@ -60,7 +60,7 @@ export function fromAPI(
 
 	let refs: ArticleRefIdPair | null = null;
 
-	const medias: ArticleMedia[] = note.files.map(f => {
+	const medias: ArticleMedia[] = (note.files ?? []).map(f => {
 		let mediaType: MediaType;
 		switch (f.type) {
 			case 'image/png':
@@ -87,12 +87,13 @@ export function fromAPI(
 
 	const author = {
 		id: note.user.id,
-		name: note.user.name,
+		name: note.user.name ?? note.user.username,
 		username: note.user.username,
-		avatarUrl: note.user.avatarUrl,
+		//TODO Allow null avatarUrl
+		avatarUrl: note.user.avatarUrl ?? '',
 		//TODO Use host
 		url: `https://misskey.io/@${note.user.username}`
-	};
+	} satisfies MisskeyUser;
 
 	const makeArticle = () => new MisskeyArticle(
 			note.id,
@@ -106,7 +107,7 @@ export function fromAPI(
 			[note],
 		);
 
-	if (note.renote !== undefined) {
+	if (note.renote) {
 		const renoted = fromAPI(note.renote, markedAsReadStorage, true);
 
 		if (note.text !== null) {

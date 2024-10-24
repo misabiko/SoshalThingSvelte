@@ -22,6 +22,9 @@ export const BlueskyService: BlueskyServiceType = {
 							return article;
 						});
 					}else {
+						if (!uri)
+							throw new Error('Cannot like article without URI');
+
 						const response = await BlueskyService.agent.like(uri, articleIdPair.id as string);
 						writable.update(article => {
 							article.likeURI = response.uri;
@@ -46,6 +49,9 @@ export const BlueskyService: BlueskyServiceType = {
 							return article;
 						});
 					}else {
+						if (!uri)
+							throw new Error('Cannot repost article without URI');
+
 						const response = await BlueskyService.agent.repost(uri, articleIdPair.id as string);
 						writable.update(article => {
 							article.repostURI = response.uri;

@@ -41,7 +41,7 @@ import {registerEndpointConstructor} from '../../service';
 // 		return true;
 // 	}
 //
-// 	parsePage(document: HTMLElement): ArticleWithRefs[] {
+// 	parsePage(document: Document): ArticleWithRefs[] {
 // 		const thumbnails = document.querySelector('section > div > div > ul')?.children;
 // 		if (!thumbnails)
 // 			throw "Couldn't find thumbnails";

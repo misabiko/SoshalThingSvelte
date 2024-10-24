@@ -71,4 +71,4 @@
 	</select>
 </label>
 
-<button on:click={doAction}>Do Action</button>
+<button onclick={doAction}>Do Action</button>

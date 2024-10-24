@@ -56,8 +56,8 @@
 			alt='{`${actualArticle.idPair.id}/${mediaIndex}`}'
 			class='articleMedia'
 			src={media.src}
-			on:click='{() => onMediaClick(actualArticle.idPair, mediaIndex)}'
-			on:load='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, mediaIndex) : undefined}'
+			onclick='{() => onMediaClick(actualArticle.idPair, mediaIndex)}'
+			onload='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, mediaIndex) : undefined}'
 			class:articleMediaLoading={isLoading}
 			bind:this={ref}
 			style:object-fit="{'cover'}"
@@ -85,8 +85,8 @@
 		alt='{`${actualArticle.idPair.id}/${mediaIndex}`}'
 		class='articleMedia'
 		src={media.src}
-		on:click='{() => onMediaClick(actualArticle.idPair, mediaIndex)}'
-		on:load='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, mediaIndex) : undefined}'
+		onclick='{() => onMediaClick(actualArticle.idPair, mediaIndex)}'
+		onload='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, mediaIndex) : undefined}'
 		class:articleMediaLoading={isLoading}
 		bind:this={ref}
 	/>

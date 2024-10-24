@@ -151,9 +151,9 @@
 					controls
 					preload='auto'
 					muted={timelineProps.muteVideos}
-					on:click|preventDefault='{() => onMediaClick(actualArticle.idPair, i)}'
-					on:loadeddata='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}'
-					on:load='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}'
+					onclick='{e => {e.preventDefault(); onMediaClick(actualArticle.idPair, i);}}'
+					onloadeddata='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}'
+					onload='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}'
 				>
 					<source src={media.src} type='video/mp4'/>
 				</video>
@@ -165,9 +165,9 @@
 					loop
 					muted
 					preload='auto'
-					on:click|preventDefault='{() => onMediaClick(actualArticle.idPair, i)}'
-					on:loadeddata='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}'
-					on:load='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}'
+					onclick='{e => {e.preventDefault(); onMediaClick(actualArticle.idPair, i)}}'
+					onloadeddata='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}'
+					onload='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}'
 				>
 					<source src={media.src} type='video/mp4'/>
 				</video>
@@ -175,7 +175,7 @@
 		{/each}
 		{#if !$showAllMedia && timelineProps.maxMediaCount !== null && actualArticle.medias.length > timelineProps.maxMediaCount}
 			<div class='moreMedia'>
-				<button class='borderless-button' title='Load more medias' on:click='{() => timelineProps.showAllMediaArticles.update(a => {a.add(rootArticle.idPairStr); return a;})}'>
+				<button class='borderless-button' title='Load more medias' onclick='{() => timelineProps.showAllMediaArticles.update(a => {a.add(rootArticle.idPairStr); return a;})}'>
 					<Fa icon={faImages} size='2x'/>
 				</button>
 			</div>
@@ -187,7 +187,7 @@
 				</span>
 			</a>
 			{#if !modal}
-				<button class='button' on:click='{() => modal = !modal}'>
+				<button class='button' onclick='{() => modal = !modal}'>
 					<span class='icon darkIcon'>
 						<Fa icon={faExpandArrowsAlt} class='is-small'/>
 					</span>
@@ -207,7 +207,7 @@
 						{@const actioned = action.actioned(rootArticle)}
 						<button
 								class='dropdown-item'
-								on:click='{() => actionFunc(rootArticle.idPair)}'
+								onclick='{() => actionFunc(rootArticle.idPair)}'
 								disabled='{disabled || (actioned && !action.togglable)}'
 						>
 							{#if action.actionedName && actioned}
@@ -230,43 +230,45 @@
 						</a>
 					{/if}
 				{/each}
-				<button class='dropdown-item' on:click={onLogData}>
+				<button class='dropdown-item' onclick={onLogData}>
 					Log Data
 				</button>
-				<button class='dropdown-item' on:click={onLogJSON}>
+				<button class='dropdown-item' onclick={onLogJSON}>
 					Log JSON Data
 				</button>
 			</Dropdown>
 		</div>
 		<div class='holderBox holderBoxBottom'>
 			{#each actions[0] as action (action.key)}
-				{#if action.action}
-					{@const actionFunc = action.action}
-					{@const actioned = action.actioned(rootArticle)}
-					{@const disabled = action.disabled ? action.disabled(rootArticle) : false}
-					{#if !actioned || action.togglable}
-						<button
+				{#if action.icon}
+					{#if action.action}
+						{@const actionFunc = action.action}
+						{@const actioned = action.actioned(rootArticle)}
+						{@const disabled = action.disabled ? action.disabled(rootArticle) : false}
+						{#if !actioned || action.togglable}
+							<button
+								class='button'
+								class:actioned
+								title={action.name}
+								onclick='{() => actionFunc(rootArticle.idPair)}'
+								{disabled}
+							>
+								<span class='icon darkIcon'>
+									<Fa icon='{action.actionedIcon && actioned ? action.actionedIcon : action.icon}' class='is-small'/>
+								</span>
+							</button>
+						{/if}
+					{:else}
+						<a
 							class='button'
-							class:actioned
 							title={action.name}
-							on:click='{() => actionFunc(rootArticle.idPair)}'
-							{disabled}
+							href={action.href}
 						>
 							<span class='icon darkIcon'>
-								<Fa icon='{action.actionedIcon && actioned ? action.actionedIcon : action.icon}' class='is-small'/>
+								<Fa icon={action.icon} class='is-small'/>
 							</span>
-						</button>
+						</a>
 					{/if}
-				{:else}
-					<a
-						class='button'
-						title={action.name}
-						href={action.href}
-					>
-						<span class='icon darkIcon'>
-							<Fa icon={action.icon} class='is-small'/>
-						</span>
-					</a>
 				{/if}
 			{/each}
 		</div>

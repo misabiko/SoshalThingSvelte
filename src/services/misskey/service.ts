@@ -1,7 +1,7 @@
 import type MisskeyArticle from './article';
 import type {Service} from '../service';
 import {newService, registerService} from '../service';
-import type {APIClient} from 'misskey-js/built/api';
+import type { api as Misskey } from 'misskey-js';
 
 export const MisskeyService: MisskeyServiceType = {
 	...newService({
@@ -13,7 +13,7 @@ export const MisskeyService: MisskeyServiceType = {
 registerService(MisskeyService);
 
 interface MisskeyServiceType extends Service<MisskeyArticle> {
-	cli?: APIClient
+	cli?: Misskey.APIClient
 	emojis?: Emoji[] | null
 }
 

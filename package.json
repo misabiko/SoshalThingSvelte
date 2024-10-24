@@ -11,7 +11,7 @@
 		"test:e2e:headed": "playwright test --headed",
 		"test:unit": "npm run build:unit && playwright test -c playwright.config.unit.ts",
 		"test": "npm run test:e2e && npm run test:unit",
-		"check": "tsc --noEmit && svelte-check && eslint .  --ignore-pattern \"chrome extension/dist/\" --ignore-pattern \"dist/\" --ignore-pattern \"dist-test/\" --ignore-pattern \"**/services/twitter/\""
+		"check": "tsc --noEmit && svelte-check && eslint .  --ignore-pattern \"chrome extension/dist/\" --ignore-pattern \"dist/\" --ignore-pattern \"dist-test/\""
 	},
 	"type": "module",
 	"devDependencies": {

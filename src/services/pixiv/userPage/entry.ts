@@ -12,11 +12,17 @@ import UserBookmarksPage from './UserBookmarksPage.svelte';
 const path = window.location.pathname.split('/');
 if (path.length === 4 || path[4] === 'illustrations' || path[4] === 'artworks') {
 	tryInject(() => {
-		const sectionSibling = document.querySelector('section + div');
-		const img = sectionSibling?.getElementsByTagName('img')[0];
-		//Before the image loads, there's a placeholder figure element
-		const figure = sectionSibling?.getElementsByTagName('figure')[0];
-		return (img ?? figure)?.parentElement?.parentElement?.parentElement?.parentElement?.parentElement?.parentElement?.parentElement?.parentElement ?? null;
+		let thumbnail;
+		if (document.getElementsByTagName('section').length) {
+			const sectionSibling = document.querySelector('section + div');
+			thumbnail = sectionSibling?.getElementsByTagName('img')[0];
+			//Before the image loads, there's a placeholder figure element
+			thumbnail ??= sectionSibling?.getElementsByTagName('figure')[0];
+		}else {
+			thumbnail = document.querySelector('ul img');
+			thumbnail ??= document.querySelector('ul figure');
+		}
+		return thumbnail?.parentElement?.parentElement?.parentElement?.parentElement?.parentElement?.parentElement?.parentElement?.parentElement ?? null;
 	})
 	.then(ul => {
 		const target = ul.parentElement/* as HTMLUListElement | null*/;

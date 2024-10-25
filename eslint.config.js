@@ -10,7 +10,7 @@ const ignores = [
 	'**/dist/',
 	'**/dist*/',
 	'**/node_modules/',
-	'chrome extension/dist/'
+	'extension/dist/'
 ];
 
 export default tseslint.config(

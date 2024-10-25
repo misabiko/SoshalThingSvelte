@@ -1,6 +1,7 @@
 {
 	"name": "soshalthing-svelte",
 	"private": true,
+	"type": "module",
 	"scripts": {
 		"build": "bun scripts/buildscript.ts",
 		"serve": "bun scripts/staticServer.ts",
@@ -10,10 +11,9 @@
 		"test:e2e:headed": "playwright test --headed",
 		"test:unit": "bun run build:unit && playwright test -c playwright.config.unit.ts",
 		"test": "bun run test:e2e && bun run test:unit",
-		"check": "tsc --noEmit && svelte-check && eslint .  --ignore-pattern \"chrome extension/dist/\" --ignore-pattern \"dist/\" --ignore-pattern \"dist-test/\"",
-		"clean": "rm -r dist dist-test test-results"
+		"check": "tsc --noEmit && svelte-check && eslint .  --ignore-pattern \"extension/dist/\" --ignore-pattern \"dist/\" --ignore-pattern \"dist-test/\"",
+		"clean": "rm -rf dist dist-test test-results extension/dist"
 	},
-	"type": "module",
 	"devDependencies": {
 		"@playwright/test": "^1.40.1",
 		"@stylistic/eslint-plugin": "^2.9.0",

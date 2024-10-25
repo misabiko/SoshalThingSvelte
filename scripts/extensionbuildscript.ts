@@ -3,7 +3,7 @@ import {buildOptions, errorHandler} from './buildscript.js';
 import fs from 'fs';
 import fastGlob from 'fast-glob';
 
-const outdir = './chrome extension/dist';
+const outdir = './extension/dist';
 
 const entryPoints = [
 	...fastGlob.globSync('./src/extension/**/entry.ts', { onlyFiles: true }),
@@ -25,7 +25,7 @@ esbuild
 	.build(extensionBuildOptions)
 	.catch(errorHandler)
 	.then(() => {
-		const manifest = JSON.parse(fs.readFileSync('./chrome extension/manifest.json', 'utf8'));
+		const manifest = JSON.parse(fs.readFileSync('./extension/manifest.json', 'utf8'));
 
 		const entryPointNames = entryPoints
 			.map(e => e.split('/'))

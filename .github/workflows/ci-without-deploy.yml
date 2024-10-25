@@ -2,16 +2,12 @@ name: CI Without Deploy
 
 on:
   push:
-    branches: [ dev ]
-  pull_request:
-    branches: [ main ]
-    types: [closed]
+    branches-ignore: [ main ]
 
 permissions:
   contents: write
 jobs:
   build-test:
-    if: github.event_name == 'push' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

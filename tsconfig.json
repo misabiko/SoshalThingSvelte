@@ -12,7 +12,8 @@
 		"types": [
 			"svelte",
 			"chrome",
-			"node"
+			"node",
+			"Bun"
 		],
 
 		"strict": true,

@@ -1,13 +1,27 @@
-//TODO Use Bun serve
-import express from 'express';
+import {parseArgs} from 'util';
 
-const app = express();
+const args = parseArgs({
+	args: Bun.argv,
+	options: {
+		port: {
+			type: 'string',
+			short: 'p',
+			default: '8080',
+		}
+	},
+	strict: true,
+	allowPositionals: true,
+});
 
-let port = 8080;
-const portIndex = process.argv.findIndex(s => s === '--port');
-if (portIndex > -1 && process.argv.length >= portIndex)
-	port = parseInt(process.argv[portIndex + 1]);
+const server = Bun.serve({
+	port: parseInt(args.values.port),
+	async fetch(req) {
+		let pathname = new URL(req.url).pathname;
+		if (pathname === '/')
+			pathname = '/index.html';
 
-app.use(express.static('dist'));
+		return new Response(Bun.file('dist' + pathname));
+	},
+});
 
-app.listen(port, () => console.log(`Listening on http://localhost:${port}`));
+console.log(`Listening on ${server.url}`);

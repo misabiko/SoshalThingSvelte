@@ -37,6 +37,7 @@
 	};
 
 	let articleProps: ArticleProps | null;
+	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 	$: article !== null ? {
 		...article,
 		filteredOut: false,

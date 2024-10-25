@@ -6,6 +6,7 @@ import htmlParser from '@html-eslint/parser';
 import eslintPluginSvelte from 'eslint-plugin-svelte';
 import svelteParser from 'svelte-eslint-parser';
 import stylistic from '@stylistic/eslint-plugin';
+import svelteConfig from './svelte.config.js';
 
 export default tseslint.config(
 	{
@@ -82,6 +83,7 @@ export default tseslint.config(
 			'@typescript-eslint/no-non-null-assertion': 'off',
 			//Sometimes the index name is useful, sometimes it's not
 			'@typescript-eslint/consistent-indexed-object-style': 'off',
+			'@typescript-eslint/no-empty-function': 'off',
 
 			// 'no-undef': 'error',
 			// 'comma-dangle': ['warn', 'always-multiline'],
@@ -115,6 +117,7 @@ export default tseslint.config(
 			parser: svelteParser,
 			parserOptions: {
 				parser: tseslint.parser,
+				svelteConfig,
 			}
 		},
 		rules: {
@@ -130,6 +133,8 @@ export default tseslint.config(
 			//https://github.com/sveltejs/eslint-plugin-svelte/issues/818
 			//https://github.com/sveltejs/eslint-plugin-svelte/pull/816
 			'prefer-const': 'off',
+			//TODO Investigate false positives
+			'svelte/no-unused-svelte-ignore': 'off',
 		},
 	},
 	{

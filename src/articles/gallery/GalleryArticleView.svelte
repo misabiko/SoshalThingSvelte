@@ -21,10 +21,14 @@
 	import {derived, type Readable} from 'svelte/store';
 
 	export let timelineProps: TimelineArticleProps;
+	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 	export let articleProps: ArticleProps; articleProps;
 	export let actualArticleProps: ArticleProps;
+	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 	export let style = ''; style;
+	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 	export let modal: boolean; modal;
+	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 	export let rootArticle: Readonly<Article>; rootArticle;
 	export let actualArticle: Readonly<Article>;
 	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number;

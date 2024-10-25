@@ -14,6 +14,7 @@
 	export let timelineProps: TimelineArticleProps;
 	export let articleProps: ArticleProps;
 	export let actualArticleProps: ArticleProps;
+	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 	export let modal: boolean; modal;
 	export let rootArticle: Readonly<Article>;
 	// $: idPair = rootArticle.idPair;

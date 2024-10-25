@@ -20,7 +20,9 @@
 			case TimelineAddTypes.User:
 				try {
 					addDisabled = !username.length || !JSON.parse(username)?.name?.length;
-				} catch (e) {
+					//TODO Debug why prefix is ignored
+					// eslint-disable-next-line @typescript-eslint/no-unused-vars
+				} catch (_e) {
 					addDisabled = true;
 				}
 				break;

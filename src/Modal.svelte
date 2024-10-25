@@ -72,7 +72,9 @@
 </style>
 
 <div class='modal' class:active={active} bind:this={modal}>
-	<!-- svelte-ignore a11y_no_static_element_interactions, a11y_click_events_have_key_events -->
+<!--TODO svelte/no-unused-svelte-ignore doesn't work for multiple inline ignores-->
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div class='modal-background' onclick={close}></div>
 	<div class='modal-content'>
 		{@render children()}

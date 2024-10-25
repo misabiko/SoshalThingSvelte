@@ -70,8 +70,8 @@
 			for (const {idServiceMedia} of addedArticles)
 				columnsChanged.add(addArticle(idServiceMedia));
 
-			for (let i = 0; i < columns.length; ++i)
-				columns[i].idServiceMedias.sort((a, b) => uniqueArticles[a].index - uniqueArticles[b].index);
+			for (const column of columns)
+				column.idServiceMedias.sort((a, b) => uniqueArticles[a].index - uniqueArticles[b].index);
 
 			for (const i of columnsChanged.values())
 				columns[i].ratio = columns[i].idServiceMedias.reduce((acc, curr) => acc + getRatio(uniqueArticles[curr].articleProps), 0);

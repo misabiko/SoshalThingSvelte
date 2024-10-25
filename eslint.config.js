@@ -1,40 +1,31 @@
-import globals from 'globals';
-import stylistic from '@stylistic/eslint-plugin';
+import tsEslint from 'typescript-eslint';
 import pluginJs from '@eslint/js';
-import tseslint from 'typescript-eslint';
+import globals from 'globals';
 import pluginHtml from '@html-eslint/eslint-plugin';
 import htmlParser from '@html-eslint/parser';
 import eslintPluginSvelte from 'eslint-plugin-svelte';
 
-const ignores = [
-	'**/dist/',
-	'**/dist*/',
-	'**/node_modules/',
-];
-
-export default tseslint.config(
+export default tsEslint.config(
 	{
-		ignores,
+		ignores: [
+			'**/dist/',
+			'**/dist*/',
+			'**/node_modules/',
+		],
 	},
 	{
 		extends: [
 			...eslintPluginSvelte.configs['flat/recommended'],
 			pluginJs.configs.recommended,
-			...tseslint.configs.strict,
-			...tseslint.configs.stylistic,
+			...tsEslint.configs.strict,
+			...tsEslint.configs.stylistic,
 			//TODO "plugin:svelte/recommended"
 		],
-		files: ['**/*.{js,mjs,cjs,ts}'],
-		ignores,
+		files: ['**!/!*.{js,mjs,cjs,ts}'],
 		languageOptions: {
 			globals: {
 				...globals.browser,
-				// Bun: 'readonly',
-				// process: 'readonly',
 			},
-		},
-		plugins: {
-			'@stylistic': stylistic,
 		},
 		rules: {
 			//Wish I could disable semicolon for class member fields
@@ -87,7 +78,6 @@ export default tseslint.config(
 			//Sometimes the index name is useful, sometimes it's not
 			'@typescript-eslint/consistent-indexed-object-style': 'off',
 
-			// 'no-unused-vars': 'error',
 			// 'no-undef': 'error',
 			// 'comma-dangle': ['warn', 'always-multiline'],
 			// '@stylistic/semi': ['error', 'always'],
@@ -117,7 +107,6 @@ export default tseslint.config(
 	{
 		...pluginHtml.configs['flat/recommended'],
 		files: ['**/*.html'],
-		ignores,
 		languageOptions: {
 			parser: htmlParser,
 		},

@@ -26,7 +26,6 @@ Build the extension with `bun run build:extension`
 
 Test with `bun run test`, it uses the port 8089 by default
 
-[//]: # (TODO Port scripts to typescript)
 [//]: # (TODO +1 Add extension popup to inject soshal)
 [//]: # (TODO +1 Make eslint work for svelte files scripts)
 [//]: # (TODO +1 Persist auto refresh)

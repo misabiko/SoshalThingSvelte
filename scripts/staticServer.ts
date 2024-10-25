@@ -1,3 +1,4 @@
+//TODO Use Bun serve
 import express from 'express';
 
 const app = express();

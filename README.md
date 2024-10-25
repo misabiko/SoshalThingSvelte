@@ -28,17 +28,15 @@ Build the extension with `npm run build:extension`
 
 Test with `npm test`, it uses the port 8089 by default
 
----
-
-TODO Be able to add endpoints from ui
-TODO Add "one time endpoints" to timeline options
-TODO Fix modals
-TODO Add extension popup to inject soshal
-TODO Make eslint work for svelte files scripts
-TODO Rename favviewer to injected
-TODO Print vscode's problems
-TODO Go through project's TODOs
-TODO "Third-party cookie will be blocked in future Chrome versions as part of Privacy Sandbox."
-TODO Filter for "article from X service"
-TODO Persist auto refresh
-TODO Port to bun
+[//]: # (TODO Add "one time endpoints" to timeline options)
+[//]: # (TODO Add extension popup to inject soshal)
+[//]: # (TODO Make eslint work for svelte files scripts)
+[//]: # (TODO Rename favviewer to injected)
+[//]: # (TODO Print vscode's problems)
+[//]: # (TODO Go through project's TODOs)
+[//]: # (TODO "Third-party cookie will be blocked in future Chrome versions as part of Privacy Sandbox.")
+[//]: # (TODO Filter for "article from X service")
+[//]: # (TODO Persist auto refresh)
+[//]: # (TODO Update README &#40;remove twitter, bun commands&#41;)
+[//]: # (TODO Lint github workflows)
+[//]: # (TODO Port scripts to typescript)

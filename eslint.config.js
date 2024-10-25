@@ -10,17 +10,19 @@ const ignores = [
 	'**/dist/',
 	'**/dist*/',
 	'**/node_modules/',
-	'extension/dist/'
 ];
 
 export default tseslint.config(
+	{
+		ignores,
+	},
 	{
 		extends: [
 			...eslintPluginSvelte.configs['flat/recommended'],
 			pluginJs.configs.recommended,
 			...tseslint.configs.strict,
 			...tseslint.configs.stylistic,
-		//TODO "plugin:svelte/recommended"
+			//TODO "plugin:svelte/recommended"
 		],
 		files: ['**/*.{js,mjs,cjs,ts}'],
 		ignores,

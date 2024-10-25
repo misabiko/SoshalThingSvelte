@@ -72,14 +72,6 @@ export default tseslint.config(
 					varsIgnorePattern: '^_'
 				}
 			],
-			'svelte/require-store-reactive-access': 'error',
-			'svelte/html-quotes': ['warn', {
-				prefer: 'single',
-				dynamic: {
-					quoted: false,
-					avoidInvalidUnquotedInHTML: true
-				}
-			}],
 			'prefer-const': ['warn', {
 				destructuring: 'all',
 			}],
@@ -124,7 +116,21 @@ export default tseslint.config(
 			parserOptions: {
 				parser: tseslint.parser,
 			}
-		}
+		},
+		rules: {
+			'svelte/require-store-reactive-access': 'error',
+			'svelte/html-quotes': ['warn', {
+				prefer: 'single',
+				dynamic: {
+					quoted: false,
+					avoidInvalidUnquotedInHTML: true
+				}
+			}],
+			//TODO Some way to track issues via comments
+			//https://github.com/sveltejs/eslint-plugin-svelte/issues/818
+			//https://github.com/sveltejs/eslint-plugin-svelte/pull/816
+			'prefer-const': 'off',
+		},
 	},
 	{
 		...pluginHtml.configs['flat/recommended'],

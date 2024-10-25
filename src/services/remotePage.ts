@@ -1,4 +1,4 @@
-import { loadMainStorage } from '~/storages';
+import {loadMainStorage} from '~/storages';
 
 //Websocket no-connection error is not catcheable, and will be flagged as extension error no matter what, so better to make ws opt-in
 //https://stackoverflow.com/a/31003057/2692695

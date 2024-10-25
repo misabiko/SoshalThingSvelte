@@ -9,9 +9,9 @@ test.describe('SocialArticleView', () => {
 					{
 						service: 'Dummy',
 						endpointType: 'DummyEndpoint',
-					}
-				]
-			}}
+					},
+				],
+			}},
 		});
 
 		await page.locator('article button[title = "Like"]').first().click();
@@ -27,9 +27,9 @@ test.describe('SocialArticleView', () => {
 					{
 						service: 'Dummy',
 						endpointType: 'DummyEndpoint',
-					}
-				]
-			}}
+					},
+				],
+			}},
 		});
 
 		await page.locator('article button[title = "Repost"]').first().click();

@@ -99,13 +99,13 @@
 			case 'reposts':
 				console.dir({
 					...articleProps,
-					reposted: getRootArticle(articleProps.reposted).rawSource
+					reposted: getRootArticle(articleProps.reposted).rawSource,
 				});
 				break;
 			case 'quote':
 				console.dir({
 					article: getRootArticle(articleProps).rawSource,
-					quoted: getRootArticle(articleProps.quoted).rawSource
+					quoted: getRootArticle(articleProps.quoted).rawSource,
 				});
 				break;
 		}

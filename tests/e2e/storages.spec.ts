@@ -6,8 +6,8 @@ test.describe('app options', () => {
 		await loadWithLocalStorage(page, {
 			[MAIN_STORAGE_KEY]: {},
 			[TIMELINE_STORAGE_KEY]: {
-				t1: {}, t2: {}, t3: {}
-			}
+				t1: {}, t2: {}, t3: {},
+			},
 		});
 
 		await expect(page.locator('.timeline')).toHaveCount(3);
@@ -17,11 +17,11 @@ test.describe('app options', () => {
 	test('fullscreen true', async ({page}) => {
 		await loadWithLocalStorage(page, {
 			[MAIN_STORAGE_KEY]: {
-				fullscreen: true
+				fullscreen: true,
 			},
 			[TIMELINE_STORAGE_KEY]: {
-				t1: {}, t2:{}, t3:{}
-			}
+				t1: {}, t2: {}, t3: {},
+			},
 		});
 
 		const timeline = page.locator('.timeline');
@@ -31,11 +31,11 @@ test.describe('app options', () => {
 	test('fullscreen false', async ({page}) => {
 		await loadWithLocalStorage(page, {
 			[MAIN_STORAGE_KEY]: {
-				fullscreen: false
+				fullscreen: false,
 			},
 			[TIMELINE_STORAGE_KEY]: {
-				t1: {}, t2:{}, t3:{}
-			}
+				t1: {}, t2: {}, t3: {},
+			},
 		});
 
 		await expect(page.locator('.timeline')).toHaveCount(3);
@@ -45,13 +45,13 @@ test.describe('app options', () => {
 	test('fullscreen index', async ({page}) => {
 		await loadWithLocalStorage(page, {
 			[MAIN_STORAGE_KEY]: {
-				fullscreen: 1
+				fullscreen: 1,
 			},
 			[TIMELINE_STORAGE_KEY]: {
 				Timeline1: {title: 'Timeline 1'},
 				Timeline2: {title: 'Timeline 2'},
 				Timeline3: {title: 'Timeline 3'},
-			}
+			},
 		});
 
 		const timeline = page.locator('.timeline');
@@ -63,13 +63,13 @@ test.describe('app options', () => {
 	test('timelineIds', async ({page}) => {
 		await loadWithLocalStorage(page, {
 			[MAIN_STORAGE_KEY]: {
-				timelineIds: ['Timeline1', 'Timeline3']
+				timelineIds: ['Timeline1', 'Timeline3'],
 			},
 			[TIMELINE_STORAGE_KEY]: {
 				Timeline1: {title: 'Timeline 1'},
 				Timeline2: {title: 'Timeline 2'},
 				Timeline3: {title: 'Timeline 3'},
-			}
+			},
 		});
 
 		const timeline = page.locator('.timeline');
@@ -80,19 +80,19 @@ test.describe('app options', () => {
 });
 
 test.describe('timelines', () => {
-	test("no storage doesn't add any timelines", async ({ page }) => {
+	test("no storage doesn't add any timelines", async ({page}) => {
 		await clearLocalStorages(page, [TIMELINE_STORAGE_KEY]);
 
 		await expect(page.locator('.timeline')).toHaveCount(0);
 	});
 
-	test('empty objects add empty timelines', async ({ page }) => {
+	test('empty objects add empty timelines', async ({page}) => {
 		await loadWithLocalStorage(page, {[TIMELINE_STORAGE_KEY]: {t1: {}, t2: {}, t3: {}, t4: {}}});
 
 		await expect(page.locator('.timeline')).toHaveCount(4);
 	});
 
-	test('title', async ({ page }) => {
+	test('title', async ({page}) => {
 		const title = 'Timeline Title';
 
 		await loadWithLocalStorage(page, {
@@ -104,7 +104,7 @@ test.describe('timelines', () => {
 		await expect(page.locator('.timelineLeftHeader strong')).toHaveText(title);
 	});
 
-	test('masonry container', async ({ page }) => {
+	test('masonry container', async ({page}) => {
 		await loadWithLocalStorage(page, {
 			[TIMELINE_STORAGE_KEY]: {t1: {
 				container: 'Masonry',
@@ -119,7 +119,7 @@ test.describe('timelines', () => {
 	});
 
 	test.describe('endpoints', () => {
-		test('without endpoint', async ({ page }) => {
+		test('without endpoint', async ({page}) => {
 			await loadWithLocalStorage(page, {
 				[TIMELINE_STORAGE_KEY]: {t1: {}},
 			});
@@ -135,7 +135,7 @@ test.describe('timelines', () => {
 			await expect(page.locator('.sidebarMenu')).toHaveText('No endpoints currently');
 		});
 
-		test('with endpoints', async ({ page }) => {
+		test('with endpoints', async ({page}) => {
 			await loadWithLocalStorage(page, {
 				[TIMELINE_STORAGE_KEY]: {t1: {
 					endpoints: [
@@ -147,10 +147,10 @@ test.describe('timelines', () => {
 							service: 'Dummy',
 							endpointType: 'DummyEndpointWithParam',
 							params: {
-								query: 'querystring'
-							}
-						}
-					]
+								query: 'querystring',
+							},
+						},
+					],
 				}},
 			});
 
@@ -166,7 +166,7 @@ test.describe('timelines', () => {
 			await expect(page.locator('.sidebarMenu .endpointOptions')).toHaveCount(2);
 		});
 
-		test('with duplicate non-duplicatable endpoints', async ({ page }) => {
+		test('with duplicate non-duplicatable endpoints', async ({page}) => {
 			await loadWithLocalStorage(page, {
 				[TIMELINE_STORAGE_KEY]: {
 					t1: {
@@ -181,7 +181,7 @@ test.describe('timelines', () => {
 							},
 						],
 					},
-					t2:{
+					t2: {
 						endpoints: [
 							{
 								service: 'Dummy',
@@ -192,7 +192,7 @@ test.describe('timelines', () => {
 								endpointType: 'DummyEndpoint',
 							},
 						],
-					}
+					},
 				},
 			});
 
@@ -222,9 +222,9 @@ test.describe('cache', () => {
 					{
 						service: 'Dummy',
 						endpointType: 'DummyEndpoint',
-					}
-				]
-			}}
+					},
+				],
+			}},
 		});
 	});
 

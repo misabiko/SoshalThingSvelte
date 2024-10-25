@@ -3,7 +3,7 @@ import '~/services/pixiv/endpoints/user.endpoint';
 import '~/services/pixiv/endpoints/ranking.endpoint';
 import '~/services/pixiv/endpoints/top.endpoint';
 import '~/services/pixiv/endpoints/discovery.endpoint';
-import { mount } from 'svelte';
+import {mount} from 'svelte';
 
 import Discovery from './Discovery.svelte';
 import {tryInject} from '~/services/extension';

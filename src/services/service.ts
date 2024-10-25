@@ -15,7 +15,7 @@ import type {Component} from 'svelte';
 import type {TimelineTemplate} from '~/timelines';
 import {getServiceStorage} from '~/storages';
 
-const services: { [name: string]: Service<any> } = {};
+const services: {[name: string]: Service<any>} = {};
 
 if (globalThis.window) {
 	(globalThis.window as any).soshalthing ??= {};
@@ -28,9 +28,9 @@ export interface Service<A extends Article = Article> {
 	readonly endpointConstructors: Record<string, EndpointConstructorInfo>
 	userEndpoint: ((author: ArticleAuthor) => Endpoint) | null
 	loadArticle: ((id: string) => Promise<ArticleWithRefs | null>) | null
-	articleActions: { [name: string]: ArticleAction<A> }
+	articleActions: {[name: string]: ArticleAction<A>}
 	requestImageLoad?: (id: ArticleId, index: number) => void
-	getCachedArticles?: () => { [id: string]: object }
+	getCachedArticles?: () => {[id: string]: object}
 
 	keepArticle(articleWithRefs: ArticleWithRefs | ArticleProps, index: number, filter: Filter): boolean
 
@@ -49,21 +49,21 @@ export interface Service<A extends Article = Article> {
 
 export type FetchInfo =
 	| {
-	type: FetchType.OnDomainOnly
-	tabInfo?: never
-}
-	| {
-	type: FetchType.Extension
-	tabInfo?: never
-}
-	| {
-	type: FetchType.Tab
-	tabInfo: {
-		tabId: Writable<number | null>
-		url: string
-		matchUrl: string[]
+		type: FetchType.OnDomainOnly
+		tabInfo?: never
 	}
-};
+	| {
+		type: FetchType.Extension
+		tabInfo?: never
+	}
+	| {
+		type: FetchType.Tab
+		tabInfo: {
+			tabId: Writable<number | null>
+			url: string
+			matchUrl: string[]
+		}
+	};
 
 export enum FetchType {
 	OnDomainOnly,
@@ -91,7 +91,7 @@ export function addArticles(ignoreRefs: boolean, ...articlesWithRefs: ArticleWit
 				a.update(article);
 				return a;
 			});
-		} else {
+		}else {
 			//https://github.com/microsoft/TypeScript/issues/46395
 			service.articles[article.idPair.id as string] = [writable(article), article.refs];
 		}
@@ -121,7 +121,7 @@ export function registerEndpointConstructor(endpoint: (new (...args: any[]) => E
 	}
 }
 
-export function getServices(): Readonly<{ [name: string]: Service }> {
+export function getServices(): Readonly<{[name: string]: Service}> {
 	return services;
 }
 
@@ -197,7 +197,7 @@ export interface FetchingService<A extends Article = Article> {
 	fetchTimeout: undefined | number
 }
 
-export function newService<A extends Article = Article>(data: Partial<Service<A>> & { name: string }): Service<A> {
+export function newService<A extends Article = Article>(data: Partial<Service<A>> & {name: string}): Service<A> {
 	const storage = getServiceStorage(data.name);
 	data.timelineTemplates ??= {};
 	if (storage.timelineTemplates !== undefined)
@@ -239,25 +239,25 @@ export function newService<A extends Article = Article>(data: Partial<Service<A>
 					return await response.json();
 				else
 					return await response.text();
-			} else if (this.fetchInfo.type === FetchType.Extension) {
+			}else if (this.fetchInfo.type === FetchType.Extension) {
 				const response = await fetchExtension('extensionFetch', {
 					soshalthing: true,
 					//TODO Use Content-Type to determine fetchJson or fetchText
 					// request: 'fetchText',
 					fetch: url,
-					fetchOptions: init
+					fetchOptions: init,
 				});
 
 				if (init?.headers && (init.headers as Record<string, string>)['Accept'] === 'application/json')
 					return JSON.parse(response as string);
 				else
 					return response;
-			} else if (this.fetchInfo.type === FetchType.Tab) {
+			}else if (this.fetchInfo.type === FetchType.Tab) {
 				let tabId = get(this.fetchInfo.tabInfo.tabId);
 				if (tabId === null) {
 					this.fetchInfo.tabInfo.tabId.set(tabId = await fetchExtension('getTabId', {
 						url: this.fetchInfo.tabInfo.url,
-						matchUrl: this.fetchInfo.tabInfo.matchUrl
+						matchUrl: this.fetchInfo.tabInfo.matchUrl,
 					}));
 				}
 
@@ -267,10 +267,10 @@ export function newService<A extends Article = Article>(data: Partial<Service<A>
 						soshalthing: true,
 						request: 'fetchText',
 						fetch: url,
-						fetchOptions: init
-					}
+						fetchOptions: init,
+					},
 				});
-			} else {
+			}else {
 				throw new Error('Service is not on domain and has no tab info');
 			}
 		},
@@ -285,10 +285,10 @@ export function newService<A extends Article = Article>(data: Partial<Service<A>
 
 export function newFetchingService<A extends Article = Article>(
 	data: Partial<FetchingService<A>>
-		& { fetchArticle: (store: Writable<A>) => Promise<void> }
-		& Service<A>
+		& {fetchArticle: (store: Writable<A>) => Promise<void>}
+		& Service<A>,
 ): FetchingService<A>
-	& { fetchArticle: (store: Writable<A>) => Promise<void> }
+	& {fetchArticle: (store: Writable<A>) => Promise<void>}
 	& Service<A> {
 	return {
 		fetchedArticles: new Set(),

@@ -128,7 +128,7 @@ export function updateFullscreenStorage(fullscreen: FullscreenInfo) {
 
 export function loadTimelines(): TimelineCollection {
 	const item = localStorage.getItem(TIMELINE_STORAGE_KEY);
-	let storage: { [id: string]: Partial<TimelineStorage> } = item ? JSON.parse(item) : {};
+	let storage: {[id: string]: Partial<TimelineStorage>} = item ? JSON.parse(item) : {};
 	if (storage instanceof Array) {
 		console.warn('SoshalThingSvelte Timelines should be an object {[id: string]: TimelineStorage}');
 		storage = Object.assign({}, storage);
@@ -143,17 +143,17 @@ export function loadTimelines(): TimelineCollection {
 				sortInfo: {
 					method: null,
 					reversed: false,
-				}
+				},
 			}),
 			...t,
 		};
 
 		const endpoints: TimelineEndpoint[] = [];
 		for (const endpointStorage of defaulted.endpoints) {
-				const endpoint = parseAndLoadEndpoint(endpointStorage);
-				if (endpoint !== undefined && !endpoints.find(e => e.name === endpoint.name))
-					endpoints.push(endpoint);
-			}
+			const endpoint = parseAndLoadEndpoint(endpointStorage);
+			if (endpoint !== undefined && !endpoints.find(e => e.name === endpoint.name))
+				endpoints.push(endpoint);
+		}
 
 		defaulted.filters = parseFilters(defaulted.filters ?? []);
 
@@ -163,7 +163,7 @@ export function loadTimelines(): TimelineCollection {
 			endpoints,
 			section: defaulted.section ?? {
 				useSection: false,
-				count: 100
+				count: 100,
 			},
 			container: parseContainer(defaulted.container),
 			articleView: parseArticleView(defaulted.articleView),
@@ -291,7 +291,7 @@ function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | unde
 	if (!Object.hasOwn(services, storage.service)) {
 		console.error(`"${storage.service}" isn't a registered service`);
 		return undefined;
-	} else if (!Object.hasOwn(services[storage.service].endpointConstructors, storage.endpointType)) {
+	}else if (!Object.hasOwn(services[storage.service].endpointConstructors, storage.endpointType)) {
 		console.error(`"${storage.service}" doesn't have endpointType "${storage.endpointType}"`);
 		return undefined;
 	}
@@ -300,7 +300,7 @@ function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | unde
 
 	let endpoint = endpointsValue.find(endpoint =>
 		constructorInfo.name === (endpoint.constructor as typeof Endpoint).constructorInfo.name &&
-		endpoint.matchParams(storage.params)
+		endpoint.matchParams(storage.params),
 	);
 
 	if (endpoint === undefined) {
@@ -364,7 +364,7 @@ function parseSortInfo(storage: TimelineStorage['sortInfo']): SortInfo {
 		return {
 			method: SortMethod.Custom,
 			customMethod: storage.customMethod,
-			reversed
+			reversed,
 		};
 	}else {
 		let method: SortMethod | null = null;
@@ -389,7 +389,7 @@ function sortInfoToStorage(sortInfo: SortInfo): TimelineStorage['sortInfo'] {
 	if (sortInfo.customMethod) {
 		return {
 			customMethod: sortInfo.customMethod,
-			reversed: sortInfo.reversed
+			reversed: sortInfo.reversed,
 		};
 	}else {
 		let method: string | null = null;
@@ -407,7 +407,6 @@ function sortInfoToStorage(sortInfo: SortInfo): TimelineStorage['sortInfo'] {
 			reversed: sortInfo.reversed,
 		};
 	}
-
 }
 
 function parseFilters(storageFilters: FilterInstance[]) {
@@ -435,13 +434,13 @@ function parseFullscreenInfo(fullscreen?: boolean | number | FullscreenInfoStora
 		fullscreen = {
 			index: null,
 			columnCount: null,
-			container: null
+			container: null,
 		};
 	else if (fullscreen === true)
 		fullscreen = {
 			index: 0,
 			columnCount: null,
-			container: null
+			container: null,
 		};
 	else if (typeof fullscreen === 'number')
 		fullscreen = {
@@ -459,7 +458,7 @@ function parseFullscreenInfo(fullscreen?: boolean | number | FullscreenInfoStora
 
 type MainStorage = Partial<MainStorageParsed> & {
 	currentTimelineView?: string
-	timelineViews: { [name: string]: TimelineViewStorage }
+	timelineViews: {[name: string]: TimelineViewStorage}
 	fullscreen?: boolean | number | FullscreenInfoStorage
 };
 

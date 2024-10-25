@@ -11,7 +11,7 @@ type SessionCacheStorage = {
 		[name: string]: {
 			//Storing as strings until we parse bigint, a library could fix it though
 			articlesMarkedAsRead: string[]
-			cachedArticles: { [id: string]: any }
+			cachedArticles: {[id: string]: any}
 		}
 	}
 };
@@ -27,7 +27,7 @@ export function updateMarkAsReadStorage() {
 	const {markAsReadLocal} = loadMainStorage();
 	const storageType = (markAsReadLocal ? localStorage : sessionStorage);
 	const item = storageType.getItem(MAIN_STORAGE_KEY);
-	let storage : SessionCacheStorage | null = item !== null ? JSON.parse(item) : null;
+	let storage: SessionCacheStorage | null = item !== null ? JSON.parse(item) : null;
 	if (storage === null)
 		storage = {services: {}};
 	else if (storage.services === undefined)
@@ -72,7 +72,7 @@ export function updateCachedArticlesStorage(service?: string) {
 			if (Object.hasOwn(storage.services, service.name))
 				storage.services[service.name].cachedArticles = {
 					...storage.services[service.name].cachedArticles,
-					...cachedArticles
+					...cachedArticles,
 				};
 			else
 				storage.services[service.name] = {

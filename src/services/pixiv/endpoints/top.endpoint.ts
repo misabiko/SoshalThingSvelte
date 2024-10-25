@@ -29,7 +29,7 @@ export class TopAPIEndpoint extends Endpoint {
 
 	async refresh(_refreshType: RefreshType): Promise<ArticleWithRefs[]> {
 		const response: TopResponse = await getServices()['Pixiv'].fetch('https://www.pixiv.net/ajax/top/illust?mode=all', {
-			headers: {Accept: 'application/json'}
+			headers: {Accept: 'application/json'},
 		});
 
 		if (response.error)
@@ -68,7 +68,7 @@ export class TopAPIEndpoint extends Endpoint {
 			['r18', false],
 			['output', TopOutput.All],
 		],
-		constructor: params => new TopAPIEndpoint(params.r18 as boolean, params.output as TopOutput)
+		constructor: params => new TopAPIEndpoint(params.r18 as boolean, params.output as TopOutput),
 	};
 }
 

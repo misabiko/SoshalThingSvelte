@@ -22,7 +22,7 @@
 					addDisabled = !username.length || !JSON.parse(username)?.name?.length;
 					//TODO Debug why prefix is ignored
 					// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				} catch (_e) {
+				}catch (_e) {
 					addDisabled = true;
 				}
 				break;
@@ -78,4 +78,3 @@
 		Add Timeline
 	</button>
 </label>
-

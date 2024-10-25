@@ -32,8 +32,8 @@
 				index: null,
 				columnCount: null,
 				container: null,
-			}
-		}
+			},
+		},
 	};
 	for (const [viewName, view] of Object.entries(timelineViews)) {
 		if (view.fullscreen.index !== null && !Object.hasOwn(view.timelineIds, view.fullscreen.index)) {
@@ -94,14 +94,14 @@
 		const services = new Set<string>(
 			refreshingTimelines
 				.flatMap(t => t.endpoints.map(e => (e.endpoint ?? get(endpoints[e.name]))))
-				.map(e => (e.constructor as typeof Endpoint).service)
+				.map(e => (e.constructor as typeof Endpoint).service),
 		);
 		for (const serviceName of services) {
 			const service = getServices()[serviceName];
 			if (!service.isOnDomain && service.fetchInfo.type === FetchType.Tab && get(service.fetchInfo.tabInfo.tabId) === null)
 				service.fetchInfo.tabInfo.tabId.set(await fetchExtension('getTabId', {
 					url: service.fetchInfo.tabInfo.url,
-					matchUrl: service.fetchInfo.tabInfo.matchUrl
+					matchUrl: service.fetchInfo.tabInfo.matchUrl,
 				}));
 		}
 
@@ -115,7 +115,7 @@
 				else if (timelineEndpoint.endpoint?.refreshTypes && get(timelineEndpoint.endpoint.refreshTypes).has(RefreshType.RefreshStart))
 					refreshPromises.push(
 						refreshEndpoint(timelineEndpoint.endpoint as Endpoint, RefreshType.RefreshStart)
-							.then(articles => addArticlesToTimeline(timeline, ...articles.map(a => getRootArticle(a).idPair)))
+							.then(articles => addArticlesToTimeline(timeline, ...articles.map(a => getRootArticle(a).idPair))),
 					);
 
 		for (const endpointName of endpointNames)
@@ -131,7 +131,7 @@
 	function withTimeout<T>(
 		promise: Promise<T>,
 		ms: number,
-		timeoutError = new Error('Promise timed out')
+		timeoutError = new Error('Promise timed out'),
 	): Promise<T> {
 		// create a promise that rejects in milliseconds
 		const timeout = new Promise<never>((_, reject) => {

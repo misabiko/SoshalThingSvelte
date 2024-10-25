@@ -4,7 +4,7 @@
 	import {type FilterInstance, useFilters} from '~/filters';
 	import type {TimelineCollection} from '~/timelines';
 	import {derived, type Readable, readonly, type Writable} from 'svelte/store';
-	import  {
+	import {
 		type ArticleIdPair,
 		type ArticleWithRefs, flatDeriveArticle, getRootArticle,
 	} from '~/articles';
@@ -22,7 +22,7 @@
 	let articlesWithRefs: Readable<ArticleWithRefs[]>;
 	$: articlesWithRefs = derived(
 		$articleIdPairs.map(idPair => derived(flatDeriveArticle(idPair), articles => articles[0])),
-		articles => articles.map(a => a.getArticleWithRefs())
+		articles => articles.map(a => a.getArticleWithRefs()),
 	);
 
 	let filteredArticles: Readable<ArticleWithRefs[]>;
@@ -30,8 +30,8 @@
 		[articlesWithRefs, filterInstances, timelines[timelineId].filters],
 		([articlesWithRefs, filterInstances, filters]) => useFilters(articlesWithRefs, [
 			...filterInstances,
-			...(onlyListedArticles ? filters : [])
-		])
+			...(onlyListedArticles ? filters : []),
+		]),
 	);
 
 	function doAction() {

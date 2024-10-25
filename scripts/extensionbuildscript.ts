@@ -6,8 +6,8 @@ import fastGlob from 'fast-glob';
 const outdir = './extension/dist';
 
 const entryPoints = [
-	...fastGlob.globSync('./src/extension/**/entry.ts', { onlyFiles: true }),
-	...fastGlob.globSync('./src/services/**/entry.ts', { onlyFiles: true }),
+	...fastGlob.globSync('./src/extension/**/entry.ts', {onlyFiles: true}),
+	...fastGlob.globSync('./src/services/**/entry.ts', {onlyFiles: true}),
 ];
 
 const extensionBuildOptions: BuildOptions = {

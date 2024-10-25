@@ -4,7 +4,7 @@
 	import {getContext, onMount, tick} from 'svelte';
 	import {timelineEndpoints} from '~/services/endpoints';
     import Modal from '~/Modal.svelte';
-    import type { ArticleIdPair } from '~/articles';
+    import type {ArticleIdPair} from '~/articles';
 	import {updateFullscreenStorage} from '~/storages';
 
 	export let timelines: TimelineCollection = {};
@@ -49,7 +49,7 @@
 						throw new Error('modalTimeline is null');
 
 					addArticlesToTimeline(modalTimeline, ...newIdPairs);
-				}
+				},
 			});
 
 		timelineEndpoints.set(newTimelineEndpoints);
@@ -65,7 +65,7 @@
 	onMount(() => {
 		initialRefresh(...[
 			...timelineView.timelineIds.map(id => timelines[id]),
-			...(modalTimeline === null ? [] : [modalTimeline])
+			...(modalTimeline === null ? [] : [modalTimeline]),
 		]);
 	});
 </script>

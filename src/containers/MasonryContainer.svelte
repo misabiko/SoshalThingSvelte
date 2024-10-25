@@ -9,11 +9,11 @@
 	let lastRebalanceTrigger = false;
 	let lastColumnCount = props.columnCount;
 
-	let uniqueArticles: Record<string, { articleProps: ArticleProps, index: number, mediaIndex: number | null }>;
+	let uniqueArticles: Record<string, {articleProps: ArticleProps, index: number, mediaIndex: number | null}>;
 	$: if (props.separateMedia) {
 		uniqueArticles = Object.fromEntries(props.articles.map((articleProps, index) => [
 			getIdServiceMediaStr(articleProps),
-			{articleProps, index, mediaIndex: articleProps.mediaIndex}
+			{articleProps, index, mediaIndex: articleProps.mediaIndex},
 		]));
 	}else {
 		uniqueArticles = {};
@@ -45,7 +45,7 @@
 			columns = makeColumns();
 		}else {
 			const columnsChanged = new Set<number>();
-			const addedArticles: { idServiceMedia: string, index: number }[] = [];
+			const addedArticles: {idServiceMedia: string, index: number}[] = [];
 
 			for (let i = 0; i < columns.length; ++i) {
 				for (let j = 0; j < columns[i].idServiceMedias.length;) {

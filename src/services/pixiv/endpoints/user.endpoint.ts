@@ -35,7 +35,7 @@ export default class UserPageEndpoint extends PageEndpoint {
 			username: name,
 			name,
 			id: userId,
-			url: getUserUrl(userId)
+			url: getUserUrl(userId),
 		};
 	}
 
@@ -134,20 +134,20 @@ export class UserAPIEndpoint extends LoadableEndpoint {
 			['userId', 0],
 			['page', 0],
 		],
-		constructor: params => new UserAPIEndpoint(params.userId as number, params.page as number)
+		constructor: params => new UserAPIEndpoint(params.userId as number, params.page as number),
 	};
 }
 
 registerEndpointConstructor(UserAPIEndpoint);
 getServices()[PixivService.name].userEndpoint = user => new UserAPIEndpoint((user as PixivUser).id);
 
-export function getUserId() : number {
+export function getUserId(): number {
 	return parseInt(window.location.pathname.split('/')[3]);
 }
 
 type UserListAjaxResponse = PixivResponse<{
-	illusts: { [id: string]: null }
-	manga: { [id: string]: null }
+	illusts: {[id: string]: null}
+	manga: {[id: string]: null}
 	novels: []
 	mangaSeries: [
 		{
@@ -167,7 +167,7 @@ type UserListAjaxResponse = PixivResponse<{
 			watchCount: null
 			isWatched: boolean
 			isNotifying: boolean
-		}
+		},
 	]
 	novelSeries: []
 	pickup: any[]

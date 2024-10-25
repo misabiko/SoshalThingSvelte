@@ -80,7 +80,7 @@ export const loadingStore = (() => {
 						if (store.loadings.size >= maxLoading) {
 							if (!store.queue.includes(idPairStr))
 								store.queue.push(idPairStr);
-						} else
+						}else
 							store.loadings.add(idPairStr);
 					}
 					localQueue = store.queue;
@@ -127,7 +127,6 @@ export const loadingStore = (() => {
 				localQueue = store.queue;
 				return store;
 			});
-
 		},
 		forceLoading(article: Readonly<Article>, mediaIndex: number) {
 			if (article.medias[mediaIndex].loaded === undefined || article.medias[mediaIndex].loaded)
@@ -178,6 +177,6 @@ export const loadingStore = (() => {
 				localQueue = store.queue;
 				return store;
 			});
-		}
+		},
 	};
 })();

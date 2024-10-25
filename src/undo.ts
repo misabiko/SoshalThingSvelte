@@ -22,7 +22,7 @@ export const undoables = (() => {
 				u[index].undid = !u[index].undid;
 				return u;
 			});
-		}
+		},
 	};
 })();
 

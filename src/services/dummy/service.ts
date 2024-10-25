@@ -10,12 +10,12 @@ export const DummyService: Service<DummyArticle> = newService({
 		[STANDARD_ACTIONS.like.key]: {
 			...STANDARD_ACTIONS.like,
 			action: toggleLike,
-			actioned(article) { return article.liked; },
+			actioned(article) {return article.liked;},
 		},
 		[STANDARD_ACTIONS.repost.key]: {
 			...STANDARD_ACTIONS.repost,
 			action: repost,
-			actioned(article) { return article.reposted; },
+			actioned(article) {return article.reposted;},
 		},
 	},
 });

@@ -23,7 +23,7 @@
 	}[] = Object.values(getServices()).flatMap(s => Object.entries(s.sortMethods).map(m => ({
 		service: s.name,
 		method: m[0],
-		methodInfo: m[1]
+		methodInfo: m[1],
 	})));
 
 	let currentMethodName: string;
@@ -74,7 +74,7 @@
 							sortInfo.method = SortMethod.Custom;
 							sortInfo.customMethod = {
 								method: method.method,
-								service: method.service
+								service: method.service,
 							};
 							sortInfo.reversed = reversed;
 							$articlesOrder = null;

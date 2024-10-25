@@ -8,7 +8,7 @@
 		articleWithRefToWithRefArray,
 		flatDeriveArticle,
 		getActualArticleRefs,
-		getIdServiceMediaStr
+		getIdServiceMediaStr,
 	} from '~/articles';
 	import {getRootArticle, idPairEqual} from '~/articles';
 	import {fetchArticle, getWritable} from '~/services/service';
@@ -51,7 +51,7 @@
 			//Might have to give in to using .find if we want to keep duplicate articles
 			Object.fromEntries(articles
 				.flatMap((a, i) => addPropsRoot(a.getArticleWithRefs(), i, filters))
-				.map(a => [getIdServiceMediaStr(a), a]))
+				.map(a => [getIdServiceMediaStr(a), a])),
 		);
 	}
 
@@ -76,7 +76,7 @@
 
 					//Checking if the reposted article is already in merged
 					const plainIndex = merged.findIndex(m =>
-						idPairEqual(getRootArticle(m).idPair, aIdPair)
+						idPairEqual(getRootArticle(m).idPair, aIdPair),
 					);
 					if (plainIndex > -1) {
 						//Replacing it with the repost
@@ -87,14 +87,14 @@
 					//Checking if a duplicate repost is in merged
 					const index = merged.findIndex(m =>
 						m.type === 'reposts' &&
-						idPairEqual(getRootArticle(m.reposted).idPair, aIdPair)
+						idPairEqual(getRootArticle(m.reposted).idPair, aIdPair),
 					);
 
 					if (index > -1)
 						(merged[index] as any).reposts.push(...a.reposts);
 					else
 						merged.push(a);
-				} else
+				}else
 					merged.push(a);
 			}
 
@@ -146,10 +146,10 @@
 				case 'reposts':
 					throw {
 						message: 'Reposts should come from the timeline and not articles themselves',
-						articleWithRefs
+						articleWithRefs,
 					};
 			}
-		} else {
+		}else {
 			return [addProps(articleWithRefs, index, filters)];
 		}
 	}
@@ -295,7 +295,6 @@
 
 			// While there remain elements to shuffle...
 			while (currentIndex != 0) {
-
 				// Pick a remaining element...
 				randomIndex = Math.floor(Math.random() * currentIndex);
 				currentIndex--;
@@ -370,10 +369,10 @@
 			get(articles)
 				.filter((a, i) =>
 					$filters.every(f =>
-						!f.enabled || (keepArticle(a, i, f.filter) !== f.inverted)
-					)
+						!f.enabled || (keepArticle(a, i, f.filter) !== f.inverted),
+					),
 				)
-				.map(a => getRootArticle(a).idPair)
+				.map(a => getRootArticle(a).idPair),
 		);
 	}
 </script>

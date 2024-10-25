@@ -1,9 +1,9 @@
 import fs from 'fs';
 import esbuild, {type BuildOptions} from 'esbuild';
 import * as svelte from 'svelte/compiler';
-import { sveltePreprocess } from 'svelte-preprocess';
-import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
+import {sveltePreprocess} from 'svelte-preprocess';
+import path, {dirname} from 'path';
+import {fileURLToPath} from 'url';
 import EsbuildPluginImportGlob from 'esbuild-plugin-import-glob';
 import type {Warning} from 'svelte/compiler';
 
@@ -13,14 +13,14 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 const SveltePlugin: esbuild.Plugin = {
 	name: 'svelte',
 	setup(build) {
-		build.onLoad({ filter: /\.svelte$/ }, async (args) => {
+		build.onLoad({filter: /\.svelte$/}, async args => {
 			// Load the file from the file system
 			const source = await fs.promises.readFile(args.path, 'utf8');
 			const filename = path.relative(process.cwd(), args.path);
 
-			const {code: preprocessed} = await svelte.preprocess(source, sveltePreprocess(), { filename });
+			const {code: preprocessed} = await svelte.preprocess(source, sveltePreprocess(), {filename});
 
-			const convertMessage = ({ message, start, end, code }: Warning) => {
+			const convertMessage = ({message, start, end, code}: Warning) => {
 				let location;
 				if (start && end) {
 					const lineText = preprocessed.split(/\r\n|\r|\n/g)[start.line - 1];
@@ -33,12 +33,12 @@ const SveltePlugin: esbuild.Plugin = {
 						lineText,
 					};
 				}
-				return { text: `${message} (${code})`, location };
+				return {text: `${message} (${code})`, location};
 			};
 
 			// Convert Svelte syntax to JavaScript
 			try {
-				const { js, warnings } = svelte.compile(preprocessed, {
+				const {js, warnings} = svelte.compile(preprocessed, {
 					filename,
 					dev: process.env.NODE_ENV === 'development',
 					css: 'injected',
@@ -50,16 +50,16 @@ const SveltePlugin: esbuild.Plugin = {
 						//TODO Handle a11y-click-events-have-key-events
 						w.code !== 'a11y-click-events-have-key-events' &&
 						//TODO Handle a11y-no-noninteractive-element-interactions
-						w.code !== 'a11y-no-noninteractive-element-interactions'
+						w.code !== 'a11y-no-noninteractive-element-interactions',
 					)
 					.map(convertMessage);
 
-				return { contents, warnings: partialMessageWarnings };
-			} catch (e) {
-				return { errors: [convertMessage(e as unknown as Warning)] };
+				return {contents, warnings: partialMessageWarnings};
+			}catch (e) {
+				return {errors: [convertMessage(e as unknown as Warning)]};
 			}
 		});
-	}
+	},
 };
 
 const outdir = './dist';

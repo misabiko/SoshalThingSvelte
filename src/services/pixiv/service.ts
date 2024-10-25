@@ -7,7 +7,7 @@ import {
 	newFetchingService,
 	newService,
 	registerService,
-	type Service
+	type Service,
 } from '../service';
 import {get, type Writable} from 'svelte/store';
 import {
@@ -15,7 +15,7 @@ import {
 	type ArticleWithRefs,
 	articleWithRefToArray,
 	getActualArticle,
-	getRootArticle
+	getRootArticle,
 } from '~/articles';
 import {STANDARD_ACTIONS} from '../actions';
 import {getServiceStorage} from '~/storages';
@@ -82,7 +82,7 @@ export const PixivService: PixivServiceType = {
 					},
 					count(article: PixivArticle) {
 						return article.likeCount;
-					}
+					},
 				},
 				bookmark: {
 					key: 'bookmark',
@@ -140,9 +140,9 @@ export const PixivService: PixivServiceType = {
 						default: {
 							listAsIcon: true,
 							listAsDropdown: false,
-						}
-					}
-				}
+						},
+					},
+				},
 			},
 			isOnDomain: globalThis.window?.location?.hostname.endsWith('pixiv.net'),
 			keepArticle(articleWithRefs: ArticleWithRefs, index: number, filter: Filter): boolean {
@@ -205,7 +205,7 @@ export const PixivService: PixivServiceType = {
 					},
 					directionLabel(reversed: boolean): string {
 						return reversed ? 'Descending' : 'Ascending';
-					}
+					},
 				},
 				retweets: {
 					name: 'Bookmarks',
@@ -214,8 +214,8 @@ export const PixivService: PixivServiceType = {
 					},
 					directionLabel(reversed: boolean): string {
 						return reversed ? 'Descending' : 'Ascending';
-					}
-				}
+					},
+				},
 			},
 			filterTypes: {
 				bookmarked: {
@@ -239,7 +239,7 @@ export const PixivService: PixivServiceType = {
 							type: 'order',
 							optional: false,
 							min: 0,
-						}
+						},
 					},
 				},
 				bookmarks: {
@@ -251,7 +251,7 @@ export const PixivService: PixivServiceType = {
 							type: 'order',
 							optional: false,
 							min: 0,
-						}
+						},
 					},
 				},
 			},
@@ -277,7 +277,7 @@ export const PixivService: PixivServiceType = {
 								compare: {
 									value: 0,
 									comparator: '>=',
-								}
+								},
 							},
 						};
 					case 'bookmarks':
@@ -288,7 +288,7 @@ export const PixivService: PixivServiceType = {
 								compare: {
 									value: 0,
 									comparator: '>=',
-								}
+								},
 							},
 						};
 					default:
@@ -316,7 +316,7 @@ export const PixivService: PixivServiceType = {
 					},
 					compact: true,
 					fullMedia: 1,
-				}
+				},
 			},
 		}),
 		async fetchArticle(store: Writable<PixivArticle>) {
@@ -399,22 +399,22 @@ type PagesResponse = {
 	error: boolean
 	message: string
 	body:
-		{
-			urls: {
-				thumb_mini: string
-				small: string
-				regular: string
-				original: string
-			}
-			width: number
-			height: number
-		}[]
+	{
+		urls: {
+			thumb_mini: string
+			small: string
+			regular: string
+			original: string
+		}
+		width: number
+		height: number
+	}[]
 };
 
 type LikeResponse = {
 	error: boolean
 	message: string
-	body: { is_liked: boolean }
+	body: {is_liked: boolean}
 };
 
 type BookmarkResponse = {
@@ -471,8 +471,8 @@ export type PreloadIllust = {
 	userName: string
 	userAccount: string
 	userIllusts: Record<string, (Omit<Illust,
-		| 'urls'
-		| 'profileImageUrl'
+	| 'urls'
+	| 'profileImageUrl'
 	> & {
 		profileImageUrl?: string
 	}) | null>
@@ -494,11 +494,11 @@ export type PreloadIllust = {
 	pollData: null | {
 		question: string
 		choices:
-			{
-				id: number
-				text: string
-				count: number
-			}[]
+		{
+			id: number
+			text: string
+			count: number
+		}[]
 		selectedValue: null | unknown
 		total: number
 	}
@@ -529,10 +529,10 @@ export type PreloadIllust = {
 	bookmarkData: BookmarkData | null
 	contestData: null | unknown
 	zoneConfig: ZoneConfig & {
-		responsive: { url: string }
-		rectangle: { url: string }
-		expandedFooter: { url: string }
-		relatedworks: { url: string }
+		responsive: {url: string}
+		rectangle: {url: string}
+		expandedFooter: {url: string}
+		relatedworks: {url: string}
 	}
 	extraData: ExtraData
 	titleCaptionTranslation: {
@@ -644,49 +644,49 @@ export function logPreloadDataTypes(data: PreloadData) {
 			console.log(
 				'PreloadData.Illust.imageResponseOutData',
 				typeof (illust.imageResponseOutData[0]),
-				illust.imageResponseOutData[0]
+				illust.imageResponseOutData[0],
 			);
 		if (illust.imageResponseData.length > 0)
 			console.log(
 				'PreloadData.Illust.imageResponseData',
 				typeof (illust.imageResponseData[0]),
-				illust.imageResponseData[0]
+				illust.imageResponseData[0],
 			);
 		if (illust.descriptionBoothId !== null && illust.descriptionBoothId !== undefined)
 			console.log(
 				'PreloadData.Illust.descriptionBoothId',
 				typeof (illust.descriptionBoothId),
-				illust.descriptionBoothId
+				illust.descriptionBoothId,
 			);
 		if (illust.descriptionYoutubeId !== null && illust.descriptionYoutubeId !== undefined)
 			console.log(
 				'PreloadData.Illust.descriptionYoutubeId',
 				typeof (illust.descriptionYoutubeId),
-				illust.descriptionYoutubeId
+				illust.descriptionYoutubeId,
 			);
 		if (illust.comicPromotion !== null && illust.comicPromotion !== undefined)
 			console.log(
 				'PreloadData.Illust.comicPromotion',
 				typeof (illust.comicPromotion),
-				illust.comicPromotion
+				illust.comicPromotion,
 			);
 		if (illust.fanboxPromotion !== null && illust.fanboxPromotion !== undefined)
 			console.log(
 				'PreloadData.Illust.fanboxPromotion',
 				typeof (illust.fanboxPromotion),
-				illust.fanboxPromotion
+				illust.fanboxPromotion,
 			);
 		if (illust.contestBanners.length > 0)
 			console.log(
 				'PreloadData.Illust.contestBanners',
 				typeof (illust.contestBanners[0]),
-				illust.contestBanners[0]
+				illust.contestBanners[0],
 			);
 		if (illust.contestData !== null && illust.contestData !== undefined)
 			console.log(
 				'PreloadData.Illust.contestData',
 				typeof (illust.contestData),
-				illust.contestData
+				illust.contestData,
 			);
 	}
 
@@ -695,25 +695,25 @@ export function logPreloadDataTypes(data: PreloadData) {
 			console.log(
 				'PreloadData.User.background.color',
 				typeof (user.background?.color),
-				user.background?.color
+				user.background?.color,
 			);
 		if (user.background?.repeat !== null && user.background?.repeat !== undefined)
 			console.log(
 				'PreloadData.User.background.repeat',
 				typeof (user.background?.repeat),
-				user.background?.repeat
+				user.background?.repeat,
 			);
 		if (user.sketchLiveId !== null && user.sketchLiveId !== undefined)
 			console.log(
 				'PreloadData.User.sketchLiveId',
 				typeof (user.sketchLiveId),
-				user.sketchLiveId
+				user.sketchLiveId,
 			);
 		if (user.sketchLives.length > 0)
 			console.log(
 				'PreloadData.User.sketchLives',
 				typeof (user.sketchLives[0]),
-				user.sketchLives[0]
+				user.sketchLives[0],
 			);
 	}
 }

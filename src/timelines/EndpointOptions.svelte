@@ -8,7 +8,7 @@
 		everyRefreshType,
 		LoadableEndpoint,
 		LoadablePageEndpoint,
-		RefreshType
+		RefreshType,
 	} from '~/services/endpoints';
 	import {updateTimelinesStorageEndpoints} from '~/storages';
 	import {getRootArticle} from '~/articles';
@@ -72,7 +72,7 @@
 	//TODO Add auto refresh option
 
 	async function loadRandomPage(timelineEndpoint: TimelineEndpoint) {
-			let endpoint: Endpoint;
+		let endpoint: Endpoint;
 
 		if (timelineEndpoint.name !== undefined)
 			endpoint = get(endpoints[timelineEndpoint.name]);
@@ -107,8 +107,8 @@
 				.some(pair =>
 					pair.service === idPair.service &&
 					pair.id === idPair.id,
-				)
-			)
+				),
+			),
 		);
 
 		addArticles(false, ...articles);

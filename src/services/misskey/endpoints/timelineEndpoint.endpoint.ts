@@ -49,7 +49,7 @@ export class TimelineEndpoint extends Endpoint {
 	static readonly constructorInfo: EndpointConstructorInfo = {
 		name: 'TimelineEndpoint',
 		paramTemplate: [],
-		constructor: () => new TimelineEndpoint()
+		constructor: () => new TimelineEndpoint(),
 	};
 }
 

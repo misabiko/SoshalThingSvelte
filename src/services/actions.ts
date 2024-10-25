@@ -2,7 +2,7 @@ import type {ArticleIdPair} from '~/articles';
 import {fetchArticle, getServices, getWritable, toggleMarkAsRead} from './service';
 import {
 	faUpRightFromSquare,
-	type IconDefinition
+	type IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
 import {faHeart as faHeartReg} from '@fortawesome/free-regular-svg-icons';
 import {faEye, faEyeSlash, faHeart, faRetweet} from '@fortawesome/free-solid-svg-icons';
@@ -41,8 +41,8 @@ export type ArticleAction<A extends Article = Article> = (
 	count: ((article: A) => number | null) | null
 	index: number
 	views: Partial<Record<'GalleryArticleView' | 'SocialArticleView', {
-			listAsIcon?: boolean
-			listAsDropdown?: boolean
+		listAsIcon?: boolean
+		listAsDropdown?: boolean
 	}>> & {
 		default: {
 			listAsIcon: boolean
@@ -69,7 +69,7 @@ export const STANDARD_ACTIONS = {
 			default: {
 				listAsIcon: true,
 				listAsDropdown: false,
-			}
+			},
 		},
 	},
 	repost: {
@@ -87,10 +87,10 @@ export const STANDARD_ACTIONS = {
 			default: {
 				listAsIcon: true,
 				listAsDropdown: false,
-			}
+			},
 		},
 	},
-} satisfies { [key: string]: StandardAction<Article> };
+} satisfies {[key: string]: StandardAction<Article>};
 
 export function articleAction(actionName: string, idPair: ArticleIdPair) {
 	switch (actionName) {
@@ -136,8 +136,8 @@ export function getGenericActions(article: Article): ArticleAction[] {
 				GalleryArticleView: {
 					listAsIcon: false,
 					listAsDropdown: true,
-				}
-			}
+				},
+			},
 		},
 	];
 	if (article.url)

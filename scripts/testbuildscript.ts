@@ -1,7 +1,7 @@
 import fs from 'fs';
 import esbuild from 'esbuild';
 import {buildOptions, errorHandler} from './buildscript.js';
-import { Glob } from 'bun';
+import {Glob} from 'bun';
 
 const entryPoints = [
 	'./tests/unit/**/spec.ts',
@@ -20,6 +20,6 @@ esbuild
 		outdir,
 		platform: 'node',
 		external: ['@playwright/test'],
-		inject: ['src/unit-shims.js']
+		inject: ['src/unit-shims.js'],
 	})
 	.catch(errorHandler);

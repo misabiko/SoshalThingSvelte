@@ -23,7 +23,7 @@ export class DummyEndpoint extends Endpoint {
 	static readonly constructorInfo: EndpointConstructorInfo = {
 		name: 'DummyEndpoint',
 		paramTemplate: [],
-		constructor: () => new DummyEndpoint()
+		constructor: () => new DummyEndpoint(),
 	};
 
 	matchParams(_params: any): boolean {
@@ -42,7 +42,7 @@ export class DummyEndpointWithParam extends Endpoint {
 		this.name = `Dummy Endpoint ${query}`;
 
 		this.params = {
-			query
+			query,
 		};
 	}
 
@@ -53,7 +53,7 @@ export class DummyEndpointWithParam extends Endpoint {
 	static readonly constructorInfo: EndpointConstructorInfo = {
 		name: 'DummyEndpointWithParam',
 		paramTemplate: [['query', '']],
-		constructor: params => new DummyEndpointWithParam(params.query as string)
+		constructor: params => new DummyEndpointWithParam(params.query as string),
 	};
 
 	matchParams(params: any): boolean {

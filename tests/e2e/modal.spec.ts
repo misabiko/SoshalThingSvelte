@@ -1,7 +1,6 @@
 import {expect, test} from '@playwright/test';
 import {loadWithLocalStorage, TIMELINE_STORAGE_KEY} from '../storagesUtils';
 
-
 test.skip('modal timeline is full height', async ({page}) => {
 	//TODO Open modal timeline
 
@@ -14,20 +13,20 @@ test.skip('modal timeline is full height', async ({page}) => {
 test('filtering modal article disables it', async ({page}) => {
 	await loadWithLocalStorage(page, {
 		[TIMELINE_STORAGE_KEY]: {t1: {
-				endpoints: [
-					{
-						service: 'Dummy',
-						endpointType: 'DummyEndpoint',
-					}
-				],
-				filters: [
-					{
-						filter: {type: 'notMarkedAsRead', service: null},
-						enabled: true,
-						inverted: false,
-					},
-				]
-			}}
+			endpoints: [
+				{
+					service: 'Dummy',
+					endpointType: 'DummyEndpoint',
+				},
+			],
+			filters: [
+				{
+					filter: {type: 'notMarkedAsRead', service: null},
+					enabled: true,
+					inverted: false,
+				},
+			],
+		}},
 	});
 
 	await expect(page.locator('div:not(.modal-content) > article').first()).toBeVisible();

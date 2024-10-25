@@ -25,7 +25,7 @@
 			i.push({
 				filter: defaultFilter(filterType, service),
 				enabled: true,
-				inverted
+				inverted,
 			});
 			return i;
 		});
@@ -54,7 +54,7 @@
 					instance.filter.service === null
 						? genericFilterTypes[instance.filter.type]
 						: getServices()[instance.filter.service].filterTypes[instance.filter.type],
-					instance.inverted
+					instance.inverted,
 				)
 			}
 			<button class='button' class:is-success={instance.enabled} onclick='{() => $instances[index].enabled = !instance.enabled}'>

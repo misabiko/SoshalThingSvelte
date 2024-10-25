@@ -46,7 +46,6 @@ export type FilterInfo<S extends string = string> = {
 
 export function getFilterName(filter: FilterInfo, inversed: boolean): string {
 	return inversed ? filter.invertedName : filter.name;
-
 }
 
 export type PropType =
@@ -87,7 +86,7 @@ export const genericFilterTypes: Record<GenericFilter, FilterInfo<GenericFilter>
 			includeQuoted: {
 				type: 'boolean',
 				optional: true,
-			}
+			},
 		},
 	},
 	noRef: {

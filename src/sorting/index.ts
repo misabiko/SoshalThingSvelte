@@ -35,7 +35,7 @@ export function compare(info: SortInfo): (a: ArticleWithRefs | ArticleProps, b: 
 				const bRoot = getRootArticle(b);
 				order = aRoot.numberId > bRoot.numberId ? 1 : (aRoot.numberId < bRoot.numberId ? -1 : 0);
 			}
-			break;
+				break;
 			case SortMethod.Date:
 				order = (getRootArticle(a).creationTime?.getTime() || 0) - (getRootArticle(b).creationTime?.getTime() || 0);
 				break;

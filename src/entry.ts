@@ -1,6 +1,6 @@
 import './services/**/service.ts';
 import './services/**/*.endpoint.ts';
-import { mount } from 'svelte';
+import {mount} from 'svelte';
 
 import {getServices} from './services/service';
 console.debug('Loaded services and endpoints:', Object.fromEntries(Object.values(getServices()).map(service => [service.name, Object.keys(service.endpointConstructors)])));
@@ -33,9 +33,8 @@ mount(SoshalThing, {
 		timelines,
 		timelineViewId,
 		timelineViews,
-	}
+	},
 });
-
 
 
 function parseFullscreen(search: URLSearchParams): FullscreenInfo | null {

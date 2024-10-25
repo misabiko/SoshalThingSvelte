@@ -18,7 +18,7 @@
 
 		try {
 			article = await (getServices()[serviceName] as LoadArticleService).loadArticle(articleId);
-		} catch (e) {
+		}catch (e) {
 			console.error(`Failed to load article "${articleId}"`, e);
 		}
 	}
@@ -33,7 +33,7 @@
 		shouldLoadMedia: false,
 		maxMediaCount: 4,
 		setModalTimeline: () => {},
-		showAllMediaArticles: writable(new Set())
+		showAllMediaArticles: writable(new Set()),
 	};
 
 	let articleProps: ArticleProps | null;

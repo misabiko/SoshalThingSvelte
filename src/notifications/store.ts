@@ -33,7 +33,7 @@ export const notifications = {
 			delete prev[id];
 			return prev;
 		});
-	}
+	},
 };
 
 export function generateId(): string {

@@ -7,7 +7,7 @@
 	import type {TimelineData} from './index';
 	import FiltersOptions from '~/filters/FiltersOptions.svelte';
 	import SortOptions from '~/sorting/SortOptions.svelte';
-	import type { SortMethod } from '~/sorting';
+	import type {SortMethod} from '~/sorting';
 	import type {FullscreenInfo} from './index';
 	import {updateFullscreenStorage, updateServiceTemplateStorageValue, updateTimelinesStorageValue} from '~/storages';
 	import EndpointOptions from '~/timelines/EndpointOptions.svelte';
@@ -373,7 +373,7 @@
 		{#key $currentLayer}
 			{#if ($currentLayer === OptionLayer.Timeline) && timelineId !== null}
 				<FiltersOptions
-					onInstancesUpdate="{(instances) => {
+					onInstancesUpdate="{instances => {
 						if (timelineId === null)
 							throw {message: 'TimelineId is null', data};
 						updateTimelinesStorageValue(timelineId, 'filters', instances);
@@ -382,7 +382,7 @@
 				/>
 			{:else if $currentLayer === OptionLayer.ServiceTemplate && data.serviceTemplate !== null && templateFilters !== null}
 				<FiltersOptions
-					onInstancesUpdate="{(instances) => {
+					onInstancesUpdate="{instances => {
 						if (data.serviceTemplate === null)
 							throw {message: 'ServiceTemplate is null', data};
 						updateServiceTemplateStorageValue(data.serviceTemplate.service, data.serviceTemplate.templateId, 'filters', instances);

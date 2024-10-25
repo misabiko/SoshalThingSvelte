@@ -7,7 +7,7 @@ const args = parseArgs({
 			type: 'string',
 			short: 'p',
 			default: '8080',
-		}
+		},
 	},
 	strict: true,
 	allowPositionals: true,

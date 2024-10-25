@@ -3,7 +3,7 @@ import type {ArticleWithRefs} from '~/articles';
 import {getServiceStorage} from '~/storages';
 import {BlueskyService} from '~/services/bluesky/service';
 import {registerEndpointConstructor} from '~/services/service';
-import { parseFeedViewPost } from '~/services/bluesky/article';
+import {parseFeedViewPost} from '~/services/bluesky/article';
 import {getMarkedAsReadStorage} from '~/storages/serviceCache';
 
 //TODO Rename to FollowingFeed
@@ -52,7 +52,7 @@ export class TimelineEndpoint extends Endpoint {
 	static readonly constructorInfo: EndpointConstructorInfo = {
 		name: 'Timeline',
 		paramTemplate: [],
-		constructor: () => new TimelineEndpoint()
+		constructor: () => new TimelineEndpoint(),
 	};
 }
 

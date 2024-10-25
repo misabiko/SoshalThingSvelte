@@ -186,7 +186,7 @@
 			>
 				<source src={media.src} type='video/mp4'/>
 			</video>
-		{:else if media.mediaType === MediaType.VideoGif || timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
+		{:else if (media.mediaType === MediaType.VideoGif || timelineProps.animatedAsGifs) && media.mediaType === MediaType.Video}
 			<video
 					class='articleMedia'
 					class:socialMediaFull='{index < timelineProps.fullMedia}'

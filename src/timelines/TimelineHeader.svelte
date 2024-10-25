@@ -131,7 +131,7 @@
 				title="{fullscreen ? 'Disable fullscreen' : 'Make timeline fullscreen'}"
 				onclick={toggleFullscreen}
 			>
-				<Fa icon='{fullscreen ? faColumns: faExpandAlt}' size='lg'/>
+				<Fa icon='{fullscreen ? faColumns : faExpandAlt}' size='lg'/>
 			</button>
 		{/if}
 	</div>

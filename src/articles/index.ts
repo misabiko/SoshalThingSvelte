@@ -230,7 +230,7 @@ export function getActualArticleIdPair(article: Article): Readonly<ArticleIdPair
 	}
 }
 
-export function getRootArticle(articleWithRefs: ArticleWithRefs | ArticleProps) : Readonly<Article> {
+export function getRootArticle(articleWithRefs: ArticleWithRefs | ArticleProps): Readonly<Article> {
 	switch (articleWithRefs.type) {
 		case 'reposts':
 			return articleWithRefs.reposts[0];
@@ -239,7 +239,7 @@ export function getRootArticle(articleWithRefs: ArticleWithRefs | ArticleProps) 
 	}
 }
 
-export function getActualArticle(articleWithRefs: ArticleWithRefs | ArticleProps) : Readonly<Article> {
+export function getActualArticle(articleWithRefs: ArticleWithRefs | ArticleProps): Readonly<Article> {
 	switch (articleWithRefs.type) {
 		case 'normal':
 		case 'quote':
@@ -250,7 +250,7 @@ export function getActualArticle(articleWithRefs: ArticleWithRefs | ArticleProps
 	}
 }
 
-export function getActualArticleRefs(articleWithRefs: ArticleWithRefs | ArticleProps) : Readonly<ArticleWithRefs | ArticleProps> {
+export function getActualArticleRefs(articleWithRefs: ArticleWithRefs | ArticleProps): Readonly<ArticleWithRefs | ArticleProps> {
 	switch (articleWithRefs.type) {
 		case 'normal':
 		case 'quote':

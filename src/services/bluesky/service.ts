@@ -32,9 +32,9 @@ export const BlueskyService: BlueskyServiceType = {
 						});
 					}
 				},
-				actioned(article) { return article.liked ?? false; },
+				actioned(article) {return article.liked ?? false;},
 				disabled: null,
-				count(article) { return article.likeCount; },
+				count(article) {return article.likeCount;},
 			},
 			[STANDARD_ACTIONS.repost.key]: {
 				...STANDARD_ACTIONS.repost,
@@ -59,9 +59,9 @@ export const BlueskyService: BlueskyServiceType = {
 						});
 					}
 				},
-				actioned(article) { return article.reposted ?? false; },
+				actioned(article) {return article.reposted ?? false;},
 				disabled: null,
-				count(article) { return article.repostCount; },
+				count(article) {return article.repostCount;},
 			},
 		},
 		keepArticle(articleWithRefs: ArticleWithRefs, index: number, filter: Filter): boolean {
@@ -123,7 +123,7 @@ export const BlueskyService: BlueskyServiceType = {
 				},
 				directionLabel(reversed: boolean): string {
 					return reversed ? 'Descending' : 'Ascending';
-				}
+				},
 			},
 			reposts: {
 				name: 'Reposts',
@@ -132,8 +132,8 @@ export const BlueskyService: BlueskyServiceType = {
 				},
 				directionLabel(reversed: boolean): string {
 					return reversed ? 'Descending' : 'Ascending';
-				}
-			}
+				},
+			},
 		},
 		filterTypes: {
 			liked: {
@@ -157,7 +157,7 @@ export const BlueskyService: BlueskyServiceType = {
 						type: 'order',
 						optional: false,
 						min: 0,
-					}
+					},
 				},
 			},
 			reposts: {
@@ -169,7 +169,7 @@ export const BlueskyService: BlueskyServiceType = {
 						type: 'order',
 						optional: false,
 						min: 0,
-					}
+					},
 				},
 			},
 		},

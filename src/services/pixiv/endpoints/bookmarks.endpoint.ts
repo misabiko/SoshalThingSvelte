@@ -36,7 +36,7 @@ export default class BookmarkPageEndpoint extends PageEndpoint {
 			username: name,
 			name,
 			id: userId,
-			url: getUserUrl(userId)
+			url: getUserUrl(userId),
 		};
 	}
 
@@ -134,7 +134,7 @@ export class BookmarkAPIEndpoint extends LoadableEndpoint {
 			['r18', false],
 			['page', 0],
 		],
-		constructor: params => new BookmarkAPIEndpoint(params.userId as number, params.r18 as boolean, params.page as number)
+		constructor: params => new BookmarkAPIEndpoint(params.userId as number, params.r18 as boolean, params.page as number),
 	};
 }
 

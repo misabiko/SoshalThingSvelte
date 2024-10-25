@@ -9,7 +9,7 @@ test.describe('mark as read', () => {
 					{
 						service: 'Dummy',
 						endpointType: 'DummyEndpoint',
-					}
+					},
 				],
 				filters: [
 					{
@@ -17,8 +17,8 @@ test.describe('mark as read', () => {
 						enabled: true,
 						inverted: false,
 					},
-				]
-			}}
+				],
+			}},
 		});
 	});
 
@@ -40,24 +40,24 @@ test('missing optional props field should be added', async ({page}) => {
 
 	await loadWithLocalStorage(page, {
 		[TIMELINE_STORAGE_KEY]: {t1: {
-				endpoints: [
-					{
-						service: 'Dummy',
-						endpointType: 'DummyEndpoint',
-					}
-				],
-				filters: [
-					{
-						filter: {
-							type: 'repost',
-							service: null
-							// 	no `props: {byUsername}`
-						},
-						enabled: true,
-						inverted: false,
+			endpoints: [
+				{
+					service: 'Dummy',
+					endpointType: 'DummyEndpoint',
+				},
+			],
+			filters: [
+				{
+					filter: {
+						type: 'repost',
+						service: null,
+						// 	no `props: {byUsername}`
 					},
-				]
-			}}
+					enabled: true,
+					inverted: false,
+				},
+			],
+		}},
 	});
 
 	await page.click('.timeline button[title = "Expand options"]');

@@ -24,7 +24,7 @@
 				service: PixivService.name,
 				templateId: 'main',
 			},
-		})
+		}),
 	};
 
 	const mainStorage = loadMainStorage();
@@ -40,9 +40,9 @@
 			timelineIds: Object.keys(timelines),
 			fullscreen: {
 				...mainStorage.fullscreen,
-				index: 0
-			}
-		}
+				index: 0,
+			},
+		},
 	};
 </script>
 
@@ -84,7 +84,7 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
 <a
-	use:portal='{{ target: activatorMount }}'
+	use:portal='{{target: activatorMount}}'
 	id='favvieweractivator'
 	class={activatorMount.children[0].className}
 	onclick='{() => favviewerHidden = !favviewerHidden}'

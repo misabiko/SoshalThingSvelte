@@ -116,14 +116,13 @@ export function parseFeedViewPost(feedViewPost: AppBskyFeedDefs.FeedViewPost, ma
 						url: 'https://bsky.app/profile/' + by.handle,
 						avatarUrl: by.avatar,
 					},
-					creationTime: new Date(reason.indexedAt)
+					creationTime: new Date(reason.indexedAt),
 				},
 				rawSource,
 			),
 			reposted: post,
 		};
-	}
-	else if (feedViewPost.reason !== undefined){
+	}else if (feedViewPost.reason !== undefined) {
 		console.error({
 			message: 'Unknown reason type',
 			feedViewPost,

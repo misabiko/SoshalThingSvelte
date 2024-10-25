@@ -21,11 +21,12 @@ export default tseslint.config(
 
 	...tseslint.configs.strict,
 	...tseslint.configs.stylistic,
-	// stylistic.configs.customize({
-	// 	indent: 4,
-	// 	quotes: 'single',
-	// 	semi: true,
-	// }),
+	stylistic.configs.customize({
+		indent: 4,
+		quotes: 'single',
+		semi: true,
+		arrowParens: false,
+	}),
 	...eslintPluginSvelte.configs['flat/recommended'],
 	{
 		plugins: {
@@ -49,20 +50,20 @@ export default tseslint.config(
 				{
 					multiline: {
 						delimiter: 'none',
-						requireLast: true
+						requireLast: true,
 					},
 					singleline: {
 						delimiter: 'comma',
-						requireLast: false
-					}
-				}
+						requireLast: false,
+					},
+				},
 			],
 			'@stylistic/quotes': [
 				'warn',
 				'single',
 				{
-					avoidEscape: true
-				}
+					avoidEscape: true,
+				},
 			],
 			'@stylistic/quote-props': ['warn', 'as-needed'],
 			'@typescript-eslint/no-explicit-any': 'off',
@@ -70,8 +71,8 @@ export default tseslint.config(
 				'warn',
 				{
 					argsIgnorePattern: '^_',
-					varsIgnorePattern: '^_'
-				}
+					varsIgnorePattern: '^_',
+				},
 			],
 			'prefer-const': ['warn', {
 				destructuring: 'all',
@@ -85,8 +86,57 @@ export default tseslint.config(
 			'@typescript-eslint/consistent-indexed-object-style': 'off',
 			'@typescript-eslint/no-empty-function': 'off',
 
+			'@stylistic/indent': ['warn', 'tab'],
+			'@stylistic/indent-binary-ops': ['warn', 'tab'],
+			//TODO Try to tweak indent-binary-ops to allow
+			/*userIllusts: Record<string, (Omit<Illust,
+				| 'urls'
+				| 'profileImageUrl'
+			> & {
+				profileImageUrl?: string
+			}) | null>*/
+			/*type TimelineDataPartial = Partial<Omit<TimelineData,
+				| 'addedIdPairs'
+				| 'articles'
+				| 'articlesOrder'
+				| 'filters'
+				| 'showAllMediaArticles'
+			> & {
+				articles: ArticleIdPair[]
+				filters: FilterInstance[]
+				articlesOrder: string[]
+				showAllMediaArticles: Set<string>
+			}>;*/
+			'@stylistic/no-mixed-spaces-and-tabs': ['warn', 'smart-tabs'],
+			'@stylistic/space-infix-ops': 'off',
+			'@stylistic/no-tabs': 'off',
+			// '@stylistic/spaced-comment': ['warn', 'never'],
+			//TODO Debug crash with index.html
+			'@stylistic/spaced-comment': 'off',
+			'@stylistic/keyword-spacing': ['warn', {
+				before: true,
+				after: true,
+				overrides: {
+					else: {before: false},
+					catch: {before: false},
+					case: {before: false},
+					default: {before: false},
+				},
+			}],
+			'@stylistic/object-curly-spacing': ['warn', 'never'],
+			'@stylistic/block-spacing': ['warn', 'never'],
+			//TODO Add exceptions for single line
+			'@stylistic/comma-dangle': ['warn', 'always-multiline'],
+			'@stylistic/eol-last': ['warn', 'never'],
+			'@stylistic/no-multiple-empty-lines': ['warn', {max: 2}],
+			'@stylistic/max-statements-per-line': ['warn', {max: 2}],
+			'@stylistic/brace-style': ['warn', '1tbs', {allowSingleLine: true}],
+			'@stylistic/arrow-parens': ['warn', 'as-needed'],
+			'@stylistic/multiline-ternary': 'off',
+			//Maybe if I could disable it for single line
+			'@stylistic/operator-linebreak': 'off',
+
 			// 'no-undef': 'error',
-			// 'comma-dangle': ['warn', 'always-multiline'],
 			// '@stylistic/semi': ['error', 'always'],
 			// '@stylistic/member-delimiter-style': [
 			// 	'warn',
@@ -118,7 +168,7 @@ export default tseslint.config(
 			parserOptions: {
 				parser: tseslint.parser,
 				svelteConfig,
-			}
+			},
 		},
 		rules: {
 			'svelte/require-store-reactive-access': 'error',
@@ -126,8 +176,8 @@ export default tseslint.config(
 				prefer: 'single',
 				dynamic: {
 					quoted: false,
-					avoidInvalidUnquotedInHTML: true
-				}
+					avoidInvalidUnquotedInHTML: true,
+				},
 			}],
 			//TODO Some way to track issues via comments
 			//https://github.com/sveltejs/eslint-plugin-svelte/issues/818

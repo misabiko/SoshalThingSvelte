@@ -1,11 +1,13 @@
-import tsEslint from 'typescript-eslint';
-import pluginJs from '@eslint/js';
+import tseslint from 'typescript-eslint';
+import eslint from '@eslint/js';
 import globals from 'globals';
 import pluginHtml from '@html-eslint/eslint-plugin';
 import htmlParser from '@html-eslint/parser';
 import eslintPluginSvelte from 'eslint-plugin-svelte';
+import svelteParser from 'svelte-eslint-parser';
+import stylistic from '@stylistic/eslint-plugin';
 
-export default tsEslint.config(
+export default tseslint.config(
 	{
 		ignores: [
 			'**/dist/',
@@ -13,18 +15,29 @@ export default tsEslint.config(
 			'**/node_modules/',
 		],
 	},
+	eslint.configs.recommended,
+	//TODO TypeChecked
+
+	...tseslint.configs.strict,
+	...tseslint.configs.stylistic,
+	// stylistic.configs.customize({
+	// 	indent: 4,
+	// 	quotes: 'single',
+	// 	semi: true,
+	// }),
+	...eslintPluginSvelte.configs['flat/recommended'],
 	{
-		extends: [
-			...eslintPluginSvelte.configs['flat/recommended'],
-			pluginJs.configs.recommended,
-			...tsEslint.configs.strict,
-			...tsEslint.configs.stylistic,
-			//TODO "plugin:svelte/recommended"
-		],
-		files: ['**!/!*.{js,mjs,cjs,ts}'],
+		plugins: {
+			'@typescript-eslint': tseslint.plugin,
+			'@stylistic': stylistic,
+		},
 		languageOptions: {
+			parser: tseslint.parser,
 			globals: {
 				...globals.browser,
+			},
+			parserOptions: {
+				extraFileExtensions: ['.svelte'],
 			},
 		},
 		rules: {
@@ -103,6 +116,15 @@ export default tsEslint.config(
 			// ],
 			// '@stylistic/quote-props': ['warn', 'as-needed'],
 		},
+	},
+	{
+		files: ['**/*.svelte', '*.svelte'],
+		languageOptions: {
+			parser: svelteParser,
+			parserOptions: {
+				parser: tseslint.parser,
+			}
+		}
 	},
 	{
 		...pluginHtml.configs['flat/recommended'],

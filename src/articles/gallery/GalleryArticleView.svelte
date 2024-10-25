@@ -165,7 +165,7 @@
 					loop
 					muted
 					preload='auto'
-					onclick='{e => {e.preventDefault(); onMediaClick(actualArticle.idPair, i)}}'
+					onclick='{e => {e.preventDefault(); onMediaClick(actualArticle.idPair, i);}}'
 					onloadeddata='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}'
 					onload='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}'
 				>

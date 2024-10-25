@@ -181,7 +181,7 @@
 					controls
 					preload='auto'
 					muted={timelineProps.muteVideos}
-					onclick='{e => {e.preventDefault(); onMediaClick(index)}}'
+					onclick='{e => {e.preventDefault(); onMediaClick(index);}}'
 					bind:this={mediaRefs[index]}
 			>
 				<source src={media.src} type='video/mp4'/>
@@ -195,7 +195,7 @@
 					loop
 					muted
 					preload='auto'
-					onclick='{e => {e.preventDefault(); onMediaClick(index)}}'
+					onclick='{e => {e.preventDefault(); onMediaClick(index);}}'
 					bind:this={mediaRefs[index]}
 			>
 				<source src={media.src} type='video/mp4'/>

@@ -8,9 +8,9 @@
 		mountElement,
 		children,
 	}: {
-		active: boolean;
-		mountElement: Element | null;
-		children: Snippet;
+		active: boolean
+		mountElement: Element | null
+		children: Snippet
 	} = $props();
 
 	let modal: HTMLDivElement;

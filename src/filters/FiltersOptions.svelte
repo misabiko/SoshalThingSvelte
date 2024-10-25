@@ -100,7 +100,7 @@
 						required={true}
 					>
 						{#each ['=', '!=', '>', '>=', '<', '<='] as comparator}
-							<option value={comparator} selected={comparator === (instance.filter.props[propName]?.comparator ?? '=')}>{comparator}</option>
+							<option value={comparator} selected="{comparator === (instance.filter.props[propName]?.comparator ?? '=')}">{comparator}</option>
 						{/each}
 					</select>
 					<input

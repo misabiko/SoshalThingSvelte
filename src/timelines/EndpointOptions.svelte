@@ -126,7 +126,7 @@
 
 <ul>
 	{#each data.endpoints as timelineEndpoint, i}
-		{@const endpoint = (timelineEndpoint.endpoint || get(endpoints[timelineEndpoint.name]))}
+		{@const endpoint = timelineEndpoint.endpoint || get(endpoints[timelineEndpoint.name])}
 		{@const endpointRefreshTypes = get(endpoint.refreshTypes)}
 		<li>
 			<h2>{endpoint.name}</h2>

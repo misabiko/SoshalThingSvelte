@@ -6,8 +6,6 @@ Mostly for my personal use, so the code is messy and the UI is all over the plac
 
 Hosted on https://soshalthing.com
 
-Rust version: https://github.com/misabiko/SoshalThingYew
-
 ---
 ## Why I use it (vs Tweetdeck)
 - Not having every image cropped
@@ -15,28 +13,28 @@ Rust version: https://github.com/misabiko/SoshalThingYew
 - Having multiple sources per timeline rather than 15 individual timelines
 - Multi-column timelines
 - Adding timelines to other websites
-- Using it for other services than Twitter (not quite there yet)
+- Using it for multiple services
 
 ## Usage
 
 ### Dev
-Build with `npm run build`
-Serve the app  on `localhost:8080` with `npm run serve`
+Build with `bun run build`
+Serve the app  on `localhost:8080` with `bun run serve`
 You can pass `--port <port>` to serve over a specific port
 
-Build the extension with `npm run build:extension`
+Build the extension with `bun run build:extension`
 
-Test with `npm test`, it uses the port 8089 by default
+Test with `bun run test`, it uses the port 8089 by default
 
-[//]: # (TODO Add "one time endpoints" to timeline options)
-[//]: # (TODO Add extension popup to inject soshal)
-[//]: # (TODO Make eslint work for svelte files scripts)
+[//]: # (TODO Port scripts to typescript)
+[//]: # (TODO +1 Add extension popup to inject soshal)
+[//]: # (TODO +1 Make eslint work for svelte files scripts)
+[//]: # (TODO +1 Persist auto refresh)
+[//]: # (TODO Activate rune mode)
 [//]: # (TODO Rename favviewer to injected)
+[//]: # (TODO Add "one time endpoints" to timeline options)
 [//]: # (TODO Print vscode's problems)
-[//]: # (TODO Go through project's TODOs)
 [//]: # (TODO "Third-party cookie will be blocked in future Chrome versions as part of Privacy Sandbox.")
 [//]: # (TODO Filter for "article from X service")
-[//]: # (TODO Persist auto refresh)
-[//]: # (TODO Update README &#40;remove twitter, bun commands&#41;)
 [//]: # (TODO Lint github workflows)
-[//]: # (TODO Port scripts to typescript)
+[//]: # (TODO Go through project's TODOs)

@@ -17,10 +17,8 @@ export default tseslint.config(
 		],
 	},
 	eslint.configs.recommended,
-	//TODO TypeChecked
-
-	...tseslint.configs.strict,
-	...tseslint.configs.stylistic,
+	...tseslint.configs.strictTypeChecked,
+	...tseslint.configs.stylisticTypeChecked,
 	stylistic.configs.customize({
 		indent: 4,
 		quotes: 'single',
@@ -35,11 +33,13 @@ export default tseslint.config(
 		},
 		languageOptions: {
 			parser: tseslint.parser,
-			globals: {
-				...globals.browser,
-			},
 			parserOptions: {
 				extraFileExtensions: ['.svelte'],
+				projectService: true,
+				tsconfigRootDir: import.meta.dirname,
+			},
+			globals: {
+				...globals.browser,
 			},
 		},
 		rules: {
@@ -208,5 +208,9 @@ export default tseslint.config(
 				selfClosing: 'always',
 			}],
 		},
+	},
+	{
+		files: ['**/*.html'],
+		...tseslint.configs.disableTypeChecked,
 	},
 );

@@ -42,7 +42,7 @@ export default abstract class Article {
 		this.text = params.text;
 		this.textHtml = params.textHtml;
 		this.url = params.url ?? null;
-		this.medias = params.medias || [];
+		this.medias = params.medias;
 		this.markedAsRead = params.markedAsRead ?? params.markedAsReadStorage.includes(params.id.toString());
 		this.refs = params.refs ?? null;
 		this.fetched = params.fetched ?? false;
@@ -69,7 +69,7 @@ export default abstract class Article {
 				};
 			case 'repost': {
 				const reposted = get(getWritable(this.refs.reposted)).getArticleWithRefs();
-				if (reposted === null || reposted.type === 'repost' || reposted.type === 'reposts')
+				if (/*reposted === null ||*/ reposted.type === 'repost' || reposted.type === 'reposts')
 					throw new Error('Reposted article is a repost itself: ' + JSON.stringify(reposted));
 				return {
 					type: 'repost',
@@ -79,7 +79,7 @@ export default abstract class Article {
 			}
 			case 'quote': {
 				const quoted = get(getWritable(this.refs.quoted)).getArticleWithRefs();
-				if (quoted === null || quoted.type === 'repost' || quoted.type === 'reposts')
+				if (/*quoted === null ||*/ quoted.type === 'repost' || quoted.type === 'reposts')
 					throw new Error('Quoted article is a repost itself: ' + JSON.stringify(quoted));
 				return {
 					type: 'quote',

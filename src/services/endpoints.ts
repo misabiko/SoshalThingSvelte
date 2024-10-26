@@ -216,7 +216,7 @@ export async function refreshEndpoint(endpoint: Endpoint, refreshType: RefreshTy
 		return [];
 	}
 
-	if (!autoRefreshing && endpoints[endpoint.name] !== undefined && endpoint.autoRefreshId !== null) {
+	if (!autoRefreshing && /*endpoints[endpoint.name] !== undefined &&*/ endpoint.autoRefreshId !== null) {
 		clearInterval(endpoint.autoRefreshId);
 		endpoint.autoRefreshId = null;
 		startAutoRefreshEndpoint(endpoint);
@@ -247,8 +247,8 @@ export async function refreshEndpoint(endpoint: Endpoint, refreshType: RefreshTy
 
 	addArticles(false, ...articles);
 
-	if (endpoints[endpoint.name] !== undefined)
-		endpoints[endpoint.name].set(endpoint);
+	// if (endpoints[endpoint.name] !== undefined)
+	endpoints[endpoint.name].set(endpoint);
 
 	return articles;
 }

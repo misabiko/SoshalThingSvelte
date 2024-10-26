@@ -11,7 +11,7 @@
 
 	const query = window.location.pathname.split('/')[3];
 	const searchParams = new URLSearchParams(window.location.search);
-	const mode = searchParams.get('mode') as Mode ?? Mode.All;
+	const mode = searchParams.get('mode') as Mode | null ?? Mode.All;
 
 	const timelines: TimelineCollection = {
 		Follows: defaultTimeline({

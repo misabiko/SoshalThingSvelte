@@ -144,7 +144,7 @@ export const PixivService: PixivServiceType = {
 					},
 				},
 			},
-			isOnDomain: globalThis.window?.location?.hostname.endsWith('pixiv.net'),
+			isOnDomain: globalThis.window.location.hostname.endsWith('pixiv.net'),
 			keepArticle(articleWithRefs: ArticleWithRefs, index: number, filter: Filter): boolean {
 				switch (filter.type) {
 					case 'bookmarked':
@@ -694,14 +694,14 @@ export function logPreloadDataTypes(data: PreloadData) {
 		if (user.background?.color !== null && user.background?.color !== undefined)
 			console.log(
 				'PreloadData.User.background.color',
-				typeof (user.background?.color),
-				user.background?.color,
+				typeof (user.background.color),
+				user.background.color,
 			);
 		if (user.background?.repeat !== null && user.background?.repeat !== undefined)
 			console.log(
 				'PreloadData.User.background.repeat',
-				typeof (user.background?.repeat),
-				user.background?.repeat,
+				typeof (user.background.repeat),
+				user.background.repeat,
 			);
 		if (user.sketchLiveId !== null && user.sketchLiveId !== undefined)
 			console.log(

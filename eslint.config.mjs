@@ -35,11 +35,7 @@ export default tseslint.config(
 			parser: tseslint.parser,
 			parserOptions: {
 				extraFileExtensions: ['.svelte'],
-				projectService: {
-					allowDefaultProject: [
-						'playwright.config.ts',
-					],
-				},
+				projectService: true,
 				tsconfigRootDir: import.meta.dirname,
 			},
 			globals: {
@@ -168,6 +164,9 @@ export default tseslint.config(
 			'@typescript-eslint/no-confusing-void-expression': 'off',
 			'@typescript-eslint/no-floating-promises': 'off',
 
+			//TODO Temp
+			// '@typescript-eslint/no-unnecessary-condition': 'off',
+
 			'prefer-const': ['warn', {
 				destructuring: 'all',
 			}],
@@ -188,7 +187,6 @@ export default tseslint.config(
 				prefer: 'single',
 				dynamic: {
 					quoted: false,
-					avoidInvalidUnquotedInHTML: true,
 				},
 			}],
 			//TODO Some way to track issues via comments

@@ -166,8 +166,8 @@ export function getReadable<T extends Article = Article>(idPair: ArticleIdPair):
 
 export async function fetchArticle(idPair: ArticleIdPair) {
 	const service = services[idPair.service] as unknown as Service & FetchingService;
-	if (service.fetchArticle === undefined)
-		return;
+	// if (service.fetchArticle === undefined)
+	// 	return;
 
 	if (service.fetchedArticles.has(idPair.id))
 		return;

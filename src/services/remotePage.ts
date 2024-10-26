@@ -29,11 +29,13 @@ export function sendRequest<T>(request: string, body: any): Promise<T> {
 	websocket.send(JSON.stringify({request, body}));
 
 	return new Promise((resolve, reject) => {
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 		if (websocket === null)
 			throw new Error('Websocket not initialized');
 
 		const timeoutId = setTimeout(() => reject(new Error("Remote page didn't respond in 10 seconds.")), 10000);
 		const listener = (data: MessageEvent) => {
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			if (websocket === null)
 				throw new Error('Websocket not initialized');
 

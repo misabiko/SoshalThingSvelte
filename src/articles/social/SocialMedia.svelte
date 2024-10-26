@@ -29,7 +29,7 @@
 		if (articleMediaEls) {
 			const modifiedMedias: [number, number][] = [];
 			for (let i = 0; i < $article.medias.length; ++i)
-				if ($article.medias[i].ratio === null && articleMediaEls[i] !== undefined)
+				if ($article.medias[i].ratio === null /*&& articleMediaEls[i] !== undefined*/)
 					modifiedMedias.push([i, articleMediaEls[i].clientHeight / articleMediaEls[i].clientWidth]);
 
 			getWritable($article.idPair).update(a => {

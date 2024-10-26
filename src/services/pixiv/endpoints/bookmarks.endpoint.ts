@@ -50,8 +50,10 @@ export default class BookmarkPageEndpoint extends PageEndpoint {
 			url.searchParams.set('lang', 'en`');
 
 			const response: PixivResponseWithWorks = await PixivService.fetch(url.toString(), {headers: {Accept: 'application/json'}});
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			if (response?.body?.works) {
 				for (const work of Object.values(response.body.works))
+					// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 					getWritable<PixivArticle>({id: parseInt(work.id), service: PixivService.name})?.update(a => {
 						a.creationTime = new Date(work.createDate);
 						return a;

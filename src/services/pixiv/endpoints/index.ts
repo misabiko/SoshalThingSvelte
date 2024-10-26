@@ -6,6 +6,7 @@ import {avatarHighRes} from '~/services/pixiv/endpoints/bookmarks.endpoint';
 
 export function getThumbnailId(element: Element): number | null {
 	const anchors = element.querySelectorAll('a');
+	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 	const idStr = anchors[0]?.getAttribute('data-gtm-value');
 	if (!idStr) {
 		if (element.querySelector('span')?.getAttribute('data-gtm-value'))
@@ -46,6 +47,7 @@ export function parseThumbnail(element: Element, markedAsReadStorage: string[], 
 				cropRatio: null,
 			}));
 
+	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 	const title = element.querySelectorAll('a')[1]?.textContent;
 	if (!title)
 		throw new Error("Couldn't find title");

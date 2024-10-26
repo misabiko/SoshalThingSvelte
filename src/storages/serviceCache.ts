@@ -30,6 +30,7 @@ export function updateMarkAsReadStorage() {
 	let storage: SessionCacheStorage | null = item !== null ? JSON.parse(item) : null;
 	if (storage === null)
 		storage = {services: {}};
+	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 	else if (storage.services === undefined)
 		storage.services = {};
 
@@ -91,6 +92,7 @@ export function getMarkedAsReadStorage(service: Service<any>): string[] {
 	const parsed: SessionCacheStorage | null = item !== null ? JSON.parse(item) : null;
 	if (parsed?.services === undefined)
 		return [];
+	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 	return parsed.services[service.name].articlesMarkedAsRead ?? [];
 }
 

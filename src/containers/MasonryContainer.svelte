@@ -49,6 +49,7 @@
 
 			for (let i = 0; i < columns.length; ++i) {
 				for (let j = 0; j < columns[i].idServiceMedias.length;) {
+					// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 					if (!uniqueArticles[columns[i].idServiceMedias[j]]) {
 						columns[i].idServiceMedias.splice(j, 1);
 						columnsChanged.add(i);

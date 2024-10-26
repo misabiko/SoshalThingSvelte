@@ -32,7 +32,7 @@ export const BlueskyService: BlueskyServiceType = {
 						});
 					}
 				},
-				actioned(article) {return article.liked ?? false;},
+				actioned(article) {return article.liked;},
 				disabled: null,
 				count(article) {return article.likeCount;},
 			},
@@ -59,7 +59,7 @@ export const BlueskyService: BlueskyServiceType = {
 						});
 					}
 				},
-				actioned(article) {return article.reposted ?? false;},
+				actioned(article) {return article.reposted;},
 				disabled: null,
 				count(article) {return article.repostCount;},
 			},

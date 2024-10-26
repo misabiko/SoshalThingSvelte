@@ -53,6 +53,7 @@
 	let batchActionFilters: Writable<FilterInstance[]> = writable([]);
 
 	setContext('isInjected', isInjected);
+	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 	let showSidebar = !isInjected && favviewerMaximized !== true;
 
 	function addTimeline(data: TimelineData) {
@@ -112,7 +113,7 @@
 			for (const timelineEndpoint of timeline.endpoints.filter(e => e.refreshTypes.has(RefreshType.RefreshStart)))
 				if (timelineEndpoint.name !== undefined)
 					endpointNames.add(timelineEndpoint.name);
-				else if (timelineEndpoint.endpoint?.refreshTypes && get(timelineEndpoint.endpoint.refreshTypes).has(RefreshType.RefreshStart))
+				else if (/*timelineEndpoint.endpoint.refreshTypes &&*/ get(timelineEndpoint.endpoint.refreshTypes).has(RefreshType.RefreshStart))
 					refreshPromises.push(
 						refreshEndpoint(timelineEndpoint.endpoint, RefreshType.RefreshStart)
 							.then(articles => addArticlesToTimeline(timeline, ...articles.map(a => getRootArticle(a).idPair))),

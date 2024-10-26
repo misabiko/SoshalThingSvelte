@@ -142,7 +142,7 @@ export function BlueskyPostToArticle(post: AppBskyFeedDefs.PostView, markedAsRea
 			text: (post.record as AppBskyFeedPost.Record).text,
 			url: `https://bsky.app/profile/${post.author.handle}/post/${post.uri.split('/').at(-1)}`,
 			medias: (post.embed?.images as AppBskyEmbedImages.ViewImage[] | undefined)?.map((image: AppBskyEmbedImages.ViewImage) => {
-				const ratio = image.aspectRatio?.width && image.aspectRatio?.height ? getRatio(image.aspectRatio?.width, image.aspectRatio?.height) : null;
+				const ratio = image.aspectRatio?.width && image.aspectRatio.height ? getRatio(image.aspectRatio.width, image.aspectRatio.height) : null;
 				return ({
 					src: image.fullsize,
 					mediaType: MediaType.Image,

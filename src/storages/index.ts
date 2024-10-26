@@ -42,6 +42,7 @@ export function loadMainStorage() {
 	if (!mainStorage.maximized)
 		mainStorage.maximized = false;
 
+	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 	if (!mainStorage.timelineViews)
 		mainStorage.timelineViews = {};
 	else
@@ -155,7 +156,7 @@ export function loadTimelines(): TimelineCollection {
 				endpoints.push(endpoint);
 		}
 
-		defaulted.filters = parseFilters(defaulted.filters ?? []);
+		defaulted.filters = parseFilters(defaulted.filters/* ?? []*/);
 
 		//TODO Try to avoid defaulted, while passing tests
 		const timeline = defaultTimeline({
@@ -414,6 +415,7 @@ function parseFilters(storageFilters: FilterInstance[]) {
 
 	for (const instance of storageFilters) {
 		instance.filter.service ??= null;
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 		instance.filter.props ??= {};
 
 		if (instance.filter.service === null && !Object.hasOwn(genericFilterTypes, instance.filter.type))
@@ -449,7 +451,7 @@ function parseFullscreenInfo(fullscreen?: boolean | number | FullscreenInfoStora
 			container: null,
 		};
 
-	const containerString = fullscreen?.container as string | undefined;
+	const containerString = fullscreen.container as string | undefined;
 	if (containerString)
 		(fullscreen as FullscreenInfo).container = parseContainer(containerString);
 

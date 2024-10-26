@@ -1,6 +1,6 @@
 import type BlueskyArticle from '~/services/bluesky/article';
 import {getWritable, newService, registerService, type Service} from '~/services/service';
-import {BskyAgent} from '@atproto/api';
+import {AtpAgent} from '@atproto/api/src/atp-agent';
 import {STANDARD_ACTIONS} from '~/services/actions';
 import {get} from 'svelte/store';
 import {type ArticleWithRefs, articleWithRefToArray, getActualArticle, getRootArticle} from '~/articles';
@@ -174,7 +174,7 @@ export const BlueskyService: BlueskyServiceType = {
 			},
 		},
 	}),
-	agent: new BskyAgent({
+	agent: new AtpAgent({
 		service: 'https://bsky.social',
 		// persistSession(evt: AtpSessionEvent, sess?: AtpSessionData) {
 		// 	//TODO Look into persistSession
@@ -186,5 +186,5 @@ export const BlueskyService: BlueskyServiceType = {
 registerService(BlueskyService);
 
 interface BlueskyServiceType extends Service<BlueskyArticle> {
-	agent: BskyAgent
+	agent: AtpAgent
 }

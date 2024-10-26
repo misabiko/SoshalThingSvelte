@@ -66,13 +66,13 @@
 		<input bind:value={username} name='username'/>
 	{/if}
 	<button
-		onclick='{() => {const data = getTimelineData(); if (data) setModalTimeline(data);}}'
+		onclick={() => {const data = getTimelineData(); if (data) setModalTimeline(data);}}
 		disabled={addDisabled}
 	>
 		Add Modal Timeline
 	</button>
 	<button
-		onclick='{() => {const data = getTimelineData(); if (data) addTimeline(data);}}'
+		onclick={() => {const data = getTimelineData(); if (data) addTimeline(data);}}
 		disabled={addDisabled}
 	>
 		Add Timeline

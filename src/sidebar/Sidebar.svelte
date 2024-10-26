@@ -138,30 +138,30 @@
 	<div id='sidebarButtons'>
 		<div>
 			{#if menu !== null}
-				<button class='borderless-button' title='Expand sidebar' onclick='{() => menu = null}'>
+				<button class='borderless-button' title='Expand sidebar' onclick={() => menu = null}>
 					<Fa icon={faAngleDoubleLeft} size='2x'/>
 				</button>
 			{/if}
 			{#each buttons as {icon, menu, title}}
-				<button class='borderless-button' {title} onclick='{() => toggleSidebarMenu(menu)}'>
+				<button class='borderless-button' {title} onclick={() => toggleSidebarMenu(menu)}>
 					<Fa icon={icon} size='2x'/>
 				</button>
 			{/each}
 			{#each Object.entries(timelineViews) as [id, _]}
 				<button
 						class='borderless-button'
-						title='{`Set view: ${id}`}'
-						onclick="{() => {
+						title={`Set view: ${id}`}
+						onclick={() => {
 							timelineViewId = id;
 							updateMainStorage('currentTimelineView', timelineViewId);
-						}}"
+						}}
 				>
 					<Fa icon={faTableColumns} size='2x'/>
 				</button>
 			{/each}
 		</div>
 		<div>
-			<button class='borderless-button' title='Settings' onclick='{() => toggleSidebarMenu(SettingsMenu)}'>
+			<button class='borderless-button' title='Settings' onclick={() => toggleSidebarMenu(SettingsMenu)}>
 				<Fa icon={faCog} size='2x'/>
 			</button>
 			<a href='https://github.com/misabiko/SoshalThingSvelte' title='Github'>

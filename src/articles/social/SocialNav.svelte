@@ -136,19 +136,19 @@
 							class='articleButton borderless-button'
 							class:actioned
 							title={action.name}
-							onclick='{() => actionFunc(idPair)}'
-							disabled='{disabled || (actioned && !action.togglable)}'
-							onmouseover='{() => updateActionHover(action.key, true)}'
-							onmouseout='{() => updateActionHover(action.key, false)}'
+							onclick={() => actionFunc(idPair)}
+							disabled={disabled || (actioned && !action.togglable)}
+							onmouseover={() => updateActionHover(action.key, true)}
+							onmouseout={() => updateActionHover(action.key, false)}
 					>
 						<span class='icon'>
 							<Fa
-									icon='{action.actionedIcon && actioned ? action.actionedIcon : action.icon}'
-									color='{action.color && !disabled && (actioned || isHovered) ? action.color : undefined}'
+									icon={action.actionedIcon && actioned ? action.actionedIcon : action.icon}
+									color={action.color && !disabled && (actioned || isHovered) ? action.color : undefined}
 							/>
 						</span>
 						{#if count}
-							<span style:color="{!disabled && (actioned || isHovered) ? action.color : 'inherit'}">{count}</span>
+							<span style:color={!disabled && (actioned || isHovered) ? action.color : 'inherit'}>{count}</span>
 						{/if}
 					</button>
 				{:else}
@@ -159,17 +159,17 @@
 							class='articleButton borderless-button'
 							title={action.name}
 							href={action.href}
-							onmouseover='{() => updateActionHover(action.key, true)}'
-							onmouseout='{() => updateActionHover(action.key, false)}'
+							onmouseover={() => updateActionHover(action.key, true)}
+							onmouseout={() => updateActionHover(action.key, false)}
 					>
 						<span class='icon'>
 							<Fa
 									icon={action.icon}
-									color='{isHovered ? action.color ?? undefined : undefined}'
+									color={isHovered ? action.color ?? undefined : undefined}
 							/>
 						</span>
 						{#if count}
-							<span style:color="{isHovered ? action.color ?? undefined : 'inherit'}">{count}</span>
+							<span style:color={isHovered ? action.color ?? undefined : 'inherit'}>{count}</span>
 						{/if}
 					</a>
 				{/if}
@@ -179,7 +179,7 @@
 			<button
 					class='articleButton borderless-button'
 					title='Expand article as modal'
-					onclick='{() => modal = true}'
+					onclick={() => modal = true}
 			>
 				<span class='icon'>
 					<Fa icon={faExpandAlt}/>
@@ -199,8 +199,8 @@
 					{@const actioned = action.actioned($article)}
 					<button
 							class='dropdown-item'
-							onclick='{() => actionFunc(idPair)}'
-							disabled='{disabled || (actioned && !action.togglable)}'
+							onclick={() => actionFunc(idPair)}
+							disabled={disabled || (actioned && !action.togglable)}
 					>
 						{#if action.actionedName && actioned}
 							{action.actionedName}

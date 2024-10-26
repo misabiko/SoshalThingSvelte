@@ -91,7 +91,7 @@
 			Title
 			<input type='text'
 					bind:value={data.title}
-					onchange="{() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'title', data.title)}"
+					onchange={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'title', data.title)}
 			/>
 		</label>
 		<p>{articleCountLabel}</p>
@@ -108,7 +108,7 @@
 			{`${fullscreen?.container !== null ? 'Timeline ' : ''}Container`}
 			<select
 					bind:value={data.container}
-					onchange="{() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'container', data.container.name.replace('Proxy<', '').replace('>', ''))}"
+					onchange={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'container', data.container.name.replace('Proxy<', '').replace('>', ''))}
 			>
 				<option value={ColumnContainer}>Column</option>
 				<option value={RowContainer}>Row</option>
@@ -118,16 +118,16 @@
 		{#if fullscreen !== null}
 			<label class='field'>
 				<input type='checkbox' checked={!!fullscreen.container}
-						onchange='{e => setFullscreenContainer(e.currentTarget.checked)}'/>
+						onchange={e => setFullscreenContainer(e.currentTarget.checked)}/>
 				Fullscreen Container
 				{#if fullscreen.container}
 					<select
 							bind:value={fullscreen.container}
-						onchange="{() => {
+						onchange={() => {
 							if (fullscreen === null)
 								throw new Error('FullscreenInfo is null');
 							updateFullscreenStorage(fullscreen);
-						}}"
+						}}
 					>
 						<option value={ColumnContainer}>Column</option>
 						<option value={RowContainer}>Row</option>
@@ -144,31 +144,31 @@
 						type='number'
 						bind:value={data.columnCount}
 						min={1}
-						onchange="{() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'columnCount', data.columnCount)}"
+						onchange={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'columnCount', data.columnCount)}
 				/>
 				<!-- Add PlusMinusNumber component -->
-				<button onclick="{() => {
+				<button onclick={() => {
 					data.columnCount++;
 					if (timelineId !== null)
 						updateTimelinesStorageValue(timelineId, 'columnCount', data.columnCount);
-				}}">
+				}}>
 					+
 				</button>
-				<button onclick="{() => {
+				<button onclick={() => {
 					if (data.columnCount > 1) {
 						data.columnCount--;
 
 						if (timelineId !== null)
 							updateTimelinesStorageValue(timelineId, 'columnCount', data.columnCount);
 					}
-				}}">
+				}}>
 					-
 				</button>
 			</label>
 			{#if fullscreen !== null}
 				<label class='field'>
-					<input type='checkbox' checked='{fullscreen.columnCount !== null}'
-							onchange='{e => setFullscreenColumnCount(e.currentTarget.checked)}'/>
+					<input type='checkbox' checked={fullscreen.columnCount !== null}
+							onchange={e => setFullscreenColumnCount(e.currentTarget.checked)}/>
 					Fullscreen Column Count
 					{#if fullscreen.columnCount !== null}
 						<input
@@ -176,27 +176,27 @@
 								type='number'
 								min={1}
 								value={fullscreen.columnCount}
-								onchange='{e => {
+								onchange={e => {
 									if (fullscreen && e.currentTarget.value) {
 										fullscreen.columnCount = parseInt(e.currentTarget.value);
 										updateFullscreenStorage(fullscreen);
 									}
-								}}'
+								}}
 						/>
-						<button onclick='{() => {
+						<button onclick={() => {
 							if (fullscreen?.columnCount) {
 								fullscreen.columnCount++;
 								updateFullscreenStorage(fullscreen);
 							}
-						}}'>
+						}}>
 							+
 						</button>
-						<button onclick='{() => {
+						<button onclick={() => {
 							if (fullscreen?.columnCount && fullscreen.columnCount > 1) {
 								fullscreen.columnCount--;
 								updateFullscreenStorage(fullscreen);
 							}
-						}}'>
+						}}>
 							-
 						</button>
 					{/if}
@@ -215,7 +215,7 @@
 						type='number'
 						bind:value={data.width}
 						min={1}
-						onchange="{() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'width', data.width)}"
+						onchange={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'width', data.width)}
 				/>
 			</label>
 		{/if}
@@ -228,7 +228,7 @@
 			<label>
 				<input type='checkbox'
 						bind:checked={data.section.useSection}
-						onchange="{() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'section', data.section)}"
+						onchange={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'section', data.section)}
 				/>
 				Section articles
 			</label>
@@ -237,7 +237,7 @@
 					type='number'
 					bind:value={data.section.count}
 					min={0}
-					onchange="{() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'section', data.section)}"
+					onchange={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'section', data.section)}
 			/>
 		</label>
 	</section>
@@ -246,7 +246,7 @@
 			Article View
 			<select
 					bind:value={data.articleView}
-					onchange="{() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'articleView', data.articleView.name.replace('Proxy<', '').replace('>', ''))}"
+					onchange={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'articleView', data.articleView.name.replace('Proxy<', '').replace('>', ''))}
 			>
 				<option value={SocialArticleView}>Social</option>
 				<option value={GalleryArticleView}>Gallery</option>
@@ -256,7 +256,7 @@
 			<label>
 				<input type='checkbox'
 						bind:checked={data.animatedAsGifs}
-						onchange="{() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'animatedAsGifs', data.animatedAsGifs)}"
+						onchange={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'animatedAsGifs', data.animatedAsGifs)}
 				/>
 				Show all animated as gifs
 			</label>
@@ -265,7 +265,7 @@
 			<label>
 				<input type='checkbox'
 						bind:checked={data.muteVideos}
-						onchange="{() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'muteVideos', data.muteVideos)}"
+						onchange={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'muteVideos', data.muteVideos)}
 				/>
 				Mute videos
 			</label>
@@ -274,7 +274,7 @@
 			<label>
 				<input type='checkbox'
 						bind:checked={data.hideFilteredOutArticles}
-						onchange="{() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'hideFilteredOutArticles', data.hideFilteredOutArticles)}"
+						onchange={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'hideFilteredOutArticles', data.hideFilteredOutArticles)}
 				/>
 				Hide filtered out articles
 			</label>
@@ -282,7 +282,7 @@
 		<div class='field'>
 			<label>
 				<input type='checkbox' bind:checked={data.mergeReposts}
-						onchange="{() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'mergeReposts', data.mergeReposts)}"
+						onchange={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'mergeReposts', data.mergeReposts)}
 				/>
 				Merge duplicate reposts
 			</label>
@@ -292,7 +292,7 @@
 				<label>
 					<input type='checkbox'
 							bind:checked={data.compact}
-							onchange="{() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'compact', data.compact)}"
+							onchange={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'compact', data.compact)}
 					/>
 					Compact articles
 				</label>
@@ -304,7 +304,7 @@
 						type='number'
 						bind:value={data.fullMedia}
 						min={0}
-						onchange="{() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'fullMedia', data.fullMedia)}"
+						onchange={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'fullMedia', data.fullMedia)}
 				/>
 			</label>
 			<div class='field'>
@@ -320,7 +320,7 @@
 				<label>
 					<input type='checkbox'
 							bind:checked={data.hideText}
-							onchange="{() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'hideText', data.hideText)}"
+							onchange={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'hideText', data.hideText)}
 					/>
 					Hide text
 				</label>
@@ -333,14 +333,14 @@
 					type='number'
 					value={data.maxMediaCount}
 					min={1}
-					onchange="{() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'maxMediaCount', data.maxMediaCount)}"
+					onchange={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'maxMediaCount', data.maxMediaCount)}
 			/>
 		</label>
 		<div class='field'>
 			<label>
 				<input type='checkbox'
 					bind:checked={data.separateMedia}
-					onchange="{() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'separateMedia', data.separateMedia)}"
+					onchange={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'separateMedia', data.separateMedia)}
 				/>
 				Split articles per media
 			</label>
@@ -349,7 +349,7 @@
 			<label>
 				<input type='checkbox'
 					bind:checked={data.shouldLoadMedia}
-					onchange="{() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'shouldLoadMedia', data.shouldLoadMedia)}"
+					onchange={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'shouldLoadMedia', data.shouldLoadMedia)}
 				/>
 				Load media
 			</label>
@@ -373,11 +373,11 @@
 		{#key $currentLayer}
 			{#if ($currentLayer === OptionLayer.Timeline) && timelineId !== null}
 				<FiltersOptions
-					onInstancesUpdate="{instances => {
+					onInstancesUpdate={instances => {
 						if (timelineId === null)
 							throw {message: 'TimelineId is null', data};
 						updateTimelinesStorageValue(timelineId, 'filters', instances);
-					}}"
+					}}
 					instances={data.filters}
 				/>
 			{:else if $currentLayer === OptionLayer.ServiceTemplate && data.serviceTemplate !== null && templateFilters !== null}
@@ -397,7 +397,7 @@
 		<SortOptions {timelineId} bind:sortInfo={data.sortInfo} articlesOrder={data.articlesOrder} {sortOnce}/>
 	</section>
 	<section>
-		<button onclick='{() => console.log(data)}'>
+		<button onclick={() => console.log(data)}>
 			Log Timeline Data
 		</button>
 	</section>

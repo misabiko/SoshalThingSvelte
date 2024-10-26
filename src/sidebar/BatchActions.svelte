@@ -52,7 +52,7 @@
 
 <div class='block'>
 	<FiltersOptions
-		onInstancesUpdate='{() => {}}'
+		onInstancesUpdate={() => {}}
 		instances={filterInstances}
 	/>
 </div>

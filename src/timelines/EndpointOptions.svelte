@@ -139,16 +139,16 @@
 					<input
 							type='checkbox'
 							checked={timelineEndpoint.refreshTypes.has(refreshType)}
-							onchange='{e => onRefreshTypeChange(i, refreshType, e.currentTarget.checked)}'
+							onchange={e => onRefreshTypeChange(i, refreshType, e.currentTarget.checked)}
 					/>
 				</label>
 			{/each}
 
 			{#if (endpoint instanceof LoadablePageEndpoint || endpoint instanceof LoadableEndpoint) && endpoint.lastPage}
-				<button onclick='{() => loadRandomPage(timelineEndpoint)}'>Load Random</button>
+				<button onclick={() => loadRandomPage(timelineEndpoint)}>Load Random</button>
 			{/if}
 
-			<button onclick='{() => removeEndpoint(i)}'>Remove</button>
+			<button onclick={() => removeEndpoint(i)}>Remove</button>
 		</li>
 	{/each}
 </ul>
@@ -170,11 +170,11 @@
 		<label class='field'>
 			{key}
 			{#if typeof value === 'number'}
-				<input type='number' {value} onchange='{e => params[key] = parseInt(e.currentTarget.value)}'/>
+				<input type='number' {value} onchange={e => params[key] = parseInt(e.currentTarget.value)}/>
 			{:else if typeof value === 'boolean'}
-				<input type='checkbox' checked={value} onchange='{e => params[key] = e.currentTarget.checked}'/>
+				<input type='checkbox' checked={value} onchange={e => params[key] = e.currentTarget.checked}/>
 			{:else}
-				<input type='text' {value} onchange='{e => params[key] = e.currentTarget.value}'/>
+				<input type='text' {value} onchange={e => params[key] = e.currentTarget.value}/>
 			{/if}
 		</label>
 	{/each}

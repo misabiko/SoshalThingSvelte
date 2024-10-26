@@ -421,8 +421,8 @@
 
 <div
 		class='timeline'
-		class:fullscreenTimeline='{fullscreen !== null}'
-		style="{modal ? '' : data.width > 1 ? `width: ${data.width * 500}px` : ''}"
+		class:fullscreenTimeline={fullscreen !== null}
+		style={modal ? '' : data.width > 1 ? `width: ${data.width * 500}px` : ''}
 >
 	<TimelineHeader
 			bind:data
@@ -454,7 +454,7 @@
 	{/if}
 	{#if $filteredArticles.length}
 		<svelte:component
-				this='{fullscreen?.container ?? data.container}'
+				this={fullscreen?.container ?? data.container}
 				bind:containerRef
 				props={containerProps}
 		/>

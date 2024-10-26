@@ -155,9 +155,9 @@
 					controls
 					preload='auto'
 					muted={timelineProps.muteVideos}
-					onclick='{e => {e.preventDefault(); onMediaClick(actualArticle.idPair, i);}}'
-					onloadeddata='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}'
-					onload='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}'
+					onclick={e => {e.preventDefault(); onMediaClick(actualArticle.idPair, i);}}
+					onloadeddata={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
+					onload={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
 				>
 					<source src={media.src} type='video/mp4'/>
 				</video>
@@ -169,9 +169,9 @@
 					loop
 					muted
 					preload='auto'
-					onclick='{e => {e.preventDefault(); onMediaClick(actualArticle.idPair, i);}}'
-					onloadeddata='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}'
-					onload='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}'
+					onclick={e => {e.preventDefault(); onMediaClick(actualArticle.idPair, i);}}
+					onloadeddata={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
+					onload={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
 				>
 					<source src={media.src} type='video/mp4'/>
 				</video>
@@ -179,7 +179,7 @@
 		{/each}
 		{#if !$showAllMedia && timelineProps.maxMediaCount !== null && actualArticle.medias.length > timelineProps.maxMediaCount}
 			<div class='moreMedia'>
-				<button class='borderless-button' title='Load more medias' onclick='{() => timelineProps.showAllMediaArticles.update(a => {a.add(rootArticle.idPairStr); return a;})}'>
+				<button class='borderless-button' title='Load more medias' onclick={() => timelineProps.showAllMediaArticles.update(a => {a.add(rootArticle.idPairStr); return a;})}>
 					<Fa icon={faImages} size='2x'/>
 				</button>
 			</div>
@@ -191,7 +191,7 @@
 				</span>
 			</a>
 			{#if !modal}
-				<button class='button' onclick='{() => modal = !modal}'>
+				<button class='button' onclick={() => modal = !modal}>
 					<span class='icon darkIcon'>
 						<Fa icon={faExpandArrowsAlt} class='is-small'/>
 					</span>
@@ -211,8 +211,8 @@
 						{@const actioned = action.actioned(rootArticle)}
 						<button
 								class='dropdown-item'
-								onclick='{() => actionFunc(rootArticle.idPair)}'
-								disabled='{disabled || (actioned && !action.togglable)}'
+								onclick={() => actionFunc(rootArticle.idPair)}
+								disabled={disabled || (actioned && !action.togglable)}
 						>
 							{#if action.actionedName && actioned}
 								{action.actionedName}
@@ -254,11 +254,11 @@
 								class='button'
 								class:actioned
 								title={action.name}
-								onclick='{() => actionFunc(rootArticle.idPair)}'
+								onclick={() => actionFunc(rootArticle.idPair)}
 								{disabled}
 							>
 								<span class='icon darkIcon'>
-									<Fa icon='{action.actionedIcon && actioned ? action.actionedIcon : action.icon}' class='is-small'/>
+									<Fa icon={action.actionedIcon && actioned ? action.actionedIcon : action.icon} class='is-small'/>
 								</span>
 							</button>
 						{/if}

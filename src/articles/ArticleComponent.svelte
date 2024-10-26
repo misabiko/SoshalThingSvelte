@@ -132,7 +132,7 @@
 
 {#if modal}
 <!-- TODO Find way to get specific parent soshalthing -->
-	<Modal bind:active={modal} mountElement="{document.getElementsByClassName('soshalthing')[0]}">
+	<Modal bind:active={modal} mountElement={document.getElementsByClassName('soshalthing')[0]}>
 		<article class:transparent={articleProps.filteredOut}>
 			<svelte:component
 				this={view}
@@ -153,7 +153,7 @@
 	</Modal>
 {/if}
 
-<article class="{articleProps.filteredOut ? 'transparent' : ''}" {style}>
+<article class={articleProps.filteredOut ? 'transparent' : ''} {style}>
 	<svelte:component
 		this={view}
 		{timelineProps}

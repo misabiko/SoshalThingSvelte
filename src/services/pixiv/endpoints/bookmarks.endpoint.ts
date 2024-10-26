@@ -4,7 +4,7 @@ import {PixivService} from '../service';
 import PixivArticle, {type CachedPixivArticle} from '../article';
 import type {PixivUser} from '../article';
 import {getCachedArticlesStorage, getMarkedAsReadStorage} from '~/storages/serviceCache';
-import {getWritable, registerEndpointConstructor} from '../../service';
+import {getWritableArticle, registerEndpointConstructor} from '../../service';
 import {
 	getUserUrl, illustToArticle,
 	parseThumbnail, type PixivResponseWithWorks,
@@ -31,7 +31,7 @@ export default class BookmarkPageEndpoint extends PageEndpoint {
 		if (!name)
 			throw new Error("Couldn't find user name");
 
-		const userId = parseInt(window.location.pathname.split('/')[3]);
+		const userId = parseInt(window.location.pathname.split('/')[3]!);
 		this.user = {
 			username: name,
 			name,
@@ -50,15 +50,11 @@ export default class BookmarkPageEndpoint extends PageEndpoint {
 			url.searchParams.set('lang', 'en`');
 
 			const response: PixivResponseWithWorks = await PixivService.fetch(url.toString(), {headers: {Accept: 'application/json'}});
-			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-			if (response?.body?.works) {
-				for (const work of Object.values(response.body.works))
-					// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-					getWritable<PixivArticle>({id: parseInt(work.id), service: PixivService.name})?.update(a => {
-						a.creationTime = new Date(work.createDate);
-						return a;
-					});
-			}
+			for (const work of Object.values(response.body.works))
+				getWritableArticle<PixivArticle>({id: parseInt(work.id), service: PixivService.name}).update(a => {
+					a.creationTime = new Date(work.createDate);
+					return a;
+				});
 			return [];
 		}else
 			return await super.refresh(refreshType);

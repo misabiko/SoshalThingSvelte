@@ -85,10 +85,10 @@ export function addArticles(ignoreRefs: boolean, ...articlesWithRefs: ArticleWit
 
 	for (const article of articles) {
 		//Articles from one service can quote articles from other (TwitterNotifs quotes Tweets)
-		const service = services[article.idPair.service];
+		const service = getService(article.idPair.service);
 
 		if (Object.hasOwn(service.articles, article.idPair.id as string)) {
-			service.articles[article.idPair.id as string][0].update(a => {
+			getWritableArticle(article.idPair).update(a => {
 				a.update(article);
 				return a;
 			});
@@ -116,7 +116,7 @@ export function registerEndpointConstructor(endpoint: (new (...args: any[]) => E
 	}
 
 	try {
-		services[endpoint.service].endpointConstructors[endpoint.constructorInfo.name] = endpoint.constructorInfo;
+		getService(endpoint.service).endpointConstructors[endpoint.constructorInfo.name] = endpoint.constructorInfo;
 	}catch (e) {
 		console.error(e);
 	}
@@ -126,8 +126,16 @@ export function getServices(): Readonly<{[name: string]: Service}> {
 	return services;
 }
 
+export function getService(name: string): Service {
+	const service = services[name];
+	if (service === undefined)
+		throw new Error(`Service ${name} not found`);
+
+	return service;
+}
+
 export function toggleMarkAsRead(idPair: ArticleIdPair) {
-	const store = getWritable(idPair);
+	const store = getWritableArticle(idPair);
 	store.update(a => {
 		const oldValue = a.markedAsRead;
 		a.markedAsRead = !a.markedAsRead;
@@ -155,13 +163,16 @@ export function toggleMarkAsRead(idPair: ArticleIdPair) {
 	updateMarkAsReadStorage();
 }
 
-export function getWritable<T extends Article = Article>(idPair: ArticleIdPair): Writable<T> {
+export function getWritableArticle<T extends Article = Article>(idPair: ArticleIdPair): Writable<T> {
+	const article = getService(idPair.service).articles[idPair.id as string];
+	if (article === undefined)
+		throw new Error(`Article ${idPair.service}/${idPair.id} not found`);
 	//Type casting might not be a great idea, no guarantee that the service returns T
-	return services[idPair.service].articles[idPair.id as string][0] as Writable<T>;
+	return article[0] as Writable<T>;
 }
 
-export function getReadable<T extends Article = Article>(idPair: ArticleIdPair): Readable<T> {
-	return readonly(services[idPair.service].articles[idPair.id as string][0]) as Readable<T>;
+export function getReadableArticle<T extends Article = Article>(idPair: ArticleIdPair): Readable<T> {
+	return readonly(getWritableArticle(idPair));
 }
 
 export async function fetchArticle(idPair: ArticleIdPair) {
@@ -187,7 +198,7 @@ export async function fetchArticle(idPair: ArticleIdPair) {
 	service.fetchedArticles.add(idPair.id);
 	++service.fetchedArticleQueue;
 
-	const store = getWritable(idPair);
+	const store = getWritableArticle(idPair);
 	await service.fetchArticle(store);
 }
 

@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import {type ArticleIdPair, type ArticleViewProps, getActualArticleRefs} from './index';
-	import {getWritable, toggleMarkAsRead} from '~/services/service';
+	import {getWritableArticle, toggleMarkAsRead} from '~/services/service';
 	import Article, {getActualArticle} from '../articles';
 	import type {ArticleProps, TimelineArticleProps} from './index';
 	import {type Component, onDestroy, tick} from 'svelte';
@@ -51,7 +51,7 @@
 					modifiedMedias.push([i, mediaRef.clientHeight / mediaRef.clientWidth]);
 			}
 
-			getWritable(actualArticle.idPair).update(a => {
+			getWritableArticle(actualArticle.idPair).update(a => {
 				for (const [i, ratio] of modifiedMedias)
 					a.medias[i]!.ratio = ratio;
 				return a;
@@ -114,6 +114,9 @@
 	function onMediaClick(idPair: ArticleIdPair, _index: number) {
 		toggleMarkAsRead(idPair);
 	}
+
+	//TODO Find way to get specific parent soshalthing
+	const modalMountElement = document.getElementsByClassName('soshalthing')[0]!;
 </script>
 
 <style>
@@ -131,8 +134,7 @@
 </style>
 
 {#if modal}
-<!-- TODO Find way to get specific parent soshalthing -->
-	<Modal bind:active={modal} mountElement={document.getElementsByClassName('soshalthing')[0]!}>
+	<Modal bind:active={modal} mountElement={modalMountElement}>
 		<article class:transparent={articleProps.filteredOut}>
 			<svelte:component
 				this={view}

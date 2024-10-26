@@ -48,10 +48,9 @@
 			const addedArticles: {idServiceMedia: string, index: number}[] = [];
 
 			for (let i = 0; i < columns.length; ++i) {
-				for (let j = 0; j < columns[i].idServiceMedias.length;) {
-					// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-					if (!uniqueArticles[columns[i].idServiceMedias[j]]) {
-						columns[i].idServiceMedias.splice(j, 1);
+				for (let j = 0; j < columns[i]!.idServiceMedias.length;) {
+					if (!uniqueArticles[columns[i]!.idServiceMedias[j]!]) {
+						columns[i]!.idServiceMedias.splice(j, 1);
 						columnsChanged.add(i);
 					}else
 						++j;
@@ -61,7 +60,7 @@
 			for (const [idServiceMedia, {articleProps, index, mediaIndex}] of Object.entries(uniqueArticles)) {
 				if (!columns.some(c => c.idServiceMedias.some(idServiceMedia => {
 					const [_idStr, _service, mediaIndexStr] = idServiceMedia.split('/');
-					return getRootArticle(uniqueArticles[idServiceMedia].articleProps).idPairStr === getRootArticle(articleProps).idPairStr && [mediaIndexStr === 'null' ? mediaIndex === null : parseInt(mediaIndexStr) === mediaIndex];
+					return getRootArticle(uniqueArticles[idServiceMedia]!.articleProps).idPairStr === getRootArticle(articleProps).idPairStr && [mediaIndexStr === 'null' ? mediaIndex === null : parseInt(mediaIndexStr) === mediaIndex];
 				}))) {
 					addedArticles.push({idServiceMedia, index});
 				}

@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import type {ArticleIdPair, TimelineArticleProps} from '../index';
-	import {getReadable, getWritable} from '~/services/service';
+	import {getReadableArticle, getWritableArticle} from '~/services/service';
 	import Fa from 'svelte-fa';
 	import {faImages} from '@fortawesome/free-solid-svg-icons';
 	import {type ArticleMedia, extensionToMediaType, MediaType} from '../media';
@@ -10,7 +10,7 @@
 	import {tick} from 'svelte';
 
 	export let idPair: ArticleIdPair;
-	let article = getReadable(idPair);
+	let article = getReadableArticle(idPair);
 	if ($article.medias.length === 0)
 		throw {message: 'Article has no media', article: $article};
 	export let mediaIndex: number | null = null;
@@ -32,7 +32,7 @@
 				if ($article.medias[i].ratio === null /*&& articleMediaEls[i] !== undefined*/)
 					modifiedMedias.push([i, articleMediaEls[i].clientHeight / articleMediaEls[i].clientWidth]);
 
-			getWritable($article.idPair).update(a => {
+			getWritableArticle($article.idPair).update(a => {
 				for (const [i, ratio] of modifiedMedias)
 					a.medias[i].ratio = ratio;
 				return a;

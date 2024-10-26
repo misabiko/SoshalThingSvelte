@@ -1,6 +1,6 @@
 import type Article from './articles';
 import type {ArticleIdPair} from './articles';
-import {getWritable} from './services/service';
+import {getWritableArticle} from './services/service';
 import {get, writable} from 'svelte/store';
 
 function hash(idPair: ArticleIdPair, mediaIndex: number) {
@@ -31,7 +31,7 @@ export const loadingStore = (() => {
 	return {
 		subscribe,
 		requestLoad(idPair: ArticleIdPair, mediaIndex: number) {
-			if (get(getWritable(idPair)).medias[mediaIndex].loaded)
+			if (get(getWritableArticle(idPair)).medias[mediaIndex]!.loaded)
 				return LoadingState.Loaded;
 
 			const key = hash(idPair, mediaIndex);
@@ -66,7 +66,7 @@ export const loadingStore = (() => {
 					if (localLoadings.has(idPairStr) || localQueue.includes(idPairStr))
 						return false;
 
-					const loaded = get(getWritable(idPair)).medias[mediaIndex].loaded;
+					const loaded = get(getWritableArticle(idPair)).medias[mediaIndex]!.loaded;
 					return loaded === false;
 				});
 
@@ -97,7 +97,7 @@ export const loadingStore = (() => {
 			if (localQueue.includes(idPairStr))
 				return LoadingState.NotLoaded;
 
-			const loaded = get(getWritable(idPair)).medias[mediaIndex].loaded;
+			const loaded = get(getWritableArticle(idPair)).medias[mediaIndex]!.loaded;
 			if (loaded === undefined || loaded)
 				return LoadingState.Loaded;
 			else if (request) {
@@ -107,8 +107,8 @@ export const loadingStore = (() => {
 		},
 		mediaLoaded(idPair: ArticleIdPair, mediaIndex: number) {
 			update(store => {
-				getWritable(idPair).update(a => {
-					a.medias[mediaIndex].loaded = true;
+				getWritableArticle(idPair).update(a => {
+					a.medias[mediaIndex]!.loaded = true;
 					return a;
 				});
 
@@ -129,7 +129,7 @@ export const loadingStore = (() => {
 			});
 		},
 		forceLoading(article: Readonly<Article>, mediaIndex: number) {
-			if (article.medias[mediaIndex].loaded === undefined || article.medias[mediaIndex].loaded)
+			if (article.medias[mediaIndex]!.loaded === undefined || article.medias[mediaIndex]!.loaded)
 				return;
 
 			update(store => {

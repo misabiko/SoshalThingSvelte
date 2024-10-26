@@ -6,11 +6,11 @@
 	import Dropdown from '../../Dropdown.svelte';
 	import Article, {type ArticleIdPair} from '../../articles';
 	import type {TimelineArticleProps} from '../index';
-	import {getReadable, getServices} from '~/services/service';
+	import {getReadableArticle, getServices} from '~/services/service';
 	import {type ArticleAction, getGenericActions} from '~/services/actions';
 
 	export let idPair: ArticleIdPair;
-	let article = getReadable(idPair);
+	let article = getReadableArticle(idPair);
 	export let repost: Article | null = null;
 	export let isQuoted = false;
 	export let modal: boolean;

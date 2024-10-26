@@ -3,7 +3,7 @@
 	import Timestamp from './Timestamp.svelte';
 	import SocialNav from './SocialNav.svelte';
 	import SocialMedia from './SocialMedia.svelte';
-	import {getReadable} from '~/services/service';
+	import {getReadableArticle} from '~/services/service';
 	import {derived, type Readable, writable, type Writable} from 'svelte/store';
 	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
 
@@ -16,7 +16,7 @@
 	export let onLogData: () => void;
 	export let onLogJSON: () => void;
 
-	let article: Readable<Article> = getReadable(idPair);
+	let article: Readable<Article> = getReadableArticle(idPair);
 
 	let showAllMedia = derived(timelineProps.showAllMediaArticles, articles => articles.has($article.idPairStr));
 

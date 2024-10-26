@@ -11,7 +11,7 @@
 		getIdServiceMediaStr,
 	} from '~/articles';
 	import {getRootArticle, idPairEqual} from '~/articles';
-	import {fetchArticle, getWritable} from '~/services/service';
+	import {fetchArticle, getWritableArticle} from '~/services/service';
 	import {addArticlesToTimeline, type FullscreenInfo, type TimelineData} from './index';
 	import {type FilterInstance, keepArticle} from '~/filters';
 	import {compare, SortMethod} from '~/sorting';
@@ -224,7 +224,7 @@
 			if (data.hideFilteredOutArticles && actualArticleProps.filteredOut)
 				continue;
 
-			const articleStore = getWritable(actualArticleProps.article.idPair);
+			const articleStore = getWritableArticle(actualArticleProps.article.idPair);
 			let article = get(articleStore);
 
 			if (!article.fetched)

@@ -26,6 +26,9 @@ Build the extension with `bun run build:extension`
 
 Test with `bun run test`, it uses the port 8089 by default
 
+[//]: # (TODO Fix opening multiple user modal user timelines)
+[//]: # (TODO Finish fixing linting)
+[//]: # (TODO Try removing eslint-disable no-unnecessary-condition)
 [//]: # (TODO +2 Fix svelte-fa)
 [//]: # (TODO +1 Add extension popup to inject soshal)
 [//]: # (TODO +1 Make eslint work for svelte files scripts)

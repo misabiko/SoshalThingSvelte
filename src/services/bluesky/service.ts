@@ -1,5 +1,5 @@
 import type BlueskyArticle from '~/services/bluesky/article';
-import {getWritable, newService, registerService, type Service} from '~/services/service';
+import {getWritableArticle, newService, registerService, type Service} from '~/services/service';
 import {AtpAgent} from '@atproto/api/src/atp-agent';
 import {STANDARD_ACTIONS} from '~/services/actions';
 import {get} from 'svelte/store';
@@ -13,7 +13,7 @@ export const BlueskyService: BlueskyServiceType = {
 			[STANDARD_ACTIONS.like.key]: {
 				...STANDARD_ACTIONS.like,
 				action: async articleIdPair => {
-					const writable = getWritable<BlueskyArticle>(articleIdPair);
+					const writable = getWritableArticle<BlueskyArticle>(articleIdPair);
 					const {uri, likeURI} = get(writable);
 					if (likeURI) {
 						await BlueskyService.agent.deleteLike(likeURI);
@@ -40,7 +40,7 @@ export const BlueskyService: BlueskyServiceType = {
 				...STANDARD_ACTIONS.repost,
 				togglable: true,
 				action: async articleIdPair => {
-					const writable = getWritable<BlueskyArticle>(articleIdPair);
+					const writable = getWritableArticle<BlueskyArticle>(articleIdPair);
 					const {uri, repostURI} = get(writable);
 					if (repostURI) {
 						await BlueskyService.agent.deleteRepost(repostURI);

@@ -3,7 +3,7 @@ import type {CachedPixivArticle} from './article';
 import {
 	type FetchingService,
 	FetchType, getServices,
-	getWritable,
+	getWritableArticle,
 	newFetchingService,
 	newService,
 	registerService,
@@ -70,7 +70,7 @@ export const PixivService: PixivServiceType = {
 						else
 							console.debug('Liked ' + idPair.id);
 
-						getWritable<PixivArticle>(idPair).update(a => {
+						getWritableArticle<PixivArticle>(idPair).update(a => {
 							a.liked = true;
 							return a;
 						});
@@ -125,7 +125,7 @@ export const PixivService: PixivServiceType = {
 
 						console.debug('Bookmarked ' + idPair.id);
 
-						getWritable<PixivArticle>(idPair).update(a => {
+						getWritableArticle<PixivArticle>(idPair).update(a => {
 							a.bookmarked = true;
 							return a;
 						});

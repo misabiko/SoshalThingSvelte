@@ -1,5 +1,5 @@
 import type {ArticleIdPair} from '~/articles';
-import {fetchArticle, getServices, getWritable, toggleMarkAsRead} from './service';
+import {fetchArticle, getService, getWritableArticle, toggleMarkAsRead} from './service';
 import {
 	faUpRightFromSquare,
 	type IconDefinition,
@@ -11,7 +11,7 @@ import {loadingStore} from '~/bufferedMediaLoading';
 import {get} from 'svelte/store';
 
 export type ArticleAction<A extends Article = Article> = (
-| (
+	| (
 	{
 		action: (idPair: ArticleIdPair) => void
 		actioned: (article: A) => boolean
@@ -22,34 +22,34 @@ export type ArticleAction<A extends Article = Article> = (
 
 		href?: never
 	}
-)
-| {
-	href: string
+	)
+	| {
+		href: string
 
-	action?: never
-	actionedName?: never
-	actioned?: never
-	togglable?: never
-	actionedIcon?: never
-	disabled?: never
-}
-) & {
-	key: string
-	name: string
-	icon: IconDefinition | null
-	color: string | null
-	count: ((article: A) => number | null) | null
-	index: number
-	views: Partial<Record<'GalleryArticleView' | 'SocialArticleView', {
-		listAsIcon?: boolean
-		listAsDropdown?: boolean
-	}>> & {
-		default: {
-			listAsIcon: boolean
-			listAsDropdown: boolean
-		}
+		action?: never
+		actionedName?: never
+		actioned?: never
+		togglable?: never
+		actionedIcon?: never
+		disabled?: never
 	}
-};
+	) & {
+		key: string
+		name: string
+		icon: IconDefinition | null
+		color: string | null
+		count: ((article: A) => number | null) | null
+		index: number
+		views: Partial<Record<'GalleryArticleView' | 'SocialArticleView', {
+			listAsIcon?: boolean
+			listAsDropdown?: boolean
+		}>> & {
+			default: {
+				listAsIcon: boolean
+				listAsDropdown: boolean
+			}
+		}
+	};
 
 type StandardAction<A extends Article> = Omit<ArticleAction<A>, 'action' | 'href'>;
 
@@ -97,20 +97,22 @@ export function articleAction(actionName: string, idPair: ArticleIdPair) {
 		case 'markAsRead':
 			toggleMarkAsRead(idPair);
 			break;
-		default:
-			if (Object.hasOwn(getServices()[idPair.service].articleActions, actionName)) {
-				const action = getServices()[idPair.service].articleActions[actionName];
-				if (!action.action)
-					throw {message: 'Action is a link.', action};
+		default: {
+			const action = getArticleAction(idPair.service, actionName);
+			if (!action.action)
+				throw new Error(`Action ${actionName} is a link.`);
 
-				action.action(idPair);
-			}else
-				console.warn(`${idPair.service} doesn't have action ${actionName}.`);
+			action.action(idPair);
+		}
 	}
 }
 
-export function getArticleAction(action: string, service: string) {
-	return getServices()[service].articleActions[action];
+export function getArticleAction(actionName: string, service: string) {
+	const action = getService(service).articleActions[actionName];
+	if (!action)
+		throw new Error(`Service ${service} doesn't have action ${actionName}.`);
+
+	return action;
 }
 
 export function getGenericActions(article: Article): ArticleAction[] {
@@ -160,7 +162,7 @@ export function getGenericActions(article: Article): ArticleAction[] {
 				},
 			},
 		});
-	if (('fetchArticle' in getServices()[article.idPair.service])/* && !article.fetched*/)
+	if ('fetchArticle' in getService(article.idPair.service)/* && !article.fetched*/)
 		genericActions.push({
 			action: (idPair: ArticleIdPair) => fetchArticle(idPair),
 			actionedName: 'Re-Fetch Article',
@@ -184,7 +186,7 @@ export function getGenericActions(article: Article): ArticleAction[] {
 	if (article.medias.length)
 		genericActions.push({
 			action: (idPair: ArticleIdPair) => {
-				const article = get(getWritable(idPair));
+				const article = get(getWritableArticle(idPair));
 				for (let i = 0; i < article.medias.length; ++i)
 					loadingStore.forceLoading(article, i);
 			},

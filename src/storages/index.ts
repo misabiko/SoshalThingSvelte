@@ -108,8 +108,8 @@ export function updateMainStorageTimelineViews(views: Record<string, TimelineVie
 	const item = localStorage.getItem(MAIN_STORAGE_KEY);
 	const storage = item ? JSON.parse(item) : {};
 
-	views['default'] = views[defaultTimelineView];
-	storage['timelineViews'] = views;
+	views.default = views[defaultTimelineView];
+	storage.timelineViews = views;
 
 	localStorage.setItem(MAIN_STORAGE_KEY, JSON.stringify(storage));
 }
@@ -316,13 +316,13 @@ function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | unde
 	}
 
 	const refreshTypes = new Set<RefreshType>();
-	if (storage.onStart === undefined ? true : storage.onStart)
+	if (storage.onStart ?? true)
 		refreshTypes.add(RefreshType.RefreshStart);
-	if (storage.onRefresh === undefined ? true : storage.onRefresh)
+	if (storage.onRefresh ?? true)
 		refreshTypes.add(RefreshType.Refresh);
-	if (storage.loadTop === undefined ? true : storage.loadTop)
+	if (storage.loadTop ?? true)
 		refreshTypes.add(RefreshType.LoadTop);
-	if (storage.loadBottom === undefined ? true : storage.loadBottom)
+	if (storage.loadBottom ?? true)
 		refreshTypes.add(RefreshType.LoadBottom);
 
 	if (storage.autoRefresh)
@@ -333,7 +333,7 @@ function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | unde
 	return {
 		name: endpoint.name,
 		refreshTypes,
-		filters: storage.filters || [],
+		filters: storage.filters ?? [],
 	};
 }
 

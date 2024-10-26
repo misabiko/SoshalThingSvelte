@@ -30,7 +30,6 @@
 	$: {
 		switch (sortInfo.method) {
 			case null:
-			case undefined:
 				currentMethodName = 'Unsorted';
 				break;
 			//TODO Check if still complaining once we switch to runes, also https://github.com/sveltejs/svelte/issues/13811

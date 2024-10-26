@@ -34,7 +34,7 @@ export function updateMarkAsReadStorage() {
 		storage.services = {};
 
 	for (const service of Object.values(getServices())) {
-		const articlesMarkedAsRead = new Set(storage.services[service.name]?.articlesMarkedAsRead);
+		const articlesMarkedAsRead = new Set(storage.services[service.name].articlesMarkedAsRead);
 		for (const article of getServiceArticles(service)) {
 			if (article.markedAsRead)
 				articlesMarkedAsRead.add(article.idPair.id.toString());
@@ -91,7 +91,7 @@ export function getMarkedAsReadStorage(service: Service<any>): string[] {
 	const parsed: SessionCacheStorage | null = item !== null ? JSON.parse(item) : null;
 	if (parsed?.services === undefined)
 		return [];
-	return parsed.services[service.name]?.articlesMarkedAsRead || [];
+	return parsed.services[service.name].articlesMarkedAsRead ?? [];
 }
 
 export function getCachedArticlesStorage<S extends object>(service: Service<any>): Record<string, S | undefined> {

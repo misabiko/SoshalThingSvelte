@@ -114,7 +114,7 @@
 					endpointNames.add(timelineEndpoint.name);
 				else if (timelineEndpoint.endpoint?.refreshTypes && get(timelineEndpoint.endpoint.refreshTypes).has(RefreshType.RefreshStart))
 					refreshPromises.push(
-						refreshEndpoint(timelineEndpoint.endpoint as Endpoint, RefreshType.RefreshStart)
+						refreshEndpoint(timelineEndpoint.endpoint, RefreshType.RefreshStart)
 							.then(articles => addArticlesToTimeline(timeline, ...articles.map(a => getRootArticle(a).idPair))),
 					);
 

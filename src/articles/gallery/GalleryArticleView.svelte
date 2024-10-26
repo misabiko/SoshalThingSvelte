@@ -42,13 +42,13 @@
 
 	let actions: [ArticleAction[], ArticleAction[]] = [...Object.values(getServices()[rootArticle.idPair.service].articleActions), ...getGenericActions(rootArticle)]
 		.sort((a, b) => a.index - b.index)
-		.reduce(([icons, dropdown], action) => {
+		.reduce<[ArticleAction[], ArticleAction[]]>(([icons, dropdown], action) => {
 			if (action.views.GalleryArticleView?.listAsIcon ?? action.views.default.listAsIcon)
 				icons.push(action);
 			if (action.views.GalleryArticleView?.listAsDropdown ?? action.views.default.listAsDropdown)
 				dropdown.push(action);
 			return [icons, dropdown];
-		}, [[], []] as [ArticleAction[], ArticleAction[]]);
+		}, [[], []]);
 
 	let medias: [ArticleMedia, number][];
 	$: medias = actualArticleProps.mediaIndex === null

@@ -1,7 +1,7 @@
 import Article, {type ArticleAuthor, type ArticleRefIdPair, type ArticleWithRefs} from '~/articles';
 import type {ArticleMedia} from '~/articles/media';
 import {getRatio, MediaLoadType, MediaType} from '~/articles/media';
-import {type AppBskyActorDefs, AppBskyEmbedImages, type AppBskyFeedDefs, AppBskyFeedPost} from '@atproto/api';
+import {AppBskyEmbedImages, type AppBskyFeedDefs, AppBskyFeedPost} from '@atproto/api';
 
 export default class BlueskyArticle extends Article {
 	static service = 'Bluesky';
@@ -98,7 +98,7 @@ export function parseFeedViewPost(feedViewPost: AppBskyFeedDefs.FeedViewPost, ma
 
 	if (feedViewPost.reason?.$type === 'app.bsky.feed.defs#reasonRepost') {
 		const reason = feedViewPost.reason as AppBskyFeedDefs.ReasonRepost;
-		const by = reason.by as AppBskyActorDefs.ProfileViewBasic;
+		const by = reason.by;
 		return {
 			type: 'repost',
 			article: new BlueskyArticle(

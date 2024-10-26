@@ -14,7 +14,7 @@
 	export let isLoading: boolean;
 	export let ref;
 
-	const cropped = !!(media.offsetX || media.offsetY);
+	const cropped = !!(media.offsetX ?? media.offsetY);
 
 	let firstMediaExtension = media.src.split('.').at(-1);
 	let isFakeGif = firstMediaExtension && media.mediaType === MediaType.Gif && extensionToMediaType(firstMediaExtension) === MediaType.Image;

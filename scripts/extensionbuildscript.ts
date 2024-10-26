@@ -23,7 +23,7 @@ if (!fs.existsSync(outdir))
 
 esbuild
 	.build(extensionBuildOptions)
-	.catch(errorHandler)
+	.catch((e: unknown) => errorHandler(e))
 	.then(() => {
 		const manifest = JSON.parse(fs.readFileSync('./extension/manifest.json', 'utf8'));
 

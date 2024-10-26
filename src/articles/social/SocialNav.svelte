@@ -62,13 +62,13 @@
 	//TODO Have option to move icon actions to dropdown
 	let actions: [ArticleAction[], ArticleAction[]] = [...Object.values(getServices()[idPair.service].articleActions), ...genericActions]
 		.sort((a, b) => a.index - b.index)
-		.reduce(([icons, dropdown], action) => {
+		.reduce<[ArticleAction[], ArticleAction[]]>(([icons, dropdown], action) => {
 			if (action.views.SocialArticleView?.listAsIcon ?? action.views.default.listAsIcon)
 				icons.push(action);
 			if (action.views.SocialArticleView?.listAsDropdown ?? action.views.default.listAsDropdown)
 				dropdown.push(action);
 			return [icons, dropdown];
-		}, [[], []] as [ArticleAction[], ArticleAction[]]);
+		}, [[], []]);
 
 	let hoveredActions = new Set<string>();
 

@@ -35,7 +35,11 @@ export default tseslint.config(
 			parser: tseslint.parser,
 			parserOptions: {
 				extraFileExtensions: ['.svelte'],
-				projectService: true,
+				projectService: {
+					allowDefaultProject: [
+						'playwright.config.ts',
+					],
+				},
 				tsconfigRootDir: import.meta.dirname,
 			},
 			globals: {
@@ -66,26 +70,6 @@ export default tseslint.config(
 				},
 			],
 			'@stylistic/quote-props': ['warn', 'as-needed'],
-			'@typescript-eslint/no-explicit-any': 'off',
-			'@typescript-eslint/no-unused-vars': [
-				'warn',
-				{
-					argsIgnorePattern: '^_',
-					varsIgnorePattern: '^_',
-				},
-			],
-			'prefer-const': ['warn', {
-				destructuring: 'all',
-			}],
-			'@typescript-eslint/no-dynamic-delete': 'off',
-			//Usually "type" by default, but interface when extending
-			'@typescript-eslint/consistent-type-definitions': 'off',
-			//Annoying for DOM getters
-			'@typescript-eslint/no-non-null-assertion': 'off',
-			//Sometimes the index name is useful, sometimes it's not
-			'@typescript-eslint/consistent-indexed-object-style': 'off',
-			'@typescript-eslint/no-empty-function': 'off',
-
 			'@stylistic/indent': ['warn', 'tab'],
 			'@stylistic/indent-binary-ops': ['warn', 'tab'],
 			//TODO Try to tweak indent-binary-ops to allow
@@ -108,8 +92,6 @@ export default tseslint.config(
 				showAllMediaArticles: Set<string>
 			}>;*/
 			'@stylistic/no-mixed-spaces-and-tabs': ['warn', 'smart-tabs'],
-			'@stylistic/space-infix-ops': 'off',
-			'@stylistic/no-tabs': 'off',
 			// '@stylistic/spaced-comment': ['warn', 'never'],
 			//TODO Debug crash with index.html
 			'@stylistic/spaced-comment': 'off',
@@ -132,33 +114,63 @@ export default tseslint.config(
 			'@stylistic/max-statements-per-line': ['warn', {max: 2}],
 			'@stylistic/brace-style': ['warn', '1tbs', {allowSingleLine: true}],
 			'@stylistic/arrow-parens': ['warn', 'as-needed'],
+			'@stylistic/space-infix-ops': 'off',
+			'@stylistic/no-tabs': 'off',
 			'@stylistic/multiline-ternary': 'off',
 			//Maybe if I could disable it for single line
 			'@stylistic/operator-linebreak': 'off',
 
-			// 'no-undef': 'error',
-			// '@stylistic/semi': ['error', 'always'],
-			// '@stylistic/member-delimiter-style': [
-			// 	'warn',
-			// 	{
-			// 		multiline: {
-			// 			delimiter: 'none',
-			// 			requireLast: true,
-			// 		},
-			// 		singleline: {
-			// 			delimiter: 'comma',
-			// 			requireLast: false,
-			// 		},
-			// 	},
-			// ],
-			// '@stylistic/quotes': [
-			// 	'warn',
-			// 	'single',
-			// 	{
-			// 		avoidEscape: true,
-			// 	},
-			// ],
-			// '@stylistic/quote-props': ['warn', 'as-needed'],
+			'@typescript-eslint/no-unused-vars': [
+				'warn',
+				{
+					argsIgnorePattern: '^_',
+					varsIgnorePattern: '^_',
+				},
+			],
+			'@typescript-eslint/restrict-plus-operands': ['error', {
+				allowNumberAndString: true,
+			}],
+			'@typescript-eslint/restrict-template-expressions': ['error', {
+				allowNumber: true,
+				allowBoolean: true,
+				allowNullish: true,
+			}],
+			'@typescript-eslint/no-misused-promises': ['error', {
+				checksVoidReturn: {
+					arguments: false,
+					inheritedMethods: false,
+					properties: false,
+				},
+			}],
+			//TODO Ignore overriding async methods with sync methods
+			'@typescript-eslint/require-await': 'off',
+			//Usually "type" by default, but interface when extending
+			'@typescript-eslint/consistent-type-definitions': 'off',
+			//Annoying for DOM getters
+			'@typescript-eslint/no-non-null-assertion': 'off',
+			//Sometimes the index name is useful, sometimes it's not
+			'@typescript-eslint/consistent-indexed-object-style': 'off',
+			//Having the type is still a good hint
+			'@typescript-eslint/no-redundant-type-constituents': 'off',
+			//TODO Make a nice convenient Error class
+			'@typescript-eslint/only-throw-error': 'off',
+			'@typescript-eslint/prefer-promise-reject-errors': 'off',
+			'@typescript-eslint/no-explicit-any': 'off',
+			'@typescript-eslint/no-empty-function': 'off',
+			'@typescript-eslint/no-unsafe-assignment': 'off',
+			'@typescript-eslint/no-unsafe-argument': 'off',
+			'@typescript-eslint/no-unsafe-call': 'off',
+			'@typescript-eslint/no-unsafe-member-access': 'off',
+			'@typescript-eslint/no-unsafe-return': 'off',
+			'@typescript-eslint/no-unsafe-enum-comparison': 'off',
+			'@typescript-eslint/no-dynamic-delete': 'off',
+			'@typescript-eslint/non-nullable-type-assertion-style': 'off',
+			'@typescript-eslint/no-confusing-void-expression': 'off',
+			'@typescript-eslint/no-floating-promises': 'off',
+
+			'prefer-const': ['warn', {
+				destructuring: 'all',
+			}],
 		},
 	},
 	{
@@ -210,7 +222,7 @@ export default tseslint.config(
 		},
 	},
 	{
-		files: ['**/*.html'],
+		files: ['**/*.html', '**/*.js', '**/*.mjs'],
 		...tseslint.configs.disableTypeChecked,
 	},
 );

@@ -15,7 +15,7 @@ const args = parseArgs({
 
 const server = Bun.serve({
 	port: parseInt(args.values.port),
-	async fetch(req) {
+	fetch(req) {
 		let pathname = new URL(req.url).pathname;
 		if (pathname === '/')
 			pathname = '/index.html';

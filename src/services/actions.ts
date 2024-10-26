@@ -101,7 +101,7 @@ export function articleAction(actionName: string, idPair: ArticleIdPair) {
 			if (Object.hasOwn(getServices()[idPair.service].articleActions, actionName)) {
 				const action = getServices()[idPair.service].articleActions[actionName];
 				if (!action.action)
-					throw new Error(`Action ${action} is a link.`);
+					throw {message: 'Action is a link.', action};
 
 				action.action(idPair);
 			}else

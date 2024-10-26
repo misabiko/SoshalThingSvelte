@@ -17,6 +17,7 @@ import {getServiceStorage} from '~/storages';
 
 const services: {[name: string]: Service<any>} = {};
 
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 if (globalThis.window) {
 	(globalThis.window as any).soshalthing ??= {};
 	(globalThis.window as any).soshalthing.services = services;
@@ -235,7 +236,7 @@ export function newService<A extends Article = Article>(data: Partial<Service<A>
 			if (this.isOnDomain) {
 				const response = await fetch(url, init);
 
-				if (init?.headers && (init.headers as Record<string, string>)['Accept'] === 'application/json')
+				if (init?.headers && (init.headers as Record<string, string>).Accept === 'application/json')
 					return await response.json();
 				else
 					return await response.text();
@@ -248,7 +249,7 @@ export function newService<A extends Article = Article>(data: Partial<Service<A>
 					fetchOptions: init,
 				});
 
-				if (init?.headers && (init.headers as Record<string, string>)['Accept'] === 'application/json')
+				if (init?.headers && (init.headers as Record<string, string>).Accept === 'application/json')
 					return JSON.parse(response as string);
 				else
 					return response;

@@ -7,7 +7,7 @@ import {fileURLToPath} from 'url';
 import EsbuildPluginImportGlob from 'esbuild-plugin-import-glob';
 import type {Warning} from 'svelte/compiler';
 
-process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+process.env.NODE_ENV = process.env.NODE_ENV ?? 'development';
 
 //https://esbuild.github.io/plugins/#svelte-plugin
 const SveltePlugin: esbuild.Plugin = {
@@ -56,7 +56,7 @@ const SveltePlugin: esbuild.Plugin = {
 
 				return {contents, warnings: partialMessageWarnings};
 			}catch (e) {
-				return {errors: [convertMessage(e as unknown as Warning)]};
+				return {errors: [convertMessage(e as Warning)]};
 			}
 		});
 	},
@@ -102,7 +102,7 @@ if (!fs.existsSync(outdir))
 
 esbuild
 	.build(buildOptions)
-	.catch(e => errorHandler(e));
+	.catch((e: unknown) => errorHandler(e));
 
 //TODO Dynamically copy all files from static folder
 for (const file of [

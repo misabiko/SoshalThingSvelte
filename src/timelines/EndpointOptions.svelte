@@ -20,12 +20,12 @@
 	let newEndpointService: string = newEndpointServices[0]?.name;
 	let newEndpoint: string = Object.values(newEndpointServices[0]?.endpointConstructors)[0]?.name;
 	$: {
-		if (!Object.hasOwn(getServices()[newEndpointService]?.endpointConstructors, newEndpoint))
-			newEndpoint = Object.values(getServices()[newEndpointService]?.endpointConstructors)[0]?.name;
+		if (!Object.hasOwn(getServices()[newEndpointService].endpointConstructors, newEndpoint))
+			newEndpoint = Object.values(getServices()[newEndpointService].endpointConstructors)[0]?.name;
 	}
-	let params = Object.fromEntries(getServices()[newEndpointService]?.endpointConstructors[newEndpoint]?.paramTemplate);
+	let params = Object.fromEntries(getServices()[newEndpointService].endpointConstructors[newEndpoint].paramTemplate);
 	function updateParams() {
-		params = Object.fromEntries(getServices()[newEndpointService]?.endpointConstructors[newEndpoint]?.paramTemplate);
+		params = Object.fromEntries(getServices()[newEndpointService].endpointConstructors[newEndpoint].paramTemplate);
 	}
 
 	function addEndpoint() {
@@ -126,7 +126,7 @@
 
 <ul>
 	{#each data.endpoints as timelineEndpoint, i}
-		{@const endpoint = timelineEndpoint.endpoint || get(endpoints[timelineEndpoint.name])}
+		{@const endpoint = timelineEndpoint.endpoint ?? get(endpoints[timelineEndpoint.name])}
 		{@const endpointRefreshTypes = get(endpoint.refreshTypes)}
 		<li>
 			<h2>{endpoint.name}</h2>

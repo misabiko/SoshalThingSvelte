@@ -35,7 +35,7 @@ export class RankingAPIEndpoint extends LoadableEndpoint {
 		if (this.currentPage > 0)
 			url.searchParams.set('p', (this.currentPage + 1).toString());
 
-		const response: RankingResponse = await getServices()['Pixiv'].fetch(url.toString(), {headers: {Accept: 'application/json'}});
+		const response: RankingResponse = await getServices().Pixiv.fetch(url.toString(), {headers: {Accept: 'application/json'}});
 		if ('error' in response)
 			throw response.error;
 

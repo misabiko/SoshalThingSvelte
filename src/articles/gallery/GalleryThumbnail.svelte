@@ -8,7 +8,7 @@
 	export let media: ArticleMedia;
 	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number;
 
-	const cropped = !!(media.thumbnail?.offsetX || media.thumbnail?.offsetY);
+	const cropped = !!(media.thumbnail?.offsetX ?? media.thumbnail?.offsetY);
 </script>
 
 <style>

@@ -2,7 +2,7 @@ import {Endpoint, type EndpointConstructorInfo, RefreshType} from '~/services/en
 import {BlueskyService} from '~/services/bluesky/service';
 import type {ArticleWithRefs} from '~/articles';
 import {getMarkedAsReadStorage} from '~/storages/serviceCache';
-import {type BlueskyAuthor, parseFeedViewPost} from '~/services/bluesky/article';
+import {parseFeedViewPost} from '~/services/bluesky/article';
 import {getServiceStorage} from '~/storages';
 import {getServices, registerEndpointConstructor} from '~/services/service';
 
@@ -61,4 +61,4 @@ export class UserEndpoint extends Endpoint {
 }
 
 registerEndpointConstructor(UserEndpoint);
-getServices()[BlueskyService.name].userEndpoint = user => new UserEndpoint((user as BlueskyAuthor).username);
+getServices()[BlueskyService.name].userEndpoint = user => new UserEndpoint((user).username);

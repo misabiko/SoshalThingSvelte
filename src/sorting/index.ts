@@ -37,13 +37,13 @@ export function compare(info: SortInfo): (a: ArticleWithRefs | ArticleProps, b: 
 			}
 				break;
 			case SortMethod.Date:
-				order = (getRootArticle(a).creationTime?.getTime() || 0) - (getRootArticle(b).creationTime?.getTime() || 0);
+				order = (getRootArticle(a).creationTime?.getTime() ?? 0) - (getRootArticle(b).creationTime?.getTime() ?? 0);
 				break;
 			case SortMethod.Custom: {
-				if (getRootArticle(a).idPair.service !== info?.customMethod?.service || getRootArticle(b).idPair.service !== info.customMethod.service)
+				if (getRootArticle(a).idPair.service !== info.customMethod?.service || getRootArticle(b).idPair.service !== info.customMethod.service)
 					order = 0;
 				else
-					order = getServices()[info.customMethod.service]?.sortMethods[info.customMethod.method]?.compare(a, b) || 0;
+					order = getServices()[info.customMethod.service].sortMethods[info.customMethod.method].compare(a, b) || 0;
 				break;
 			}case null:
 				order = 0;

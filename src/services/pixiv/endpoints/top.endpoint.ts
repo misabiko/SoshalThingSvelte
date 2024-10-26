@@ -28,7 +28,7 @@ export class TopAPIEndpoint extends Endpoint {
 	}
 
 	async refresh(_refreshType: RefreshType): Promise<ArticleWithRefs[]> {
-		const response: TopResponse = await getServices()['Pixiv'].fetch('https://www.pixiv.net/ajax/top/illust?mode=all', {
+		const response: TopResponse = await getServices().Pixiv.fetch('https://www.pixiv.net/ajax/top/illust?mode=all', {
 			headers: {Accept: 'application/json'},
 		});
 

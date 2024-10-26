@@ -192,7 +192,7 @@
 							+
 						</button>
 						<button onclick='{() => {
-							if (fullscreen?.columnCount && fullscreen?.columnCount > 1) {
+							if (fullscreen?.columnCount && fullscreen.columnCount > 1) {
 								fullscreen.columnCount--;
 								updateFullscreenStorage(fullscreen);
 							}
@@ -311,7 +311,7 @@
 				<label>
 					<input type='checkbox'
 							bind:checked={data.hideQuoteMedia}
-							onchange="{() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'hideQuoteMedia', data.hideQuoteMedia)}"
+							onchange={() => timelineId !== null && updateTimelinesStorageValue(timelineId, 'hideQuoteMedia', data.hideQuoteMedia)}
 					/>
 					Hide quote media
 				</label>
@@ -382,11 +382,11 @@
 				/>
 			{:else if $currentLayer === OptionLayer.ServiceTemplate && data.serviceTemplate !== null && templateFilters !== null}
 				<FiltersOptions
-					onInstancesUpdate="{instances => {
+					onInstancesUpdate={instances => {
 						if (data.serviceTemplate === null)
 							throw {message: 'ServiceTemplate is null', data};
 						updateServiceTemplateStorageValue(data.serviceTemplate.service, data.serviceTemplate.templateId, 'filters', instances);
-					}}"
+					}}
 					instances={templateFilters}
 				/>
 			{/if}

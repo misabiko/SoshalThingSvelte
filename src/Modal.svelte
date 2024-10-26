@@ -16,7 +16,7 @@
 	let modal: HTMLDivElement;
 
 	$effect(() => {
-		if (modal && active && mountElement) {
+		if (active && mountElement) {
 			mountElement.appendChild(modal);
 		}
 	});

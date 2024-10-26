@@ -19,13 +19,13 @@
 	{/if}
 	<div class='field has-addons'>
 		{#if $endpoint.autoRefreshId !== null}
-			<button class='button' onclick='{() => stopAutoRefresh($endpoint.name)}'>
+			<button class='button' onclick={() => stopAutoRefresh($endpoint.name)}>
 				Stop refreshing
 			</button>
 			<input class='input' type='number' value={$endpoint.autoRefreshInterval} disabled>
 			<button class='button is-static'>ms</button>
 		{:else}
-			<button class='button' onclick='{() => startAutoRefresh($endpoint.name)}'>
+			<button class='button' onclick={() => startAutoRefresh($endpoint.name)}>
 				Auto refresh
 			</button>
 			<input class='input' type='number' bind:value={$endpoint.autoRefreshInterval}/>

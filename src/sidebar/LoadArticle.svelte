@@ -60,7 +60,7 @@
 		{/each}
 	</select>
 	<input bind:value={articleId}/>
-	<button onclick={loadArticle} disabled='{serviceName === null || !articleId.length}'>Load</button>
+	<button onclick={loadArticle} disabled={serviceName === null || !articleId.length}>Load</button>
 </div>
 {#if article !== null && articleProps !== null}
 	<ArticleComponent

@@ -62,13 +62,13 @@
 			const count = actualArticle.medias.length;
 			for (let i = 0; i < count; ++i) {
 				if (actualArticle.medias[i].queueLoadInfo === MediaLoadType.LazyLoad && !actualArticle.medias[i].loaded) {
-					if (mediaRefs[i]?.complete)
+					if (mediaRefs[i].complete)
 						loadingStore.mediaLoaded(actualArticle.idPair, i);
 				}
 			}
 		}else {
 			if (actualArticle.medias[actualArticleProps.mediaIndex].queueLoadInfo === MediaLoadType.LazyLoad && !actualArticle.medias[actualArticleProps.mediaIndex].loaded) {
-				if (mediaRefs[actualArticleProps.mediaIndex]?.complete)
+				if (mediaRefs[actualArticleProps.mediaIndex].complete)
 					loadingStore.mediaLoaded(actualArticle.idPair, actualArticleProps.mediaIndex);
 			}
 		}

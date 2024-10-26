@@ -51,7 +51,7 @@ export function fromAPI(
 	markedAsReadStorage: string[],
 	_isRef = false,
 ): ArticleWithRefs {
-	let textHtml = note.text || '';
+	let textHtml = note.text ?? '';
 	try {
 		textHtml = parseText(note.text);
 	}catch (e) {
@@ -213,7 +213,7 @@ function mfmToHtml(node: MfmNode): string {
 				console.log('url brackets:', node.props.brackets, node);
 			return `<a href="${node.props.url}">${node.props.url}</a>`;
 		case 'fn':
-			return `$[${node.props.name}(${node.props.args.toString()}) ${node.children.map(n => mfmToHtml(n)).join('')}]`;
+			return `$[${node.props.name}(${JSON.stringify(node.props.args)}) ${node.children.map(n => mfmToHtml(n)).join('')}]`;
 		case 'plain':
 			if (node.props?.length)
 				console.warn('Unparsed center props:', node.props);

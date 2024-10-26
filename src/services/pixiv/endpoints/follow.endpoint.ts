@@ -34,7 +34,7 @@ export class FollowPageEndpoint extends PageEndpoint {
 		const markedAsReadStorage = getMarkedAsReadStorage(PixivService);
 		const cachedArticlesStorage = getCachedArticlesStorage<CachedPixivArticle>(PixivService);
 
-		return [...thumbnails].map(t => this.parseThumbnail(t, markedAsReadStorage, cachedArticlesStorage)).filter(a => a !== null) as ArticleWithRefs[];
+		return [...thumbnails].map(t => this.parseThumbnail(t, markedAsReadStorage, cachedArticlesStorage)).filter(a => a !== null);
 	}
 
 	parseThumbnail(element: Element, markedAsReadStorage: string[], cachedArticlesStorage: Record<number, CachedPixivArticle | undefined>): ArticleWithRefs | null {

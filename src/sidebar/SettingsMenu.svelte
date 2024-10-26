@@ -24,7 +24,7 @@
 		<input
 			type='checkbox'
 			bind:checked={mainStorage.markAsReadLocal}
-			oninput="{e => updateMainStorage('markAsReadLocal', e.currentTarget.checked)}"
+			oninput={e => updateMainStorage('markAsReadLocal', e.currentTarget.checked)}
 		/>
 	</label>
 </section>

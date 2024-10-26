@@ -22,4 +22,4 @@ esbuild
 		external: ['@playwright/test'],
 		inject: ['src/unit-shims.js'],
 	})
-	.catch(errorHandler);
+	.catch((e: unknown) => errorHandler(e));

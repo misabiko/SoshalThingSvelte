@@ -119,7 +119,7 @@ export const BlueskyService: BlueskyServiceType = {
 			likes: {
 				name: 'Likes',
 				compare(a, b) {
-					return ((getActualArticle(a) as BlueskyArticle).likeCount || 0) - ((getActualArticle(b) as BlueskyArticle).likeCount || 0);
+					return ((getActualArticle(a) as BlueskyArticle).likeCount ?? 0) - ((getActualArticle(b) as BlueskyArticle).likeCount ?? 0);
 				},
 				directionLabel(reversed: boolean): string {
 					return reversed ? 'Descending' : 'Ascending';
@@ -128,7 +128,7 @@ export const BlueskyService: BlueskyServiceType = {
 			reposts: {
 				name: 'Reposts',
 				compare(a, b) {
-					return ((getActualArticle(a) as BlueskyArticle).repostCount || 0) - ((getActualArticle(b) as BlueskyArticle).repostCount || 0);
+					return ((getActualArticle(a) as BlueskyArticle).repostCount ?? 0) - ((getActualArticle(b) as BlueskyArticle).repostCount ?? 0);
 				},
 				directionLabel(reversed: boolean): string {
 					return reversed ? 'Descending' : 'Ascending';

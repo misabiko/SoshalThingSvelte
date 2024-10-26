@@ -45,11 +45,11 @@ export const PixivService: PixivServiceType = {
 					color: null,
 					togglable: false,
 					async action(idPair: ArticleIdPair) {
-						const csrfToken = getServiceStorage(PixivService.name)['csrfToken'] as string | undefined;
+						const csrfToken = getServiceStorage(PixivService.name).csrfToken as string | undefined;
 						if (!csrfToken)
 							throw new Error('No CSRF token');
 
-						const response: LikeResponse = await getServices()['Pixiv'].fetch('https://www.pixiv.net/ajax/illusts/like', {
+						const response: LikeResponse = await getServices().Pixiv.fetch('https://www.pixiv.net/ajax/illusts/like', {
 							method: 'POST',
 							credentials: 'same-origin',
 							cache: 'no-cache',
@@ -96,13 +96,13 @@ export const PixivService: PixivServiceType = {
 					index: 1,
 					async action(idPair) {
 						const storage = getServiceStorage(PixivService.name);
-						const csrfToken = storage['csrfToken'] as string | undefined;
+						const csrfToken = storage.csrfToken as string | undefined;
 						if (!csrfToken)
 							throw new Error('No CSRF token');
 
-						const privateBookmark = (storage['privateBookmark'] as boolean | undefined) ?? false;
+						const privateBookmark = (storage.privateBookmark as boolean | undefined) ?? false;
 
-						const response: BookmarkResponse = await getServices()['Pixiv'].fetch('https://www.pixiv.net/ajax/illusts/bookmarks/add', {
+						const response: BookmarkResponse = await getServices().Pixiv.fetch('https://www.pixiv.net/ajax/illusts/bookmarks/add', {
 							method: 'POST',
 							credentials: 'same-origin',
 							cache: 'no-cache',
@@ -201,7 +201,7 @@ export const PixivService: PixivServiceType = {
 				likes: {
 					name: 'Likes',
 					compare(a, b) {
-						return ((getActualArticle(a) as PixivArticle).likeCount || 0) - ((getActualArticle(b) as PixivArticle).likeCount || 0);
+						return ((getActualArticle(a) as PixivArticle).likeCount ?? 0) - ((getActualArticle(b) as PixivArticle).likeCount ?? 0);
 					},
 					directionLabel(reversed: boolean): string {
 						return reversed ? 'Descending' : 'Ascending';
@@ -210,7 +210,7 @@ export const PixivService: PixivServiceType = {
 				retweets: {
 					name: 'Bookmarks',
 					compare(a, b) {
-						return ((getActualArticle(a) as PixivArticle).bookmarkCount || 0) - ((getActualArticle(b) as PixivArticle).bookmarkCount || 0);
+						return ((getActualArticle(a) as PixivArticle).bookmarkCount ?? 0) - ((getActualArticle(b) as PixivArticle).bookmarkCount ?? 0);
 					},
 					directionLabel(reversed: boolean): string {
 						return reversed ? 'Descending' : 'Ascending';

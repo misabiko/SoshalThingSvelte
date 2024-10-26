@@ -29,7 +29,9 @@
 		//overriding the default behavior of the svelte tsconfig
 		"importsNotUsedAsValues": "remove",
 		"preserveValueImports": false,
-		"verbatimModuleSyntax": true
+		"verbatimModuleSyntax": true,
+
+		"noUncheckedIndexedAccess": true
 	},
 //	"include": ["src/**/*.ts", "tests/**/*.ts"],
 	"exclude": ["node_modules/**", "dist/**"]

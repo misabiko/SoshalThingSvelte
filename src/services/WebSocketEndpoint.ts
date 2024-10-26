@@ -32,8 +32,7 @@ export default abstract class WebSocketEndpoint extends Endpoint {
 
 			addArticles(false, ...articles);
 
-			// if (endpoints[this.name] !== undefined)
-			endpoints[this.name].set(this);
+			endpoints[this.name]?.set(this);
 
 			await addEndpointArticlesToTimeline(this.name, articles);
 		});

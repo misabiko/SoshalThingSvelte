@@ -43,7 +43,7 @@ export default abstract class Article {
 		this.textHtml = params.textHtml;
 		this.url = params.url ?? null;
 		this.medias = params.medias;
-		this.markedAsRead = params.markedAsRead ?? params.markedAsReadStorage.includes(params.id.toString());
+		this.markedAsRead = params.markedAsRead === true || params.markedAsReadStorage.includes(params.id.toString());
 		this.refs = params.refs ?? null;
 		this.fetched = params.fetched ?? false;
 		this.rawSource = params.rawSource ?? [];

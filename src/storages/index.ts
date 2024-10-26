@@ -31,31 +31,48 @@ import type {ActualContainerProps} from '~/containers';
 export const MAIN_STORAGE_KEY = 'SoshalThingSvelte';
 export const TIMELINE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Timelines';
 
-export function loadMainStorage() {
+type RawMainStorage = Partial<MainStorageParsed & {
+	currentTimelineView: string
+	timelineViews: {[name: string]: TimelineViewStorage}
+	fullscreen: boolean | number | FullscreenInfoStorage
+}>;
+
+export function loadMainStorage(): MainStorageParsed {
 	const item = localStorage.getItem(MAIN_STORAGE_KEY);
-	const mainStorage: MainStorage = item ? JSON.parse(item) : {};
+	const partialMainStorage: RawMainStorage = item ? JSON.parse(item) : {};
 
-	mainStorage.timelineIds ??= null;
+	const timelineIds = partialMainStorage.timelineIds ?? null;
 
-	(mainStorage as MainStorageParsed).fullscreen = parseFullscreenInfo(mainStorage.fullscreen);
+	const currentTimelineView = partialMainStorage.currentTimelineView ?? null;
 
-	if (!mainStorage.maximized)
-		mainStorage.maximized = false;
+	const timelineViews: Record<string, TimelineView> = {};
+	if (partialMainStorage.timelineViews) {
+		for (const view in partialMainStorage.timelineViews)
+			if (Object.hasOwn(partialMainStorage.timelineViews, view))
+				timelineViews[view] = {
+					timelineIds: partialMainStorage.timelineViews[view]!.timelineIds,
+					fullscreen: parseFullscreenInfo(partialMainStorage.timelineViews[view]!.fullscreen),
+				};
+	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-	if (!mainStorage.timelineViews)
-		mainStorage.timelineViews = {};
-	else
-		for (const view in mainStorage.timelineViews)
-			if (Object.hasOwn(mainStorage.timelineViews, view))
-				(mainStorage as MainStorageParsed).timelineViews[view].fullscreen = parseFullscreenInfo(mainStorage.timelineViews[view].fullscreen);
+	const fullscreen = parseFullscreenInfo(partialMainStorage.fullscreen);
 
-	(mainStorage as MainStorageParsed).currentTimelineView = mainStorage.currentTimelineView ?? null;
+	const maximized = partialMainStorage.maximized ?? false;
 
-	if (!mainStorage.useWebSocket)
-		mainStorage.useWebSocket = false;
+	const markAsReadLocal = partialMainStorage.markAsReadLocal ?? false;
 
-	return mainStorage as MainStorageParsed;
+	const useWebSocket = partialMainStorage.useWebSocket ?? false;
+
+	return {
+		timelineIds,
+		currentTimelineView,
+		timelineViews,
+		fullscreen,
+		maximized,
+		markAsReadLocal,
+		//TODO Add UI setting for websocket
+		useWebSocket,
+	};
 }
 
 type ServiceStorage = Record<string, any>;
@@ -457,12 +474,6 @@ function parseFullscreenInfo(fullscreen?: boolean | number | FullscreenInfoStora
 
 	return fullscreen;
 }
-
-type MainStorage = Partial<MainStorageParsed> & {
-	currentTimelineView?: string
-	timelineViews: {[name: string]: TimelineViewStorage}
-	fullscreen?: boolean | number | FullscreenInfoStorage
-};
 
 type MainStorageParsed = {
 	timelineIds: TimelineView['timelineIds'] | null

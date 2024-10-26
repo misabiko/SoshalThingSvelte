@@ -45,15 +45,15 @@
 	tick().then(() => {
 		{
 			const modifiedMedias: [number, number][] = [];
-			for (const [iStr, _mediaRef] of Object.entries(mediaRefs)) {
+			for (const [iStr, mediaRef] of Object.entries(mediaRefs)) {
 				const i = parseInt(iStr);
-				if (actualArticle.medias[i].ratio === null)
-					modifiedMedias.push([i, mediaRefs[i].clientHeight / mediaRefs[i].clientWidth]);
+				if (actualArticle.medias[i]!.ratio === null)
+					modifiedMedias.push([i, mediaRef.clientHeight / mediaRef.clientWidth]);
 			}
 
 			getWritable(actualArticle.idPair).update(a => {
 				for (const [i, ratio] of modifiedMedias)
-					a.medias[i].ratio = ratio;
+					a.medias[i]!.ratio = ratio;
 				return a;
 			});
 		}
@@ -61,14 +61,14 @@
 		if (actualArticleProps.mediaIndex === null) {
 			const count = actualArticle.medias.length;
 			for (let i = 0; i < count; ++i) {
-				if (actualArticle.medias[i].queueLoadInfo === MediaLoadType.LazyLoad && !actualArticle.medias[i].loaded) {
-					if (mediaRefs[i].complete)
+				if (actualArticle.medias[i]!.queueLoadInfo === MediaLoadType.LazyLoad && !actualArticle.medias[i]!.loaded) {
+					if (mediaRefs[i]?.complete)
 						loadingStore.mediaLoaded(actualArticle.idPair, i);
 				}
 			}
 		}else {
-			if (actualArticle.medias[actualArticleProps.mediaIndex].queueLoadInfo === MediaLoadType.LazyLoad && !actualArticle.medias[actualArticleProps.mediaIndex].loaded) {
-				if (mediaRefs[actualArticleProps.mediaIndex].complete)
+			if (actualArticle.medias[actualArticleProps.mediaIndex]!.queueLoadInfo === MediaLoadType.LazyLoad && !actualArticle.medias[actualArticleProps.mediaIndex]!.loaded) {
+				if (mediaRefs[actualArticleProps.mediaIndex]?.complete)
 					loadingStore.mediaLoaded(actualArticle.idPair, actualArticleProps.mediaIndex);
 			}
 		}
@@ -132,7 +132,7 @@
 
 {#if modal}
 <!-- TODO Find way to get specific parent soshalthing -->
-	<Modal bind:active={modal} mountElement={document.getElementsByClassName('soshalthing')[0]}>
+	<Modal bind:active={modal} mountElement={document.getElementsByClassName('soshalthing')[0]!}>
 		<article class:transparent={articleProps.filteredOut}>
 			<svelte:component
 				this={view}

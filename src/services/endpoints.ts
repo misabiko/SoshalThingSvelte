@@ -247,13 +247,15 @@ export async function refreshEndpoint(endpoint: Endpoint, refreshType: RefreshTy
 
 	addArticles(false, ...articles);
 
-	// if (endpoints[endpoint.name] !== undefined)
-	endpoints[endpoint.name].set(endpoint);
+	endpoints[endpoint.name]?.set(endpoint);
 
 	return articles;
 }
 
 export function startAutoRefresh(endpointName: string) {
+	if (endpoints[endpointName] === undefined)
+		throw new Error(`Endpoint ${endpointName} doesn't exist`);
+
 	endpoints[endpointName].update(e => {
 		startAutoRefreshEndpoint(e);
 		return e;
@@ -270,6 +272,9 @@ function startAutoRefreshEndpoint(endpoint: Endpoint) {
 }
 
 export function stopAutoRefresh(endpointName: string) {
+	if (endpoints[endpointName] === undefined)
+		throw new Error(`Endpoint ${endpointName} doesn't exist`);
+
 	endpoints[endpointName].update(e => {
 		clearInterval(e.autoRefreshId as number);
 		e.autoRefreshId = null;

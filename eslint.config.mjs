@@ -102,6 +102,7 @@ export default tseslint.config(
 				},
 			}],
 			'@stylistic/object-curly-spacing': ['warn', 'never'],
+			//TODO Retry spaces inside braces later
 			'@stylistic/block-spacing': ['warn', 'never'],
 			//TODO Add exceptions for single line
 			'@stylistic/comma-dangle': ['warn', 'always-multiline'],

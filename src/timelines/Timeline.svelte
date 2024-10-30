@@ -51,7 +51,7 @@
 		preOrderArticles = derived([filters, ...$articleIdPairs.map(idPair => derived(flatDeriveArticle(idPair), articles => articles[0]))], ([filters, ...articles]) =>
 			//Might have to give in to using .find if we want to keep duplicate articles
 			Object.fromEntries(articles
-				.flatMap((a, i) => addPropsRoot(a.getArticleWithRefs(), i, filters))
+				.flatMap((a, i) => addPropsRoot(a!.getArticleWithRefs(), i, filters))
 				.map(a => [getIdServiceMediaStr(a), a])),
 		);
 	}
@@ -61,7 +61,7 @@
 		if (order === null)
 			return Object.values(a);
 
-		return order.map(id => a[id]);
+		return order.map(id => a[id]!);
 	});
 
 	let filteredArticles: Readable<ArticleProps[]>;
@@ -248,7 +248,7 @@
 
 	let availableRefreshTypes: Readable<Set<RefreshType>>;
 	$: availableRefreshTypes = derived(data.endpoints.flatMap(e => {
-		const endpoint = e.name !== undefined ? get(endpoints[e.name]) : e.endpoint;
+		const endpoint = e.name !== undefined ? get(endpoints[e.name]!) : e.endpoint;
 		return derived(endpoint.refreshTypes, rt => [...rt.values()]);
 	}), rts => new Set(rts.flatMap(rt => rt)));
 
@@ -302,7 +302,7 @@
 
 				// And swap it with the current element.
 				[articleIndex[currentIndex], articleIndex[randomIndex]] = [
-					articleIndex[randomIndex], articleIndex[currentIndex]];
+					articleIndex[randomIndex]!, articleIndex[currentIndex]!];
 			}
 
 			data.sortInfo.method = null;

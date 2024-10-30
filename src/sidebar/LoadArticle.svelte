@@ -7,7 +7,7 @@
 
 	type LoadArticleService = Service & {loadArticle: Exclude<Service['loadArticle'], null>};
 	let services = Object.entries(getServices()).filter(([_, s]) => s.loadArticle !== null) as [string, LoadArticleService][];
-	let serviceName = services.length ? services[0][0] : null;
+	let serviceName = services[0] ? services[0][0] : null;
 
 	let articleId = '';
 	let article: ArticleWithRefs | null = null;

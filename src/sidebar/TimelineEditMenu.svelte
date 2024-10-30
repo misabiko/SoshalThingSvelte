@@ -35,6 +35,8 @@
 	let title = '';
 	let username = '';
 	let userServices = Object.entries(getServices()).filter(([_, s]) => s.userEndpoint !== null);
+	if (userServices[0] === undefined)
+		throw new Error('No user services available');
 	let userService = userServices[0][0];
 
 	function getTimelineData() {

@@ -58,7 +58,7 @@
 		? getService(data.serviceTemplate.service).timelineTemplates[data.serviceTemplate.templateId]
 		: null;
 	let templateFilters = template?.filters ?? null;
-	if (templateFilters === null && template !== null)
+	if (templateFilters === null && template != null)
 		template.filters = templateFilters = writable(structuredClone(get(data.filters)));
 </script>
 

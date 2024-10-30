@@ -27,23 +27,26 @@
 	}
 
 	function addTimeline(view: string, timelineId: string) {
-		timelineViews[view].timelineIds.push(timelineId);
+		timelineViews[view]!.timelineIds.push(timelineId);
 
 		updateMainStorageTimelineViews(timelineViews);
 	}
 
 	function removeTimeline(view: string, index: number) {
-		timelineViews[view].timelineIds.splice(index, 1);
+		timelineViews[view]!.timelineIds.splice(index, 1);
 
 		updateMainStorageTimelineViews(timelineViews);
 	}
 
-	function moveTimeline(view: string, index: number, up: boolean) {
-		const removed = timelineViews[view].timelineIds.splice(index, 1);
+	function moveTimeline(viewId: string, index: number, up: boolean) {
+		const view = timelineViews[viewId]!;
+		const removed = view.timelineIds.splice(index, 1);
+		if (removed[0] === undefined)
+			throw new Error('Timeline not found');
 		if (up)
-			timelineViews[view].timelineIds.splice(index - 1, 0, removed[0]);
+			view.timelineIds.splice(index - 1, 0, removed[0]);
 		else
-			timelineViews[view].timelineIds.splice(index + 1, 0, removed[0]);
+			view.timelineIds.splice(index + 1, 0, removed[0]);
 
 		timelineViews = timelineViews;
 
@@ -51,7 +54,7 @@
 	}
 
 	function replaceTimeline(view: string, index: number, newTimeline: string) {
-		timelineViews[view].timelineIds.splice(index, 1, newTimeline);
+		timelineViews[view]!.timelineIds.splice(index, 1, newTimeline);
 
 		updateMainStorageTimelineViews(timelineViews);
 	}

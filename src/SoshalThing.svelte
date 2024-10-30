@@ -64,18 +64,21 @@
 		const id = `Timeline ${idNum}`;
 		timelines[id] = data;
 		timelines = timelines;
-		timelineViews[timelineViewId].timelineIds = [...timelineViews[timelineViewId].timelineIds, id];
+		timelineViews[timelineViewId]!.timelineIds = [...timelineViews[timelineViewId]!.timelineIds, id];
 
 		updateTimelinesStorage(timelines);
 	}
 
 	function removeTimeline(id: string) {
 		delete timelines[id];
+		const view = timelineViews[timelineViewId];
+		if (!view)
+			throw new Error(`TimelineView ${timelineViewId} does not exist`);
 		//We don't cache index since TimelineView.timelineIds might hold duplicates
-		if (timelineViews[timelineViewId].fullscreen.index === timelineViews[timelineViewId].timelineIds.indexOf(id))
-			timelineViews[timelineViewId].fullscreen.index = null;
+		if (view.fullscreen.index === view.timelineIds.indexOf(id))
+			view.fullscreen.index = null;
 
-		timelineViews[timelineViewId].timelineIds = timelineViews[timelineViewId].timelineIds.filter(viewId => viewId !== id);
+		view.timelineIds = view.timelineIds.filter(viewId => viewId !== id);
 		timelineViewId = timelineViewId;
 
 		updateTimelinesStorage(timelines);
@@ -94,7 +97,7 @@
 	async function initialRefresh(...refreshingTimelines: TimelineData[]) {
 		const services = new Set<string>(
 			refreshingTimelines
-				.flatMap(t => t.endpoints.map(e => (e.endpoint ?? get(endpoints[e.name]))))
+				.flatMap(t => t.endpoints.map(e => (e.endpoint ?? get(endpoints[e.name]!))))
 				.map(e => (e.constructor as typeof Endpoint).service),
 		);
 		for (const serviceName of services) {

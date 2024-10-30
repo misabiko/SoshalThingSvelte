@@ -40,27 +40,20 @@
 </script>
 
 {#each $instances as instance, index (`${JSON.stringify(instance)}/${index}`)}
-	{@const filterTypeInfo = instance.filter.service === null
+	{@const filterTypeInfo: FilterInfo = instance.filter.service === null
 		? genericFilterTypes[instance.filter.type]
-		: getService(instance.filter.service).filterTypes[instance.filter.type]
+		: getService(instance.filter.service).filterTypes[instance.filter.type]!
 	}
 	<div class='field'>
 		<label>
 			{#if instance.filter.service !== null}
 				{`${instance.filter.service}: ` }
 			{/if}
-			{
-				getFilterName(
-					instance.filter.service === null
-						? genericFilterTypes[instance.filter.type]
-						: getService(instance.filter.service).filterTypes[instance.filter.type],
-					instance.inverted,
-				)
-			}
-			<button class='button' class:is-success={instance.enabled} onclick={() => $instances[index].enabled = !instance.enabled}>
+			{getFilterName(filterTypeInfo, instance.inverted)}
+			<button class='button' class:is-success={instance.enabled} onclick={() => $instances[index]!.enabled = !instance.enabled}>
 				{instance.enabled ? 'Enabled' : 'Disabled'}
 			</button>
-			<button class='button' class:is-info={instance.inverted} onclick={() => $instances[index].inverted = !instance.inverted}>
+			<button class='button' class:is-info={instance.inverted} onclick={() => $instances[index]!.inverted = !instance.inverted}>
 				{instance.inverted ? 'Inverted' : 'Normal'}
 			</button>
 			<button class='button' onclick={() => removeFilter(index)}>
@@ -86,9 +79,9 @@
 						value={instance.filter.props[propName] ?? ''}
 						onchange={e => {
 							if (propType.optional && e.currentTarget.value === '')
-								delete $instances[index].filter.props[propName];
+								delete $instances[index]!.filter.props[propName];
 							else
-								$instances[index].filter.props[propName] = Number(e.currentTarget.value);
+								$instances[index]!.filter.props[propName] = Number(e.currentTarget.value);
 						}}
 						min={propType.min}
 						max={propType.max}
@@ -96,7 +89,7 @@
 					/>
 				{:else if propType.type === 'order'}
 					<select
-						onchange={e => $instances[index].filter.props[propName].comparator = e.currentTarget.value}
+						onchange={e => $instances[index]!.filter.props[propName].comparator = e.currentTarget.value}
 						required={true}
 					>
 						{#each ['=', '!=', '>', '>=', '<', '<='] as comparator}
@@ -108,9 +101,9 @@
 						value={instance.filter.props[propName].value ?? ''}
 						onchange={e => {
 							if (propType.optional && e.currentTarget.value === '')
-								delete $instances[index].filter.props[propName].value;
+								delete $instances[index]!.filter.props[propName].value;
 							else
-								$instances[index].filter.props[propName].value = Number(e.currentTarget.value);
+								$instances[index]!.filter.props[propName].value = Number(e.currentTarget.value);
 						}}
 						min={propType.min}
 						max={propType.max}
@@ -118,7 +111,7 @@
 					/>
 				{:else if propType.type === 'select'}
 					<select
-						onchange={e => $instances[index].filter.props[propName] = [...e.currentTarget.selectedOptions].map(o => o.value)}
+						onchange={e => $instances[index]!.filter.props[propName] = [...e.currentTarget.selectedOptions].map(o => o.value)}
 						multiple={propType.multiple}
 						required={!propType.optional}
 					>
@@ -135,9 +128,9 @@
 						value={instance.filter.props[propName] ?? ''}
 						onchange={e => {
 							if (propType.optional && e.currentTarget.value === '')
-								delete $instances[index].filter.props[propName];
+								delete $instances[index]!.filter.props[propName];
 							else
-								$instances[index].filter.props[propName] = e.currentTarget.value;
+								$instances[index]!.filter.props[propName] = e.currentTarget.value;
 						}}
 						required={!propType.optional}
 					/>

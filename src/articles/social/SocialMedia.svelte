@@ -29,12 +29,12 @@
 		if (articleMediaEls) {
 			const modifiedMedias: [number, number][] = [];
 			for (let i = 0; i < $article.medias.length; ++i)
-				if ($article.medias[i].ratio === null /*&& articleMediaEls[i] !== undefined*/)
-					modifiedMedias.push([i, articleMediaEls[i].clientHeight / articleMediaEls[i].clientWidth]);
+				if ($article.medias[i]!.ratio === null /*&& articleMediaEls[i] !== undefined*/)
+					modifiedMedias.push([i, articleMediaEls[i]!.clientHeight / articleMediaEls[i]!.clientWidth]);
 
 			getWritableArticle($article.idPair).update(a => {
 				for (const [i, ratio] of modifiedMedias)
-					a.medias[i].ratio = ratio;
+					a.medias[i]!.ratio = ratio;
 				return a;
 			});
 		}
@@ -44,10 +44,10 @@
 	$: medias = mediaIndex === null
 		? $article.medias.slice(0, !$showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined)
 			.map((m, i) => [m, i])
-		: [[$article.medias[mediaIndex], mediaIndex]];
+		: [[$article.medias[mediaIndex]!, mediaIndex]];
 
-	let firstMediaExtension = $article.medias[0].src.split('.').at(-1);
-	let isFakeGif = firstMediaExtension && $article.medias[0].mediaType === MediaType.Gif && extensionToMediaType(firstMediaExtension) === MediaType.Image;
+	let firstMediaExtension = $article.medias[0]!.src.split('.').at(-1);
+	let isFakeGif = firstMediaExtension && $article.medias[0]!.mediaType === MediaType.Gif && extensionToMediaType(firstMediaExtension) === MediaType.Image;
 </script>
 
 <style>

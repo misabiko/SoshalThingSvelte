@@ -10,6 +10,8 @@
 	import {PixivService} from '~/services/pixiv/service';
 
 	const query = window.location.pathname.split('/')[3];
+	if (!query)
+		throw new Error('No query found');
 	const searchParams = new URLSearchParams(window.location.search);
 	const mode = searchParams.get('mode') as Mode | null ?? Mode.All;
 
@@ -96,7 +98,7 @@
 <a
 		use:portal={{target: activatorMount}}
 		id='favvieweractivator'
-		class={activatorMount.children[0].className}
+		class={activatorMount.children[0]!.className}
 		onclick={() => favviewerHidden = !favviewerHidden}
 >
 	SoshalThing

@@ -38,7 +38,7 @@
 			case SortMethod.Custom:
 				if (sortInfo.customMethod === null)
 					throw new Error('Custom sort method is null');
-				currentMethodName = `${sortInfo.customMethod.service} - ${getService(sortInfo.customMethod.service).sortMethods[sortInfo.customMethod.method].name}`;
+				currentMethodName = `${sortInfo.customMethod.service} - ${getService(sortInfo.customMethod.service).sortMethods[sortInfo.customMethod.method]!.name}`;
 				break;
 			default:
 				currentMethodName = methodName(sortInfo.method);

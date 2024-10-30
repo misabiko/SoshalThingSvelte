@@ -17,20 +17,22 @@
 	export let data: TimelineData;
 
 	let newEndpointServices = Object.values(getServices()).filter(s => Object.values(s.endpointConstructors).length > 0);
-	let newEndpointService: string = newEndpointServices[0]?.name;
-	let newEndpoint: string = Object.values(newEndpointServices[0]?.endpointConstructors)[0]?.name;
+	if (!newEndpointServices[0])
+		throw new Error('No services with endpoints');
+	let newEndpointService: string = newEndpointServices[0].name;
+	let newEndpoint: string = Object.values(newEndpointServices[0]?.endpointConstructors)[0]!.name;
 	$: {
 		if (!Object.hasOwn(getService(newEndpointService).endpointConstructors, newEndpoint))
-			newEndpoint = Object.values(getService(newEndpointService).endpointConstructors)[0]?.name;
+			newEndpoint = Object.values(getService(newEndpointService).endpointConstructors)[0]!.name;
 	}
-	let params = Object.fromEntries(getService(newEndpointService).endpointConstructors[newEndpoint].paramTemplate);
+	let params = Object.fromEntries(getService(newEndpointService).endpointConstructors[newEndpoint]!.paramTemplate);
 	function updateParams() {
-		params = Object.fromEntries(getService(newEndpointService).endpointConstructors[newEndpoint].paramTemplate);
+		params = Object.fromEntries(getService(newEndpointService).endpointConstructors[newEndpoint]!.paramTemplate);
 	}
 
 	function addEndpoint() {
 		data.endpoints.push({
-			endpoint: getService(newEndpointService).endpointConstructors[newEndpoint].constructor(params),
+			endpoint: getService(newEndpointService).endpointConstructors[newEndpoint]!.constructor(params),
 			refreshTypes: everyRefreshType,
 			filters: [],
 		});
@@ -52,9 +54,9 @@
 
 	function onRefreshTypeChange(index: number, refreshType: RefreshType, checked: boolean) {
 		if (checked)
-			data.endpoints[index].refreshTypes.add(refreshType);
+			data.endpoints[index]!.refreshTypes.add(refreshType);
 		else
-			data.endpoints[index].refreshTypes.delete(refreshType);
+			data.endpoints[index]!.refreshTypes.delete(refreshType);
 
 		data.endpoints = data.endpoints;
 
@@ -75,7 +77,7 @@
 		let endpoint: Endpoint;
 
 		if (timelineEndpoint.name !== undefined)
-			endpoint = get(endpoints[timelineEndpoint.name]);
+			endpoint = get(endpoints[timelineEndpoint.name]!);
 		else
 			endpoint = timelineEndpoint.endpoint;
 
@@ -126,7 +128,7 @@
 
 <ul>
 	{#each data.endpoints as timelineEndpoint, i}
-		{@const endpoint = timelineEndpoint.endpoint ?? get(endpoints[timelineEndpoint.name])}
+		{@const endpoint = timelineEndpoint.endpoint ?? get(endpoints[timelineEndpoint.name]!)}
 		{@const endpointRefreshTypes = get(endpoint.refreshTypes)}
 		<li>
 			<h2>{endpoint.name}</h2>

@@ -60,6 +60,8 @@
 			for (const [idServiceMedia, {articleProps, index, mediaIndex}] of Object.entries(uniqueArticles)) {
 				if (!columns.some(c => c.idServiceMedias.some(idServiceMedia => {
 					const [_idStr, _service, mediaIndexStr] = idServiceMedia.split('/');
+					if (!mediaIndexStr)
+						throw new Error('Media index not found in idServiceMedia');
 					return getRootArticle(uniqueArticles[idServiceMedia]!.articleProps).idPairStr === getRootArticle(articleProps).idPairStr && [mediaIndexStr === 'null' ? mediaIndex === null : parseInt(mediaIndexStr) === mediaIndex];
 				}))) {
 					addedArticles.push({idServiceMedia, index});
@@ -71,10 +73,10 @@
 				columnsChanged.add(addArticle(idServiceMedia));
 
 			for (const column of columns)
-				column.idServiceMedias.sort((a, b) => uniqueArticles[a].index - uniqueArticles[b].index);
+				column.idServiceMedias.sort((a, b) => uniqueArticles[a]!.index - uniqueArticles[b]!.index);
 
 			for (const i of columnsChanged.values())
-				columns[i].ratio = columns[i].idServiceMedias.reduce((acc, curr) => acc + getRatio(uniqueArticles[curr].articleProps), 0);
+				columns[i]!.ratio = columns[i]!.idServiceMedias.reduce((acc, curr) => acc + getRatio(uniqueArticles[curr]!.articleProps), 0);
 		}
 	}
 
@@ -92,9 +94,11 @@
 	}
 
 	function addArticle(idServiceMedia: string): number {
-		const smallestIndex = columns.reduce((acc, curr, currIndex) => curr.ratio < columns[acc].ratio ? currIndex : acc, 0);
-		columns[smallestIndex].idServiceMedias.push(idServiceMedia);
-		columns[smallestIndex].ratio += getRatio(uniqueArticles[idServiceMedia].articleProps);
+		if (uniqueArticles[idServiceMedia] === undefined)
+			throw new Error('Article not found in uniqueArticles');
+		const smallestIndex = columns.reduce((acc, curr, currIndex) => curr.ratio < columns[acc]!.ratio ? currIndex : acc, 0);
+		columns[smallestIndex]!.idServiceMedias.push(idServiceMedia);
+		columns[smallestIndex]!.ratio += getRatio(uniqueArticles[idServiceMedia].articleProps);
 		return smallestIndex;
 	}
 
@@ -140,7 +144,7 @@
 			{#each column.idServiceMedias as idServiceMedia (idServiceMedia)}
 				<ArticleComponent
 					view={props.articleView}
-					articleProps={uniqueArticles[idServiceMedia].articleProps}
+					articleProps={uniqueArticles[idServiceMedia]!.articleProps}
 					timelineProps={props.timelineArticleProps}
 				/>
 			{/each}

@@ -52,7 +52,7 @@
 	$: medias = actualArticleProps.mediaIndex === null
 		? actualArticle.medias.slice(0, !$showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined)
 			.map((m, i) => [m, i])
-		: [[actualArticle.medias[actualArticleProps.mediaIndex], actualArticleProps.mediaIndex]];
+		: [[actualArticle.medias[actualArticleProps.mediaIndex]!, actualArticleProps.mediaIndex]];
 </script>
 
 <style>

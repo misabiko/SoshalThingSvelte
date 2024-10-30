@@ -93,7 +93,7 @@ export function getMarkedAsReadStorage(service: Service<any>): string[] {
 	if (parsed?.services === undefined)
 		return [];
 
-	return parsed.services![service.name]?.articlesMarkedAsRead ?? [];
+	return parsed.services[service.name]?.articlesMarkedAsRead ?? [];
 }
 
 export function getCachedArticlesStorage<S extends object>(service: Service<any>): Record<string, S | undefined> {

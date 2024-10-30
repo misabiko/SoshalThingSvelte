@@ -116,7 +116,7 @@
 	}
 
 	//TODO Find way to get specific parent soshalthing
-	const modalMountElement = document.getElementsByClassName('soshalthing')[0]!;
+	const modalMountElement = document.getElementsByClassName('soshalthing')[0] as HTMLDivElement;
 </script>
 
 <style>

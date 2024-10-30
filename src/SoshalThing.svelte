@@ -17,7 +17,7 @@
 	import {getRootArticle} from './articles';
 	import {updateTimelinesStorage} from '~/storages';
 	import {get, type Writable, writable} from 'svelte/store';
-	import {FetchType, getServices} from './services/service';
+	import {FetchType, getService} from './services/service';
 	import {fetchExtension} from './services/extension';
 
 	(BigInt.prototype as any).toJSON = function () {
@@ -98,7 +98,7 @@
 				.map(e => (e.constructor as typeof Endpoint).service),
 		);
 		for (const serviceName of services) {
-			const service = getServices()[serviceName];
+			const service = getService(serviceName);
 			if (!service.isOnDomain && service.fetchInfo.type === FetchType.Tab && get(service.fetchInfo.tabInfo.tabId) === null)
 				service.fetchInfo.tabInfo.tabId.set(await fetchExtension('getTabId', {
 					url: service.fetchInfo.tabInfo.url,

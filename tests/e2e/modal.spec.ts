@@ -56,7 +56,7 @@ test.describe('user timeline modal', () => {
 		});
 	});
 
-	test.only('opening modal user timeline', async ({page}) => {
+	test('opening modal user timeline', async ({page}) => {
 		await page.locator('article .names').filter({hasText: 'DummyAuthor0 @dummy0'}).first().click();
 		const modalTimeline = page.locator('.modal .timeline');
 		await expect(modalTimeline.locator('.timelineHeader')).toHaveText('DummyAuthor0');

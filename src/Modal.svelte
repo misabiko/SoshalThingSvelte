@@ -9,16 +9,15 @@
 		children,
 	}: {
 		active: boolean
-		mountElement: Element | null
+		mountElement: HTMLElement | null
 		children: Snippet
 	} = $props();
 
 	let modal: HTMLDivElement;
 
 	$effect(() => {
-		if (active && mountElement) {
+		if (active && mountElement && modal.parentElement !== mountElement)
 			mountElement.appendChild(modal);
-		}
 	});
 
 	function close() {
@@ -26,9 +25,7 @@
 		active = false;
 	}
 
-	onDestroy(() => {
-		close();
-	});
+	onDestroy(() => close());
 </script>
 
 <style>

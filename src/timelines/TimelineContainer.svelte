@@ -55,12 +55,12 @@
 		timelineEndpoints.set(newTimelineEndpoints);
 	}
 
-	tick().then(() => {
+	$: {
 		//Workaround for https://github.com/sveltejs/svelte/issues/5268
 		//During Modal's close transition, the child Timeline still calls reactive statements for modalTimeline
 		if (!modalTimelineActive)
 			modalTimeline = null;
-	});
+	};
 
 	onMount(() => {
 		initialRefresh(...[
@@ -69,7 +69,7 @@
 		]);
 	});
 
-	const mountElement = document.getElementsByClassName('soshalthing')[0]!;
+	const mountElement = document.getElementsByClassName('soshalthing')[0] as HTMLDivElement;
 </script>
 
 <style>

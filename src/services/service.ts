@@ -126,7 +126,6 @@ export function getServices(): Readonly<{[name: string]: Service}> {
 	return services;
 }
 
-//TODO Replace getServices()[] to getService()
 export function getService(name: string): Service {
 	const service = services[name];
 	if (service === undefined)

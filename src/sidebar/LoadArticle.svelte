@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import {getServices, type Service} from '~/services/service';
+	import {getService, getServices, type Service} from '~/services/service';
 	import ArticleComponent from '../articles/ArticleComponent.svelte';
 	import SocialArticleView from '../articles/social/SocialArticleView.svelte';
 	import type {ArticleProps, ArticleWithRefs, TimelineArticleProps} from '~/articles';
@@ -17,7 +17,7 @@
 			throw new Error('No service selected');
 
 		try {
-			article = await (getServices()[serviceName] as LoadArticleService).loadArticle(articleId);
+			article = await (getService(serviceName) as LoadArticleService).loadArticle(articleId);
 		}catch (e) {
 			console.error(`Failed to load article "${articleId}"`, e);
 		}

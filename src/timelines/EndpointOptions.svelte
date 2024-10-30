@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import {get} from 'svelte/store';
-	import {addArticles, getServices} from '~/services/service';
+	import {addArticles, getService, getServices} from '~/services/service';
 	import {type TimelineData, type TimelineEndpoint} from './index';
 	import {
 		addEndpointArticlesToTimeline, Endpoint,
@@ -20,17 +20,17 @@
 	let newEndpointService: string = newEndpointServices[0]?.name;
 	let newEndpoint: string = Object.values(newEndpointServices[0]?.endpointConstructors)[0]?.name;
 	$: {
-		if (!Object.hasOwn(getServices()[newEndpointService].endpointConstructors, newEndpoint))
-			newEndpoint = Object.values(getServices()[newEndpointService].endpointConstructors)[0]?.name;
+		if (!Object.hasOwn(getService(newEndpointService).endpointConstructors, newEndpoint))
+			newEndpoint = Object.values(getService(newEndpointService).endpointConstructors)[0]?.name;
 	}
-	let params = Object.fromEntries(getServices()[newEndpointService].endpointConstructors[newEndpoint].paramTemplate);
+	let params = Object.fromEntries(getService(newEndpointService).endpointConstructors[newEndpoint].paramTemplate);
 	function updateParams() {
-		params = Object.fromEntries(getServices()[newEndpointService].endpointConstructors[newEndpoint].paramTemplate);
+		params = Object.fromEntries(getService(newEndpointService).endpointConstructors[newEndpoint].paramTemplate);
 	}
 
 	function addEndpoint() {
 		data.endpoints.push({
-			endpoint: getServices()[newEndpointService].endpointConstructors[newEndpoint].constructor(params),
+			endpoint: getService(newEndpointService).endpointConstructors[newEndpoint].constructor(params),
 			refreshTypes: everyRefreshType,
 			filters: [],
 		});
@@ -160,7 +160,7 @@
 		{/each}
 	</select>
 	<select bind:value={newEndpoint} onchange={updateParams}>
-		{#each Object.values(getServices()[newEndpointService].endpointConstructors) as endpoint}
+		{#each Object.values(getService(newEndpointService).endpointConstructors) as endpoint}
 			<option value={endpoint.name}>{endpoint.name}</option>
 		{/each}
 	</select>

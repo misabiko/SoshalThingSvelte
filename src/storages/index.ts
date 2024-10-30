@@ -11,7 +11,7 @@ import RowContainer from '~/containers/RowContainer.svelte';
 import MasonryContainer from '~/containers/MasonryContainer.svelte';
 import SocialArticleView from '~/articles/social/SocialArticleView.svelte';
 import GalleryArticleView from '~/articles/gallery/GalleryArticleView.svelte';
-import {getServices} from '~/services/service';
+import {getService, getServices} from '~/services/service';
 import {defaultFilterInstances, type FilterInstance, genericFilterTypes} from '~/filters';
 import type {SortInfo} from '~/sorting';
 import {SortMethod} from '~/sorting';
@@ -439,7 +439,7 @@ function parseFilters(storageFilters: FilterInstance[]) {
 			console.error(`Generic filter "${instance.filter.type}" doesn't exist.`, instance);
 		else if (instance.filter.service !== null && !Object.hasOwn(getServices(), instance.filter.service))
 			console.error(`Service ${instance.filter.service} isn't registered.`, instance);
-		else if (instance.filter.service !== null && !Object.hasOwn(getServices()[instance.filter.service].filterTypes, instance.filter.type))
+		else if (instance.filter.service !== null && !Object.hasOwn(getService(instance.filter.service).filterTypes, instance.filter.type))
 			console.error(`Service "${instance.filter.service}" doesn't have filter "${instance.filter.type}".`, instance);
 		else
 			filters.push(instance);

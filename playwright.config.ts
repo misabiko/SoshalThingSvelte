@@ -4,6 +4,7 @@ const config: PlaywrightTestConfig = {
 	webServer: {
 		command: 'bun run serve:test',
 		port: 8089,
+		//TODO Set to false on UI mode?
 		reuseExistingServer: !process.env.CI,
 	},
 	use: {

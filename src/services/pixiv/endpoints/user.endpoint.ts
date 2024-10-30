@@ -11,7 +11,7 @@ import {
 	type PixivResponse,
 	type PixivResponseWithWorks,
 } from './index';
-import {getServices, registerEndpointConstructor} from '../../service';
+import {getService, registerEndpointConstructor} from '../../service';
 
 export default class UserPageEndpoint extends PageEndpoint {
 	readonly name = 'User Endpoint';
@@ -139,7 +139,7 @@ export class UserAPIEndpoint extends LoadableEndpoint {
 }
 
 registerEndpointConstructor(UserAPIEndpoint);
-getServices()[PixivService.name].userEndpoint = user => new UserAPIEndpoint((user as PixivUser).id);
+getService(PixivService.name).userEndpoint = user => new UserAPIEndpoint((user as PixivUser).id);
 
 export function getUserId(): number {
 	return parseInt(window.location.pathname.split('/')[3]);

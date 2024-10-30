@@ -2,7 +2,7 @@
 	import {methodName, type SortInfo, SortMethod} from './index';
 	import Dropdown from '../Dropdown.svelte';
 	import {directionLabel, genericSortMethods} from './index';
-	import {getServices, type SortMethodInfo} from '~/services/service';
+	import {getService, getServices, type SortMethodInfo} from '~/services/service';
 	import {updateTimelinesStorageSortInfo} from '~/storages';
 	import type {Writable} from 'svelte/store';
 
@@ -38,7 +38,7 @@
 			case SortMethod.Custom:
 				if (sortInfo.customMethod === null)
 					throw new Error('Custom sort method is null');
-				currentMethodName = `${sortInfo.customMethod.service} - ${getServices()[sortInfo.customMethod.service].sortMethods[sortInfo.customMethod.method].name}`;
+				currentMethodName = `${sortInfo.customMethod.service} - ${getService(sortInfo.customMethod.service).sortMethods[sortInfo.customMethod.method].name}`;
 				break;
 			default:
 				currentMethodName = methodName(sortInfo.method);

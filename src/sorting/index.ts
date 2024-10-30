@@ -1,6 +1,6 @@
 import type {ArticleProps, ArticleWithRefs} from '~/articles';
 import {getRootArticle} from '~/articles';
-import {getServices} from '~/services/service';
+import {getService} from '~/services/service';
 
 export type SortInfo = {
 	method: SortMethod | null
@@ -43,7 +43,7 @@ export function compare(info: SortInfo): (a: ArticleWithRefs | ArticleProps, b: 
 				if (getRootArticle(a).idPair.service !== info.customMethod?.service || getRootArticle(b).idPair.service !== info.customMethod.service)
 					order = 0;
 				else
-					order = getServices()[info.customMethod.service].sortMethods[info.customMethod.method].compare(a, b) || 0;
+					order = getService(info.customMethod.service).sortMethods[info.customMethod.method].compare(a, b) || 0;
 				break;
 			}case null:
 				order = 0;

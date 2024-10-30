@@ -1,6 +1,6 @@
 import {loadMainStorage, MAIN_STORAGE_KEY} from './index';
 import {derived, get} from 'svelte/store';
-import type {Service} from '~/services/service';
+import {getService, type Service} from '~/services/service';
 import {getServices} from '~/services/service';
 import type Article from '../articles';
 
@@ -63,7 +63,7 @@ export function updateCachedArticlesStorage(service?: string) {
 	else if (storage.services === undefined)
 		storage.services = {};
 
-	const services = service !== undefined ? [getServices()[service]] : Object.values(getServices());
+	const services = service !== undefined ? [getService(service)] : Object.values(getServices());
 
 	for (const service of services) {
 		const getCachedArticles = service.getCachedArticles;

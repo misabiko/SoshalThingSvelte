@@ -6,7 +6,7 @@
 	import Dropdown from '../../Dropdown.svelte';
 	import Article, {type ArticleIdPair} from '../../articles';
 	import type {TimelineArticleProps} from '../index';
-	import {getReadableArticle, getServices} from '~/services/service';
+	import {getReadableArticle, getService} from '~/services/service';
 	import {type ArticleAction, getGenericActions} from '~/services/actions';
 
 	export let idPair: ArticleIdPair;
@@ -60,7 +60,7 @@
 		});
 
 	//TODO Have option to move icon actions to dropdown
-	let actions: [ArticleAction[], ArticleAction[]] = [...Object.values(getServices()[idPair.service].articleActions), ...genericActions]
+	let actions: [ArticleAction[], ArticleAction[]] = [...Object.values(getService(idPair.service).articleActions), ...genericActions]
 		.sort((a, b) => a.index - b.index)
 		.reduce<[ArticleAction[], ArticleAction[]]>(([icons, dropdown], action) => {
 			if (action.views.SocialArticleView?.listAsIcon ?? action.views.default.listAsIcon)

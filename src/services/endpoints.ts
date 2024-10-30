@@ -2,7 +2,7 @@ import type {TimelineEndpoint} from '~/timelines';
 import type {ArticleIdPair, ArticleWithRefs} from '~/articles';
 import {getRootArticle} from '~/articles';
 import {useFilters} from '~/filters';
-import {addArticles, getServices} from './service';
+import {addArticles, getService} from './service';
 import {get, writable} from 'svelte/store';
 import type {Writable} from 'svelte/store';
 
@@ -96,7 +96,7 @@ export abstract class LoadablePageEndpoint extends PageEndpoint {
 				break;
 		}
 
-		if (this.currentPage === this.hostPage && getServices()[(this.constructor as typeof Endpoint).service].isOnDomain)
+		if (this.currentPage === this.hostPage && getService((this.constructor as typeof Endpoint).service).isOnDomain)
 			return this.hostPageRefresh(refreshType);
 		else
 			return this.parsePage(await this.loadPage());

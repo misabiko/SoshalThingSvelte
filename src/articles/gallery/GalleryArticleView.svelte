@@ -9,9 +9,7 @@
 	} from '@fortawesome/free-solid-svg-icons';
 	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
 	import Dropdown from '~/Dropdown.svelte';
-	import {
-		getServices,
-	} from '~/services/service';
+	import {getService} from '~/services/service';
 	import type {TimelineArticleProps} from '../index';
 	import type {ArticleProps} from '../index';
 	import {type ArticleMedia, MediaType} from '../media';
@@ -40,7 +38,7 @@
 	export let mediaRefs: Record<number, HTMLImageElement | HTMLVideoElement>;
 	export let loadingStates: Readable<Record<number, LoadingState>>;
 
-	let actions: [ArticleAction[], ArticleAction[]] = [...Object.values(getServices()[rootArticle.idPair.service].articleActions), ...getGenericActions(rootArticle)]
+	let actions: [ArticleAction[], ArticleAction[]] = [...Object.values(getService(rootArticle.idPair.service).articleActions), ...getGenericActions(rootArticle)]
 		.sort((a, b) => a.index - b.index)
 		.reduce<[ArticleAction[], ArticleAction[]]>(([icons, dropdown], action) => {
 			if (action.views.GalleryArticleView?.listAsIcon ?? action.views.default.listAsIcon)

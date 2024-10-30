@@ -2,7 +2,7 @@ import type PixivArticle from './article';
 import type {CachedPixivArticle} from './article';
 import {
 	type FetchingService,
-	FetchType, getServices,
+	FetchType, getService,
 	getWritableArticle,
 	newFetchingService,
 	newService,
@@ -49,7 +49,7 @@ export const PixivService: PixivServiceType = {
 						if (!csrfToken)
 							throw new Error('No CSRF token');
 
-						const response: LikeResponse = await getServices().Pixiv.fetch('https://www.pixiv.net/ajax/illusts/like', {
+						const response: LikeResponse = await getService('Pixiv').fetch('https://www.pixiv.net/ajax/illusts/like', {
 							method: 'POST',
 							credentials: 'same-origin',
 							cache: 'no-cache',
@@ -102,7 +102,7 @@ export const PixivService: PixivServiceType = {
 
 						const privateBookmark = (storage.privateBookmark as boolean | undefined) ?? false;
 
-						const response: BookmarkResponse = await getServices().Pixiv.fetch('https://www.pixiv.net/ajax/illusts/bookmarks/add', {
+						const response: BookmarkResponse = await getService('Pixiv').fetch('https://www.pixiv.net/ajax/illusts/bookmarks/add', {
 							method: 'POST',
 							credentials: 'same-origin',
 							cache: 'no-cache',
@@ -332,20 +332,28 @@ export const PixivService: PixivServiceType = {
 			const pagesJson: PagesResponse = await PixivService.fetch(`https://www.pixiv.net/ajax/illust/${article.id}/pages`, {headers: {Accept: 'application/json'}});
 
 			store.update(a => {
-				a.liked = preloadDataJson.illust[article.id].likeData;
-				a.bookmarked = preloadDataJson.illust[article.id].bookmarkData !== null;
-				a.likeCount = preloadDataJson.illust[article.id].likeCount;
-				a.bookmarkCount = preloadDataJson.illust[article.id].bookmarkCount;
+				const illust = preloadDataJson.illust[article.id];
+				if (!illust)
+					throw new Error('Illust not found in preload data');
+				a.liked = illust.likeData;
+				a.bookmarked = illust.bookmarkData !== null;
+				a.likeCount = illust.likeCount;
+				a.bookmarkCount = illust.bookmarkCount;
 
 				for (let i = 0; i < a.medias.length; ++i) {
 					const page = pagesJson.body[i];
+					if (!page)
+						throw new Error('Page not found in pages');
+					const media = a.medias[i];
+					if (!media)
+						throw new Error(`Media ${i} not found in article`);
 					a.medias[i] = {
 						src: page.urls.original,
 						ratio: getRatio(page.width, page.height),
 						queueLoadInfo: MediaLoadType.LazyLoad,
-						mediaType: a.medias[i].mediaType,
-						thumbnail: a.medias[i].queueLoadInfo === MediaLoadType.Thumbnail ? {
-							src: a.medias[i].src,
+						mediaType: media.mediaType,
+						thumbnail: media.queueLoadInfo === MediaLoadType.Thumbnail ? {
+							src: media.src,
 							ratio: null,
 							offsetX: null,
 							offsetY: null,

@@ -4,7 +4,7 @@
 	import Sidebar from './sidebar/Sidebar.svelte';
 	import {
 		addArticlesToTimeline,
-		defaultTimelineView,
+		defaultTimelineViewId,
 		type TimelineCollection,
 		type TimelineData,
 		type TimelineView,
@@ -26,7 +26,7 @@
 
 	export let timelines: TimelineCollection = {};
 	export let timelineViews: Record<string, TimelineView> = {
-		[defaultTimelineView]: {
+		[defaultTimelineViewId]: {
 			timelineIds: [],
 			fullscreen: {
 				index: null,
@@ -42,7 +42,7 @@
 		}
 	}
 
-	export let timelineViewId: string = defaultTimelineView;
+	export let timelineViewId: string = defaultTimelineViewId;
 	export let isInjected = true;
 	export let favviewerHidden = false;
 	export let favviewerMaximized: boolean | null = null;

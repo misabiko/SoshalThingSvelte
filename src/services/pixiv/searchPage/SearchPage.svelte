@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import {defaultTimeline, defaultTimelineView, type TimelineCollection, type TimelineView} from '~/timelines';
+	import {defaultTimeline, defaultTimelineViewId, type TimelineCollection, type TimelineView} from '~/timelines';
 	import {Mode} from '~/services/pixiv/endpoints';
 	import {SearchAPIEndpoint} from '~/services/pixiv/endpoints/search.endpoint';
 	import {getCurrentPage} from '~/services/pixiv/endpoints';
@@ -37,7 +37,7 @@
 		throw new Error('Could not find activator mount');
 
 	const timelineViews: Record<string, TimelineView> = {
-		[defaultTimelineView]: {
+		[defaultTimelineViewId]: {
 			timelineIds: Object.keys(timelines),
 			fullscreen: {
 				...mainStorage.fullscreen,

@@ -142,7 +142,10 @@ registerEndpointConstructor(UserAPIEndpoint);
 getService(PixivService.name).userEndpoint = user => new UserAPIEndpoint((user as PixivUser).id);
 
 export function getUserId(): number {
-	return parseInt(window.location.pathname.split('/')[3]);
+	const str = window.location.pathname.split('/')[3];
+	if (!str)
+		throw new Error("Couldn't find user id");
+	return parseInt(str);
 }
 
 type UserListAjaxResponse = PixivResponse<{

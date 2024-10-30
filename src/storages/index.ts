@@ -1,5 +1,5 @@
 import {
-	defaultTimelineView,
+	defaultTimelineViewId,
 	type FullscreenInfo,
 	type TimelineCollection,
 	type TimelineEndpoint,
@@ -126,7 +126,10 @@ export function updateMainStorageTimelineViews(views: Record<string, TimelineVie
 	const item = localStorage.getItem(MAIN_STORAGE_KEY);
 	const storage = item ? JSON.parse(item) : {};
 
-	views.default = views[defaultTimelineView];
+	if (views[defaultTimelineViewId] === undefined)
+		throw new Error('Default timeline view must exist');
+
+	views.default = views[defaultTimelineViewId];
 	storage.timelineViews = views;
 
 	localStorage.setItem(MAIN_STORAGE_KEY, JSON.stringify(storage));
@@ -268,9 +271,12 @@ export function updateTimelinesStorageSortInfo(timelineId: string, sortInfo: Sor
 export function getCookie(name: string): string | null {
 	const regex = new RegExp(`(^| )${name}=([^;]+)`);
 	const match = document.cookie.match(regex);
-	if (match)
-		return match[2];
-	else
+	if (match) {
+		if (match[2])
+			return match[2];
+		else
+			throw new Error('Empty cookie value');
+	}else
 		return null;
 }
 
@@ -304,17 +310,18 @@ function parseArticleView(articleView: string | undefined): Component<ArticleVie
 }
 
 function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | undefined {
-	const services = getServices();
 	const endpointsValue: Endpoint[] = get(derived(Object.values(endpoints), (e: Endpoint[]) => e));
-	if (!Object.hasOwn(services, storage.service)) {
+	if (!Object.hasOwn(getServices(), storage.service)) {
 		console.error(`"${storage.service}" isn't a registered service`);
 		return undefined;
-	}else if (!Object.hasOwn(services[storage.service].endpointConstructors, storage.endpointType)) {
+	}else if (!Object.hasOwn(getService(storage.service).endpointConstructors, storage.endpointType)) {
 		console.error(`"${storage.service}" doesn't have endpointType "${storage.endpointType}"`);
 		return undefined;
 	}
 
-	const constructorInfo = services[storage.service].endpointConstructors[storage.endpointType];
+	const constructorInfo = getService(storage.service).endpointConstructors[storage.endpointType];
+	if (constructorInfo === undefined)
+		throw new Error(`Endpoint constructor "${storage.endpointType}" not found`);
 
 	let endpoint = endpointsValue.find(endpoint =>
 		constructorInfo.name === (endpoint.constructor as typeof Endpoint).constructorInfo.name &&
@@ -357,11 +364,22 @@ function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | unde
 
 function endpointsToStorage(timelineEndpoints: TimelineEndpoint[]): EndpointStorage[] {
 	return timelineEndpoints
-		.map(e => ({
-			endpoint: e.endpoint ?? get(endpoints[e.name]),
-			filters: e.filters,
-			refreshTypes: e.refreshTypes,
-		}))
+		.map(e => {
+			let endpoint = e.endpoint;
+			if (endpoint == null) {
+				if (!e.name)
+					throw new Error('Endpoint name is required');
+				const registered = endpoints[e.name];
+				if (registered == null)
+					throw new Error(`Endpoint "${e.name}" not found`);
+				endpoint = get(registered);
+			}
+			return {
+				endpoint,
+				filters: e.filters,
+				refreshTypes: e.refreshTypes,
+			};
+		})
 		.map(({endpoint, filters, refreshTypes}) => ({
 			service: (endpoint.constructor as typeof Endpoint).service,
 			endpointType: (endpoint.constructor as typeof Endpoint).constructorInfo.name,

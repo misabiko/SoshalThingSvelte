@@ -197,6 +197,8 @@ export async function addEndpointArticlesToTimeline(endpointName: string, articl
 }
 
 export async function refreshEndpointName(endpointName: string, refreshType: RefreshType, autoRefreshing = false) {
+	if (endpoints[endpointName] === undefined)
+		throw new Error(`Endpoint ${endpointName} doesn't exist`);
 	const endpoint = get(endpoints[endpointName]);
 	if (!get(endpoint.refreshTypes).has(refreshType))
 		return;

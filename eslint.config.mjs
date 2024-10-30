@@ -117,6 +117,7 @@ export default tseslint.config(
 			'@stylistic/multiline-ternary': 'off',
 			//Maybe if I could disable it for single line
 			'@stylistic/operator-linebreak': 'off',
+			'@stylistic/lines-between-class-members': 'off',
 
 			'@typescript-eslint/no-unused-vars': [
 				'warn',

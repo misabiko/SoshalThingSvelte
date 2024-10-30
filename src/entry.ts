@@ -7,7 +7,7 @@ console.debug('Loaded services and endpoints:', Object.fromEntries(Object.values
 
 import SoshalThing from './SoshalThing.svelte';
 import {loadMainStorage, loadTimelines} from './storages';
-import {defaultTimelineView, type FullscreenInfo, type TimelineView} from './timelines';
+import {defaultTimelineViewId, type FullscreenInfo, type TimelineView} from './timelines';
 
 const {timelineIds, fullscreen, timelineViews, currentTimelineViewId} = loadMainStorage();
 const timelines = loadTimelines();
@@ -15,9 +15,9 @@ const timelines = loadTimelines();
 const searchParams = new URLSearchParams(location.search);
 
 const searchTimelineView = parseTimelineView(timelineViews, searchParams);
-const timelineViewId: string = searchTimelineView ?? currentTimelineViewId ?? defaultTimelineView;
-if (timelineViewId === defaultTimelineView) {
-	timelineViews[defaultTimelineView] ??= {
+const timelineViewId: string = searchTimelineView ?? currentTimelineViewId ?? defaultTimelineViewId;
+if (timelineViewId === defaultTimelineViewId) {
+	timelineViews[defaultTimelineViewId] ??= {
 		timelineIds: timelineIds ?? Object.keys(timelines),
 		fullscreen,
 	};

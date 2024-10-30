@@ -79,6 +79,8 @@ export type TimelineTemplate = Partial<Omit<TimelineData,
 
 export function defaultTimeline(data: TimelineDataPartial): TimelineData {
 	const template = data.serviceTemplate ? getService(data.serviceTemplate.service).timelineTemplates[data.serviceTemplate.templateId] : {};
+	if (template === undefined)
+		throw new Error('Template not found');
 	return {
 		title: 'Timeline',
 		serviceTemplate: null,
@@ -143,7 +145,7 @@ export function addArticlesToTimeline(data: TimelineData, ...articles: ArticleId
 export type TimelineCollection = {[id: string]: TimelineData};
 
 //Would've wanted to use a symbol, but then we need to stringify in json anyway
-export const defaultTimelineView = 'default';
+export const defaultTimelineViewId = 'default';
 export type TimelineView = {
 	timelineIds: string[]
 	fullscreen: FullscreenInfo

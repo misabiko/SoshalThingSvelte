@@ -1,7 +1,7 @@
 <script lang='ts'>
 	import SoshalThing from '~/SoshalThing.svelte';
 	import {
-		defaultTimelineView,
+		defaultTimelineViewId,
 		type TimelineCollection,
 		type TimelineView,
 	} from '~/timelines';
@@ -36,7 +36,7 @@
 		throw new Error('Could not find activator mount');
 
 	const timelineViews: Record<string, TimelineView> = {
-		[defaultTimelineView]: {
+		[defaultTimelineViewId]: {
 			timelineIds: Object.keys(timelines),
 			fullscreen: {
 				...mainStorage.fullscreen,

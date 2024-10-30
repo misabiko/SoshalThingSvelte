@@ -1,6 +1,6 @@
 import {type EndpointConstructorInfo, LoadableEndpoint, RefreshType} from '~/services/endpoints';
 import type {ArticleWithRefs} from '~/articles';
-import {getServices, registerEndpointConstructor} from '~/services/service';
+import {getService, registerEndpointConstructor} from '~/services/service';
 import {getCachedArticlesStorage, getMarkedAsReadStorage} from '~/storages/serviceCache';
 import {PixivService} from '~/services/pixiv/service';
 import PixivArticle, {type CachedPixivArticle} from '~/services/pixiv/article';
@@ -35,7 +35,7 @@ export class RankingAPIEndpoint extends LoadableEndpoint {
 		if (this.currentPage > 0)
 			url.searchParams.set('p', (this.currentPage + 1).toString());
 
-		const response: RankingResponse = await getServices().Pixiv.fetch(url.toString(), {headers: {Accept: 'application/json'}});
+		const response: RankingResponse = await getService('Pixiv').fetch(url.toString(), {headers: {Accept: 'application/json'}});
 		if ('error' in response)
 			throw response.error;
 

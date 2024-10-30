@@ -42,8 +42,12 @@ export function compare(info: SortInfo): (a: ArticleWithRefs | ArticleProps, b: 
 			case SortMethod.Custom: {
 				if (getRootArticle(a).idPair.service !== info.customMethod?.service || getRootArticle(b).idPair.service !== info.customMethod.service)
 					order = 0;
-				else
-					order = getService(info.customMethod.service).sortMethods[info.customMethod.method].compare(a, b) || 0;
+				else {
+					const sortMethod = getService(info.customMethod.service).sortMethods[info.customMethod.method];
+					if (!sortMethod)
+						throw new Error(`Custom sort method ${info.customMethod.method} not found`);
+					order = sortMethod.compare(a, b) || 0;
+				}
 				break;
 			}case null:
 				order = 0;

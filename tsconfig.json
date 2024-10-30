@@ -1,9 +1,10 @@
 {
 	"extends": "@tsconfig/svelte/tsconfig.json",
 	"compilerOptions": {
-		"target": "esnext",
+		"target": "ESNext",
+		"module": "Preserve",
+		"moduleResolution": "Bundler",
 
-		"module": "esnext",
 		"baseUrl": "./src/",
 		"paths": {
 			"~/*": ["./*"]
@@ -12,7 +13,8 @@
 		"types": [
 			"svelte",
 			"chrome",
-			"node"
+			"node",
+			"bun"
 		],
 
 		"strict": true,
@@ -28,8 +30,13 @@
 		//overriding the default behavior of the svelte tsconfig
 		"importsNotUsedAsValues": "remove",
 		"preserveValueImports": false,
-		"verbatimModuleSyntax": true
+		"verbatimModuleSyntax": true,
+
+		"noUncheckedIndexedAccess": true,
+
+		//https://stackoverflow.com/a/56268670/2692695
+		"skipLibCheck": true,
 	},
-	"include": ["src/**/*.ts", "tests/**/*.ts"],
+//	"include": ["src/**/*.ts", "tests/**/*.ts"],
 	"exclude": ["node_modules/**", "dist/**"]
 }

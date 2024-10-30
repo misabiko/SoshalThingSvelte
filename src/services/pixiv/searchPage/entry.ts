@@ -5,7 +5,7 @@ import '~/services/pixiv/endpoints/ranking.endpoint';
 import '~/services/pixiv/endpoints/top.endpoint';
 import '~/services/pixiv/endpoints/discovery.endpoint';
 import '~/services/pixiv/endpoints/search.endpoint';
-import { mount } from 'svelte';
+import {mount} from 'svelte';
 
 import SearchPage from './SearchPage.svelte';
 import {tryInject} from '~/services/extension';

@@ -5,7 +5,7 @@ import type {ArticleMedia} from '~/articles/media';
 import {getRatio, MediaLoadType, MediaType} from '~/articles/media';
 import * as mfm from 'mfm-js';
 import {MisskeyService} from './service';
-import type { entities } from 'misskey-js';
+import type {entities} from 'misskey-js';
 import type {MfmNode} from 'mfm-js';
 
 export default class MisskeyArticle extends Article {
@@ -20,7 +20,7 @@ export default class MisskeyArticle extends Article {
 		readonly author: MisskeyUser,
 		refs: ArticleRefIdPair | null,
 		markedAsReadStorage: string[],
-		rawSource: any[]
+		rawSource: any[],
 	) {
 		super({
 			id,
@@ -51,7 +51,7 @@ export function fromAPI(
 	markedAsReadStorage: string[],
 	_isRef = false,
 ): ArticleWithRefs {
-	let textHtml = note.text || '';
+	let textHtml = note.text ?? '';
 	try {
 		textHtml = parseText(note.text);
 	}catch (e) {
@@ -92,20 +92,20 @@ export function fromAPI(
 		//TODO Allow null avatarUrl
 		avatarUrl: note.user.avatarUrl ?? '',
 		//TODO Use host
-		url: `https://misskey.io/@${note.user.username}`
+		url: `https://misskey.io/@${note.user.username}`,
 	} satisfies MisskeyUser;
 
 	const makeArticle = () => new MisskeyArticle(
-			note.id,
-			note.text,
-			textHtml,
-			medias,
-			new Date(note.createdAt),
-			author,
-			refs,
-			markedAsReadStorage,
-			[note],
-		);
+		note.id,
+		note.text,
+		textHtml,
+		medias,
+		new Date(note.createdAt),
+		author,
+		refs,
+		markedAsReadStorage,
+		[note],
+	);
 
 	if (note.renote) {
 		const renoted = fromAPI(note.renote, markedAsReadStorage, true);
@@ -148,7 +148,7 @@ export function fromAPI(
 
 	return {
 		type: 'normal',
-		article: makeArticle()
+		article: makeArticle(),
 	};
 }
 
@@ -213,7 +213,7 @@ function mfmToHtml(node: MfmNode): string {
 				console.log('url brackets:', node.props.brackets, node);
 			return `<a href="${node.props.url}">${node.props.url}</a>`;
 		case 'fn':
-			return `$[${node.props.name}(${node.props.args.toString()}) ${node.children.map(n => mfmToHtml(n)).join('')}]`;
+			return `$[${node.props.name}(${JSON.stringify(node.props.args)}) ${node.children.map(n => mfmToHtml(n)).join('')}]`;
 		case 'plain':
 			if (node.props?.length)
 				console.warn('Unparsed center props:', node.props);

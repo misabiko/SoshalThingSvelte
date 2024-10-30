@@ -8,10 +8,10 @@
 		articleWithRefToWithRefArray,
 		flatDeriveArticle,
 		getActualArticleRefs,
-		getIdServiceMediaStr
+		getIdServiceMediaStr,
 	} from '~/articles';
 	import {getRootArticle, idPairEqual} from '~/articles';
-	import {fetchArticle, getWritable} from '~/services/service';
+	import {fetchArticle, getWritableArticle} from '~/services/service';
 	import {addArticlesToTimeline, type FullscreenInfo, type TimelineData} from './index';
 	import {type FilterInstance, keepArticle} from '~/filters';
 	import {compare, SortMethod} from '~/sorting';
@@ -21,6 +21,7 @@
 	import {endpoints, refreshEndpoint, refreshEndpointName, RefreshType} from '~/services/endpoints';
 	import {loadingStore} from '~/bufferedMediaLoading';
 
+	//Modals don't have ids (though we should also be able to modal a timeline with id)
 	export let timelineId: string | null;
 	export let data: TimelineData;
 	export let fullscreen: FullscreenInfo | null = null;
@@ -50,8 +51,8 @@
 		preOrderArticles = derived([filters, ...$articleIdPairs.map(idPair => derived(flatDeriveArticle(idPair), articles => articles[0]))], ([filters, ...articles]) =>
 			//Might have to give in to using .find if we want to keep duplicate articles
 			Object.fromEntries(articles
-				.flatMap((a, i) => addPropsRoot(a.getArticleWithRefs(), i, filters))
-				.map(a => [getIdServiceMediaStr(a), a]))
+				.flatMap((a, i) => addPropsRoot(a!.getArticleWithRefs(), i, filters))
+				.map(a => [getIdServiceMediaStr(a), a])),
 		);
 	}
 
@@ -60,7 +61,7 @@
 		if (order === null)
 			return Object.values(a);
 
-		return order.map(id => a[id]);
+		return order.map(id => a[id]!);
 	});
 
 	let filteredArticles: Readable<ArticleProps[]>;
@@ -76,7 +77,7 @@
 
 					//Checking if the reposted article is already in merged
 					const plainIndex = merged.findIndex(m =>
-						idPairEqual(getRootArticle(m).idPair, aIdPair)
+						idPairEqual(getRootArticle(m).idPair, aIdPair),
 					);
 					if (plainIndex > -1) {
 						//Replacing it with the repost
@@ -87,14 +88,14 @@
 					//Checking if a duplicate repost is in merged
 					const index = merged.findIndex(m =>
 						m.type === 'reposts' &&
-						idPairEqual(getRootArticle(m.reposted).idPair, aIdPair)
+						idPairEqual(getRootArticle(m.reposted).idPair, aIdPair),
 					);
 
 					if (index > -1)
 						(merged[index] as any).reposts.push(...a.reposts);
 					else
 						merged.push(a);
-				} else
+				}else
 					merged.push(a);
 			}
 
@@ -146,10 +147,10 @@
 				case 'reposts':
 					throw {
 						message: 'Reposts should come from the timeline and not articles themselves',
-						articleWithRefs
+						articleWithRefs,
 					};
 			}
-		} else {
+		}else {
 			return [addProps(articleWithRefs, index, filters)];
 		}
 	}
@@ -224,7 +225,7 @@
 			if (data.hideFilteredOutArticles && actualArticleProps.filteredOut)
 				continue;
 
-			const articleStore = getWritable(actualArticleProps.article.idPair);
+			const articleStore = getWritableArticle(actualArticleProps.article.idPair);
 			let article = get(articleStore);
 
 			if (!article.fetched)
@@ -247,7 +248,7 @@
 
 	let availableRefreshTypes: Readable<Set<RefreshType>>;
 	$: availableRefreshTypes = derived(data.endpoints.flatMap(e => {
-		const endpoint = e.name !== undefined ? get(endpoints[e.name]) : e.endpoint;
+		const endpoint = e.name !== undefined ? get(endpoints[e.name]!) : e.endpoint;
 		return derived(endpoint.refreshTypes, rt => [...rt.values()]);
 	}), rts => new Set(rts.flatMap(rt => rt)));
 
@@ -295,14 +296,13 @@
 
 			// While there remain elements to shuffle...
 			while (currentIndex != 0) {
-
 				// Pick a remaining element...
 				randomIndex = Math.floor(Math.random() * currentIndex);
 				currentIndex--;
 
 				// And swap it with the current element.
 				[articleIndex[currentIndex], articleIndex[randomIndex]] = [
-					articleIndex[randomIndex], articleIndex[currentIndex]];
+					articleIndex[randomIndex]!, articleIndex[currentIndex]!];
 			}
 
 			data.sortInfo.method = null;
@@ -370,10 +370,10 @@
 			get(articles)
 				.filter((a, i) =>
 					$filters.every(f =>
-						!f.enabled || (keepArticle(a, i, f.filter) !== f.inverted)
-					)
+						!f.enabled || (keepArticle(a, i, f.filter) !== f.inverted),
+					),
 				)
-				.map(a => getRootArticle(a).idPair)
+				.map(a => getRootArticle(a).idPair),
 		);
 	}
 </script>
@@ -422,8 +422,8 @@
 
 <div
 		class='timeline'
-		class:fullscreenTimeline='{fullscreen !== null}'
-		style="{modal ? '' : data.width > 1 ? `width: ${data.width * 500}px` : ''}"
+		class:fullscreenTimeline={fullscreen !== null}
+		style={modal ? '' : data.width > 1 ? `width: ${data.width * 500}px` : ''}
 >
 	<TimelineHeader
 			bind:data
@@ -455,7 +455,7 @@
 	{/if}
 	{#if $filteredArticles.length}
 		<svelte:component
-				this='{fullscreen?.container ?? data.container}'
+				this={fullscreen?.container ?? data.container}
 				bind:containerRef
 				props={containerProps}
 		/>

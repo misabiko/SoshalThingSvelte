@@ -5,8 +5,8 @@
 	$: queueLength = derived(loadingStore, $loadingStoree => $loadingStoree.queue.length);
 </script>
 
-<button onclick={loadingStore.clearLoadings}>Clear loadings</button>
-<button onclick={loadingStore.clearQueue}>Clear queue</button>
+<button onclick={() => loadingStore.clearLoadings()}>Clear loadings</button>
+<button onclick={() => loadingStore.clearQueue()}>Clear queue</button>
 <section>
 	{#if $loadingStore.loadings.size}
 		Currently loading:

@@ -9,12 +9,12 @@ test.describe('masonry', () => {
 					{
 						service: 'Dummy',
 						endpointType: 'DummyEndpoint',
-					}
+					},
 				],
 				container: 'Masonry',
 				columnCount: 3,
 				width: 2,
-			}}
+			}},
 		});
 
 		const column = page.locator('.masonryColumn');

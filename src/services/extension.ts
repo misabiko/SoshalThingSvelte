@@ -36,6 +36,8 @@ export async function fetchExtension<T>(request: string, options: object): Promi
 			const timeoutId = setTimeout(() => reject(new Error(`Extension didn't respond in ${timeout} ms.`)), timeout);
 
 			//TODO Cancel request on timeout
+
+			// eslint-disable-next-line @typescript-eslint/no-deprecated
 			chrome.runtime.sendMessage(extensionContext.id as string, {
 				soshalthing: true,
 				request,
@@ -64,6 +66,7 @@ export async function extensionCheck(): Promise<ExtensionContext> {
 			const timeout = 3000;
 			const timeoutId = setTimeout(() => reject(new Error(`Extension didn't respond in ${timeout} ms.`)), timeout);
 
+			// eslint-disable-next-line @typescript-eslint/no-deprecated
 			chrome.runtime.sendMessage(extensionContext.id as string, {
 				soshalthing: true,
 				request: 'extensionCheck',

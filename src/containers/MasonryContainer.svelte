@@ -9,11 +9,11 @@
 	let lastRebalanceTrigger = false;
 	let lastColumnCount = props.columnCount;
 
-	let uniqueArticles: Record<string, { articleProps: ArticleProps, index: number, mediaIndex: number | null }>;
+	let uniqueArticles: Record<string, {articleProps: ArticleProps, index: number, mediaIndex: number | null}>;
 	$: if (props.separateMedia) {
 		uniqueArticles = Object.fromEntries(props.articles.map((articleProps, index) => [
 			getIdServiceMediaStr(articleProps),
-			{articleProps, index, mediaIndex: articleProps.mediaIndex}
+			{articleProps, index, mediaIndex: articleProps.mediaIndex},
 		]));
 	}else {
 		uniqueArticles = {};
@@ -45,12 +45,12 @@
 			columns = makeColumns();
 		}else {
 			const columnsChanged = new Set<number>();
-			const addedArticles: { idServiceMedia: string, index: number }[] = [];
+			const addedArticles: {idServiceMedia: string, index: number}[] = [];
 
 			for (let i = 0; i < columns.length; ++i) {
-				for (let j = 0; j < columns[i].idServiceMedias.length;) {
-					if (!uniqueArticles[columns[i].idServiceMedias[j]]) {
-						columns[i].idServiceMedias.splice(j, 1);
+				for (let j = 0; j < columns[i]!.idServiceMedias.length;) {
+					if (!uniqueArticles[columns[i]!.idServiceMedias[j]!]) {
+						columns[i]!.idServiceMedias.splice(j, 1);
 						columnsChanged.add(i);
 					}else
 						++j;
@@ -60,7 +60,9 @@
 			for (const [idServiceMedia, {articleProps, index, mediaIndex}] of Object.entries(uniqueArticles)) {
 				if (!columns.some(c => c.idServiceMedias.some(idServiceMedia => {
 					const [_idStr, _service, mediaIndexStr] = idServiceMedia.split('/');
-					return getRootArticle(uniqueArticles[idServiceMedia].articleProps).idPairStr === getRootArticle(articleProps).idPairStr && [mediaIndexStr === 'null' ? mediaIndex === null : parseInt(mediaIndexStr) === mediaIndex];
+					if (!mediaIndexStr)
+						throw new Error('Media index not found in idServiceMedia');
+					return getRootArticle(uniqueArticles[idServiceMedia]!.articleProps).idPairStr === getRootArticle(articleProps).idPairStr && [mediaIndexStr === 'null' ? mediaIndex === null : parseInt(mediaIndexStr) === mediaIndex];
 				}))) {
 					addedArticles.push({idServiceMedia, index});
 				}
@@ -70,11 +72,11 @@
 			for (const {idServiceMedia} of addedArticles)
 				columnsChanged.add(addArticle(idServiceMedia));
 
-			for (let i = 0; i < columns.length; ++i)
-				columns[i].idServiceMedias.sort((a, b) => uniqueArticles[a].index - uniqueArticles[b].index);
+			for (const column of columns)
+				column.idServiceMedias.sort((a, b) => uniqueArticles[a]!.index - uniqueArticles[b]!.index);
 
 			for (const i of columnsChanged.values())
-				columns[i].ratio = columns[i].idServiceMedias.reduce((acc, curr) => acc + getRatio(uniqueArticles[curr].articleProps), 0);
+				columns[i]!.ratio = columns[i]!.idServiceMedias.reduce((acc, curr) => acc + getRatio(uniqueArticles[curr]!.articleProps), 0);
 		}
 	}
 
@@ -92,9 +94,11 @@
 	}
 
 	function addArticle(idServiceMedia: string): number {
-		const smallestIndex = columns.reduce((acc, curr, currIndex) => curr.ratio < columns[acc].ratio ? currIndex : acc, 0);
-		columns[smallestIndex].idServiceMedias.push(idServiceMedia);
-		columns[smallestIndex].ratio += getRatio(uniqueArticles[idServiceMedia].articleProps);
+		if (uniqueArticles[idServiceMedia] === undefined)
+			throw new Error('Article not found in uniqueArticles');
+		const smallestIndex = columns.reduce((acc, curr, currIndex) => curr.ratio < columns[acc]!.ratio ? currIndex : acc, 0);
+		columns[smallestIndex]!.idServiceMedias.push(idServiceMedia);
+		columns[smallestIndex]!.ratio += getRatio(uniqueArticles[idServiceMedia].articleProps);
 		return smallestIndex;
 	}
 
@@ -132,15 +136,15 @@
 	}
 </style>
 
-<div class='articlesContainer masonryContainer' bind:this={containerRef} style:flex-direction="{props.rtl ? 'row-reverse' : null}">
+<div class='articlesContainer masonryContainer' bind:this={containerRef} style:flex-direction={props.rtl ? 'row-reverse' : null}>
 	{#each columns as column, i (i)}
-		<div class='masonryColumn' style:width="{props.columnCount > 1 ? (100 / props.columnCount) + '%' : undefined}">
+		<div class='masonryColumn' style:width={props.columnCount > 1 ? (100 / props.columnCount) + '%' : undefined}>
 <!--		<span>Ratio: {column.ratio}</span>-->
 <!--		TODO Find a way to share key among multiple columns?-->
 			{#each column.idServiceMedias as idServiceMedia (idServiceMedia)}
 				<ArticleComponent
 					view={props.articleView}
-					articleProps={uniqueArticles[idServiceMedia].articleProps}
+					articleProps={uniqueArticles[idServiceMedia]!.articleProps}
 					timelineProps={props.timelineArticleProps}
 				/>
 			{/each}

@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import {get} from 'svelte/store';
-	import {addArticles, getServices} from '~/services/service';
+	import {addArticles, getService, getServices} from '~/services/service';
 	import {type TimelineData, type TimelineEndpoint} from './index';
 	import {
 		addEndpointArticlesToTimeline, Endpoint,
@@ -8,7 +8,7 @@
 		everyRefreshType,
 		LoadableEndpoint,
 		LoadablePageEndpoint,
-		RefreshType
+		RefreshType,
 	} from '~/services/endpoints';
 	import {updateTimelinesStorageEndpoints} from '~/storages';
 	import {getRootArticle} from '~/articles';
@@ -17,20 +17,22 @@
 	export let data: TimelineData;
 
 	let newEndpointServices = Object.values(getServices()).filter(s => Object.values(s.endpointConstructors).length > 0);
-	let newEndpointService: string = newEndpointServices[0]?.name;
-	let newEndpoint: string = Object.values(newEndpointServices[0]?.endpointConstructors)[0]?.name;
+	if (!newEndpointServices[0])
+		throw new Error('No services with endpoints');
+	let newEndpointService: string = newEndpointServices[0].name;
+	let newEndpoint: string = Object.values(newEndpointServices[0]?.endpointConstructors)[0]!.name;
 	$: {
-		if (!Object.hasOwn(getServices()[newEndpointService]?.endpointConstructors, newEndpoint))
-			newEndpoint = Object.values(getServices()[newEndpointService]?.endpointConstructors)[0]?.name;
+		if (!Object.hasOwn(getService(newEndpointService).endpointConstructors, newEndpoint))
+			newEndpoint = Object.values(getService(newEndpointService).endpointConstructors)[0]!.name;
 	}
-	let params = Object.fromEntries(getServices()[newEndpointService]?.endpointConstructors[newEndpoint]?.paramTemplate);
+	let params = Object.fromEntries(getService(newEndpointService).endpointConstructors[newEndpoint]!.paramTemplate);
 	function updateParams() {
-		params = Object.fromEntries(getServices()[newEndpointService]?.endpointConstructors[newEndpoint]?.paramTemplate);
+		params = Object.fromEntries(getService(newEndpointService).endpointConstructors[newEndpoint]!.paramTemplate);
 	}
 
 	function addEndpoint() {
 		data.endpoints.push({
-			endpoint: getServices()[newEndpointService].endpointConstructors[newEndpoint].constructor(params),
+			endpoint: getService(newEndpointService).endpointConstructors[newEndpoint]!.constructor(params),
 			refreshTypes: everyRefreshType,
 			filters: [],
 		});
@@ -52,9 +54,9 @@
 
 	function onRefreshTypeChange(index: number, refreshType: RefreshType, checked: boolean) {
 		if (checked)
-			data.endpoints[index].refreshTypes.add(refreshType);
+			data.endpoints[index]!.refreshTypes.add(refreshType);
 		else
-			data.endpoints[index].refreshTypes.delete(refreshType);
+			data.endpoints[index]!.refreshTypes.delete(refreshType);
 
 		data.endpoints = data.endpoints;
 
@@ -72,10 +74,10 @@
 	//TODO Add auto refresh option
 
 	async function loadRandomPage(timelineEndpoint: TimelineEndpoint) {
-			let endpoint: Endpoint;
+		let endpoint: Endpoint;
 
 		if (timelineEndpoint.name !== undefined)
-			endpoint = get(endpoints[timelineEndpoint.name]);
+			endpoint = get(endpoints[timelineEndpoint.name]!);
 		else
 			endpoint = timelineEndpoint.endpoint;
 
@@ -107,8 +109,8 @@
 				.some(pair =>
 					pair.service === idPair.service &&
 					pair.id === idPair.id,
-				)
-			)
+				),
+			),
 		);
 
 		addArticles(false, ...articles);
@@ -126,7 +128,7 @@
 
 <ul>
 	{#each data.endpoints as timelineEndpoint, i}
-		{@const endpoint = (timelineEndpoint.endpoint || get(endpoints[timelineEndpoint.name]))}
+		{@const endpoint = timelineEndpoint.endpoint ?? get(endpoints[timelineEndpoint.name]!)}
 		{@const endpointRefreshTypes = get(endpoint.refreshTypes)}
 		<li>
 			<h2>{endpoint.name}</h2>
@@ -139,16 +141,16 @@
 					<input
 							type='checkbox'
 							checked={timelineEndpoint.refreshTypes.has(refreshType)}
-							onchange='{e => onRefreshTypeChange(i, refreshType, e.currentTarget.checked)}'
+							onchange={e => onRefreshTypeChange(i, refreshType, e.currentTarget.checked)}
 					/>
 				</label>
 			{/each}
 
 			{#if (endpoint instanceof LoadablePageEndpoint || endpoint instanceof LoadableEndpoint) && endpoint.lastPage}
-				<button onclick='{() => loadRandomPage(timelineEndpoint)}'>Load Random</button>
+				<button onclick={() => loadRandomPage(timelineEndpoint)}>Load Random</button>
 			{/if}
 
-			<button onclick='{() => removeEndpoint(i)}'>Remove</button>
+			<button onclick={() => removeEndpoint(i)}>Remove</button>
 		</li>
 	{/each}
 </ul>
@@ -160,7 +162,7 @@
 		{/each}
 	</select>
 	<select bind:value={newEndpoint} onchange={updateParams}>
-		{#each Object.values(getServices()[newEndpointService].endpointConstructors) as endpoint}
+		{#each Object.values(getService(newEndpointService).endpointConstructors) as endpoint}
 			<option value={endpoint.name}>{endpoint.name}</option>
 		{/each}
 	</select>
@@ -170,11 +172,11 @@
 		<label class='field'>
 			{key}
 			{#if typeof value === 'number'}
-				<input type='number' {value} onchange='{e => params[key] = parseInt(e.currentTarget.value)}'/>
+				<input type='number' {value} onchange={e => params[key] = parseInt(e.currentTarget.value)}/>
 			{:else if typeof value === 'boolean'}
-				<input type='checkbox' checked={value} onchange='{e => params[key] = e.currentTarget.checked}'/>
+				<input type='checkbox' checked={value} onchange={e => params[key] = e.currentTarget.checked}/>
 			{:else}
-				<input type='text' {value} onchange='{e => params[key] = e.currentTarget.value}'/>
+				<input type='text' {value} onchange={e => params[key] = e.currentTarget.value}/>
 			{/if}
 		</label>
 	{/each}

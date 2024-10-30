@@ -1,10 +1,10 @@
 import type BlueskyArticle from '~/services/bluesky/article';
-import {getWritable, newService, registerService, type Service} from '~/services/service';
-import {BskyAgent} from '@atproto/api';
+import {getWritableArticle, newService, registerService, type Service} from '~/services/service';
 import {STANDARD_ACTIONS} from '~/services/actions';
 import {get} from 'svelte/store';
 import {type ArticleWithRefs, articleWithRefToArray, getActualArticle, getRootArticle} from '~/articles';
 import type {Filter} from '~/filters';
+import {AtpAgent} from '@atproto/api';
 
 export const BlueskyService: BlueskyServiceType = {
 	...newService({
@@ -13,7 +13,7 @@ export const BlueskyService: BlueskyServiceType = {
 			[STANDARD_ACTIONS.like.key]: {
 				...STANDARD_ACTIONS.like,
 				action: async articleIdPair => {
-					const writable = getWritable<BlueskyArticle>(articleIdPair);
+					const writable = getWritableArticle<BlueskyArticle>(articleIdPair);
 					const {uri, likeURI} = get(writable);
 					if (likeURI) {
 						await BlueskyService.agent.deleteLike(likeURI);
@@ -32,15 +32,15 @@ export const BlueskyService: BlueskyServiceType = {
 						});
 					}
 				},
-				actioned(article) { return article.liked ?? false; },
+				actioned(article) {return article.liked;},
 				disabled: null,
-				count(article) { return article.likeCount; },
+				count(article) {return article.likeCount;},
 			},
 			[STANDARD_ACTIONS.repost.key]: {
 				...STANDARD_ACTIONS.repost,
 				togglable: true,
 				action: async articleIdPair => {
-					const writable = getWritable<BlueskyArticle>(articleIdPair);
+					const writable = getWritableArticle<BlueskyArticle>(articleIdPair);
 					const {uri, repostURI} = get(writable);
 					if (repostURI) {
 						await BlueskyService.agent.deleteRepost(repostURI);
@@ -59,9 +59,9 @@ export const BlueskyService: BlueskyServiceType = {
 						});
 					}
 				},
-				actioned(article) { return article.reposted ?? false; },
+				actioned(article) {return article.reposted;},
 				disabled: null,
-				count(article) { return article.repostCount; },
+				count(article) {return article.repostCount;},
 			},
 		},
 		keepArticle(articleWithRefs: ArticleWithRefs, index: number, filter: Filter): boolean {
@@ -119,21 +119,21 @@ export const BlueskyService: BlueskyServiceType = {
 			likes: {
 				name: 'Likes',
 				compare(a, b) {
-					return ((getActualArticle(a) as BlueskyArticle).likeCount || 0) - ((getActualArticle(b) as BlueskyArticle).likeCount || 0);
+					return ((getActualArticle(a) as BlueskyArticle).likeCount ?? 0) - ((getActualArticle(b) as BlueskyArticle).likeCount ?? 0);
 				},
 				directionLabel(reversed: boolean): string {
 					return reversed ? 'Descending' : 'Ascending';
-				}
+				},
 			},
 			reposts: {
 				name: 'Reposts',
 				compare(a, b) {
-					return ((getActualArticle(a) as BlueskyArticle).repostCount || 0) - ((getActualArticle(b) as BlueskyArticle).repostCount || 0);
+					return ((getActualArticle(a) as BlueskyArticle).repostCount ?? 0) - ((getActualArticle(b) as BlueskyArticle).repostCount ?? 0);
 				},
 				directionLabel(reversed: boolean): string {
 					return reversed ? 'Descending' : 'Ascending';
-				}
-			}
+				},
+			},
 		},
 		filterTypes: {
 			liked: {
@@ -157,7 +157,7 @@ export const BlueskyService: BlueskyServiceType = {
 						type: 'order',
 						optional: false,
 						min: 0,
-					}
+					},
 				},
 			},
 			reposts: {
@@ -169,12 +169,12 @@ export const BlueskyService: BlueskyServiceType = {
 						type: 'order',
 						optional: false,
 						min: 0,
-					}
+					},
 				},
 			},
 		},
 	}),
-	agent: new BskyAgent({
+	agent: new AtpAgent({
 		service: 'https://bsky.social',
 		// persistSession(evt: AtpSessionEvent, sess?: AtpSessionData) {
 		// 	//TODO Look into persistSession
@@ -186,5 +186,5 @@ export const BlueskyService: BlueskyServiceType = {
 registerService(BlueskyService);
 
 interface BlueskyServiceType extends Service<BlueskyArticle> {
-	agent: BskyAgent
+	agent: AtpAgent
 }

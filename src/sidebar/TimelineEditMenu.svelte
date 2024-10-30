@@ -20,7 +20,9 @@
 			case TimelineAddTypes.User:
 				try {
 					addDisabled = !username.length || !JSON.parse(username)?.name?.length;
-				} catch (e) {
+					//TODO Debug why prefix is ignored
+					// eslint-disable-next-line @typescript-eslint/no-unused-vars
+				}catch (_e) {
 					addDisabled = true;
 				}
 				break;
@@ -33,6 +35,8 @@
 	let title = '';
 	let username = '';
 	let userServices = Object.entries(getServices()).filter(([_, s]) => s.userEndpoint !== null);
+	if (userServices[0] === undefined)
+		throw new Error('No user services available');
 	let userService = userServices[0][0];
 
 	function getTimelineData() {
@@ -64,16 +68,15 @@
 		<input bind:value={username} name='username'/>
 	{/if}
 	<button
-		onclick='{() => {const data = getTimelineData(); if (data) setModalTimeline(data);}}'
+		onclick={() => {const data = getTimelineData(); if (data) setModalTimeline(data);}}
 		disabled={addDisabled}
 	>
 		Add Modal Timeline
 	</button>
 	<button
-		onclick='{() => {const data = getTimelineData(); if (data) addTimeline(data);}}'
+		onclick={() => {const data = getTimelineData(); if (data) addTimeline(data);}}
 		disabled={addDisabled}
 	>
 		Add Timeline
 	</button>
 </label>
-

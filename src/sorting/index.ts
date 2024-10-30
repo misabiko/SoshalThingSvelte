@@ -1,6 +1,6 @@
 import type {ArticleProps, ArticleWithRefs} from '~/articles';
 import {getRootArticle} from '~/articles';
-import {getServices} from '~/services/service';
+import {getService} from '~/services/service';
 
 export type SortInfo = {
 	method: SortMethod | null
@@ -35,15 +35,19 @@ export function compare(info: SortInfo): (a: ArticleWithRefs | ArticleProps, b: 
 				const bRoot = getRootArticle(b);
 				order = aRoot.numberId > bRoot.numberId ? 1 : (aRoot.numberId < bRoot.numberId ? -1 : 0);
 			}
-			break;
+				break;
 			case SortMethod.Date:
-				order = (getRootArticle(a).creationTime?.getTime() || 0) - (getRootArticle(b).creationTime?.getTime() || 0);
+				order = (getRootArticle(a).creationTime?.getTime() ?? 0) - (getRootArticle(b).creationTime?.getTime() ?? 0);
 				break;
 			case SortMethod.Custom: {
-				if (getRootArticle(a).idPair.service !== info?.customMethod?.service || getRootArticle(b).idPair.service !== info.customMethod.service)
+				if (getRootArticle(a).idPair.service !== info.customMethod?.service || getRootArticle(b).idPair.service !== info.customMethod.service)
 					order = 0;
-				else
-					order = getServices()[info.customMethod.service]?.sortMethods[info.customMethod.method]?.compare(a, b) || 0;
+				else {
+					const sortMethod = getService(info.customMethod.service).sortMethods[info.customMethod.method];
+					if (!sortMethod)
+						throw new Error(`Custom sort method ${info.customMethod.method} not found`);
+					order = sortMethod.compare(a, b) || 0;
+				}
 				break;
 			}case null:
 				order = 0;

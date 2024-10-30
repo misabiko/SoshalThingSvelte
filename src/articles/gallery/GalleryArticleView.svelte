@@ -9,9 +9,7 @@
 	} from '@fortawesome/free-solid-svg-icons';
 	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
 	import Dropdown from '~/Dropdown.svelte';
-	import {
-		getServices,
-	} from '~/services/service';
+	import {getService} from '~/services/service';
 	import type {TimelineArticleProps} from '../index';
 	import type {ArticleProps} from '../index';
 	import {type ArticleMedia, MediaType} from '../media';
@@ -21,10 +19,14 @@
 	import {derived, type Readable} from 'svelte/store';
 
 	export let timelineProps: TimelineArticleProps;
+	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 	export let articleProps: ArticleProps; articleProps;
 	export let actualArticleProps: ArticleProps;
+	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 	export let style = ''; style;
+	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 	export let modal: boolean; modal;
+	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 	export let rootArticle: Readonly<Article>; rootArticle;
 	export let actualArticle: Readonly<Article>;
 	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number;
@@ -36,21 +38,21 @@
 	export let mediaRefs: Record<number, HTMLImageElement | HTMLVideoElement>;
 	export let loadingStates: Readable<Record<number, LoadingState>>;
 
-	let actions: [ArticleAction[], ArticleAction[]] = [...Object.values(getServices()[rootArticle.idPair.service].articleActions), ...getGenericActions(rootArticle)]
+	let actions: [ArticleAction[], ArticleAction[]] = [...Object.values(getService(rootArticle.idPair.service).articleActions), ...getGenericActions(rootArticle)]
 		.sort((a, b) => a.index - b.index)
-		.reduce(([icons, dropdown], action) => {
+		.reduce<[ArticleAction[], ArticleAction[]]>(([icons, dropdown], action) => {
 			if (action.views.GalleryArticleView?.listAsIcon ?? action.views.default.listAsIcon)
 				icons.push(action);
 			if (action.views.GalleryArticleView?.listAsDropdown ?? action.views.default.listAsDropdown)
 				dropdown.push(action);
 			return [icons, dropdown];
-		}, [[], []] as [ArticleAction[], ArticleAction[]]);
+		}, [[], []]);
 
 	let medias: [ArticleMedia, number][];
 	$: medias = actualArticleProps.mediaIndex === null
 		? actualArticle.medias.slice(0, !$showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined)
 			.map((m, i) => [m, i])
-		: [[actualArticle.medias[actualArticleProps.mediaIndex], actualArticleProps.mediaIndex]];
+		: [[actualArticle.medias[actualArticleProps.mediaIndex]!, actualArticleProps.mediaIndex]];
 </script>
 
 <style>
@@ -151,9 +153,9 @@
 					controls
 					preload='auto'
 					muted={timelineProps.muteVideos}
-					onclick='{e => {e.preventDefault(); onMediaClick(actualArticle.idPair, i);}}'
-					onloadeddata='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}'
-					onload='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}'
+					onclick={e => {e.preventDefault(); onMediaClick(actualArticle.idPair, i);}}
+					onloadeddata={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
+					onload={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
 				>
 					<source src={media.src} type='video/mp4'/>
 				</video>
@@ -165,9 +167,9 @@
 					loop
 					muted
 					preload='auto'
-					onclick='{e => {e.preventDefault(); onMediaClick(actualArticle.idPair, i)}}'
-					onloadeddata='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}'
-					onload='{() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}'
+					onclick={e => {e.preventDefault(); onMediaClick(actualArticle.idPair, i);}}
+					onloadeddata={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
+					onload={() => isLoading ? loadingStore.mediaLoaded(actualArticle.idPair, i) : undefined}
 				>
 					<source src={media.src} type='video/mp4'/>
 				</video>
@@ -175,7 +177,7 @@
 		{/each}
 		{#if !$showAllMedia && timelineProps.maxMediaCount !== null && actualArticle.medias.length > timelineProps.maxMediaCount}
 			<div class='moreMedia'>
-				<button class='borderless-button' title='Load more medias' onclick='{() => timelineProps.showAllMediaArticles.update(a => {a.add(rootArticle.idPairStr); return a;})}'>
+				<button class='borderless-button' title='Load more medias' onclick={() => timelineProps.showAllMediaArticles.update(a => {a.add(rootArticle.idPairStr); return a;})}>
 					<Fa icon={faImages} size='2x'/>
 				</button>
 			</div>
@@ -187,7 +189,7 @@
 				</span>
 			</a>
 			{#if !modal}
-				<button class='button' onclick='{() => modal = !modal}'>
+				<button class='button' onclick={() => modal = !modal}>
 					<span class='icon darkIcon'>
 						<Fa icon={faExpandArrowsAlt} class='is-small'/>
 					</span>
@@ -207,8 +209,8 @@
 						{@const actioned = action.actioned(rootArticle)}
 						<button
 								class='dropdown-item'
-								onclick='{() => actionFunc(rootArticle.idPair)}'
-								disabled='{disabled || (actioned && !action.togglable)}'
+								onclick={() => actionFunc(rootArticle.idPair)}
+								disabled={disabled || (actioned && !action.togglable)}
 						>
 							{#if action.actionedName && actioned}
 								{action.actionedName}
@@ -250,11 +252,11 @@
 								class='button'
 								class:actioned
 								title={action.name}
-								onclick='{() => actionFunc(rootArticle.idPair)}'
+								onclick={() => actionFunc(rootArticle.idPair)}
 								{disabled}
 							>
 								<span class='icon darkIcon'>
-									<Fa icon='{action.actionedIcon && actioned ? action.actionedIcon : action.icon}' class='is-small'/>
+									<Fa icon={action.actionedIcon && actioned ? action.actionedIcon : action.icon} class='is-small'/>
 								</span>
 							</button>
 						{/if}

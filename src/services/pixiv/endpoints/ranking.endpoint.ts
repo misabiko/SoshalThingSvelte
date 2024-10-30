@@ -1,6 +1,6 @@
 import {type EndpointConstructorInfo, LoadableEndpoint, RefreshType} from '~/services/endpoints';
 import type {ArticleWithRefs} from '~/articles';
-import {getServices, registerEndpointConstructor} from '~/services/service';
+import {getService, registerEndpointConstructor} from '~/services/service';
 import {getCachedArticlesStorage, getMarkedAsReadStorage} from '~/storages/serviceCache';
 import {PixivService} from '~/services/pixiv/service';
 import PixivArticle, {type CachedPixivArticle} from '~/services/pixiv/article';
@@ -35,7 +35,7 @@ export class RankingAPIEndpoint extends LoadableEndpoint {
 		if (this.currentPage > 0)
 			url.searchParams.set('p', (this.currentPage + 1).toString());
 
-		const response: RankingResponse = await getServices()['Pixiv'].fetch(url.toString(), {headers: {Accept: 'application/json'}});
+		const response: RankingResponse = await getService('Pixiv').fetch(url.toString(), {headers: {Accept: 'application/json'}});
 		if ('error' in response)
 			throw response.error;
 
@@ -139,41 +139,41 @@ type RankingMode =
 	| 'female' | 'female_r18';
 
 type RankingResponse =
-| {
-	contents: {
-		title: string
+	| {
+		contents: {
+			title: string
+			date: string
+			tags: string[]
+			url: string
+			illust_type: string
+			illust_book_style: string
+			illust_page_count: string
+			user_name: string
+			profile_img: string
+			// illust_content_type: {}
+			illust_series: boolean
+			illust_id: number
+			width: number
+			height: number
+			user_id: number
+			rank: number
+			yes_rank: number
+			rating_count: number
+			view_count: number
+			illust_upload_timestamp: number
+			attr: string
+			is_bookmarked: boolean
+			bookmarkable: boolean
+		}[]
+		mode: RankingMode
+		content: 'all'
+		page: number
+		prev: number | false
+		next: number | false
 		date: string
-		tags: string[]
-		url: string
-		illust_type: string
-		illust_book_style: string
-		illust_page_count: string
-		user_name: string
-		profile_img: string
-		// illust_content_type: {}
-		illust_series: boolean
-		illust_id: number
-		width: number
-		height: number
-		user_id: number
-		rank: number
-		yes_rank: number
-		rating_count: number
-		view_count: number
-		illust_upload_timestamp: number
-		attr: string
-		is_bookmarked: boolean
-		bookmarkable: boolean
-	}[]
-	mode: RankingMode
-	content: 'all'
-	page: number
-	prev: number | false
-	next: number | false
-	date: string
-	prev_date: string
-	next_date: string
-	rank_total: number
+		prev_date: string
+		next_date: string
+		rank_total: number
 
-	error?: never
-} | { error: any };
+		error?: never
+	} | {error: any};

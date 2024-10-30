@@ -6,11 +6,11 @@
 	import Dropdown from '../../Dropdown.svelte';
 	import Article, {type ArticleIdPair} from '../../articles';
 	import type {TimelineArticleProps} from '../index';
-	import {getReadable, getServices} from '~/services/service';
+	import {getReadableArticle, getService} from '~/services/service';
 	import {type ArticleAction, getGenericActions} from '~/services/actions';
 
 	export let idPair: ArticleIdPair;
-	let article = getReadable(idPair);
+	let article = getReadableArticle(idPair);
 	export let repost: Article | null = null;
 	export let isQuoted = false;
 	export let modal: boolean;
@@ -60,15 +60,15 @@
 		});
 
 	//TODO Have option to move icon actions to dropdown
-	let actions: [ArticleAction[], ArticleAction[]] = [...Object.values(getServices()[idPair.service].articleActions), ...genericActions]
+	let actions: [ArticleAction[], ArticleAction[]] = [...Object.values(getService(idPair.service).articleActions), ...genericActions]
 		.sort((a, b) => a.index - b.index)
-		.reduce(([icons, dropdown], action) => {
+		.reduce<[ArticleAction[], ArticleAction[]]>(([icons, dropdown], action) => {
 			if (action.views.SocialArticleView?.listAsIcon ?? action.views.default.listAsIcon)
 				icons.push(action);
 			if (action.views.SocialArticleView?.listAsDropdown ?? action.views.default.listAsDropdown)
 				dropdown.push(action);
 			return [icons, dropdown];
-		}, [[], []] as [ArticleAction[], ArticleAction[]]);
+		}, [[], []]);
 
 	let hoveredActions = new Set<string>();
 
@@ -136,19 +136,19 @@
 							class='articleButton borderless-button'
 							class:actioned
 							title={action.name}
-							onclick='{() => actionFunc(idPair)}'
-							disabled='{disabled || (actioned && !action.togglable)}'
-							onmouseover='{() => updateActionHover(action.key, true)}'
-							onmouseout='{() => updateActionHover(action.key, false)}'
+							onclick={() => actionFunc(idPair)}
+							disabled={disabled || (actioned && !action.togglable)}
+							onmouseover={() => updateActionHover(action.key, true)}
+							onmouseout={() => updateActionHover(action.key, false)}
 					>
 						<span class='icon'>
 							<Fa
-									icon='{action.actionedIcon && actioned ? action.actionedIcon : action.icon}'
-									color='{action.color && !disabled && (actioned || isHovered) ? action.color : undefined}'
+									icon={action.actionedIcon && actioned ? action.actionedIcon : action.icon}
+									color={action.color && !disabled && (actioned || isHovered) ? action.color : undefined}
 							/>
 						</span>
 						{#if count}
-							<span style:color="{!disabled && (actioned || isHovered) ? action.color : 'inherit'}">{count}</span>
+							<span style:color={!disabled && (actioned || isHovered) ? action.color : 'inherit'}>{count}</span>
 						{/if}
 					</button>
 				{:else}
@@ -159,17 +159,17 @@
 							class='articleButton borderless-button'
 							title={action.name}
 							href={action.href}
-							onmouseover='{() => updateActionHover(action.key, true)}'
-							onmouseout='{() => updateActionHover(action.key, false)}'
+							onmouseover={() => updateActionHover(action.key, true)}
+							onmouseout={() => updateActionHover(action.key, false)}
 					>
 						<span class='icon'>
 							<Fa
 									icon={action.icon}
-									color='{isHovered ? action.color ?? undefined : undefined}'
+									color={isHovered ? action.color ?? undefined : undefined}
 							/>
 						</span>
 						{#if count}
-							<span style:color="{isHovered ? action.color ?? undefined : 'inherit'}">{count}</span>
+							<span style:color={isHovered ? action.color ?? undefined : 'inherit'}>{count}</span>
 						{/if}
 					</a>
 				{/if}
@@ -179,7 +179,7 @@
 			<button
 					class='articleButton borderless-button'
 					title='Expand article as modal'
-					onclick='{() => modal = true}'
+					onclick={() => modal = true}
 			>
 				<span class='icon'>
 					<Fa icon={faExpandAlt}/>
@@ -199,8 +199,8 @@
 					{@const actioned = action.actioned($article)}
 					<button
 							class='dropdown-item'
-							onclick='{() => actionFunc(idPair)}'
-							disabled='{disabled || (actioned && !action.togglable)}'
+							onclick={() => actionFunc(idPair)}
+							disabled={disabled || (actioned && !action.togglable)}
 					>
 						{#if action.actionedName && actioned}
 							{action.actionedName}

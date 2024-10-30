@@ -2,12 +2,12 @@ import type PixivArticle from './article';
 import type {CachedPixivArticle} from './article';
 import {
 	type FetchingService,
-	FetchType, getServices,
-	getWritable,
+	FetchType, getService,
+	getWritableArticle,
 	newFetchingService,
 	newService,
 	registerService,
-	type Service
+	type Service,
 } from '../service';
 import {get, type Writable} from 'svelte/store';
 import {
@@ -15,7 +15,7 @@ import {
 	type ArticleWithRefs,
 	articleWithRefToArray,
 	getActualArticle,
-	getRootArticle
+	getRootArticle,
 } from '~/articles';
 import {STANDARD_ACTIONS} from '../actions';
 import {getServiceStorage} from '~/storages';
@@ -45,11 +45,11 @@ export const PixivService: PixivServiceType = {
 					color: null,
 					togglable: false,
 					async action(idPair: ArticleIdPair) {
-						const csrfToken = getServiceStorage(PixivService.name)['csrfToken'] as string | undefined;
+						const csrfToken = getServiceStorage(PixivService.name).csrfToken as string | undefined;
 						if (!csrfToken)
 							throw new Error('No CSRF token');
 
-						const response: LikeResponse = await getServices()['Pixiv'].fetch('https://www.pixiv.net/ajax/illusts/like', {
+						const response: LikeResponse = await getService('Pixiv').fetch('https://www.pixiv.net/ajax/illusts/like', {
 							method: 'POST',
 							credentials: 'same-origin',
 							cache: 'no-cache',
@@ -70,7 +70,7 @@ export const PixivService: PixivServiceType = {
 						else
 							console.debug('Liked ' + idPair.id);
 
-						getWritable<PixivArticle>(idPair).update(a => {
+						getWritableArticle<PixivArticle>(idPair).update(a => {
 							a.liked = true;
 							return a;
 						});
@@ -82,7 +82,7 @@ export const PixivService: PixivServiceType = {
 					},
 					count(article: PixivArticle) {
 						return article.likeCount;
-					}
+					},
 				},
 				bookmark: {
 					key: 'bookmark',
@@ -96,13 +96,13 @@ export const PixivService: PixivServiceType = {
 					index: 1,
 					async action(idPair) {
 						const storage = getServiceStorage(PixivService.name);
-						const csrfToken = storage['csrfToken'] as string | undefined;
+						const csrfToken = storage.csrfToken as string | undefined;
 						if (!csrfToken)
 							throw new Error('No CSRF token');
 
-						const privateBookmark = (storage['privateBookmark'] as boolean | undefined) ?? false;
+						const privateBookmark = (storage.privateBookmark as boolean | undefined) ?? false;
 
-						const response: BookmarkResponse = await getServices()['Pixiv'].fetch('https://www.pixiv.net/ajax/illusts/bookmarks/add', {
+						const response: BookmarkResponse = await getService('Pixiv').fetch('https://www.pixiv.net/ajax/illusts/bookmarks/add', {
 							method: 'POST',
 							credentials: 'same-origin',
 							cache: 'no-cache',
@@ -125,7 +125,7 @@ export const PixivService: PixivServiceType = {
 
 						console.debug('Bookmarked ' + idPair.id);
 
-						getWritable<PixivArticle>(idPair).update(a => {
+						getWritableArticle<PixivArticle>(idPair).update(a => {
 							a.bookmarked = true;
 							return a;
 						});
@@ -140,11 +140,11 @@ export const PixivService: PixivServiceType = {
 						default: {
 							listAsIcon: true,
 							listAsDropdown: false,
-						}
-					}
-				}
+						},
+					},
+				},
 			},
-			isOnDomain: globalThis.window?.location?.hostname.endsWith('pixiv.net'),
+			isOnDomain: globalThis.window.location.hostname.endsWith('pixiv.net'),
 			keepArticle(articleWithRefs: ArticleWithRefs, index: number, filter: Filter): boolean {
 				switch (filter.type) {
 					case 'bookmarked':
@@ -201,21 +201,21 @@ export const PixivService: PixivServiceType = {
 				likes: {
 					name: 'Likes',
 					compare(a, b) {
-						return ((getActualArticle(a) as PixivArticle).likeCount || 0) - ((getActualArticle(b) as PixivArticle).likeCount || 0);
+						return ((getActualArticle(a) as PixivArticle).likeCount ?? 0) - ((getActualArticle(b) as PixivArticle).likeCount ?? 0);
 					},
 					directionLabel(reversed: boolean): string {
 						return reversed ? 'Descending' : 'Ascending';
-					}
+					},
 				},
 				retweets: {
 					name: 'Bookmarks',
 					compare(a, b) {
-						return ((getActualArticle(a) as PixivArticle).bookmarkCount || 0) - ((getActualArticle(b) as PixivArticle).bookmarkCount || 0);
+						return ((getActualArticle(a) as PixivArticle).bookmarkCount ?? 0) - ((getActualArticle(b) as PixivArticle).bookmarkCount ?? 0);
 					},
 					directionLabel(reversed: boolean): string {
 						return reversed ? 'Descending' : 'Ascending';
-					}
-				}
+					},
+				},
 			},
 			filterTypes: {
 				bookmarked: {
@@ -239,7 +239,7 @@ export const PixivService: PixivServiceType = {
 							type: 'order',
 							optional: false,
 							min: 0,
-						}
+						},
 					},
 				},
 				bookmarks: {
@@ -251,7 +251,7 @@ export const PixivService: PixivServiceType = {
 							type: 'order',
 							optional: false,
 							min: 0,
-						}
+						},
 					},
 				},
 			},
@@ -277,7 +277,7 @@ export const PixivService: PixivServiceType = {
 								compare: {
 									value: 0,
 									comparator: '>=',
-								}
+								},
 							},
 						};
 					case 'bookmarks':
@@ -288,7 +288,7 @@ export const PixivService: PixivServiceType = {
 								compare: {
 									value: 0,
 									comparator: '>=',
-								}
+								},
 							},
 						};
 					default:
@@ -316,7 +316,7 @@ export const PixivService: PixivServiceType = {
 					},
 					compact: true,
 					fullMedia: 1,
-				}
+				},
 			},
 		}),
 		async fetchArticle(store: Writable<PixivArticle>) {
@@ -332,20 +332,28 @@ export const PixivService: PixivServiceType = {
 			const pagesJson: PagesResponse = await PixivService.fetch(`https://www.pixiv.net/ajax/illust/${article.id}/pages`, {headers: {Accept: 'application/json'}});
 
 			store.update(a => {
-				a.liked = preloadDataJson.illust[article.id].likeData;
-				a.bookmarked = preloadDataJson.illust[article.id].bookmarkData !== null;
-				a.likeCount = preloadDataJson.illust[article.id].likeCount;
-				a.bookmarkCount = preloadDataJson.illust[article.id].bookmarkCount;
+				const illust = preloadDataJson.illust[article.id];
+				if (!illust)
+					throw new Error('Illust not found in preload data');
+				a.liked = illust.likeData;
+				a.bookmarked = illust.bookmarkData !== null;
+				a.likeCount = illust.likeCount;
+				a.bookmarkCount = illust.bookmarkCount;
 
 				for (let i = 0; i < a.medias.length; ++i) {
 					const page = pagesJson.body[i];
+					if (!page)
+						throw new Error('Page not found in pages');
+					const media = a.medias[i];
+					if (!media)
+						throw new Error(`Media ${i} not found in article`);
 					a.medias[i] = {
 						src: page.urls.original,
 						ratio: getRatio(page.width, page.height),
 						queueLoadInfo: MediaLoadType.LazyLoad,
-						mediaType: a.medias[i].mediaType,
-						thumbnail: a.medias[i].queueLoadInfo === MediaLoadType.Thumbnail ? {
-							src: a.medias[i].src,
+						mediaType: media.mediaType,
+						thumbnail: media.queueLoadInfo === MediaLoadType.Thumbnail ? {
+							src: media.src,
 							ratio: null,
 							offsetX: null,
 							offsetY: null,
@@ -399,22 +407,22 @@ type PagesResponse = {
 	error: boolean
 	message: string
 	body:
-		{
-			urls: {
-				thumb_mini: string
-				small: string
-				regular: string
-				original: string
-			}
-			width: number
-			height: number
-		}[]
+	{
+		urls: {
+			thumb_mini: string
+			small: string
+			regular: string
+			original: string
+		}
+		width: number
+		height: number
+	}[]
 };
 
 type LikeResponse = {
 	error: boolean
 	message: string
-	body: { is_liked: boolean }
+	body: {is_liked: boolean}
 };
 
 type BookmarkResponse = {
@@ -471,8 +479,8 @@ export type PreloadIllust = {
 	userName: string
 	userAccount: string
 	userIllusts: Record<string, (Omit<Illust,
-		| 'urls'
-		| 'profileImageUrl'
+	| 'urls'
+	| 'profileImageUrl'
 	> & {
 		profileImageUrl?: string
 	}) | null>
@@ -494,11 +502,11 @@ export type PreloadIllust = {
 	pollData: null | {
 		question: string
 		choices:
-			{
-				id: number
-				text: string
-				count: number
-			}[]
+		{
+			id: number
+			text: string
+			count: number
+		}[]
 		selectedValue: null | unknown
 		total: number
 	}
@@ -529,10 +537,10 @@ export type PreloadIllust = {
 	bookmarkData: BookmarkData | null
 	contestData: null | unknown
 	zoneConfig: ZoneConfig & {
-		responsive: { url: string }
-		rectangle: { url: string }
-		expandedFooter: { url: string }
-		relatedworks: { url: string }
+		responsive: {url: string}
+		rectangle: {url: string}
+		expandedFooter: {url: string}
+		relatedworks: {url: string}
 	}
 	extraData: ExtraData
 	titleCaptionTranslation: {
@@ -644,49 +652,49 @@ export function logPreloadDataTypes(data: PreloadData) {
 			console.log(
 				'PreloadData.Illust.imageResponseOutData',
 				typeof (illust.imageResponseOutData[0]),
-				illust.imageResponseOutData[0]
+				illust.imageResponseOutData[0],
 			);
 		if (illust.imageResponseData.length > 0)
 			console.log(
 				'PreloadData.Illust.imageResponseData',
 				typeof (illust.imageResponseData[0]),
-				illust.imageResponseData[0]
+				illust.imageResponseData[0],
 			);
 		if (illust.descriptionBoothId !== null && illust.descriptionBoothId !== undefined)
 			console.log(
 				'PreloadData.Illust.descriptionBoothId',
 				typeof (illust.descriptionBoothId),
-				illust.descriptionBoothId
+				illust.descriptionBoothId,
 			);
 		if (illust.descriptionYoutubeId !== null && illust.descriptionYoutubeId !== undefined)
 			console.log(
 				'PreloadData.Illust.descriptionYoutubeId',
 				typeof (illust.descriptionYoutubeId),
-				illust.descriptionYoutubeId
+				illust.descriptionYoutubeId,
 			);
 		if (illust.comicPromotion !== null && illust.comicPromotion !== undefined)
 			console.log(
 				'PreloadData.Illust.comicPromotion',
 				typeof (illust.comicPromotion),
-				illust.comicPromotion
+				illust.comicPromotion,
 			);
 		if (illust.fanboxPromotion !== null && illust.fanboxPromotion !== undefined)
 			console.log(
 				'PreloadData.Illust.fanboxPromotion',
 				typeof (illust.fanboxPromotion),
-				illust.fanboxPromotion
+				illust.fanboxPromotion,
 			);
 		if (illust.contestBanners.length > 0)
 			console.log(
 				'PreloadData.Illust.contestBanners',
 				typeof (illust.contestBanners[0]),
-				illust.contestBanners[0]
+				illust.contestBanners[0],
 			);
 		if (illust.contestData !== null && illust.contestData !== undefined)
 			console.log(
 				'PreloadData.Illust.contestData',
 				typeof (illust.contestData),
-				illust.contestData
+				illust.contestData,
 			);
 	}
 
@@ -694,26 +702,26 @@ export function logPreloadDataTypes(data: PreloadData) {
 		if (user.background?.color !== null && user.background?.color !== undefined)
 			console.log(
 				'PreloadData.User.background.color',
-				typeof (user.background?.color),
-				user.background?.color
+				typeof (user.background.color),
+				user.background.color,
 			);
 		if (user.background?.repeat !== null && user.background?.repeat !== undefined)
 			console.log(
 				'PreloadData.User.background.repeat',
-				typeof (user.background?.repeat),
-				user.background?.repeat
+				typeof (user.background.repeat),
+				user.background.repeat,
 			);
 		if (user.sketchLiveId !== null && user.sketchLiveId !== undefined)
 			console.log(
 				'PreloadData.User.sketchLiveId',
 				typeof (user.sketchLiveId),
-				user.sketchLiveId
+				user.sketchLiveId,
 			);
 		if (user.sketchLives.length > 0)
 			console.log(
 				'PreloadData.User.sketchLives',
 				typeof (user.sketchLives[0]),
-				user.sketchLives[0]
+				user.sketchLives[0],
 			);
 	}
 }

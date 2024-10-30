@@ -47,7 +47,7 @@ export default class DiscoveryEndpoint extends LoadableEndpoint {
 			['page', 0],
 			['mode', Mode.All],
 		],
-		constructor: params => new this(params.page as number, params.mode as Mode)
+		constructor: params => new this(params.page as number, params.mode as Mode),
 	};
 }
 

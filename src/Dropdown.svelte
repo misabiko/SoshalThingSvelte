@@ -1,7 +1,7 @@
 <script lang='ts'>
 	// noinspection ES6UnusedImports
 	import Fa from 'svelte-fa';
-	import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
+	import {faAngleDown} from '@fortawesome/free-solid-svg-icons';
 	import {onMount} from 'svelte';
 
 	export let isActive = false;
@@ -84,8 +84,8 @@
 	class:is-active={isActive}
 	class:is-right={isRight}
 >
-	<div class='{`dropdown-trigger ${triggerClasses}`}'>
-		<button bind:this={triggerRef} class='{`button ${labelClasses}`}' onclick='{() => isActive = !isActive}'>
+	<div class={`dropdown-trigger ${triggerClasses}`}>
+		<button bind:this={triggerRef} class={`button ${labelClasses}`} onclick={() => isActive = !isActive}>
 			{#if $$slots.triggerIcon}
 				<slot name='triggerIcon'></slot>
 			{:else}

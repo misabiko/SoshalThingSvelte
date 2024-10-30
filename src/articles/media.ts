@@ -1,23 +1,23 @@
 export type ArticleMedia = (
-| {
-	queueLoadInfo: MediaLoadType.DirectLoad | MediaLoadType.Thumbnail
-	thumbnail?: never
-	loaded?: never
-}
-| {
-	queueLoadInfo: MediaLoadType.LazyLoad
-	thumbnail: ArticleThumbnail | null
-	loaded: boolean
-}
-) & {
-	src: string
-	mediaType: MediaType
-	//Height divided by width
-	ratio: ValidRatio | null
-	cropRatio: ValidRatio | null
-	offsetX: string | null
-	offsetY: string | null
-};
+	| {
+		queueLoadInfo: MediaLoadType.DirectLoad | MediaLoadType.Thumbnail
+		thumbnail?: never
+		loaded?: never
+	}
+	| {
+		queueLoadInfo: MediaLoadType.LazyLoad
+		thumbnail: ArticleThumbnail | null
+		loaded: boolean
+	}
+	) & {
+		src: string
+		mediaType: MediaType
+		//Height divided by width
+		ratio: ValidRatio | null
+		cropRatio: ValidRatio | null
+		offsetX: string | null
+		offsetY: string | null
+	};
 
 export type ArticleThumbnail = {
 	src: string

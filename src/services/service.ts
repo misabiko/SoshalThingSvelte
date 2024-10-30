@@ -15,8 +15,9 @@ import type {Component} from 'svelte';
 import type {TimelineTemplate} from '~/timelines';
 import {getServiceStorage} from '~/storages';
 
-const services: { [name: string]: Service<any> } = {};
+const services: {[name: string]: Service<any>} = {};
 
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 if (globalThis.window) {
 	(globalThis.window as any).soshalthing ??= {};
 	(globalThis.window as any).soshalthing.services = services;
@@ -28,9 +29,9 @@ export interface Service<A extends Article = Article> {
 	readonly endpointConstructors: Record<string, EndpointConstructorInfo>
 	userEndpoint: ((author: ArticleAuthor) => Endpoint) | null
 	loadArticle: ((id: string) => Promise<ArticleWithRefs | null>) | null
-	articleActions: { [name: string]: ArticleAction<A> }
+	articleActions: {[name: string]: ArticleAction<A>}
 	requestImageLoad?: (id: ArticleId, index: number) => void
-	getCachedArticles?: () => { [id: string]: object }
+	getCachedArticles?: () => {[id: string]: object}
 
 	keepArticle(articleWithRefs: ArticleWithRefs | ArticleProps, index: number, filter: Filter): boolean
 
@@ -49,21 +50,21 @@ export interface Service<A extends Article = Article> {
 
 export type FetchInfo =
 	| {
-	type: FetchType.OnDomainOnly
-	tabInfo?: never
-}
-	| {
-	type: FetchType.Extension
-	tabInfo?: never
-}
-	| {
-	type: FetchType.Tab
-	tabInfo: {
-		tabId: Writable<number | null>
-		url: string
-		matchUrl: string[]
+		type: FetchType.OnDomainOnly
+		tabInfo?: never
 	}
-};
+	| {
+		type: FetchType.Extension
+		tabInfo?: never
+	}
+	| {
+		type: FetchType.Tab
+		tabInfo: {
+			tabId: Writable<number | null>
+			url: string
+			matchUrl: string[]
+		}
+	};
 
 export enum FetchType {
 	OnDomainOnly,
@@ -84,14 +85,14 @@ export function addArticles(ignoreRefs: boolean, ...articlesWithRefs: ArticleWit
 
 	for (const article of articles) {
 		//Articles from one service can quote articles from other (TwitterNotifs quotes Tweets)
-		const service = services[article.idPair.service];
+		const service = getService(article.idPair.service);
 
 		if (Object.hasOwn(service.articles, article.idPair.id as string)) {
-			service.articles[article.idPair.id as string][0].update(a => {
+			getWritableArticle(article.idPair).update(a => {
 				a.update(article);
 				return a;
 			});
-		} else {
+		}else {
 			//https://github.com/microsoft/TypeScript/issues/46395
 			service.articles[article.idPair.id as string] = [writable(article), article.refs];
 		}
@@ -115,18 +116,26 @@ export function registerEndpointConstructor(endpoint: (new (...args: any[]) => E
 	}
 
 	try {
-		services[endpoint.service].endpointConstructors[endpoint.constructorInfo.name] = endpoint.constructorInfo;
+		getService(endpoint.service).endpointConstructors[endpoint.constructorInfo.name] = endpoint.constructorInfo;
 	}catch (e) {
 		console.error(e);
 	}
 }
 
-export function getServices(): Readonly<{ [name: string]: Service }> {
+export function getServices(): Readonly<{[name: string]: Service}> {
 	return services;
 }
 
+export function getService(name: string): Service {
+	const service = services[name];
+	if (service === undefined)
+		throw new Error(`Service ${name} not found`);
+
+	return service;
+}
+
 export function toggleMarkAsRead(idPair: ArticleIdPair) {
-	const store = getWritable(idPair);
+	const store = getWritableArticle(idPair);
 	store.update(a => {
 		const oldValue = a.markedAsRead;
 		a.markedAsRead = !a.markedAsRead;
@@ -154,19 +163,22 @@ export function toggleMarkAsRead(idPair: ArticleIdPair) {
 	updateMarkAsReadStorage();
 }
 
-export function getWritable<T extends Article = Article>(idPair: ArticleIdPair): Writable<T> {
+export function getWritableArticle<T extends Article = Article>(idPair: ArticleIdPair): Writable<T> {
+	const article = getService(idPair.service).articles[idPair.id as string];
+	if (article === undefined)
+		throw new Error(`Article ${idPair.service}/${idPair.id} not found`);
 	//Type casting might not be a great idea, no guarantee that the service returns T
-	return services[idPair.service].articles[idPair.id as string][0] as Writable<T>;
+	return article[0] as Writable<T>;
 }
 
-export function getReadable<T extends Article = Article>(idPair: ArticleIdPair): Readable<T> {
-	return readonly(services[idPair.service].articles[idPair.id as string][0]) as Readable<T>;
+export function getReadableArticle<T extends Article = Article>(idPair: ArticleIdPair): Readable<T> {
+	return readonly(getWritableArticle(idPair));
 }
 
 export async function fetchArticle(idPair: ArticleIdPair) {
 	const service = services[idPair.service] as unknown as Service & FetchingService;
-	if (service.fetchArticle === undefined)
-		return;
+	// if (service.fetchArticle === undefined)
+	// 	return;
 
 	if (service.fetchedArticles.has(idPair.id))
 		return;
@@ -186,7 +198,7 @@ export async function fetchArticle(idPair: ArticleIdPair) {
 	service.fetchedArticles.add(idPair.id);
 	++service.fetchedArticleQueue;
 
-	const store = getWritable(idPair);
+	const store = getWritableArticle(idPair);
 	await service.fetchArticle(store);
 }
 
@@ -197,7 +209,7 @@ export interface FetchingService<A extends Article = Article> {
 	fetchTimeout: undefined | number
 }
 
-export function newService<A extends Article = Article>(data: Partial<Service<A>> & { name: string }): Service<A> {
+export function newService<A extends Article = Article>(data: Partial<Service<A>> & {name: string}): Service<A> {
 	const storage = getServiceStorage(data.name);
 	data.timelineTemplates ??= {};
 	if (storage.timelineTemplates !== undefined)
@@ -235,29 +247,29 @@ export function newService<A extends Article = Article>(data: Partial<Service<A>
 			if (this.isOnDomain) {
 				const response = await fetch(url, init);
 
-				if (init?.headers && (init.headers as Record<string, string>)['Accept'] === 'application/json')
+				if (init?.headers && (init.headers as Record<string, string>).Accept === 'application/json')
 					return await response.json();
 				else
 					return await response.text();
-			} else if (this.fetchInfo.type === FetchType.Extension) {
+			}else if (this.fetchInfo.type === FetchType.Extension) {
 				const response = await fetchExtension('extensionFetch', {
 					soshalthing: true,
 					//TODO Use Content-Type to determine fetchJson or fetchText
 					// request: 'fetchText',
 					fetch: url,
-					fetchOptions: init
+					fetchOptions: init,
 				});
 
-				if (init?.headers && (init.headers as Record<string, string>)['Accept'] === 'application/json')
+				if (init?.headers && (init.headers as Record<string, string>).Accept === 'application/json')
 					return JSON.parse(response as string);
 				else
 					return response;
-			} else if (this.fetchInfo.type === FetchType.Tab) {
+			}else if (this.fetchInfo.type === FetchType.Tab) {
 				let tabId = get(this.fetchInfo.tabInfo.tabId);
 				if (tabId === null) {
 					this.fetchInfo.tabInfo.tabId.set(tabId = await fetchExtension('getTabId', {
 						url: this.fetchInfo.tabInfo.url,
-						matchUrl: this.fetchInfo.tabInfo.matchUrl
+						matchUrl: this.fetchInfo.tabInfo.matchUrl,
 					}));
 				}
 
@@ -267,10 +279,10 @@ export function newService<A extends Article = Article>(data: Partial<Service<A>
 						soshalthing: true,
 						request: 'fetchText',
 						fetch: url,
-						fetchOptions: init
-					}
+						fetchOptions: init,
+					},
 				});
-			} else {
+			}else {
 				throw new Error('Service is not on domain and has no tab info');
 			}
 		},
@@ -285,10 +297,10 @@ export function newService<A extends Article = Article>(data: Partial<Service<A>
 
 export function newFetchingService<A extends Article = Article>(
 	data: Partial<FetchingService<A>>
-		& { fetchArticle: (store: Writable<A>) => Promise<void> }
-		& Service<A>
+		& {fetchArticle: (store: Writable<A>) => Promise<void>}
+		& Service<A>,
 ): FetchingService<A>
-	& { fetchArticle: (store: Writable<A>) => Promise<void> }
+	& {fetchArticle: (store: Writable<A>) => Promise<void>}
 	& Service<A> {
 	return {
 		fetchedArticles: new Set(),

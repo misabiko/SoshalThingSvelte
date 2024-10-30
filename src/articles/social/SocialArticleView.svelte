@@ -14,6 +14,7 @@
 	export let timelineProps: TimelineArticleProps;
 	export let articleProps: ArticleProps;
 	export let actualArticleProps: ArticleProps;
+	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 	export let modal: boolean; modal;
 	export let rootArticle: Readonly<Article>;
 	// $: idPair = rootArticle.idPair;
@@ -152,7 +153,7 @@
 	<div class='repostLabel'>
 		{#if articleProps.type === 'reposts' && rootArticle.author}
 			{@const timestamp = rootArticle.creationTime && (' - ' + shortTimestamp(rootArticle.creationTime))}
-			<a href={rootArticle.author.url} target='_blank' rel='noreferrer' onclick='{e => {e.preventDefault(); onUsernameClick(rootArticle)}}'>
+			<a href={rootArticle.author.url} target='_blank' rel='noreferrer' onclick={e => {e.preventDefault(); onUsernameClick(rootArticle);}}>
 				{#if articleProps.reposts.length > 1}
 					{articleProps.reposts.map(r => r.author?.name).filter(n => n).join(', ')} reposted{timestamp}
 				{:else}
@@ -164,12 +165,12 @@
 	<!--{ self.view_reply_label(ctx) }-->
 	<div class='media'>
 		{#if actualArticle.author?.avatarUrl}
-			<figure class='avatar' class:sharedAvatar="{articleProps.type === 'reposts'}">
+			<figure class='avatar' class:sharedAvatar={articleProps.type === 'reposts'}>
 				{#if articleProps.type === 'reposts' && rootArticle.author}
-					<img src={actualArticle.author.avatarUrl} alt="{`${actualArticle.author.username}'s avatar`}"/>
-					<img src={rootArticle.author.avatarUrl} alt="{`${rootArticle.author.username}'s avatar`}"/>
+					<img src={actualArticle.author.avatarUrl} alt={`${actualArticle.author.username}'s avatar`}/>
+					<img src={rootArticle.author.avatarUrl} alt={`${rootArticle.author.username}'s avatar`}/>
 				{:else}
-					<img src={actualArticle.author.avatarUrl} alt="{`${actualArticle.author.username}'s avatar`}"/>
+					<img src={actualArticle.author.avatarUrl} alt={`${actualArticle.author.username}'s avatar`}/>
 				{/if}
 			</figure>
 		{/if}
@@ -181,7 +182,7 @@
 						href={actualArticle.author?.url}
 						target='_blank'
 						rel='noreferrer'
-						onclick='{e => {e.preventDefault(); onUsernameClick(actualArticle)}}'
+						onclick={e => {e.preventDefault(); onUsernameClick(actualArticle);}}
 					>
 						<strong>{ actualArticle.author?.name }</strong>
 						<small>@{ actualArticle.author?.username }</small>
@@ -217,7 +218,7 @@
 				idPair={actualArticle.idPair}
 				bind:modal
 				{timelineProps}
-				repost="{articleProps.type === 'reposts' ? rootArticle : undefined}"
+				repost={articleProps.type === 'reposts' ? rootArticle : undefined}
 				{onLogData}
 				{onLogJSON}
 				bind:compact
@@ -229,7 +230,7 @@
 			idPair={actualArticle.idPair}
 			mediaIndex={actualArticleProps.mediaIndex}
 			{timelineProps}
-			onMediaClick='{index => onMediaClick(actualArticle.idPair, index)}'
+			onMediaClick={index => onMediaClick(actualArticle.idPair, index)}
 			bind:divRef
 			bind:mediaRefs
 			{loadingStates}

@@ -1,4 +1,4 @@
-import Article from '~/articles';
+import Article, {type ArticleAuthor} from '~/articles';
 
 export default class DummyArticle extends Article {
 	static service = 'Dummy';
@@ -9,6 +9,7 @@ export default class DummyArticle extends Article {
 		public liked: boolean,
 		public reposted: boolean,
 		markedAsReadStorage: string[],
+		public author: ArticleAuthor,
 	) {
 		super({
 			id,

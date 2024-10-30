@@ -1,5 +1,5 @@
 import {
-	defaultTimelineView,
+	defaultTimelineViewId,
 	type FullscreenInfo,
 	type TimelineCollection,
 	type TimelineEndpoint,
@@ -11,7 +11,7 @@ import RowContainer from '~/containers/RowContainer.svelte';
 import MasonryContainer from '~/containers/MasonryContainer.svelte';
 import SocialArticleView from '~/articles/social/SocialArticleView.svelte';
 import GalleryArticleView from '~/articles/gallery/GalleryArticleView.svelte';
-import {getServices} from '~/services/service';
+import {getService, getServices} from '~/services/service';
 import {defaultFilterInstances, type FilterInstance, genericFilterTypes} from '~/filters';
 import type {SortInfo} from '~/sorting';
 import {SortMethod} from '~/sorting';
@@ -31,30 +31,48 @@ import type {ActualContainerProps} from '~/containers';
 export const MAIN_STORAGE_KEY = 'SoshalThingSvelte';
 export const TIMELINE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Timelines';
 
-export function loadMainStorage() {
+type RawMainStorage = Partial<MainStorageParsed & {
+	currentTimelineViewId: string
+	timelineViews: {[name: string]: TimelineViewStorage}
+	fullscreen: boolean | number | FullscreenInfoStorage
+}>;
+
+export function loadMainStorage(): MainStorageParsed {
 	const item = localStorage.getItem(MAIN_STORAGE_KEY);
-	const mainStorage: MainStorage = item ? JSON.parse(item) : {};
+	const partialMainStorage: RawMainStorage = item ? JSON.parse(item) : {};
 
-	mainStorage.timelineIds ??= null;
+	const timelineIds = partialMainStorage.timelineIds ?? null;
 
-	(mainStorage as MainStorageParsed).fullscreen = parseFullscreenInfo(mainStorage.fullscreen);
+	const currentTimelineView = partialMainStorage.currentTimelineViewId ?? null;
 
-	if (!mainStorage.maximized)
-		mainStorage.maximized = false;
+	const timelineViews: Record<string, TimelineView> = {};
+	if (partialMainStorage.timelineViews) {
+		for (const view in partialMainStorage.timelineViews)
+			if (Object.hasOwn(partialMainStorage.timelineViews, view))
+				timelineViews[view] = {
+					timelineIds: partialMainStorage.timelineViews[view]!.timelineIds,
+					fullscreen: parseFullscreenInfo(partialMainStorage.timelineViews[view]!.fullscreen),
+				};
+	}
 
-	if (!mainStorage.timelineViews)
-		mainStorage.timelineViews = {};
-	else
-		for (const view in mainStorage.timelineViews)
-			if (Object.hasOwn(mainStorage.timelineViews, view))
-				(mainStorage as MainStorageParsed).timelineViews[view].fullscreen = parseFullscreenInfo(mainStorage.timelineViews[view].fullscreen);
+	const fullscreen = parseFullscreenInfo(partialMainStorage.fullscreen);
 
-	(mainStorage as MainStorageParsed).currentTimelineView = mainStorage.currentTimelineView ?? null;
+	const maximized = partialMainStorage.maximized ?? false;
 
-	if (!mainStorage.useWebSocket)
-		mainStorage.useWebSocket = false;
+	const markAsReadLocal = partialMainStorage.markAsReadLocal ?? false;
 
-	return mainStorage as MainStorageParsed;
+	const useWebSocket = partialMainStorage.useWebSocket ?? false;
+
+	return {
+		timelineIds,
+		currentTimelineViewId: currentTimelineView,
+		timelineViews,
+		fullscreen,
+		maximized,
+		markAsReadLocal,
+		//TODO Add UI setting for websocket
+		useWebSocket,
+	};
 }
 
 type ServiceStorage = Record<string, any>;
@@ -108,8 +126,11 @@ export function updateMainStorageTimelineViews(views: Record<string, TimelineVie
 	const item = localStorage.getItem(MAIN_STORAGE_KEY);
 	const storage = item ? JSON.parse(item) : {};
 
-	views['default'] = views[defaultTimelineView];
-	storage['timelineViews'] = views;
+	if (views[defaultTimelineViewId] === undefined)
+		throw new Error('Default timeline view must exist');
+
+	views.default = views[defaultTimelineViewId];
+	storage.timelineViews = views;
 
 	localStorage.setItem(MAIN_STORAGE_KEY, JSON.stringify(storage));
 }
@@ -128,7 +149,7 @@ export function updateFullscreenStorage(fullscreen: FullscreenInfo) {
 
 export function loadTimelines(): TimelineCollection {
 	const item = localStorage.getItem(TIMELINE_STORAGE_KEY);
-	let storage: { [id: string]: Partial<TimelineStorage> } = item ? JSON.parse(item) : {};
+	let storage: {[id: string]: Partial<TimelineStorage>} = item ? JSON.parse(item) : {};
 	if (storage instanceof Array) {
 		console.warn('SoshalThingSvelte Timelines should be an object {[id: string]: TimelineStorage}');
 		storage = Object.assign({}, storage);
@@ -143,19 +164,19 @@ export function loadTimelines(): TimelineCollection {
 				sortInfo: {
 					method: null,
 					reversed: false,
-				}
+				},
 			}),
 			...t,
 		};
 
 		const endpoints: TimelineEndpoint[] = [];
 		for (const endpointStorage of defaulted.endpoints) {
-				const endpoint = parseAndLoadEndpoint(endpointStorage);
-				if (endpoint !== undefined && !endpoints.find(e => e.name === endpoint.name))
-					endpoints.push(endpoint);
-			}
+			const endpoint = parseAndLoadEndpoint(endpointStorage);
+			if (endpoint !== undefined && !endpoints.find(e => e.name === endpoint.name))
+				endpoints.push(endpoint);
+		}
 
-		defaulted.filters = parseFilters(defaulted.filters ?? []);
+		defaulted.filters = parseFilters(defaulted.filters/* ?? []*/);
 
 		//TODO Try to avoid defaulted, while passing tests
 		const timeline = defaultTimeline({
@@ -163,7 +184,7 @@ export function loadTimelines(): TimelineCollection {
 			endpoints,
 			section: defaulted.section ?? {
 				useSection: false,
-				count: 100
+				count: 100,
 			},
 			container: parseContainer(defaulted.container),
 			articleView: parseArticleView(defaulted.articleView),
@@ -250,9 +271,12 @@ export function updateTimelinesStorageSortInfo(timelineId: string, sortInfo: Sor
 export function getCookie(name: string): string | null {
 	const regex = new RegExp(`(^| )${name}=([^;]+)`);
 	const match = document.cookie.match(regex);
-	if (match)
-		return match[2];
-	else
+	if (match) {
+		if (match[2])
+			return match[2];
+		else
+			throw new Error('Empty cookie value');
+	}else
 		return null;
 }
 
@@ -286,21 +310,22 @@ function parseArticleView(articleView: string | undefined): Component<ArticleVie
 }
 
 function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | undefined {
-	const services = getServices();
 	const endpointsValue: Endpoint[] = get(derived(Object.values(endpoints), (e: Endpoint[]) => e));
-	if (!Object.hasOwn(services, storage.service)) {
+	if (!Object.hasOwn(getServices(), storage.service)) {
 		console.error(`"${storage.service}" isn't a registered service`);
 		return undefined;
-	} else if (!Object.hasOwn(services[storage.service].endpointConstructors, storage.endpointType)) {
+	}else if (!Object.hasOwn(getService(storage.service).endpointConstructors, storage.endpointType)) {
 		console.error(`"${storage.service}" doesn't have endpointType "${storage.endpointType}"`);
 		return undefined;
 	}
 
-	const constructorInfo = services[storage.service].endpointConstructors[storage.endpointType];
+	const constructorInfo = getService(storage.service).endpointConstructors[storage.endpointType];
+	if (constructorInfo === undefined)
+		throw new Error(`Endpoint constructor "${storage.endpointType}" not found`);
 
 	let endpoint = endpointsValue.find(endpoint =>
 		constructorInfo.name === (endpoint.constructor as typeof Endpoint).constructorInfo.name &&
-		endpoint.matchParams(storage.params)
+		endpoint.matchParams(storage.params),
 	);
 
 	if (endpoint === undefined) {
@@ -316,13 +341,13 @@ function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | unde
 	}
 
 	const refreshTypes = new Set<RefreshType>();
-	if (storage.onStart === undefined ? true : storage.onStart)
+	if (storage.onStart ?? true)
 		refreshTypes.add(RefreshType.RefreshStart);
-	if (storage.onRefresh === undefined ? true : storage.onRefresh)
+	if (storage.onRefresh ?? true)
 		refreshTypes.add(RefreshType.Refresh);
-	if (storage.loadTop === undefined ? true : storage.loadTop)
+	if (storage.loadTop ?? true)
 		refreshTypes.add(RefreshType.LoadTop);
-	if (storage.loadBottom === undefined ? true : storage.loadBottom)
+	if (storage.loadBottom ?? true)
 		refreshTypes.add(RefreshType.LoadBottom);
 
 	if (storage.autoRefresh)
@@ -333,17 +358,28 @@ function parseAndLoadEndpoint(storage: EndpointStorage): TimelineEndpoint | unde
 	return {
 		name: endpoint.name,
 		refreshTypes,
-		filters: storage.filters || [],
+		filters: storage.filters ?? [],
 	};
 }
 
 function endpointsToStorage(timelineEndpoints: TimelineEndpoint[]): EndpointStorage[] {
 	return timelineEndpoints
-		.map(e => ({
-			endpoint: e.endpoint ?? get(endpoints[e.name]),
-			filters: e.filters,
-			refreshTypes: e.refreshTypes,
-		}))
+		.map(e => {
+			let endpoint = e.endpoint;
+			if (endpoint == null) {
+				if (!e.name)
+					throw new Error('Endpoint name is required');
+				const registered = endpoints[e.name];
+				if (registered == null)
+					throw new Error(`Endpoint "${e.name}" not found`);
+				endpoint = get(registered);
+			}
+			return {
+				endpoint,
+				filters: e.filters,
+				refreshTypes: e.refreshTypes,
+			};
+		})
 		.map(({endpoint, filters, refreshTypes}) => ({
 			service: (endpoint.constructor as typeof Endpoint).service,
 			endpointType: (endpoint.constructor as typeof Endpoint).constructorInfo.name,
@@ -364,7 +400,7 @@ function parseSortInfo(storage: TimelineStorage['sortInfo']): SortInfo {
 		return {
 			method: SortMethod.Custom,
 			customMethod: storage.customMethod,
-			reversed
+			reversed,
 		};
 	}else {
 		let method: SortMethod | null = null;
@@ -389,7 +425,7 @@ function sortInfoToStorage(sortInfo: SortInfo): TimelineStorage['sortInfo'] {
 	if (sortInfo.customMethod) {
 		return {
 			customMethod: sortInfo.customMethod,
-			reversed: sortInfo.reversed
+			reversed: sortInfo.reversed,
 		};
 	}else {
 		let method: string | null = null;
@@ -407,7 +443,6 @@ function sortInfoToStorage(sortInfo: SortInfo): TimelineStorage['sortInfo'] {
 			reversed: sortInfo.reversed,
 		};
 	}
-
 }
 
 function parseFilters(storageFilters: FilterInstance[]) {
@@ -415,13 +450,14 @@ function parseFilters(storageFilters: FilterInstance[]) {
 
 	for (const instance of storageFilters) {
 		instance.filter.service ??= null;
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 		instance.filter.props ??= {};
 
 		if (instance.filter.service === null && !Object.hasOwn(genericFilterTypes, instance.filter.type))
 			console.error(`Generic filter "${instance.filter.type}" doesn't exist.`, instance);
 		else if (instance.filter.service !== null && !Object.hasOwn(getServices(), instance.filter.service))
 			console.error(`Service ${instance.filter.service} isn't registered.`, instance);
-		else if (instance.filter.service !== null && !Object.hasOwn(getServices()[instance.filter.service].filterTypes, instance.filter.type))
+		else if (instance.filter.service !== null && !Object.hasOwn(getService(instance.filter.service).filterTypes, instance.filter.type))
 			console.error(`Service "${instance.filter.service}" doesn't have filter "${instance.filter.type}".`, instance);
 		else
 			filters.push(instance);
@@ -435,13 +471,13 @@ function parseFullscreenInfo(fullscreen?: boolean | number | FullscreenInfoStora
 		fullscreen = {
 			index: null,
 			columnCount: null,
-			container: null
+			container: null,
 		};
 	else if (fullscreen === true)
 		fullscreen = {
 			index: 0,
 			columnCount: null,
-			container: null
+			container: null,
 		};
 	else if (typeof fullscreen === 'number')
 		fullscreen = {
@@ -450,22 +486,16 @@ function parseFullscreenInfo(fullscreen?: boolean | number | FullscreenInfoStora
 			container: null,
 		};
 
-	const containerString = fullscreen?.container as string | undefined;
+	const containerString = fullscreen.container as string | undefined;
 	if (containerString)
 		(fullscreen as FullscreenInfo).container = parseContainer(containerString);
 
 	return fullscreen;
 }
 
-type MainStorage = Partial<MainStorageParsed> & {
-	currentTimelineView?: string
-	timelineViews: { [name: string]: TimelineViewStorage }
-	fullscreen?: boolean | number | FullscreenInfoStorage
-};
-
 type MainStorageParsed = {
 	timelineIds: TimelineView['timelineIds'] | null
-	currentTimelineView: string | null
+	currentTimelineViewId: string | null
 	timelineViews: Record<string, TimelineView>
 	fullscreen: FullscreenInfo
 	maximized: boolean

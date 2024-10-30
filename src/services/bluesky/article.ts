@@ -1,7 +1,7 @@
 import Article, {type ArticleAuthor, type ArticleRefIdPair, type ArticleWithRefs} from '~/articles';
 import type {ArticleMedia} from '~/articles/media';
 import {getRatio, MediaLoadType, MediaType} from '~/articles/media';
-import {type AppBskyActorDefs, AppBskyEmbedImages, type AppBskyFeedDefs, AppBskyFeedPost} from '@atproto/api';
+import {AppBskyEmbedImages, type AppBskyFeedDefs, AppBskyFeedPost} from '@atproto/api';
 
 export default class BlueskyArticle extends Article {
 	static service = 'Bluesky';
@@ -98,7 +98,7 @@ export function parseFeedViewPost(feedViewPost: AppBskyFeedDefs.FeedViewPost, ma
 
 	if (feedViewPost.reason?.$type === 'app.bsky.feed.defs#reasonRepost') {
 		const reason = feedViewPost.reason as AppBskyFeedDefs.ReasonRepost;
-		const by = reason.by as AppBskyActorDefs.ProfileViewBasic;
+		const by = reason.by;
 		return {
 			type: 'repost',
 			article: new BlueskyArticle(
@@ -116,14 +116,13 @@ export function parseFeedViewPost(feedViewPost: AppBskyFeedDefs.FeedViewPost, ma
 						url: 'https://bsky.app/profile/' + by.handle,
 						avatarUrl: by.avatar,
 					},
-					creationTime: new Date(reason.indexedAt)
+					creationTime: new Date(reason.indexedAt),
 				},
 				rawSource,
 			),
 			reposted: post,
 		};
-	}
-	else if (feedViewPost.reason !== undefined){
+	}else if (feedViewPost.reason !== undefined) {
 		console.error({
 			message: 'Unknown reason type',
 			feedViewPost,
@@ -143,7 +142,7 @@ export function BlueskyPostToArticle(post: AppBskyFeedDefs.PostView, markedAsRea
 			text: (post.record as AppBskyFeedPost.Record).text,
 			url: `https://bsky.app/profile/${post.author.handle}/post/${post.uri.split('/').at(-1)}`,
 			medias: (post.embed?.images as AppBskyEmbedImages.ViewImage[] | undefined)?.map((image: AppBskyEmbedImages.ViewImage) => {
-				const ratio = image.aspectRatio?.width && image.aspectRatio?.height ? getRatio(image.aspectRatio?.width, image.aspectRatio?.height) : null;
+				const ratio = image.aspectRatio?.width && image.aspectRatio.height ? getRatio(image.aspectRatio.width, image.aspectRatio.height) : null;
 				return ({
 					src: image.fullsize,
 					mediaType: MediaType.Image,

@@ -8,17 +8,16 @@
 		mountElement,
 		children,
 	}: {
-		active: boolean;
-		mountElement: Element | null;
-		children: Snippet;
+		active: boolean
+		mountElement: HTMLElement | null
+		children: Snippet
 	} = $props();
 
 	let modal: HTMLDivElement;
 
 	$effect(() => {
-		if (modal && active && mountElement) {
+		if (active && mountElement && modal.parentElement !== mountElement)
 			mountElement.appendChild(modal);
-		}
 	});
 
 	function close() {
@@ -26,9 +25,7 @@
 		active = false;
 	}
 
-	onDestroy(() => {
-		close();
-	});
+	onDestroy(() => close());
 </script>
 
 <style>
@@ -72,7 +69,9 @@
 </style>
 
 <div class='modal' class:active={active} bind:this={modal}>
-	<!-- svelte-ignore a11y_no_static_element_interactions, a11y_click_events_have_key_events -->
+<!--TODO svelte/no-unused-svelte-ignore doesn't work for multiple inline ignores-->
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div class='modal-background' onclick={close}></div>
 	<div class='modal-content'>
 		{@render children()}

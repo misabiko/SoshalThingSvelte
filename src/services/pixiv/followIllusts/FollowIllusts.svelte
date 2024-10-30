@@ -1,7 +1,7 @@
 <script lang='ts'>
 	import SoshalThing from '~/SoshalThing.svelte';
 	import {
-		defaultTimelineView,
+		defaultTimelineViewId,
 		type TimelineCollection,
 		type TimelineView,
 	} from '~/timelines';
@@ -25,7 +25,7 @@
 				service: PixivService.name,
 				templateId: 'main',
 			},
-		})
+		}),
 	};
 
 	const mainStorage = loadMainStorage();
@@ -37,13 +37,13 @@
 		throw new Error('Could not find activator mount');
 
 	const timelineViews: Record<string, TimelineView> = {
-		[defaultTimelineView]: {
+		[defaultTimelineViewId]: {
 			timelineIds: Object.keys(timelines),
 			fullscreen: {
 				...mainStorage.fullscreen,
-				index: 0
-			}
-		}
+				index: 0,
+			},
+		},
 	};
 </script>
 
@@ -85,10 +85,10 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
 <a
-	use:portal='{{ target: activatorMount }}'
+	use:portal={{target: activatorMount}}
 	id='favvieweractivator'
-	class={activatorMount.children[0].className}
-	onclick='{() => favviewerHidden = !favviewerHidden}'
+	class={activatorMount.children[0]!.className}
+	onclick={() => favviewerHidden = !favviewerHidden}
 >
 	SoshalThing
 </a>

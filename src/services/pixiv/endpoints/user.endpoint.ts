@@ -11,7 +11,7 @@ import {
 	type PixivResponse,
 	type PixivResponseWithWorks,
 } from './index';
-import {getServices, registerEndpointConstructor} from '../../service';
+import {getService, registerEndpointConstructor} from '../../service';
 
 export default class UserPageEndpoint extends PageEndpoint {
 	readonly name = 'User Endpoint';
@@ -35,7 +35,7 @@ export default class UserPageEndpoint extends PageEndpoint {
 			username: name,
 			name,
 			id: userId,
-			url: getUserUrl(userId)
+			url: getUserUrl(userId),
 		};
 	}
 
@@ -50,7 +50,7 @@ export default class UserPageEndpoint extends PageEndpoint {
 		const markedAsReadStorage = getMarkedAsReadStorage(PixivService);
 		const cachedArticlesStorage = getCachedArticlesStorage<CachedPixivArticle>(PixivService);
 
-		return [...thumbnails].map(t => this.parseThumbnail(t, markedAsReadStorage, cachedArticlesStorage)).filter(a => a !== null) as ArticleWithRefs[];
+		return [...thumbnails].map(t => this.parseThumbnail(t, markedAsReadStorage, cachedArticlesStorage)).filter(a => a !== null);
 	}
 
 	parseThumbnail(element: Element, markedAsReadStorage: string[], cachedArticlesStorage: Record<number, CachedPixivArticle | undefined>): ArticleWithRefs | null {
@@ -134,20 +134,23 @@ export class UserAPIEndpoint extends LoadableEndpoint {
 			['userId', 0],
 			['page', 0],
 		],
-		constructor: params => new UserAPIEndpoint(params.userId as number, params.page as number)
+		constructor: params => new UserAPIEndpoint(params.userId as number, params.page as number),
 	};
 }
 
 registerEndpointConstructor(UserAPIEndpoint);
-getServices()[PixivService.name].userEndpoint = user => new UserAPIEndpoint((user as PixivUser).id);
+getService(PixivService.name).userEndpoint = user => new UserAPIEndpoint((user as PixivUser).id);
 
-export function getUserId() : number {
-	return parseInt(window.location.pathname.split('/')[3]);
+export function getUserId(): number {
+	const str = window.location.pathname.split('/')[3];
+	if (!str)
+		throw new Error("Couldn't find user id");
+	return parseInt(str);
 }
 
 type UserListAjaxResponse = PixivResponse<{
-	illusts: { [id: string]: null }
-	manga: { [id: string]: null }
+	illusts: {[id: string]: null}
+	manga: {[id: string]: null}
 	novels: []
 	mangaSeries: [
 		{
@@ -167,7 +170,7 @@ type UserListAjaxResponse = PixivResponse<{
 			watchCount: null
 			isWatched: boolean
 			isNotifying: boolean
-		}
+		},
 	]
 	novelSeries: []
 	pickup: any[]

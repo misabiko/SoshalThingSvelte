@@ -72,44 +72,44 @@
 		<strong>{data.title + (data.showArticleCount ? ' - ' + articleCountLabel : '')}</strong>
 		{#if favviewerButtons}
 			<div class='timelineButtons'>
-				<button class='borderless-button' title='Toggle SoshalThing' onclick='{() => favviewerHidden = !favviewerHidden}'>
+				<button class='borderless-button' title='Toggle SoshalThing' onclick={() => favviewerHidden = !favviewerHidden}>
 					<Fa icon={faEyeSlash} size='lg'/>
 				</button>
 				{#if favviewerMaximized !== null}
 					<button class='borderless-button'
-							title="{favviewerMaximized ? 'Minimize SoshalThing' : 'Maximize SoshalThing'}"
-							onclick='{() => {
+							title={favviewerMaximized ? 'Minimize SoshalThing' : 'Maximize SoshalThing'}
+							onclick={() => {
 								favviewerMaximized = !favviewerMaximized;
 								updateMaximized(favviewerMaximized);
-							}}'
+							}}
 					>
-						<Fa icon='{favviewerMaximized ? faMinimize : faMaximize}' size='lg'/>
+						<Fa icon={favviewerMaximized ? faMinimize : faMaximize} size='lg'/>
 					</button>
 				{/if}
-				<button class='borderless-button' title='Show Sidebar' onclick='{() => showSidebar = !showSidebar}'>
+				<button class='borderless-button' title='Show Sidebar' onclick={() => showSidebar = !showSidebar}>
 					<Fa icon={faEllipsisV} size='lg'/>
 				</button>
 			</div>
 		{/if}
 	</div>
 	<div class='timelineRightHeader timelineButtons'>
-		<button class='borderless-button' title='Expand options' onclick='{() => showOptions = !showOptions}'>
+		<button class='borderless-button' title='Expand options' onclick={() => showOptions = !showOptions}>
 			<Fa icon={faEllipsisV} size='lg'/>
 		</button>
 		{#if availableRefreshTypes.has(RefreshType.LoadTop)}
 			<button class='borderless-button' title='Load Top'
-					onclick='{() => refresh(RefreshType.LoadTop)}'>
+					onclick={() => refresh(RefreshType.LoadTop)}>
 				<Fa icon={faArrowUp} size='lg'/>
 			</button>
 		{/if}
 		{#if availableRefreshTypes.has(RefreshType.LoadBottom)}
 			<button class='borderless-button' title='Load Bottom'
-					onclick='{() => refresh(RefreshType.LoadBottom)}'>
+					onclick={() => refresh(RefreshType.LoadBottom)}>
 				<Fa icon={faArrowDown} size='lg'/>
 			</button>
 		{/if}
 		{#if availableRefreshTypes.has(RefreshType.Refresh)}
-			<button class='borderless-button' title='Refresh' onclick='{() => refresh(RefreshType.Refresh)}'>
+			<button class='borderless-button' title='Refresh' onclick={() => refresh(RefreshType.Refresh)}>
 				<Fa icon={faSyncAlt} size='lg'/>
 			</button>
 		{/if}
@@ -121,17 +121,17 @@
 		</button>
 		{#if data.container === MasonryContainer}
 			<button class='borderless-button' title='Organize Container'
-					onclick='{() => containerRebalance = !containerRebalance}'>
+					onclick={() => containerRebalance = !containerRebalance}>
 				<Fa icon={faScaleBalanced} size='lg'/>
 			</button>
 		{/if}
 		{#if toggleFullscreen}
 			<button
 				class='borderless-button'
-				title="{fullscreen ? 'Disable fullscreen' : 'Make timeline fullscreen'}"
+				title={fullscreen ? 'Disable fullscreen' : 'Make timeline fullscreen'}
 				onclick={toggleFullscreen}
 			>
-				<Fa icon='{fullscreen ? faColumns: faExpandAlt}' size='lg'/>
+				<Fa icon={fullscreen ? faColumns : faExpandAlt} size='lg'/>
 			</button>
 		{/if}
 	</div>

@@ -1,4 +1,4 @@
-export default function portal(node: Element, { target, insertBefore }: PortalProps) {
+export default function portal(node: Element, {target, insertBefore}: PortalProps) {
 	if (insertBefore)
 		target.insertBefore(node, insertBefore);
 	else
@@ -7,11 +7,11 @@ export default function portal(node: Element, { target, insertBefore }: PortalPr
 	return {
 		destroy() {
 			setTimeout(() => {
-				if (node?.parentNode) {
-					node.parentNode?.removeChild(node);
+				if (node.parentNode) {
+					node.parentNode.removeChild(node);
 				}
 			});
-		}
+		},
 	};
 }
 

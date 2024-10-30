@@ -1,5 +1,5 @@
 import {expect, test} from '@playwright/test';
-import { TIMELINE_STORAGE_KEY } from '../storagesUtils';
+import {TIMELINE_STORAGE_KEY} from '../storagesUtils';
 
 //TODO Move add timeline to dedicated spec file
 test.beforeEach(async ({page}) => {
@@ -37,7 +37,7 @@ test('Add Timeline local storage', async ({page}) => {
 
 	await page.click('.sidebarMenu button:text("Add Timeline")');
 
-	const storageStr = await page.mainFrame().evaluate((key) => {
+	const storageStr = await page.mainFrame().evaluate(key => {
 		return window.localStorage.getItem(key);
 	}, TIMELINE_STORAGE_KEY);
 

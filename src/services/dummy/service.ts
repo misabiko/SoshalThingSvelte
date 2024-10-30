@@ -1,5 +1,5 @@
 import {get} from 'svelte/store';
-import {getWritable, newService, registerService, type Service} from '../service';
+import {getWritableArticle, newService, registerService, type Service} from '../service';
 import type DummyArticle from './article';
 import type {ArticleIdPair} from '~/articles';
 import {STANDARD_ACTIONS} from '../actions';
@@ -10,12 +10,12 @@ export const DummyService: Service<DummyArticle> = newService({
 		[STANDARD_ACTIONS.like.key]: {
 			...STANDARD_ACTIONS.like,
 			action: toggleLike,
-			actioned(article) { return article.liked; },
+			actioned(article) {return article.liked;},
 		},
 		[STANDARD_ACTIONS.repost.key]: {
 			...STANDARD_ACTIONS.repost,
 			action: repost,
-			actioned(article) { return article.reposted; },
+			actioned(article) {return article.reposted;},
 		},
 	},
 });
@@ -23,7 +23,7 @@ export const DummyService: Service<DummyArticle> = newService({
 registerService(DummyService);
 
 async function toggleLike(idPair: ArticleIdPair) {
-	const writable = getWritable<DummyArticle>(idPair);
+	const writable = getWritableArticle<DummyArticle>(idPair);
 	const oldValue = get(writable).liked;
 
 	writable.update(a => {
@@ -33,7 +33,7 @@ async function toggleLike(idPair: ArticleIdPair) {
 }
 
 async function repost(idPair: ArticleIdPair) {
-	const writable = getWritable<DummyArticle>(idPair);
+	const writable = getWritableArticle<DummyArticle>(idPair);
 	if (get(writable).reposted)
 		return;
 

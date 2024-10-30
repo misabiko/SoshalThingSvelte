@@ -1,6 +1,6 @@
 import {type ArticleWithRefs, getRootArticle} from '~/articles';
 import {articleWithRefToArray} from '~/articles';
-import {getServices} from '~/services/service';
+import {getService} from '~/services/service';
 import {type ArticleMedia, MediaType} from '~/articles/media';
 
 //TODO Filter groups and boolean filters
@@ -46,7 +46,6 @@ export type FilterInfo<S extends string = string> = {
 
 export function getFilterName(filter: FilterInfo, inversed: boolean): string {
 	return inversed ? filter.invertedName : filter.name;
-
 }
 
 export type PropType =
@@ -87,7 +86,7 @@ export const genericFilterTypes: Record<GenericFilter, FilterInfo<GenericFilter>
 			includeQuoted: {
 				type: 'boolean',
 				optional: true,
-			}
+			},
 		},
 	},
 	noRef: {
@@ -170,7 +169,7 @@ export const genericFilterTypes: Record<GenericFilter, FilterInfo<GenericFilter>
 
 export function defaultFilter(filterType: string, service: string | null): Filter {
 	if (service)
-		return getServices()[service].defaultFilter(filterType);
+		return getService(service).defaultFilter(filterType);
 
 	switch (filterType) {
 		case 'interval':
@@ -206,7 +205,7 @@ export function keepArticle(articleWithRefs: ArticleWithRefs, index: number, fil
 	else if (filter.service !== getRootArticle(articleWithRefs).idPair.service)
 		return null;
 	else
-		return getServices()[filter.service].keepArticle(articleWithRefs, index, filter);
+		return getService(filter.service).keepArticle(articleWithRefs, index, filter);
 }
 
 function keepArticleGeneric(articleWithRefs: ArticleWithRefs, index: number, filter: Filter): boolean {

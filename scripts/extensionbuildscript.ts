@@ -1,22 +1,21 @@
-import esbuild from 'esbuild';
+import esbuild, {type BuildOptions} from 'esbuild';
 import {buildOptions, errorHandler} from './buildscript.js';
 import fs from 'fs';
 import fastGlob from 'fast-glob';
 
-const outdir = './chrome extension/dist';
+const outdir = './extension/dist';
 
 const entryPoints = [
-	...fastGlob.globSync('./src/extension/**/entry.ts', { onlyFiles: true }),
-	...fastGlob.globSync('./src/services/**/entry.ts', { onlyFiles: true }),
+	...fastGlob.globSync('./src/extension/**/entry.ts', {onlyFiles: true}),
+	...fastGlob.globSync('./src/services/**/entry.ts', {onlyFiles: true}),
 ];
 
-const extensionBuildOptions = {
+const extensionBuildOptions: BuildOptions = {
 	...buildOptions,
 	entryPoints,
 	outdir,
 	splitting: false,
 	format: 'esm',
-	plugins: [...buildOptions.plugins],
 };
 
 if (!fs.existsSync(outdir))
@@ -24,9 +23,9 @@ if (!fs.existsSync(outdir))
 
 esbuild
 	.build(extensionBuildOptions)
-	.catch(errorHandler)
+	.catch((e: unknown) => errorHandler(e))
 	.then(() => {
-		const manifest = JSON.parse(fs.readFileSync('./chrome extension/manifest.json', 'utf8'));
+		const manifest = JSON.parse(fs.readFileSync('./extension/manifest.json', 'utf8'));
 
 		const entryPointNames = entryPoints
 			.map(e => e.split('/'))
@@ -35,7 +34,7 @@ esbuild
 
 		const contentScripts = [];
 		for (const service of manifestPaths) {
-			const serviceManifest = JSON.parse(fs.readFileSync(service, 'utf8'));
+			const serviceManifest: ServiceManifest = JSON.parse(fs.readFileSync(service, 'utf8'));
 			const serviceSplit = service.split('/');
 			serviceSplit.splice(1, 2);
 			const servicePath = serviceSplit.slice(0, -1).join('/');
@@ -54,3 +53,10 @@ esbuild
 		manifest.content_scripts = contentScripts.flat();
 		fs.writeFileSync(outdir + '/manifest.json', JSON.stringify(manifest, null, '\t'));
 	});
+
+type ServiceManifest = {
+	[entry: string]: {
+		matches: string[]
+		exclude_matches?: string[]
+	}
+};

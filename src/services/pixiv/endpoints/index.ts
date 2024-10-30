@@ -36,15 +36,15 @@ export function parseThumbnail(element: Element, markedAsReadStorage: string[], 
 
 	const medias: ArticleMedia[] = cached?.medias ??
 		getEachPageURL(thumbnailSrc, pageCount)
-		.map(src => ({
-			mediaType: MediaType.Image,
-			src,
-			ratio: null,
-			queueLoadInfo: MediaLoadType.Thumbnail,
-			offsetX: null,
-			offsetY: null,
-			cropRatio: null,
-		}));
+			.map(src => ({
+				mediaType: MediaType.Image,
+				src,
+				ratio: null,
+				queueLoadInfo: MediaLoadType.Thumbnail,
+				offsetX: null,
+				offsetY: null,
+				cropRatio: null,
+			}));
 
 	const title = element.querySelectorAll('a')[1]?.textContent;
 	if (!title)
@@ -72,7 +72,7 @@ export function parseThumbnail(element: Element, markedAsReadStorage: string[], 
 			liked,
 			bookmarked,
 			cached?.medias !== undefined,
-		)
+		),
 	};
 }
 
@@ -165,10 +165,10 @@ export type Illust = {
 export type TagTranslation = Record<string, Record<'en' | 'ko' | 'zh' | 'zh_tw' | 'romaji', string>>;
 
 export type ZoneConfig = {
-	header: { url: string }
-	footer: { url: string }
-	logo: { url: string }
-	'500x500': { url: string }
+	header: {url: string}
+	footer: {url: string}
+	logo: {url: string}
+	'500x500': {url: string}
 };
 
 export type ExtraData = {
@@ -222,15 +222,15 @@ export function illustToArticle(illust: Illust, markedAsReadStorage: string[], c
 	const medias = cached?.medias ?? getEachPageURL(illust.url, illust.pageCount).map((src, i) => {
 		//TODO Try loading image and trying different extension on fail
 		// if (mediaType === MediaType.Gif) {
-			return {
-				mediaType,
-				src,
-				ratio: i === 0 ? illust.height / illust.width : null,
-				queueLoadInfo: MediaLoadType.Thumbnail,
-				offsetX: null,
-				offsetY: null,
-				cropRatio: null,
-			} satisfies ArticleMedia;
+		return {
+			mediaType,
+			src,
+			ratio: i === 0 ? illust.height / illust.width : null,
+			queueLoadInfo: MediaLoadType.Thumbnail,
+			offsetX: null,
+			offsetY: null,
+			cropRatio: null,
+		} satisfies ArticleMedia;
 		// }else {
 		// 	const fullSrc = new URL(src);
 		// 	fullSrc.pathname = fullSrc.pathname.replace(/\/img-master\//, '/img-original/');
@@ -285,5 +285,5 @@ export function illustToArticle(illust: Illust, markedAsReadStorage: string[], c
 export enum Mode {
 	All = 'all',
 	AllAges = 'safe',
-	R18 = 'r18'
+	R18 = 'r18',
 }

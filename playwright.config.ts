@@ -1,9 +1,10 @@
-import type { PlaywrightTestConfig } from '@playwright/test';
+import type {PlaywrightTestConfig} from '@playwright/test';
 
 const config: PlaywrightTestConfig = {
 	webServer: {
-		command: 'bun run build -- --entry ../tests/e2e/entry.ts && bun run serve:static -- --port 8089',
+		command: 'bun run serve:test',
 		port: 8089,
+		//TODO Set to false on UI mode?
 		reuseExistingServer: !process.env.CI,
 	},
 	use: {

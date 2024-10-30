@@ -4,7 +4,7 @@
 	import Sidebar from './sidebar/Sidebar.svelte';
 	import {
 		addArticlesToTimeline,
-		defaultTimelineView,
+		defaultTimelineViewId,
 		type TimelineCollection,
 		type TimelineData,
 		type TimelineView,
@@ -17,7 +17,7 @@
 	import {getRootArticle} from './articles';
 	import {updateTimelinesStorage} from '~/storages';
 	import {get, type Writable, writable} from 'svelte/store';
-	import {FetchType, getServices} from './services/service';
+	import {FetchType, getService} from './services/service';
 	import {fetchExtension} from './services/extension';
 
 	(BigInt.prototype as any).toJSON = function () {
@@ -26,14 +26,14 @@
 
 	export let timelines: TimelineCollection = {};
 	export let timelineViews: Record<string, TimelineView> = {
-		[defaultTimelineView]: {
+		[defaultTimelineViewId]: {
 			timelineIds: [],
 			fullscreen: {
 				index: null,
 				columnCount: null,
 				container: null,
-			}
-		}
+			},
+		},
 	};
 	for (const [viewName, view] of Object.entries(timelineViews)) {
 		if (view.fullscreen.index !== null && !Object.hasOwn(view.timelineIds, view.fullscreen.index)) {
@@ -42,7 +42,7 @@
 		}
 	}
 
-	export let timelineViewId: string = defaultTimelineView;
+	export let timelineViewId: string = defaultTimelineViewId;
 	export let isInjected = true;
 	export let favviewerHidden = false;
 	export let favviewerMaximized: boolean | null = null;
@@ -53,6 +53,7 @@
 	let batchActionFilters: Writable<FilterInstance[]> = writable([]);
 
 	setContext('isInjected', isInjected);
+	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 	let showSidebar = !isInjected && favviewerMaximized !== true;
 
 	function addTimeline(data: TimelineData) {
@@ -63,18 +64,21 @@
 		const id = `Timeline ${idNum}`;
 		timelines[id] = data;
 		timelines = timelines;
-		timelineViews[timelineViewId].timelineIds = [...timelineViews[timelineViewId].timelineIds, id];
+		timelineViews[timelineViewId]!.timelineIds = [...timelineViews[timelineViewId]!.timelineIds, id];
 
 		updateTimelinesStorage(timelines);
 	}
 
 	function removeTimeline(id: string) {
 		delete timelines[id];
+		const view = timelineViews[timelineViewId];
+		if (!view)
+			throw new Error(`TimelineView ${timelineViewId} does not exist`);
 		//We don't cache index since TimelineView.timelineIds might hold duplicates
-		if (timelineViews[timelineViewId].fullscreen.index === timelineViews[timelineViewId].timelineIds.indexOf(id))
-			timelineViews[timelineViewId].fullscreen.index = null;
+		if (view.fullscreen.index === view.timelineIds.indexOf(id))
+			view.fullscreen.index = null;
 
-		timelineViews[timelineViewId].timelineIds = timelineViews[timelineViewId].timelineIds.filter(viewId => viewId !== id);
+		view.timelineIds = view.timelineIds.filter(viewId => viewId !== id);
 		timelineViewId = timelineViewId;
 
 		updateTimelinesStorage(timelines);
@@ -93,15 +97,15 @@
 	async function initialRefresh(...refreshingTimelines: TimelineData[]) {
 		const services = new Set<string>(
 			refreshingTimelines
-				.flatMap(t => t.endpoints.map(e => (e.endpoint ?? get(endpoints[e.name]))))
-				.map(e => (e.constructor as typeof Endpoint).service)
+				.flatMap(t => t.endpoints.map(e => (e.endpoint ?? get(endpoints[e.name]!))))
+				.map(e => (e.constructor as typeof Endpoint).service),
 		);
 		for (const serviceName of services) {
-			const service = getServices()[serviceName];
+			const service = getService(serviceName);
 			if (!service.isOnDomain && service.fetchInfo.type === FetchType.Tab && get(service.fetchInfo.tabInfo.tabId) === null)
 				service.fetchInfo.tabInfo.tabId.set(await fetchExtension('getTabId', {
 					url: service.fetchInfo.tabInfo.url,
-					matchUrl: service.fetchInfo.tabInfo.matchUrl
+					matchUrl: service.fetchInfo.tabInfo.matchUrl,
 				}));
 		}
 
@@ -112,10 +116,10 @@
 			for (const timelineEndpoint of timeline.endpoints.filter(e => e.refreshTypes.has(RefreshType.RefreshStart)))
 				if (timelineEndpoint.name !== undefined)
 					endpointNames.add(timelineEndpoint.name);
-				else if (timelineEndpoint.endpoint?.refreshTypes && get(timelineEndpoint.endpoint.refreshTypes).has(RefreshType.RefreshStart))
+				else if (/*timelineEndpoint.endpoint.refreshTypes &&*/ get(timelineEndpoint.endpoint.refreshTypes).has(RefreshType.RefreshStart))
 					refreshPromises.push(
-						refreshEndpoint(timelineEndpoint.endpoint as Endpoint, RefreshType.RefreshStart)
-							.then(articles => addArticlesToTimeline(timeline, ...articles.map(a => getRootArticle(a).idPair)))
+						refreshEndpoint(timelineEndpoint.endpoint, RefreshType.RefreshStart)
+							.then(articles => addArticlesToTimeline(timeline, ...articles.map(a => getRootArticle(a).idPair))),
 					);
 
 		for (const endpointName of endpointNames)
@@ -131,7 +135,7 @@
 	function withTimeout<T>(
 		promise: Promise<T>,
 		ms: number,
-		timeoutError = new Error('Promise timed out')
+		timeoutError = new Error('Promise timed out'),
 	): Promise<T> {
 		// create a promise that rejects in milliseconds
 		const timeout = new Promise<never>((_, reject) => {

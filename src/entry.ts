@@ -1,30 +1,36 @@
 import './services/**/service.ts';
 import './services/**/*.endpoint.ts';
-import { mount } from 'svelte';
+import {mount} from 'svelte';
 
 import {getServices} from './services/service';
 console.debug('Loaded services and endpoints:', Object.fromEntries(Object.values(getServices()).map(service => [service.name, Object.keys(service.endpointConstructors)])));
 
 import SoshalThing from './SoshalThing.svelte';
 import {loadMainStorage, loadTimelines} from './storages';
-import {defaultTimelineView, type FullscreenInfo, type TimelineView} from './timelines';
+import {defaultTimelineViewId, type FullscreenInfo, type TimelineView} from './timelines';
 
-const {timelineIds, fullscreen, timelineViews, currentTimelineView} = loadMainStorage();
+const {timelineIds, fullscreen, timelineViews, currentTimelineViewId} = loadMainStorage();
 const timelines = loadTimelines();
 
 const searchParams = new URLSearchParams(location.search);
 
 const searchTimelineView = parseTimelineView(timelineViews, searchParams);
-const timelineViewId: string = searchTimelineView ?? currentTimelineView ?? defaultTimelineView;
-if (timelineViewId === defaultTimelineView) {
-	timelineViews[defaultTimelineView] ??= {
+const timelineViewId: string = searchTimelineView ?? currentTimelineViewId ?? defaultTimelineViewId;
+if (timelineViewId === defaultTimelineViewId) {
+	timelineViews[defaultTimelineViewId] ??= {
 		timelineIds: timelineIds ?? Object.keys(timelines),
 		fullscreen,
 	};
 }
+
+
+const currentTimelineView = timelineViews[timelineViewId];
+if (currentTimelineView === undefined)
+	throw new Error(`Couldn't find timeline view "${timelineViewId}"`);
+
 const searchParamsFullscreen = parseFullscreen(searchParams);
 if (searchParamsFullscreen !== null)
-	timelineViews[timelineViewId].fullscreen = searchParamsFullscreen;
+	currentTimelineView.fullscreen = searchParamsFullscreen;
 
 mount(SoshalThing, {
 	target: document.body,
@@ -33,9 +39,8 @@ mount(SoshalThing, {
 		timelines,
 		timelineViewId,
 		timelineViews,
-	}
+	},
 });
-
 
 
 function parseFullscreen(search: URLSearchParams): FullscreenInfo | null {

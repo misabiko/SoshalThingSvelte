@@ -2,9 +2,9 @@ import {Endpoint, type EndpointConstructorInfo, RefreshType} from '~/services/en
 import {BlueskyService} from '~/services/bluesky/service';
 import type {ArticleWithRefs} from '~/articles';
 import {getMarkedAsReadStorage} from '~/storages/serviceCache';
-import {type BlueskyAuthor, parseFeedViewPost} from '~/services/bluesky/article';
+import {parseFeedViewPost} from '~/services/bluesky/article';
 import {getServiceStorage} from '~/storages';
-import {getServices, registerEndpointConstructor} from '~/services/service';
+import {getService, registerEndpointConstructor} from '~/services/service';
 
 export class UserEndpoint extends Endpoint {
 	readonly name = 'User';
@@ -37,10 +37,10 @@ export class UserEndpoint extends Endpoint {
 		const {feed, cursor} = data;
 		if (!!this.cursor != !!cursor)
 			this.refreshTypes.update(r => {
-				if (cursor === null)
-					r.delete(RefreshType.LoadBottom);
-				else
-					r.add(RefreshType.LoadBottom);
+				// if (cursor === null)
+				// 	r.delete(RefreshType.LoadBottom);
+				// else
+				r.add(RefreshType.LoadBottom);
 				return r;
 			});
 		this.cursor = cursor ?? null;
@@ -61,4 +61,4 @@ export class UserEndpoint extends Endpoint {
 }
 
 registerEndpointConstructor(UserEndpoint);
-getServices()[BlueskyService.name].userEndpoint = user => new UserEndpoint((user as BlueskyAuthor).username);
+getService(BlueskyService.name).userEndpoint = user => new UserEndpoint((user).username);

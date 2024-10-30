@@ -17,7 +17,7 @@ test.describe('notifications', () => {
 		expect(ids).toEqual([
 			'Generated0',
 			'Generated1',
-			'Generated2'
+			'Generated2',
 		]);
 	});
 });

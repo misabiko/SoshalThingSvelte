@@ -4,7 +4,7 @@ import {PixivService} from '../service';
 import PixivArticle, {type CachedPixivArticle} from '../article';
 import type {PixivUser} from '../article';
 import {getCachedArticlesStorage, getMarkedAsReadStorage} from '~/storages/serviceCache';
-import {getWritable, registerEndpointConstructor} from '../../service';
+import {getWritableArticle, registerEndpointConstructor} from '../../service';
 import {
 	getUserUrl, illustToArticle,
 	parseThumbnail, type PixivResponseWithWorks,
@@ -31,12 +31,12 @@ export default class BookmarkPageEndpoint extends PageEndpoint {
 		if (!name)
 			throw new Error("Couldn't find user name");
 
-		const userId = parseInt(window.location.pathname.split('/')[3]);
+		const userId = parseInt(window.location.pathname.split('/')[3]!);
 		this.user = {
 			username: name,
 			name,
 			id: userId,
-			url: getUserUrl(userId)
+			url: getUserUrl(userId),
 		};
 	}
 
@@ -50,13 +50,11 @@ export default class BookmarkPageEndpoint extends PageEndpoint {
 			url.searchParams.set('lang', 'en`');
 
 			const response: PixivResponseWithWorks = await PixivService.fetch(url.toString(), {headers: {Accept: 'application/json'}});
-			if (response?.body?.works) {
-				for (const work of Object.values(response.body.works))
-					getWritable<PixivArticle>({id: parseInt(work.id), service: PixivService.name})?.update(a => {
-						a.creationTime = new Date(work.createDate);
-						return a;
-					});
-			}
+			for (const work of Object.values(response.body.works))
+				getWritableArticle<PixivArticle>({id: parseInt(work.id), service: PixivService.name}).update(a => {
+					a.creationTime = new Date(work.createDate);
+					return a;
+				});
 			return [];
 		}else
 			return await super.refresh(refreshType);
@@ -73,7 +71,7 @@ export default class BookmarkPageEndpoint extends PageEndpoint {
 		const markedAsReadStorage = getMarkedAsReadStorage(PixivService);
 		const cachedArticlesStorage = getCachedArticlesStorage<CachedPixivArticle>(PixivService);
 
-		return [...thumbnails].map(t => this.parseThumbnail(t, markedAsReadStorage, cachedArticlesStorage)).filter(a => a !== null) as ArticleWithRefs[];
+		return [...thumbnails].map(t => this.parseThumbnail(t, markedAsReadStorage, cachedArticlesStorage)).filter(a => a !== null);
 	}
 
 	parseThumbnail(element: Element, markedAsReadStorage: string[], cachedArticlesStorage: Record<number, CachedPixivArticle | undefined>): ArticleWithRefs | null {
@@ -134,7 +132,7 @@ export class BookmarkAPIEndpoint extends LoadableEndpoint {
 			['r18', false],
 			['page', 0],
 		],
-		constructor: params => new BookmarkAPIEndpoint(params.userId as number, params.r18 as boolean, params.page as number)
+		constructor: params => new BookmarkAPIEndpoint(params.userId as number, params.r18 as boolean, params.page as number),
 	};
 }
 

@@ -1,28 +1,32 @@
 import fs from 'fs';
-import esbuild from 'esbuild';
+import esbuild, {type BuildOptions} from 'esbuild';
 import * as svelte from 'svelte/compiler';
-import { sveltePreprocess } from 'svelte-preprocess';
-import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
+import {sveltePreprocess} from 'svelte-preprocess';
+import path, {dirname} from 'path';
+import {fileURLToPath} from 'url';
 import EsbuildPluginImportGlob from 'esbuild-plugin-import-glob';
+import type {Warning} from 'svelte/compiler';
+import {parseArgs} from 'util';
 
-process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+process.env.NODE_ENV = process.env.NODE_ENV ?? 'development';
 
 //https://esbuild.github.io/plugins/#svelte-plugin
-const SveltePlugin = {
+const SveltePlugin: esbuild.Plugin = {
 	name: 'svelte',
 	setup(build) {
-		build.onLoad({ filter: /\.svelte$/ }, async (args) => {
+		build.onLoad({filter: /\.svelte$/}, async args => {
 			// Load the file from the file system
 			const source = await fs.promises.readFile(args.path, 'utf8');
 			const filename = path.relative(process.cwd(), args.path);
 
-			const {code: preprocessed} = await svelte.preprocess(source, sveltePreprocess(), { filename });
+			const {code: preprocessed} = await svelte.preprocess(source, sveltePreprocess(), {filename});
 
-			const convertMessage = ({ message, start, end, code }) => {
+			const convertMessage = ({message, start, end, code}: Warning) => {
 				let location;
 				if (start && end) {
 					const lineText = preprocessed.split(/\r\n|\r|\n/g)[start.line - 1];
+					if (!lineText)
+						throw new Error('Line text not found');
 					const lineEnd = start.line === end.line ? end.column : lineText.length;
 					location = {
 						file: filename,
@@ -32,48 +36,53 @@ const SveltePlugin = {
 						lineText,
 					};
 				}
-				return { text: `${message} (${code})`, location };
+				return {text: `${message} (${code})`, location};
 			};
 
 			// Convert Svelte syntax to JavaScript
 			try {
-				let { js, warnings } = svelte.compile(preprocessed, {
+				const {js, warnings} = svelte.compile(preprocessed, {
 					filename,
 					dev: process.env.NODE_ENV === 'development',
 					css: 'injected',
 				});
 				const contents = js.code + '//# sourceMappingURL=' + js.map.toUrl();
 
-				warnings = warnings
+				const partialMessageWarnings = warnings
 					.filter(w =>
 						//TODO Handle a11y-click-events-have-key-events
 						w.code !== 'a11y-click-events-have-key-events' &&
 						//TODO Handle a11y-no-noninteractive-element-interactions
-						w.code !== 'a11y-no-noninteractive-element-interactions'
+						w.code !== 'a11y-no-noninteractive-element-interactions',
 					)
 					.map(convertMessage);
 
-				return { contents, warnings };
-			} catch (e) {
-				return { errors: [convertMessage(e)] };
+				return {contents, warnings: partialMessageWarnings};
+			}catch (e) {
+				return {errors: [convertMessage(e as Warning)]};
 			}
 		});
-	}
+	},
 };
 
 const outdir = './dist';
 
 
-let entryPoint = './src/entry.ts';
-const entryIndex = process.argv.findIndex(s => s === '--entry');
-if (entryIndex > -1 && process.argv.length >= entryIndex)
-	entryPoint = path.join(dirname(fileURLToPath(import.meta.url)), process.argv[entryIndex + 1]);
+const args = parseArgs({
+	args: Bun.argv,
+	options: {
+		entry: {
+			type: 'string',
+			short: 'e',
+			default: '../src/entry.ts',
+		},
+	},
+	strict: true,
+	allowPositionals: true,
+});
 
-/**
- * @type {import('esbuild').BuildOptions}
- */
-export const buildOptions = {
-	entryPoints: [entryPoint],
+export const buildOptions: BuildOptions = {
+	entryPoints: [path.join(dirname(fileURLToPath(import.meta.url)), args.values.entry)],
 	bundle: true,
 	outdir,
 	mainFields: ['svelte', 'browser', 'module', 'main', 'exports'],
@@ -93,7 +102,7 @@ export const buildOptions = {
 	conditions: process.env.NODE_ENV === 'development' ? ['development'] : [],
 };
 
-export const errorHandler = (error, location) => {
+export const errorHandler = (error: any, location: string | undefined = undefined) => {
 	console.warn('Errors: ', error, location);
 	process.exit(1);
 };
@@ -102,30 +111,9 @@ export const errorHandler = (error, location) => {
 if (!fs.existsSync(outdir))
 	fs.mkdirSync(outdir);
 
-let port = 8080;
-const portIndex = process.argv.findIndex(s => s === '--port');
-if (portIndex > -1 && process.argv.length >= portIndex)
-	port = parseInt(process.argv[portIndex + 1]);
-
-if (process.argv.includes('--serve'))
-	esbuild
-		.serve({
-			port,
-			servedir: outdir,
-		}, {
-			...buildOptions,
-			logLevel: 'debug',
-		})
-		.then(({ host, port }) => {
-			if (host === '0.0.0.0')
-				host = 'localhost';
-			console.log(`Serving at \`http://${host}:${port}\`...`);
-		})
-		.catch(errorHandler);
-else
-	esbuild
-		.build(buildOptions)
-		.catch(errorHandler);
+esbuild
+	.build(buildOptions)
+	.catch((e: unknown) => errorHandler(e));
 
 //TODO Dynamically copy all files from static folder
 for (const file of [

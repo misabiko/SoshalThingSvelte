@@ -1,5 +1,5 @@
 import {Endpoint, type EndpointConstructorInfo, RefreshType} from '~/services/endpoints';
-import {getServices, registerEndpointConstructor} from '~/services/service';
+import {getService, registerEndpointConstructor} from '~/services/service';
 import {illustToArticle, type PixivResponseWithPage} from '~/services/pixiv/endpoints/index';
 import {getCachedArticlesStorage, getMarkedAsReadStorage} from '~/storages/serviceCache';
 import {PixivService} from '~/services/pixiv/service';
@@ -28,8 +28,8 @@ export class TopAPIEndpoint extends Endpoint {
 	}
 
 	async refresh(_refreshType: RefreshType): Promise<ArticleWithRefs[]> {
-		const response: TopResponse = await getServices()['Pixiv'].fetch('https://www.pixiv.net/ajax/top/illust?mode=all', {
-			headers: {Accept: 'application/json'}
+		const response: TopResponse = await getService('Pixiv').fetch('https://www.pixiv.net/ajax/top/illust?mode=all', {
+			headers: {Accept: 'application/json'},
 		});
 
 		if (response.error)
@@ -54,8 +54,12 @@ export class TopAPIEndpoint extends Endpoint {
 		}
 
 		return ids
-			.map(id => illustThumbnails[id.toString()])
-			.map(illust => illustToArticle(illust, markedAsReadStorage, cachedArticlesStorage));
+			.map(id => {
+				const illust = illustThumbnails[id];
+				if (!illust)
+					throw new Error(`Illust with id ${id} not found`);
+				return illustToArticle(illust, markedAsReadStorage, cachedArticlesStorage);
+			});
 	}
 
 	matchParams(params: any): boolean {
@@ -68,7 +72,7 @@ export class TopAPIEndpoint extends Endpoint {
 			['r18', false],
 			['output', TopOutput.All],
 		],
-		constructor: params => new TopAPIEndpoint(params.r18 as boolean, params.output as TopOutput)
+		constructor: params => new TopAPIEndpoint(params.r18 as boolean, params.output as TopOutput),
 	};
 }
 

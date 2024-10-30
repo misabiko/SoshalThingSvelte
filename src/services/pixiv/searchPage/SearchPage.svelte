@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import {defaultTimeline, defaultTimelineView, type TimelineCollection, type TimelineView} from '~/timelines';
+	import {defaultTimeline, defaultTimelineViewId, type TimelineCollection, type TimelineView} from '~/timelines';
 	import {Mode} from '~/services/pixiv/endpoints';
 	import {SearchAPIEndpoint} from '~/services/pixiv/endpoints/search.endpoint';
 	import {getCurrentPage} from '~/services/pixiv/endpoints';
@@ -10,8 +10,10 @@
 	import {PixivService} from '~/services/pixiv/service';
 
 	const query = window.location.pathname.split('/')[3];
+	if (!query)
+		throw new Error('No query found');
 	const searchParams = new URLSearchParams(window.location.search);
-	const mode = searchParams.get('mode') as Mode ?? Mode.All;
+	const mode = searchParams.get('mode') as Mode | null ?? Mode.All;
 
 	const timelines: TimelineCollection = {
 		Follows: defaultTimeline({
@@ -25,7 +27,7 @@
 				service: PixivService.name,
 				templateId: 'main',
 			},
-		})
+		}),
 	};
 
 	const mainStorage = loadMainStorage();
@@ -37,13 +39,13 @@
 		throw new Error('Could not find activator mount');
 
 	const timelineViews: Record<string, TimelineView> = {
-		[defaultTimelineView]: {
+		[defaultTimelineViewId]: {
 			timelineIds: Object.keys(timelines),
 			fullscreen: {
 				...mainStorage.fullscreen,
-				index: 0
-			}
-		}
+				index: 0,
+			},
+		},
 	};
 </script>
 
@@ -94,10 +96,10 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
 <a
-		use:portal='{{ target: activatorMount }}'
+		use:portal={{target: activatorMount}}
 		id='favvieweractivator'
-		class={activatorMount.children[0].className}
-		onclick='{() => favviewerHidden = !favviewerHidden}'
+		class={activatorMount.children[0]!.className}
+		onclick={() => favviewerHidden = !favviewerHidden}
 >
 	SoshalThing
 </a>

@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import {getServices, type Service} from '~/services/service';
+	import {getService, getServices, type Service} from '~/services/service';
 	import ArticleComponent from '../articles/ArticleComponent.svelte';
 	import SocialArticleView from '../articles/social/SocialArticleView.svelte';
 	import type {ArticleProps, ArticleWithRefs, TimelineArticleProps} from '~/articles';
@@ -7,7 +7,7 @@
 
 	type LoadArticleService = Service & {loadArticle: Exclude<Service['loadArticle'], null>};
 	let services = Object.entries(getServices()).filter(([_, s]) => s.loadArticle !== null) as [string, LoadArticleService][];
-	let serviceName = services.length ? services[0][0] : null;
+	let serviceName = services[0] ? services[0][0] : null;
 
 	let articleId = '';
 	let article: ArticleWithRefs | null = null;
@@ -17,8 +17,8 @@
 			throw new Error('No service selected');
 
 		try {
-			article = await (getServices()[serviceName] as LoadArticleService).loadArticle(articleId);
-		} catch (e) {
+			article = await (getService(serviceName) as LoadArticleService).loadArticle(articleId);
+		}catch (e) {
 			console.error(`Failed to load article "${articleId}"`, e);
 		}
 	}
@@ -33,10 +33,11 @@
 		shouldLoadMedia: false,
 		maxMediaCount: 4,
 		setModalTimeline: () => {},
-		showAllMediaArticles: writable(new Set())
+		showAllMediaArticles: writable(new Set()),
 	};
 
 	let articleProps: ArticleProps | null;
+	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 	$: article !== null ? {
 		...article,
 		filteredOut: false,
@@ -59,7 +60,7 @@
 		{/each}
 	</select>
 	<input bind:value={articleId}/>
-	<button onclick={loadArticle} disabled='{serviceName === null || !articleId.length}'>Load</button>
+	<button onclick={loadArticle} disabled={serviceName === null || !articleId.length}>Load</button>
 </div>
 {#if article !== null && articleProps !== null}
 	<ArticleComponent

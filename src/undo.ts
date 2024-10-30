@@ -14,6 +14,9 @@ export const undoables = (() => {
 		},
 		toggleDo(index: number) {
 			update(u => {
+				if (u[index] === undefined)
+					throw new Error('Index out of bounds');
+
 				if (u[index].undid)
 					u[index].redo();
 				else
@@ -22,7 +25,7 @@ export const undoables = (() => {
 				u[index].undid = !u[index].undid;
 				return u;
 			});
-		}
+		},
 	};
 })();
 

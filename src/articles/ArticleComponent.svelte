@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import {type ArticleIdPair, type ArticleViewProps, getActualArticleRefs} from './index';
-	import {getWritable, toggleMarkAsRead} from '~/services/service';
+	import {getWritableArticle, toggleMarkAsRead} from '~/services/service';
 	import Article, {getActualArticle} from '../articles';
 	import type {ArticleProps, TimelineArticleProps} from './index';
 	import {type Component, onDestroy, tick} from 'svelte';
@@ -14,6 +14,7 @@
 	let actualArticleProps = getActualArticleRefs(articleProps) as ArticleProps;
 	export let timelineProps: TimelineArticleProps;
 	export let view: Component<ArticleViewProps>;
+	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 	export let style = ''; style;
 	let modal = false;
 
@@ -33,6 +34,7 @@
 		$loadingStates = [];
 		//TODO Remove after porting to runes
 		// svelte-ignore reactive_declaration_non_reactive_property
+		// eslint-disable-next-line svelte/valid-compile
 		if (actualArticleProps.mediaIndex === null) {
 			for (let mediaIndex = 0; mediaIndex < Math.min(actualArticle.medias.length, !$showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : Infinity); ++mediaIndex)
 				$loadingStates[mediaIndex] = loadingStore.getLoadingState(actualArticle.idPair, mediaIndex, timelineProps.shouldLoadMedia);
@@ -43,15 +45,15 @@
 	tick().then(() => {
 		{
 			const modifiedMedias: [number, number][] = [];
-			for (const [iStr, _mediaRef] of Object.entries(mediaRefs)) {
+			for (const [iStr, mediaRef] of Object.entries(mediaRefs)) {
 				const i = parseInt(iStr);
-				if (actualArticle.medias[i].ratio === null)
-					modifiedMedias.push([i, mediaRefs[i].clientHeight / mediaRefs[i].clientWidth]);
+				if (actualArticle.medias[i]!.ratio === null)
+					modifiedMedias.push([i, mediaRef.clientHeight / mediaRef.clientWidth]);
 			}
 
-			getWritable(actualArticle.idPair).update(a => {
+			getWritableArticle(actualArticle.idPair).update(a => {
 				for (const [i, ratio] of modifiedMedias)
-					a.medias[i].ratio = ratio;
+					a.medias[i]!.ratio = ratio;
 				return a;
 			});
 		}
@@ -59,13 +61,13 @@
 		if (actualArticleProps.mediaIndex === null) {
 			const count = actualArticle.medias.length;
 			for (let i = 0; i < count; ++i) {
-				if (actualArticle.medias[i].queueLoadInfo === MediaLoadType.LazyLoad && !actualArticle.medias[i].loaded) {
+				if (actualArticle.medias[i]!.queueLoadInfo === MediaLoadType.LazyLoad && !actualArticle.medias[i]!.loaded) {
 					if (mediaRefs[i]?.complete)
 						loadingStore.mediaLoaded(actualArticle.idPair, i);
 				}
 			}
 		}else {
-			if (actualArticle.medias[actualArticleProps.mediaIndex].queueLoadInfo === MediaLoadType.LazyLoad && !actualArticle.medias[actualArticleProps.mediaIndex].loaded) {
+			if (actualArticle.medias[actualArticleProps.mediaIndex]!.queueLoadInfo === MediaLoadType.LazyLoad && !actualArticle.medias[actualArticleProps.mediaIndex]!.loaded) {
 				if (mediaRefs[actualArticleProps.mediaIndex]?.complete)
 					loadingStore.mediaLoaded(actualArticle.idPair, actualArticleProps.mediaIndex);
 			}
@@ -97,13 +99,13 @@
 			case 'reposts':
 				console.dir({
 					...articleProps,
-					reposted: getRootArticle(articleProps.reposted).rawSource
+					reposted: getRootArticle(articleProps.reposted).rawSource,
 				});
 				break;
 			case 'quote':
 				console.dir({
 					article: getRootArticle(articleProps).rawSource,
-					quoted: getRootArticle(articleProps.quoted).rawSource
+					quoted: getRootArticle(articleProps.quoted).rawSource,
 				});
 				break;
 		}
@@ -112,6 +114,9 @@
 	function onMediaClick(idPair: ArticleIdPair, _index: number) {
 		toggleMarkAsRead(idPair);
 	}
+
+	//TODO Find way to get specific parent soshalthing
+	const modalMountElement = document.getElementsByClassName('soshalthing')[0] as HTMLDivElement;
 </script>
 
 <style>
@@ -129,8 +134,7 @@
 </style>
 
 {#if modal}
-<!-- TODO Find way to get specific parent soshalthing -->
-	<Modal bind:active={modal} mountElement="{document.getElementsByClassName('soshalthing')[0]}">
+	<Modal bind:active={modal} mountElement={modalMountElement}>
 		<article class:transparent={articleProps.filteredOut}>
 			<svelte:component
 				this={view}
@@ -151,7 +155,7 @@
 	</Modal>
 {/if}
 
-<article class="{articleProps.filteredOut ? 'transparent' : ''}" {style}>
+<article class={articleProps.filteredOut ? 'transparent' : ''} {style}>
 	<svelte:component
 		this={view}
 		{timelineProps}

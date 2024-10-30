@@ -7,7 +7,7 @@ import {
 	getCurrentPage,
 	getUserUrl,
 	parseThumbnail,
-	illustToArticle, type PixivResponseWithPage
+	illustToArticle, type PixivResponseWithPage,
 } from './index';
 import {registerEndpointConstructor} from '../../service';
 
@@ -34,7 +34,7 @@ export class FollowPageEndpoint extends PageEndpoint {
 		const markedAsReadStorage = getMarkedAsReadStorage(PixivService);
 		const cachedArticlesStorage = getCachedArticlesStorage<CachedPixivArticle>(PixivService);
 
-		return [...thumbnails].map(t => this.parseThumbnail(t, markedAsReadStorage, cachedArticlesStorage)).filter(a => a !== null) as ArticleWithRefs[];
+		return [...thumbnails].map(t => this.parseThumbnail(t, markedAsReadStorage, cachedArticlesStorage)).filter(a => a !== null);
 	}
 
 	parseThumbnail(element: Element, markedAsReadStorage: string[], cachedArticlesStorage: Record<number, CachedPixivArticle | undefined>): ArticleWithRefs | null {
@@ -45,7 +45,7 @@ export class FollowPageEndpoint extends PageEndpoint {
 			name,
 			username: name,
 			id: userId,
-			url: getUserUrl(userId)
+			url: getUserUrl(userId),
 		};
 
 		return parseThumbnail(element, markedAsReadStorage, cachedArticlesStorage, user);
@@ -95,7 +95,7 @@ export class FollowAPIEndpoint extends LoadableEndpoint {
 			['page', 0],
 			['r18', false],
 		],
-		constructor: params => new FollowAPIEndpoint(params.page as number, params.r18 as boolean)
+		constructor: params => new FollowAPIEndpoint(params.page as number, params.r18 as boolean),
 	};
 }
 

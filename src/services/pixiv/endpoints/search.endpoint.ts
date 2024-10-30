@@ -112,7 +112,7 @@ export class SearchAPIEndpoint extends LoadableEndpoint {
 			['bookmarkMin', null],
 			['bookmarkMax', null],
 		],
-		constructor: params => new SearchAPIEndpoint(params.query as string, params.mode as Mode, params.page as number)
+		constructor: params => new SearchAPIEndpoint(params.query as string, params.mode as Mode, params.page as number),
 	};
 }
 

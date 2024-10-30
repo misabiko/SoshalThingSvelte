@@ -2,11 +2,11 @@ import type {TimelineEndpoint} from '~/timelines';
 import type {ArticleIdPair, ArticleWithRefs} from '~/articles';
 import {getRootArticle} from '~/articles';
 import {useFilters} from '~/filters';
-import {addArticles, getServices} from './service';
+import {addArticles, getService} from './service';
 import {get, writable} from 'svelte/store';
 import type {Writable} from 'svelte/store';
 
-export const endpoints: { [name: string]: Writable<Endpoint> } = {};
+export const endpoints: {[name: string]: Writable<Endpoint>} = {};
 
 type TimelineEndpoints = {
 	endpoints: TimelineEndpoint[]
@@ -96,7 +96,7 @@ export abstract class LoadablePageEndpoint extends PageEndpoint {
 				break;
 		}
 
-		if (this.currentPage === this.hostPage && getServices()[(this.constructor as typeof Endpoint).service].isOnDomain)
+		if (this.currentPage === this.hostPage && getService((this.constructor as typeof Endpoint).service).isOnDomain)
 			return this.hostPageRefresh(refreshType);
 		else
 			return this.parsePage(await this.loadPage());
@@ -183,20 +183,22 @@ export async function addEndpointArticlesToTimeline(endpointName: string, articl
 		.map(te => ({
 			endpoint: te.endpoints
 				.find(es => (es.name ?? es.endpoint.name) === endpointName && (refreshType === undefined || es.refreshTypes.has(refreshType))),
-			addArticles: te.addArticles
+			addArticles: te.addArticles,
 		}))
-		.filter(te => te.endpoint !== undefined) as { endpoint: TimelineEndpoint, addArticles: (idPairs: ArticleIdPair[]) => void }[];
+		.filter(te => te.endpoint !== undefined) as {endpoint: TimelineEndpoint, addArticles: (idPairs: ArticleIdPair[]) => void}[];
 
 	for (const timelineEndpoint of matchingTimelineEndpoints) {
 		//TODO Exclude interval from endpoint filters
 		timelineEndpoint.addArticles(
 			useFilters(articles, timelineEndpoint.endpoint.filters)
-				.map(a => getRootArticle(a).idPair)
+				.map(a => getRootArticle(a).idPair),
 		);
 	}
 }
 
 export async function refreshEndpointName(endpointName: string, refreshType: RefreshType, autoRefreshing = false) {
+	if (endpoints[endpointName] === undefined)
+		throw new Error(`Endpoint ${endpointName} doesn't exist`);
 	const endpoint = get(endpoints[endpointName]);
 	if (!get(endpoint.refreshTypes).has(refreshType))
 		return;
@@ -216,7 +218,7 @@ export async function refreshEndpoint(endpoint: Endpoint, refreshType: RefreshTy
 		return [];
 	}
 
-	if (!autoRefreshing && endpoints[endpoint.name] !== undefined && endpoint.autoRefreshId !== null) {
+	if (!autoRefreshing && /*endpoints[endpoint.name] !== undefined &&*/ endpoint.autoRefreshId !== null) {
 		clearInterval(endpoint.autoRefreshId);
 		endpoint.autoRefreshId = null;
 		startAutoRefreshEndpoint(endpoint);
@@ -241,19 +243,21 @@ export async function refreshEndpoint(endpoint: Endpoint, refreshType: RefreshTy
 			.some(pair =>
 				pair.service === idPair.service &&
 				pair.id === idPair.id,
-			)
-		)
+			),
+		),
 	);
 
 	addArticles(false, ...articles);
 
-	if (endpoints[endpoint.name] !== undefined)
-		endpoints[endpoint.name].set(endpoint);
+	endpoints[endpoint.name]?.set(endpoint);
 
 	return articles;
 }
 
 export function startAutoRefresh(endpointName: string) {
+	if (endpoints[endpointName] === undefined)
+		throw new Error(`Endpoint ${endpointName} doesn't exist`);
+
 	endpoints[endpointName].update(e => {
 		startAutoRefreshEndpoint(e);
 		return e;
@@ -270,6 +274,9 @@ function startAutoRefreshEndpoint(endpoint: Endpoint) {
 }
 
 export function stopAutoRefresh(endpointName: string) {
+	if (endpoints[endpointName] === undefined)
+		throw new Error(`Endpoint ${endpointName} doesn't exist`);
+
 	endpoints[endpointName].update(e => {
 		clearInterval(e.autoRefreshId as number);
 		e.autoRefreshId = null;

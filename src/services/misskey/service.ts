@@ -1,7 +1,7 @@
 import type MisskeyArticle from './article';
 import type {Service} from '../service';
 import {newService, registerService} from '../service';
-import type { api as Misskey } from 'misskey-js';
+import type {api as Misskey} from 'misskey-js';
 
 export const MisskeyService: MisskeyServiceType = {
 	...newService({

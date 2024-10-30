@@ -1,5 +1,5 @@
 import type {TimelineData} from '~/timelines';
-import {getServices, getWritable} from '~/services/service';
+import {getService, getWritableArticle} from '~/services/service';
 import type {Readable, Writable} from 'svelte/store';
 import {get} from 'svelte/store';
 import type {ArticleMedia} from './media';
@@ -42,8 +42,8 @@ export default abstract class Article {
 		this.text = params.text;
 		this.textHtml = params.textHtml;
 		this.url = params.url ?? null;
-		this.medias = params.medias || [];
-		this.markedAsRead = params.markedAsRead || params.markedAsReadStorage.includes(params.id.toString());
+		this.medias = params.medias;
+		this.markedAsRead = params.markedAsRead === true || params.markedAsReadStorage.includes(params.id.toString());
 		this.refs = params.refs ?? null;
 		this.fetched = params.fetched ?? false;
 		this.rawSource = params.rawSource ?? [];
@@ -68,8 +68,8 @@ export default abstract class Article {
 					article: this,
 				};
 			case 'repost': {
-				const reposted = get(getWritable(this.refs.reposted)).getArticleWithRefs();
-				if (reposted === null || reposted.type === 'repost' || reposted.type === 'reposts')
+				const reposted = get(getWritableArticle(this.refs.reposted)).getArticleWithRefs();
+				if (/*reposted === null ||*/ reposted.type === 'repost' || reposted.type === 'reposts')
 					throw new Error('Reposted article is a repost itself: ' + JSON.stringify(reposted));
 				return {
 					type: 'repost',
@@ -78,8 +78,8 @@ export default abstract class Article {
 				};
 			}
 			case 'quote': {
-				const quoted = get(getWritable(this.refs.quoted)).getArticleWithRefs();
-				if (quoted === null || quoted.type === 'repost' || quoted.type === 'reposts')
+				const quoted = get(getWritableArticle(this.refs.quoted)).getArticleWithRefs();
+				if (/*quoted === null ||*/ quoted.type === 'repost' || quoted.type === 'reposts')
 					throw new Error('Quoted article is a repost itself: ' + JSON.stringify(quoted));
 				return {
 					type: 'quote',
@@ -230,16 +230,20 @@ export function getActualArticleIdPair(article: Article): Readonly<ArticleIdPair
 	}
 }
 
-export function getRootArticle(articleWithRefs: ArticleWithRefs | ArticleProps) : Readonly<Article> {
+export function getRootArticle(articleWithRefs: ArticleWithRefs | ArticleProps): Readonly<Article> {
 	switch (articleWithRefs.type) {
-		case 'reposts':
-			return articleWithRefs.reposts[0];
-		default:
+		case 'reposts': {
+			const repost = articleWithRefs.reposts[0];
+			if (!repost)
+				throw new Error('No reposts');
+
+			return repost;
+		}default:
 			return articleWithRefs.article;
 	}
 }
 
-export function getActualArticle(articleWithRefs: ArticleWithRefs | ArticleProps) : Readonly<Article> {
+export function getActualArticle(articleWithRefs: ArticleWithRefs | ArticleProps): Readonly<Article> {
 	switch (articleWithRefs.type) {
 		case 'normal':
 		case 'quote':
@@ -250,7 +254,7 @@ export function getActualArticle(articleWithRefs: ArticleWithRefs | ArticleProps
 	}
 }
 
-export function getActualArticleRefs(articleWithRefs: ArticleWithRefs | ArticleProps) : Readonly<ArticleWithRefs | ArticleProps> {
+export function getActualArticleRefs(articleWithRefs: ArticleWithRefs | ArticleProps): Readonly<ArticleWithRefs | ArticleProps> {
 	switch (articleWithRefs.type) {
 		case 'normal':
 		case 'quote':
@@ -262,7 +266,11 @@ export function getActualArticleRefs(articleWithRefs: ArticleWithRefs | ArticleP
 }
 
 export function flatDeriveArticle(idPair: ArticleIdPair): Readable<Article>[] {
-	const [articleStore, refs] = getServices()[idPair.service].articles[idPair.id as string];
+	const article = getService(idPair.service).articles[idPair.id as string];
+	if (!article)
+		throw new Error(`Article ${idPair.service}/${idPair.id} not found`);
+	const [articleStore, refs] = article;
+
 	switch (refs?.type) {
 		case undefined:
 			return [articleStore];

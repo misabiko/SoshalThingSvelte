@@ -1,6 +1,6 @@
 import {loadMainStorage, MAIN_STORAGE_KEY} from './index';
 import {derived, get} from 'svelte/store';
-import type {Service} from '~/services/service';
+import {getService, type Service} from '~/services/service';
 import {getServices} from '~/services/service';
 import type Article from '../articles';
 
@@ -11,7 +11,7 @@ type SessionCacheStorage = {
 		[name: string]: {
 			//Storing as strings until we parse bigint, a library could fix it though
 			articlesMarkedAsRead: string[]
-			cachedArticles: { [id: string]: any }
+			cachedArticles: {[id: string]: any}
 		}
 	}
 };
@@ -27,14 +27,15 @@ export function updateMarkAsReadStorage() {
 	const {markAsReadLocal} = loadMainStorage();
 	const storageType = (markAsReadLocal ? localStorage : sessionStorage);
 	const item = storageType.getItem(MAIN_STORAGE_KEY);
-	let storage : SessionCacheStorage | null = item !== null ? JSON.parse(item) : null;
-	if (storage === null)
-		storage = {services: {}};
-	else if (storage.services === undefined)
-		storage.services = {};
+	const rawSessionCacheStorage: Partial<SessionCacheStorage> | null = item !== null ? JSON.parse(item) : null;
+
+	const sessionCacheStorage: SessionCacheStorage = rawSessionCacheStorage === null ? {services: {}} : {
+		...rawSessionCacheStorage,
+		services: rawSessionCacheStorage.services ??{},
+	};
 
 	for (const service of Object.values(getServices())) {
-		const articlesMarkedAsRead = new Set(storage.services[service.name]?.articlesMarkedAsRead);
+		const articlesMarkedAsRead = new Set(sessionCacheStorage.services[service.name]?.articlesMarkedAsRead ?? []);
 		for (const article of getServiceArticles(service)) {
 			if (article.markedAsRead)
 				articlesMarkedAsRead.add(article.idPair.id.toString());
@@ -42,16 +43,16 @@ export function updateMarkAsReadStorage() {
 				articlesMarkedAsRead.delete(article.idPair.id.toString());
 		}
 
-		if (Object.hasOwn(storage.services, service.name))
-			storage.services[service.name].articlesMarkedAsRead = [...articlesMarkedAsRead];
+		if (Object.hasOwn(sessionCacheStorage.services, service.name))
+			sessionCacheStorage.services[service.name]!.articlesMarkedAsRead = Array.from(articlesMarkedAsRead);
 		else
-			storage.services[service.name] = {
-				articlesMarkedAsRead: [...articlesMarkedAsRead],
+			sessionCacheStorage.services[service.name] = {
+				articlesMarkedAsRead: Array.from(articlesMarkedAsRead),
 				cachedArticles: {},
 			};
 	}
 
-	storageType.setItem(MAIN_STORAGE_KEY, JSON.stringify(storage));
+	storageType.setItem(MAIN_STORAGE_KEY, JSON.stringify(sessionCacheStorage));
 }
 
 export function updateCachedArticlesStorage(service?: string) {
@@ -62,7 +63,7 @@ export function updateCachedArticlesStorage(service?: string) {
 	else if (storage.services === undefined)
 		storage.services = {};
 
-	const services = service !== undefined ? [getServices()[service]] : Object.values(getServices());
+	const services = service !== undefined ? [getService(service)] : Object.values(getServices());
 
 	for (const service of services) {
 		const getCachedArticles = service.getCachedArticles;
@@ -72,7 +73,7 @@ export function updateCachedArticlesStorage(service?: string) {
 			if (Object.hasOwn(storage.services, service.name))
 				storage.services[service.name].cachedArticles = {
 					...storage.services[service.name].cachedArticles,
-					...cachedArticles
+					...cachedArticles,
 				};
 			else
 				storage.services[service.name] = {
@@ -88,10 +89,11 @@ export function updateCachedArticlesStorage(service?: string) {
 export function getMarkedAsReadStorage(service: Service<any>): string[] {
 	const {markAsReadLocal} = loadMainStorage();
 	const item = (markAsReadLocal ? localStorage : sessionStorage).getItem(MAIN_STORAGE_KEY);
-	const parsed: SessionCacheStorage | null = item !== null ? JSON.parse(item) : null;
+	const parsed: Partial<SessionCacheStorage> | null = item !== null ? JSON.parse(item) : null;
 	if (parsed?.services === undefined)
 		return [];
-	return parsed.services[service.name]?.articlesMarkedAsRead || [];
+
+	return parsed.services[service.name]?.articlesMarkedAsRead ?? [];
 }
 
 export function getCachedArticlesStorage<S extends object>(service: Service<any>): Record<string, S | undefined> {

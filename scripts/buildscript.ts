@@ -25,6 +25,8 @@ const SveltePlugin: esbuild.Plugin = {
 				let location;
 				if (start && end) {
 					const lineText = preprocessed.split(/\r\n|\r|\n/g)[start.line - 1];
+					if (!lineText)
+						throw new Error('Line text not found');
 					const lineEnd = start.line === end.line ? end.column : lineText.length;
 					location = {
 						file: filename,

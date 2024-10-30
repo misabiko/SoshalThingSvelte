@@ -9,22 +9,28 @@ import SoshalThing from './SoshalThing.svelte';
 import {loadMainStorage, loadTimelines} from './storages';
 import {defaultTimelineView, type FullscreenInfo, type TimelineView} from './timelines';
 
-const {timelineIds, fullscreen, timelineViews, currentTimelineView} = loadMainStorage();
+const {timelineIds, fullscreen, timelineViews, currentTimelineViewId} = loadMainStorage();
 const timelines = loadTimelines();
 
 const searchParams = new URLSearchParams(location.search);
 
 const searchTimelineView = parseTimelineView(timelineViews, searchParams);
-const timelineViewId: string = searchTimelineView ?? currentTimelineView ?? defaultTimelineView;
+const timelineViewId: string = searchTimelineView ?? currentTimelineViewId ?? defaultTimelineView;
 if (timelineViewId === defaultTimelineView) {
 	timelineViews[defaultTimelineView] ??= {
 		timelineIds: timelineIds ?? Object.keys(timelines),
 		fullscreen,
 	};
 }
+
+
+const currentTimelineView = timelineViews[timelineViewId];
+if (currentTimelineView === undefined)
+	throw new Error(`Couldn't find timeline view "${timelineViewId}"`);
+
 const searchParamsFullscreen = parseFullscreen(searchParams);
 if (searchParamsFullscreen !== null)
-	timelineViews[timelineViewId].fullscreen = searchParamsFullscreen;
+	currentTimelineView.fullscreen = searchParamsFullscreen;
 
 mount(SoshalThing, {
 	target: document.body,

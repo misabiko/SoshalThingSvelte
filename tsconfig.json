@@ -1,9 +1,10 @@
 {
 	"extends": "@tsconfig/svelte/tsconfig.json",
 	"compilerOptions": {
-		"target": "esnext",
+		"target": "ESNext",
+		"module": "Preserve",
+		"moduleResolution": "Bundler",
 
-		"module": "esnext",
 		"baseUrl": "./src/",
 		"paths": {
 			"~/*": ["./*"]
@@ -13,7 +14,7 @@
 			"svelte",
 			"chrome",
 			"node",
-			"Bun"
+			"bun"
 		],
 
 		"strict": true,

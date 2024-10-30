@@ -1,10 +1,10 @@
 import type BlueskyArticle from '~/services/bluesky/article';
 import {getWritableArticle, newService, registerService, type Service} from '~/services/service';
-import {AtpAgent} from '@atproto/api/src/atp-agent';
 import {STANDARD_ACTIONS} from '~/services/actions';
 import {get} from 'svelte/store';
 import {type ArticleWithRefs, articleWithRefToArray, getActualArticle, getRootArticle} from '~/articles';
 import type {Filter} from '~/filters';
+import {AtpAgent} from '@atproto/api';
 
 export const BlueskyService: BlueskyServiceType = {
 	...newService({

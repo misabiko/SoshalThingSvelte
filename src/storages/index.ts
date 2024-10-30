@@ -32,7 +32,7 @@ export const MAIN_STORAGE_KEY = 'SoshalThingSvelte';
 export const TIMELINE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Timelines';
 
 type RawMainStorage = Partial<MainStorageParsed & {
-	currentTimelineView: string
+	currentTimelineViewId: string
 	timelineViews: {[name: string]: TimelineViewStorage}
 	fullscreen: boolean | number | FullscreenInfoStorage
 }>;
@@ -43,7 +43,7 @@ export function loadMainStorage(): MainStorageParsed {
 
 	const timelineIds = partialMainStorage.timelineIds ?? null;
 
-	const currentTimelineView = partialMainStorage.currentTimelineView ?? null;
+	const currentTimelineView = partialMainStorage.currentTimelineViewId ?? null;
 
 	const timelineViews: Record<string, TimelineView> = {};
 	if (partialMainStorage.timelineViews) {
@@ -65,7 +65,7 @@ export function loadMainStorage(): MainStorageParsed {
 
 	return {
 		timelineIds,
-		currentTimelineView,
+		currentTimelineViewId: currentTimelineView,
 		timelineViews,
 		fullscreen,
 		maximized,
@@ -477,7 +477,7 @@ function parseFullscreenInfo(fullscreen?: boolean | number | FullscreenInfoStora
 
 type MainStorageParsed = {
 	timelineIds: TimelineView['timelineIds'] | null
-	currentTimelineView: string | null
+	currentTimelineViewId: string | null
 	timelineViews: Record<string, TimelineView>
 	fullscreen: FullscreenInfo
 	maximized: boolean

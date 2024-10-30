@@ -15,7 +15,7 @@ import {get, type Writable} from 'svelte/store';
 import {writable} from 'svelte/store';
 import {everyRefreshType} from '~/services/endpoints';
 import MasonryContainer from '~/containers/MasonryContainer.svelte';
-import {getServices} from '~/services/service';
+import {getService} from '~/services/service';
 import type {ActualContainerProps} from '~/containers';
 
 export type TimelineData = {
@@ -78,7 +78,7 @@ export type TimelineTemplate = Partial<Omit<TimelineData,
 }>;
 
 export function defaultTimeline(data: TimelineDataPartial): TimelineData {
-	const template = data.serviceTemplate ? getServices()[data.serviceTemplate.service].timelineTemplates[data.serviceTemplate.templateId] : {};
+	const template = data.serviceTemplate ? getService(data.serviceTemplate.service).timelineTemplates[data.serviceTemplate.templateId] : {};
 	return {
 		title: 'Timeline',
 		serviceTemplate: null,
@@ -168,7 +168,7 @@ export type FullscreenInfo = {
 };
 
 export function newUserTimeline(serviceName: string, author: ArticleAuthor): TimelineData | null {
-	const endpointConstructor = getServices()[serviceName].userEndpoint;
+	const endpointConstructor = getService(serviceName).userEndpoint;
 	if (endpointConstructor === null)
 		return null;
 
@@ -180,25 +180,26 @@ export function newUserTimeline(serviceName: string, author: ArticleAuthor): Tim
 			filters: [],
 		}],
 		filters: [
-			...defaultFilterInstances,
-			{
-				filter: {
-					type: 'media',
-					service: null,
-					props: {},
-				},
-				enabled: true,
-				inverted: false,
-			},
-			{
-				filter: {
-					type: 'noRef',
-					service: null,
-					props: {},
-				},
-				enabled: true,
-				inverted: false,
-			},
+			//TODO Store user timeline filters dynamically
+			// ...defaultFilterInstances,
+			// {
+			// 	filter: {
+			// 		type: 'media',
+			// 		service: null,
+			// 		props: {},
+			// 	},
+			// 	enabled: true,
+			// 	inverted: false,
+			// },
+			// {
+			// 	filter: {
+			// 		type: 'noRef',
+			// 		service: null,
+			// 		props: {},
+			// 	},
+			// 	enabled: true,
+			// 	inverted: false,
+			// },
 		],
 		container: MasonryContainer,
 		columnCount: 3,

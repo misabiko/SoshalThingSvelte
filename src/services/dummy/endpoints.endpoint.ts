@@ -4,7 +4,8 @@ import {getMarkedAsReadStorage} from '~/storages/serviceCache';
 import {Endpoint, RefreshType} from '../endpoints';
 import type {EndpointConstructorInfo} from '../endpoints';
 import type {ArticleWithRefs} from '~/articles';
-import {registerEndpointConstructor} from '../service';
+import {getService, registerEndpointConstructor} from '../service';
+import {get} from 'svelte/store';
 
 export class DummyEndpoint extends Endpoint {
 	readonly name = 'DummyEndpoint';
@@ -16,7 +17,11 @@ export class DummyEndpoint extends Endpoint {
 
 		return [...Array(10).keys()].map(i => ({
 			type: 'normal',
-			article: new DummyArticle(i, 'bleh' + i, false, false, markAsReadStorage),
+			article: new DummyArticle(i, 'bleh' + i, false, false, markAsReadStorage, {
+				name: 'DummyAuthor' + i,
+				url: '',
+				username: 'dummy' + i,
+			}),
 		} as ArticleWithRefs));
 	}
 
@@ -61,5 +66,46 @@ export class DummyEndpointWithParam extends Endpoint {
 	}
 }
 
+export class DummyUserEndpoint extends Endpoint {
+	readonly name;
+	static service = DummyService.name;
+	readonly params;
+
+	constructor(readonly user: string) {
+		super();
+
+		this.name = `Dummy Endpoint ${user}`;
+
+		this.params = {
+			user,
+		};
+	}
+
+	async refresh(_refreshType: RefreshType) {
+		const authorIndex = parseInt(this.user.replace('dummy', ''));
+		const writablePair = getService('Dummy').articles[authorIndex];
+		if (writablePair === undefined)
+			throw new Error(`Article ${authorIndex} not found`);
+		const article = get(writablePair[0]);
+		return [{
+			type: 'normal',
+			article,
+		} satisfies ArticleWithRefs];
+	}
+
+	static readonly constructorInfo: EndpointConstructorInfo = {
+		name: 'DummyUserEndpoint',
+		paramTemplate: [['user', '']],
+		constructor: params => new DummyEndpointWithParam(params.user as string),
+	};
+
+	matchParams(params: any): boolean {
+		return params.user === this.user;
+	}
+}
+
 registerEndpointConstructor(DummyEndpoint);
 registerEndpointConstructor(DummyEndpointWithParam);
+registerEndpointConstructor(DummyUserEndpoint);
+
+getService('Dummy').userEndpoint = user => new DummyUserEndpoint((user).username);

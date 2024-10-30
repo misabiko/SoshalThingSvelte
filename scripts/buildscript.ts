@@ -6,6 +6,7 @@ import path, {dirname} from 'path';
 import {fileURLToPath} from 'url';
 import EsbuildPluginImportGlob from 'esbuild-plugin-import-glob';
 import type {Warning} from 'svelte/compiler';
+import {parseArgs} from 'util';
 
 process.env.NODE_ENV = process.env.NODE_ENV ?? 'development';
 
@@ -65,13 +66,21 @@ const SveltePlugin: esbuild.Plugin = {
 const outdir = './dist';
 
 
-let entryPoint = './src/entry.ts';
-const entryIndex = process.argv.findIndex(s => s === '--entry');
-if (entryIndex > -1 && process.argv.length >= entryIndex)
-	entryPoint = path.join(dirname(fileURLToPath(import.meta.url)), process.argv[entryIndex + 1]);
+const args = parseArgs({
+	args: Bun.argv,
+	options: {
+		entry: {
+			type: 'string',
+			short: 'e',
+			default: '../src/entry.ts',
+		},
+	},
+	strict: true,
+	allowPositionals: true,
+});
 
 export const buildOptions: BuildOptions = {
-	entryPoints: [entryPoint],
+	entryPoints: [path.join(dirname(fileURLToPath(import.meta.url)), args.values.entry)],
 	bundle: true,
 	outdir,
 	mainFields: ['svelte', 'browser', 'module', 'main', 'exports'],

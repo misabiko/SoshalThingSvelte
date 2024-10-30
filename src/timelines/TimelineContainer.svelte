@@ -68,6 +68,8 @@
 			...(modalTimeline === null ? [] : [modalTimeline]),
 		]);
 	});
+
+	const mountElement = document.getElementsByClassName('soshalthing')[0]!;
 </script>
 
 <style>
@@ -83,7 +85,7 @@
 <div id='timelineContainer'>
 	{#if modalTimeline !== null}
 	<!-- TODO Find way to get specific parent soshalthing -->
-		<Modal bind:active={modalTimelineActive} mountElement={document.getElementsByClassName('soshalthing')[0]}>
+		<Modal bind:active={modalTimelineActive} {mountElement}>
 			<Timeline
 				timelineId={null}
 				data={modalTimeline}

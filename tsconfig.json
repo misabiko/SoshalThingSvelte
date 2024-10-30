@@ -31,7 +31,10 @@
 		"preserveValueImports": false,
 		"verbatimModuleSyntax": true,
 
-		"noUncheckedIndexedAccess": true
+		"noUncheckedIndexedAccess": true,
+
+		//https://stackoverflow.com/a/56268670/2692695
+		"skipLibCheck": true,
 	},
 //	"include": ["src/**/*.ts", "tests/**/*.ts"],
 	"exclude": ["node_modules/**", "dist/**"]

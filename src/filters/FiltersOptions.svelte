@@ -3,7 +3,7 @@
 	import Dropdown from '../Dropdown.svelte';
 	import {genericFilterTypes} from './index';
 	import {defaultFilter} from './index';
-	import {getServices} from '~/services/service';
+	import {getService, getServices} from '~/services/service';
 	import type {Writable} from 'svelte/store';
 
 	export let onInstancesUpdate: (i: FilterInstance[]) => void;
@@ -42,7 +42,7 @@
 {#each $instances as instance, index (`${JSON.stringify(instance)}/${index}`)}
 	{@const filterTypeInfo = instance.filter.service === null
 		? genericFilterTypes[instance.filter.type]
-		: getServices()[instance.filter.service].filterTypes[instance.filter.type]
+		: getService(instance.filter.service).filterTypes[instance.filter.type]
 	}
 	<div class='field'>
 		<label>
@@ -53,7 +53,7 @@
 				getFilterName(
 					instance.filter.service === null
 						? genericFilterTypes[instance.filter.type]
-						: getServices()[instance.filter.service].filterTypes[instance.filter.type],
+						: getService(instance.filter.service).filterTypes[instance.filter.type],
 					instance.inverted,
 				)
 			}

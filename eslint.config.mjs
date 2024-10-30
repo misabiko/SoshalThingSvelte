@@ -40,6 +40,7 @@ export default tseslint.config(
 			},
 			globals: {
 				...globals.browser,
+				chrome: 'readonly',
 			},
 		},
 		rules: {

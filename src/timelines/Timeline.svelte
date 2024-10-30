@@ -21,6 +21,7 @@
 	import {endpoints, refreshEndpoint, refreshEndpointName, RefreshType} from '~/services/endpoints';
 	import {loadingStore} from '~/bufferedMediaLoading';
 
+	//Modals don't have ids (though we should also be able to modal a timeline with id)
 	export let timelineId: string | null;
 	export let data: TimelineData;
 	export let fullscreen: FullscreenInfo | null = null;

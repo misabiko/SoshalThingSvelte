@@ -11,7 +11,7 @@
 	import type {FullscreenInfo} from './index';
 	import {updateFullscreenStorage, updateServiceTemplateStorageValue, updateTimelinesStorageValue} from '~/storages';
 	import EndpointOptions from '~/timelines/EndpointOptions.svelte';
-	import {getServices} from '~/services/service';
+	import {getService} from '~/services/service';
 	import {get, writable} from 'svelte/store';
 
 	export let timelineId: string | null;
@@ -47,7 +47,7 @@
 	}
 
 	enum OptionLayer {
-		Session = 'session',
+		// Session = 'session',
 		Timeline = 'timeline',
 		//Fullscreen = 'fullscreen',
 		ServiceTemplate = 'serviceTemplate',
@@ -55,7 +55,7 @@
 	const currentLayer = writable(OptionLayer.Timeline);
 
 	const template = data.serviceTemplate !== null
-		? getServices()[data.serviceTemplate.service].timelineTemplates[data.serviceTemplate.templateId]
+		? getService(data.serviceTemplate.service).timelineTemplates[data.serviceTemplate.templateId]
 		: null;
 	let templateFilters = template?.filters ?? null;
 	if (templateFilters === null && template !== null)
@@ -364,30 +364,31 @@
 	</section>
 	<section>
 		<select bind:value={$currentLayer}>
-			<option value={OptionLayer.Session}>Session</option>
+<!--			TODO Have actual session filtersinstance somewhere-->
+<!--			<option value={OptionLayer.Session}>Session</option>-->
 			<option value={OptionLayer.Timeline}>Timeline</option>
-			{#if data.serviceTemplate !== null}
+			{#if data.serviceTemplate !== null && templateFilters !== null}
 				<option value={OptionLayer.ServiceTemplate}>Service Template</option>
 			{/if}
 		</select>
 		{#key $currentLayer}
-			{#if ($currentLayer === OptionLayer.Timeline) && timelineId !== null}
+			{#if ($currentLayer === OptionLayer.Timeline)}
 				<FiltersOptions
 					onInstancesUpdate={instances => {
-						if (timelineId === null)
-							throw {message: 'TimelineId is null', data};
-						updateTimelinesStorageValue(timelineId, 'filters', instances);
+						if (timelineId !== null)
+						// 	throw {message: 'TimelineId is null', data};
+							updateTimelinesStorageValue(timelineId, 'filters', instances);
 					}}
 					instances={data.filters}
 				/>
-			{:else if $currentLayer === OptionLayer.ServiceTemplate && data.serviceTemplate !== null && templateFilters !== null}
+			{:else if $currentLayer === OptionLayer.ServiceTemplate}
 				<FiltersOptions
 					onInstancesUpdate={instances => {
 						if (data.serviceTemplate === null)
 							throw {message: 'ServiceTemplate is null', data};
 						updateServiceTemplateStorageValue(data.serviceTemplate.service, data.serviceTemplate.templateId, 'filters', instances);
 					}}
-					instances={templateFilters}
+					instances={templateFilters!}
 				/>
 			{/if}
 		{/key}

@@ -120,6 +120,7 @@
 			<Fa icon={faRandom} size='lg'/>
 		</button>
 		{#if data.container === MasonryContainer}
+		<!-- TODO Fix balance on fullscreen container -->
 			<button class='borderless-button' title='Organize Container'
 					onclick={() => containerRebalance = !containerRebalance}>
 				<Fa icon={faScaleBalanced} size='lg'/>

@@ -35,10 +35,10 @@ if (searchParamsFullscreen !== null)
 mount(SoshalThing, {
 	target: document.body,
 	props: {
-		isInjected: false,
 		timelines,
-		timelineViewId,
 		timelineViews,
+		timelineViewId,
+		isInjected: false,
 	},
 });
 

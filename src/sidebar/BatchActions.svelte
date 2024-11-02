@@ -3,7 +3,7 @@
 	import FiltersOptions from '../filters/FiltersOptions.svelte';
 	import {type FilterInstance, useFilters} from '~/filters';
 	import type {TimelineCollection} from '~/timelines';
-	import {derived, type Readable, readonly, type Writable} from 'svelte/store';
+	import {derived as storeDerived, type Readable, readonly, type Writable} from 'svelte/store';
 	import {
 		type ArticleIdPair,
 		type ArticleWithRefs, flatDeriveArticle, getRootArticle,
@@ -22,17 +22,14 @@
 	let action = $state('markAsRead');
 	let onlyListedArticles = $state(true);
 
-	let articleIdPairs: Readable<ArticleIdPair[]> = readonly(timelines[timelineId]!.articles);
+	let articleIdPairs: Readable<ArticleIdPair[]> = $derived(readonly(timelines[timelineId]!.articles));
 
-	let articlesWithRefs: Readable<ArticleWithRefs[]>;
-	//Redo with $derived
-	$effect(() => articlesWithRefs = derived(
-		$articleIdPairs.map(idPair => derived(flatDeriveArticle(idPair), articles => articles[0]!)),
+	let articlesWithRefs: Readable<ArticleWithRefs[]> = $derived(storeDerived(
+		$articleIdPairs.map(idPair => storeDerived(flatDeriveArticle(idPair), articles => articles[0]!)),
 		articles => articles.map(a => a.getArticleWithRefs()),
 	));
 
-	let filteredArticles: Readable<ArticleWithRefs[]>;
-	$effect(() => filteredArticles = derived(
+	let filteredArticles: Readable<ArticleWithRefs[]> = $derived(storeDerived(
 		[articlesWithRefs, filterInstances, timelines[timelineId]!.filters],
 		([articlesWithRefs, filterInstances, filters]) => useFilters(articlesWithRefs, [
 			...filterInstances,

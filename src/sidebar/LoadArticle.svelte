@@ -10,7 +10,7 @@
 	let serviceName = $state(services[0] ? services[0][0] : null);
 
 	let articleId = $state('');
-	let article: ArticleWithRefs | null = $state(null);
+	let article = $state<ArticleWithRefs | null>(null);
 
 	async function loadArticle() {
 		if (serviceName === null)
@@ -36,10 +36,13 @@
 		showAllMediaArticles: writable(new Set()),
 	});
 
+	//TODO should use Timeline's addProps to convert recursively
+	// @ts-expect-error Will fix later, article typing might change anyway
 	let articleProps: ArticleProps | null = $derived(article !== null ? {
 		...article,
 		filteredOut: false,
 		nonKeepFilters: [],
+		mediaIndex: null,
 	} : null);
 </script>
 

@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import {type Readable, readonly} from 'svelte/store';
-	import {derived, get} from 'svelte/store';
+	import {derived as storeDerived, get} from 'svelte/store';
 	import {
 		type ArticleIdPair,
 		type ArticleProps,
@@ -21,51 +21,61 @@
 	import {endpoints, refreshEndpoint, refreshEndpointName, RefreshType} from '~/services/endpoints';
 	import {loadingStore} from '~/bufferedMediaLoading';
 
-	//Modals don't have ids (though we should also be able to modal a timeline with id)
-	export let timelineId: string | null;
-	export let data: TimelineData;
-	export let fullscreen: FullscreenInfo | null = null;
-	export let toggleFullscreen: (() => void) | null = null;
-	export let removeTimeline: () => void;
-	export let setModalTimeline: (data: TimelineData, width?: number) => void;
-	export let modal = false;
+	let {
+		timelineId,
+		data,
+		fullscreen = $bindable(null),
+		toggleFullscreen = null,
+		removeTimeline,
+		setModalTimeline,
+		modal = false,
 
-	export let favviewerButtons = false;
-	export let favviewerHidden = false;
-	export let favviewerMaximized: boolean | null = null;
-	export let showSidebar = true;
+		favviewerButtons = false,
+		favviewerHidden = $bindable(false),
+		favviewerMaximized = $bindable(null),
+		showSidebar = $bindable(true),
+	}: {
+		//Modals don't have ids (though we should also be able to modal a timeline with id)
+		timelineId: string | null
+		data: TimelineData
+		fullscreen?: FullscreenInfo | null
+		toggleFullscreen?: (() => void) | null
+		removeTimeline: () => void
+		setModalTimeline: (data: TimelineData, width?: number) => void
+		modal?: boolean
 
-	let showOptions = false;
-	let containerRef: HTMLElement | null = null;
-	let containerRebalance = false;
+		favviewerButtons?: boolean
+		favviewerHidden?: boolean
+		favviewerMaximized?: boolean | null
+		showSidebar?: boolean
+	} = $props();
 
-	let articleIdPairs: Readable<ArticleIdPair[]> = derived([readonly(data.articles), loadingStore], ([a, _]) => a);
+	let showOptions = $state(false);
+	let containerRef: HTMLElement | null = $state(null);
+	let containerRebalance = $state(false);
+
+	let articleIdPairs: Readable<ArticleIdPair[]> = storeDerived([readonly(data.articles), loadingStore], ([a, _]) => a);
 	let articlesOrder = readonly(data.articlesOrder);
 
 	let showAllMediaArticles = data.showAllMediaArticles;
 	let filters = data.filters;
 
-	let preOrderArticles: Readable<Record<string, ArticleProps>>;
-	$: {
-		//Get flat article ref store array per idPair, derive each then discard the refs, then add props for each
-		preOrderArticles = derived([filters, ...$articleIdPairs.map(idPair => derived(flatDeriveArticle(idPair), articles => articles[0]))], ([filters, ...articles]) =>
-			//Might have to give in to using .find if we want to keep duplicate articles
-			Object.fromEntries(articles
-				.flatMap((a, i) => addPropsRoot(a!.getArticleWithRefs(), i, filters))
-				.map(a => [getIdServiceMediaStr(a), a])),
-		);
-	}
+	//Get flat article ref store array per idPair, derive each then discard the refs, then add props for each
+	let preOrderArticles: Readable<Record<string, ArticleProps>> = $derived(storeDerived([filters, ...$articleIdPairs.map(idPair => storeDerived(flatDeriveArticle(idPair), articles => articles[0]))], ([filters, ...articles]) =>
+		//Might have to give in to using .find if we want to keep duplicate articles
+		Object.fromEntries(articles
+			.flatMap((a, i) => addPropsRoot(a!.getArticleWithRefs(), i, filters))
+			.map(a => [getIdServiceMediaStr(a), a])),
+	));
 
-	let articles: Readable<ArticleProps[]>;
-	$: articles = derived([preOrderArticles, articlesOrder], ([a, order]) => {
+	let articles: Readable<ArticleProps[]> = $derived(storeDerived([preOrderArticles, articlesOrder], ([a, order]) => {
 		if (order === null)
 			return Object.values(a);
 
 		return order.map(id => a[id]!);
-	});
+	}));
 
-	let filteredArticles: Readable<ArticleProps[]>;
-	$: filteredArticles = derived(articles, articleProps => {
+	let filteredArticles: Readable<ArticleProps[]> = $derived(storeDerived(articles, articleProps => {
 		if (data.hideFilteredOutArticles)
 			articleProps = articleProps.filter(a => !a.filteredOut);
 
@@ -113,7 +123,7 @@
 			articleProps = articleProps.slice(0, data.section.count);
 
 		return articleProps;
-	});
+	}));
 
 	function addPropsRoot(articleWithRefs: ArticleWithRefs, index: number, filters: FilterInstance[]): ArticleProps[] {
 		if (data.separateMedia) {
@@ -202,58 +212,59 @@
 		return {filteredOut, nonKeepFilters};
 	}
 
-	let articleCountLabel: string;
-	$: if ($filteredArticles.length)
-		articleCountLabel = `${$filteredArticles.length} articles shown, ${$articles.length - $filteredArticles.length} hidden.`;
-	else if ($articles.length)
-		articleCountLabel = `${$articles.length} hidden articles`;
-	else
-		articleCountLabel = 'No articles listed.';
+	let articleCountLabel: string = $derived.by(() => {
+		if ($filteredArticles.length)
+			return `${$filteredArticles.length} articles shown, ${$articles.length - $filteredArticles.length} hidden.`;
+		else if ($articles.length)
+			return `${$articles.length} hidden articles`;
+		else
+			return 'No articles listed.';
+	});
 
 	//Pre-queuing media loads so they load in the right order
-	$: if (data.shouldLoadMedia && $filteredArticles.length) {
-		const articles = $filteredArticles.flatMap(articleWithRefToWithRefArray);
+	$effect(() => {
+		if (data.shouldLoadMedia && $filteredArticles.length) {
+			const articles = $filteredArticles.flatMap(articleWithRefToWithRefArray);
 
-		const promises = [];
-		const toRequest = [];
+			const promises = [];
+			const toRequest = [];
 
-		for (const articleProps of articles) {
-			const actualArticleProps = getActualArticleRefs(articleProps) as ArticleProps;
-			if (actualArticleProps.type === 'repost' || actualArticleProps.type === 'reposts')
-				throw new Error('Actual article is repost');
+			for (const articleProps of articles) {
+				const actualArticleProps = getActualArticleRefs(articleProps) as ArticleProps;
+				if (actualArticleProps.type === 'repost' || actualArticleProps.type === 'reposts')
+					throw new Error('Actual article is repost');
 
-			if (data.hideFilteredOutArticles && actualArticleProps.filteredOut)
-				continue;
+				if (data.hideFilteredOutArticles && actualArticleProps.filteredOut)
+					continue;
 
-			const articleStore = getWritableArticle(actualArticleProps.article.idPair);
-			let article = get(articleStore);
+				const articleStore = getWritableArticle(actualArticleProps.article.idPair);
+				let article = get(articleStore);
 
-			if (!article.fetched)
-				promises.push(fetchArticle(article.idPair).then(() => {
-					let article = get(articleStore);
+				if (!article.fetched)
+					promises.push(fetchArticle(article.idPair).then(() => {
+						let article = get(articleStore);
+						const mediaCount = Math.min(actualArticleProps.article.medias.length, !$showAllMediaArticles.has(article.idPairStr) && data.maxMediaCount !== null ? data.maxMediaCount : Infinity);
+						for (let i = 0; i < mediaCount; ++i)
+							loadingStore.getLoadingState(article.idPair, i, data.shouldLoadMedia);
+					}));
+				else {
 					const mediaCount = Math.min(actualArticleProps.article.medias.length, !$showAllMediaArticles.has(article.idPairStr) && data.maxMediaCount !== null ? data.maxMediaCount : Infinity);
-					for (let i = 0; i < mediaCount; ++i)
-						loadingStore.getLoadingState(article.idPair, i, data.shouldLoadMedia);
-				}));
-			else {
-				const mediaCount = Math.min(actualArticleProps.article.medias.length, !$showAllMediaArticles.has(article.idPairStr) && data.maxMediaCount !== null ? data.maxMediaCount : Infinity);
-				for (let mediaIndex = 0; mediaIndex < mediaCount; ++mediaIndex)
-					toRequest.push({idPair: article.idPair, mediaIndex});
+					for (let mediaIndex = 0; mediaIndex < mediaCount; ++mediaIndex)
+						toRequest.push({idPair: article.idPair, mediaIndex});
+				}
 			}
+
+			loadingStore.requestLoads(...toRequest);
+			Promise.allSettled(promises).then();
 		}
+	});
 
-		loadingStore.requestLoads(...toRequest);
-		Promise.allSettled(promises).then();
-	}
-
-	let availableRefreshTypes: Readable<Set<RefreshType>>;
-	$: availableRefreshTypes = derived(data.endpoints.flatMap(e => {
+	let availableRefreshTypes: Readable<Set<RefreshType>> = $derived(storeDerived(data.endpoints.flatMap(e => {
 		const endpoint = e.name !== undefined ? get(endpoints[e.name]!) : e.endpoint;
-		return derived(endpoint.refreshTypes, rt => [...rt.values()]);
-	}), rts => new Set(rts.flatMap(rt => rt)));
+		return storeDerived(endpoint.refreshTypes, rt => [...rt.values()]);
+	}), rts => new Set(rts.flatMap(rt => rt))));
 
-	let containerProps: ContainerProps;
-	$: containerProps = {
+	let containerProps: ContainerProps = $derived({
 		articles: $filteredArticles,
 		timelineArticleProps: {
 			animatedAsGifs: data.animatedAsGifs,
@@ -272,7 +283,7 @@
 		rtl: data.rtl,
 		rebalanceTrigger: containerRebalance,
 		separateMedia: data.separateMedia,
-	};
+	});
 
 	enum ScrollDirection {
 		Up,
@@ -286,6 +297,8 @@
 	} = {
 		direction: ScrollDirection.Down,
 	};
+
+	let ContainerComponent = $derived(fullscreen?.container ?? data.container);
 
 	function shuffle() {
 		data.articlesOrder.update(articleIndex => {
@@ -454,8 +467,7 @@
 		/>
 	{/if}
 	{#if $filteredArticles.length}
-		<svelte:component
-				this={fullscreen?.container ?? data.container}
+		<ContainerComponent
 				bind:containerRef
 				props={containerProps}
 		/>

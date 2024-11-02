@@ -4,43 +4,62 @@
 	import {getActualArticle, getRootArticle} from '~/articles';
 	import type {ContainerProps} from './index';
 
-	export let containerRef = null;
-	export let props: ContainerProps;
+	let {
+		containerRef = $bindable(null),
+		props,
+	}: {
+		containerRef: null | HTMLDivElement
+		props: ContainerProps
+	} = $props();
+
 	let lastRebalanceTrigger = false;
 	let lastColumnCount = props.columnCount;
 
-	let uniqueArticles: Record<string, {articleProps: ArticleProps, index: number, mediaIndex: number | null}>;
-	$: if (props.separateMedia) {
-		uniqueArticles = Object.fromEntries(props.articles.map((articleProps, index) => [
-			getIdServiceMediaStr(articleProps),
-			{articleProps, index, mediaIndex: articleProps.mediaIndex},
-		]));
-	}else {
-		uniqueArticles = {};
-		const idServiceMedias = new Set<string>();
-		for (const a of props.articles) {
-			let lastSize = idServiceMedias.size;
-			const idServiceMedia = getIdServiceMediaStr(a);
-			idServiceMedias.add(idServiceMedia);
-			if (idServiceMedias.size > lastSize) {
-				uniqueArticles[idServiceMedia] = {articleProps: a, index: lastSize, mediaIndex: 0};
+	let uniqueArticles: Record<string, {
+		articleProps: ArticleProps
+		index: number
+		mediaIndex: number | null
+	}> = $derived.by(() => {
+		if (props.separateMedia) {
+			return Object.fromEntries(props.articles.map((articleProps, index) => [
+				getIdServiceMediaStr(articleProps),
+				{articleProps, index, mediaIndex: articleProps.mediaIndex},
+			]));
+		}else {
+			const uniques: Record<string, {
+				articleProps: ArticleProps
+				index: number
+				mediaIndex: number | null
+			}> = {};
+			const idServiceMedias = new Set<string>();
+			for (const a of props.articles) {
+				let lastSize = idServiceMedias.size;
+				const idServiceMedia = getIdServiceMediaStr(a);
+				idServiceMedias.add(idServiceMedia);
+				if (idServiceMedias.size > lastSize) {
+					uniques[idServiceMedia] = {articleProps: a, index: lastSize, mediaIndex: 0};
+				}
 			}
+
+			return uniques;
 		}
-	}
+	});
 	//TODO Support duplicate articles
 	//Maybe by making a second MasonryContainer which refreshes every column every time
 
 	type Column = {idServiceMedias: string[], ratio: number};
-	let columns: Column[] = [];
+	let columns = $state<Column[]>([]);
 
-	$: if (props.rebalanceTrigger !== lastRebalanceTrigger || props.columnCount !== lastColumnCount) {
-		//TODO Add columnRef array and rebalance by moving overflowing articles
-		columns = [];
-		lastRebalanceTrigger = props.rebalanceTrigger;
-		lastColumnCount = props.columnCount;
-	}
+	$effect(() => {
+		if (props.rebalanceTrigger !== lastRebalanceTrigger || props.columnCount !== lastColumnCount) {
+			//TODO Add columnRef array and rebalance by moving overflowing articles
+			columns = [];
+			lastRebalanceTrigger = props.rebalanceTrigger;
+			lastColumnCount = props.columnCount;
+		}
+	});
 
-	$: {
+	$effect(() => {
 		if (!columns.length) {
 			columns = makeColumns();
 		}else {
@@ -78,7 +97,7 @@
 			for (const i of columnsChanged.values())
 				columns[i]!.ratio = columns[i]!.idServiceMedias.reduce((acc, curr) => acc + getRatio(uniqueArticles[curr]!.articleProps), 0);
 		}
-	}
+	});
 
 	function makeColumns() {
 		columns = [];

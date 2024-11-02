@@ -198,6 +198,8 @@ export default tseslint.config(
 			'prefer-const': 'off',
 			//TODO Investigate false positives
 			'svelte/no-unused-svelte-ignore': 'off',
+			//We're already using svelte-check, and it treats the warnings as errors
+			'svelte/valid-compile': 'off',
 		},
 	},
 	{

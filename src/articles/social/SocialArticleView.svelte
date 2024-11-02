@@ -1,40 +1,39 @@
 <script lang='ts'>
 	import Article, {getRootArticle} from '~/articles';
-	import type {ArticleIdPair} from '../index';
-	import type {ArticleProps, TimelineArticleProps} from '../index';
+	import type {ArticleViewProps} from '../index';
+	import type {ArticleProps} from '../index';
 	import {shortTimestamp} from '../index';
 	import SocialMedia from './SocialMedia.svelte';
 	import SocialNav from './SocialNav.svelte';
 	import Timestamp from './Timestamp.svelte';
 	import {newUserTimeline} from '~/timelines';
-	import {LoadingState} from '~/bufferedMediaLoading';
 	import SocialQuote from '~/articles/social/SocialQuote.svelte';
-	import type {Readable} from 'svelte/store';
 
-	export let timelineProps: TimelineArticleProps;
-	export let articleProps: ArticleProps;
-	export let actualArticleProps: ArticleProps;
-	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
-	export let modal: boolean; modal;
-	export let rootArticle: Readonly<Article>;
-	// $: idPair = rootArticle.idPair;
-	export let actualArticle: Readonly<Article>;
-	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number;
-	export let onLogData: () => void;
-	export let onLogJSON: () => void;
+	let {
+		timelineProps,
+		articleProps,
+		actualArticleProps,
+		modal = $bindable(),
+		rootArticle,
+		actualArticle,
+		onMediaClick,
+		onLogData,
+		onLogJSON,
 
-	export let divRef: HTMLDivElement | null;
-	export let mediaRefs: Record<number, HTMLImageElement>;
-	export let loadingStates: Readable<Record<number, LoadingState>>;
+		divRef = $bindable(),
+		mediaRefs = $bindable(),
+		loadingStates = $bindable(),
+	}: ArticleViewProps = $props();
 
 	//TODO Propagate article compact to the timeline
-	let compact: boolean | null = null;
-	let quoteCompact: boolean | null = null;
+	let compact: boolean | null = $state(null);
+	let quoteCompact: boolean | null = $state(null);
 
-	let quoted: ArticleProps | null;
-	$: quoted = actualArticleProps.type === 'quote'
-		? actualArticleProps.quoted
-		: null;
+	let quoted: ArticleProps | null = $derived(
+		actualArticleProps.type === 'quote'
+			? actualArticleProps.quoted
+			: null,
+	);
 
 	function onUsernameClick(clickedArticle: Article) {
 		if (!clickedArticle.author)

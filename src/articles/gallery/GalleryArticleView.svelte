@@ -1,6 +1,5 @@
 <script lang='ts'>
-	import Article from '../index';
-	import type {ArticleIdPair} from '../index';
+	import type {ArticleViewProps} from '../index';
 	import Fa from 'svelte-fa';
 	import {
 		faExpandArrowsAlt,
@@ -10,33 +9,28 @@
 	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
 	import Dropdown from '~/Dropdown.svelte';
 	import {getService} from '~/services/service';
-	import type {TimelineArticleProps} from '../index';
-	import type {ArticleProps} from '../index';
-	import {type ArticleMedia, MediaType} from '../media';
+	import {MediaType} from '../media';
 	import GalleryThumbnail from './GalleryThumbnail.svelte';
 	import GalleryImage from './GalleryImage.svelte';
 	import {type ArticleAction, getGenericActions} from '~/services/actions';
-	import {derived, type Readable} from 'svelte/store';
 
-	export let timelineProps: TimelineArticleProps;
-	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
-	export let articleProps: ArticleProps; articleProps;
-	export let actualArticleProps: ArticleProps;
-	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
-	export let style = ''; style;
-	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
-	export let modal: boolean; modal;
-	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
-	export let rootArticle: Readonly<Article>; rootArticle;
-	export let actualArticle: Readonly<Article>;
-	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number;
-	export let onLogData: () => void;
-	export let onLogJSON: () => void;
-	let showAllMedia = derived(timelineProps.showAllMediaArticles, articles => articles.has(rootArticle.idPairStr));
+	let {
+		timelineProps,
+		articleProps,
+		actualArticleProps,
+		modal = $bindable(),
+		rootArticle,
+		actualArticle,
+		onMediaClick,
+		onLogData,
+		onLogJSON,
 
-	export let divRef: HTMLDivElement | null;
-	export let mediaRefs: Record<number, HTMLImageElement | HTMLVideoElement>;
-	export let loadingStates: Readable<Record<number, LoadingState>>;
+		divRef = $bindable(),
+		mediaRefs = $bindable(),
+		loadingStates = $bindable(),
+	}: ArticleViewProps = $props();
+	let showAllMediaArticles = $derived(timelineProps.showAllMediaArticles);
+	let showAllMedia = $derived($showAllMediaArticles.has(rootArticle.idPairStr));
 
 	let actions: [ArticleAction[], ArticleAction[]] = [...Object.values(getService(rootArticle.idPair.service).articleActions), ...getGenericActions(rootArticle)]
 		.sort((a, b) => a.index - b.index)
@@ -48,11 +42,10 @@
 			return [icons, dropdown];
 		}, [[], []]);
 
-	let medias: [ArticleMedia, number][];
-	$: medias = actualArticleProps.mediaIndex === null
-		? actualArticle.medias.slice(0, !$showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined)
+	let medias = $derived(actualArticleProps.mediaIndex === null
+		? actualArticle.medias.slice(0, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined)
 			.map((m, i) => [m, i])
-		: [[actualArticle.medias[actualArticleProps.mediaIndex]!, actualArticleProps.mediaIndex]];
+		: [[actualArticle.medias[actualArticleProps.mediaIndex]!, actualArticleProps.mediaIndex]]);
 </script>
 
 <style>
@@ -175,7 +168,7 @@
 				</video>
 			{/if}
 		{/each}
-		{#if !$showAllMedia && timelineProps.maxMediaCount !== null && actualArticle.medias.length > timelineProps.maxMediaCount}
+		{#if !showAllMedia && timelineProps.maxMediaCount !== null && actualArticle.medias.length > timelineProps.maxMediaCount}
 			<div class='moreMedia'>
 				<button class='borderless-button' title='Load more medias' onclick={() => timelineProps.showAllMediaArticles.update(a => {a.add(rootArticle.idPairStr); return a;})}>
 					<Fa icon={faImages} size='2x'/>

@@ -4,6 +4,7 @@ import type {Readable, Writable} from 'svelte/store';
 import {get} from 'svelte/store';
 import type {ArticleMedia} from './media';
 import type {FilterInstance} from '~/filters';
+import type { LoadingState } from '~/bufferedMediaLoading';
 
 export default abstract class Article {
 	static readonly service: string;
@@ -147,8 +148,21 @@ export type ArticleProps = ArticleWithRefs<{
 	mediaIndex: number | null	//Should be always null for reposts
 }>;
 
-//TODO Make ArticleViewProps type
-export type ArticleViewProps = any;
+export type ArticleViewProps = {
+	timelineProps: TimelineArticleProps
+	articleProps: ArticleProps
+	actualArticleProps: ArticleProps
+	modal: boolean
+	rootArticle: Readonly<Article>
+	actualArticle: Readonly<Article>
+	onMediaClick: (idPair: ArticleIdPair, index: number) => number
+	onLogData: () => void
+	onLogJSON: () => void
+
+	divRef: HTMLDivElement | null
+	mediaRefs: Record<number, HTMLImageElement>
+	loadingStates: Readable<Record<number, LoadingState>>
+};
 
 export function getIdPairStr(ArticleIdPair: ArticleIdPair): ArticleIdPairStr {
 	return `${ArticleIdPair.service}/${ArticleIdPair.id}`;

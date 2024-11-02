@@ -9,7 +9,6 @@
 	import {MediaLoadType} from './media';
 	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
 	import {writable, type Writable} from 'svelte/store';
-	//TODO Test if style is still reactive?
 
 	let {
 		articleProps,

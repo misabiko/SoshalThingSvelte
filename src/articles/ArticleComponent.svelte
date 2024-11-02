@@ -30,7 +30,7 @@
 	let showAllMedia = $derived($showAllMediaArticles.has(rootArticle.idPairStr));
 
 	let divRef = $state<HTMLDivElement | null>(null);
-	let mediaRefs = $state<Record<number, HTMLImageElement>>({});
+	let mediaRefs = $state<Record<number, HTMLImageElement | undefined>>({});
 	//TODO Try porting loadingStates to runes with a svelte.ts file
 	// svelte-ignore non_reactive_update
 	let loadingStates: Writable<Record<number, LoadingState>> = writable({});
@@ -48,7 +48,8 @@
 			const modifiedMedias: [number, number][] = [];
 			for (const [iStr, mediaRef] of Object.entries(mediaRefs)) {
 				const i = parseInt(iStr);
-				if (actualArticle.medias[i]!.ratio === null)
+				//Not sure why mediaRef can be specifically null, docs says undefined only
+				if (actualArticle.medias[i]!.ratio === null && mediaRef != undefined)
 					modifiedMedias.push([i, mediaRef.clientHeight / mediaRef.clientWidth]);
 			}
 

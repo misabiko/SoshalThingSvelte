@@ -16,7 +16,7 @@
 		onMediaClick,
 
 		divRef = $bindable(null),
-		mediaRefs = $bindable([]),
+		mediaRefs = $bindable(),
 		loadingStates,
 
 		compact,
@@ -27,7 +27,7 @@
 		onMediaClick: (index: number) => void
 
 		divRef?: HTMLDivElement | null
-		mediaRefs?: Record<number, HTMLImageElement | HTMLVideoElement>
+		mediaRefs: Record<number, HTMLImageElement | HTMLVideoElement>
 		loadingStates: Readable<Record<number, LoadingState>>
 
 		compact: boolean | null
@@ -43,7 +43,7 @@
 		if (articleMediaEls) {
 			const modifiedMedias: [number, number][] = [];
 			for (let i = 0; i < $article.medias.length; ++i)
-				if ($article.medias[i]!.ratio === null /*&& articleMediaEls[i] !== undefined*/)
+				if ($article.medias[i]!.ratio === null && articleMediaEls[i] !== undefined)
 					modifiedMedias.push([i, articleMediaEls[i]!.clientHeight / articleMediaEls[i]!.clientWidth]);
 
 			getWritableArticle($article.idPair).update(a => {

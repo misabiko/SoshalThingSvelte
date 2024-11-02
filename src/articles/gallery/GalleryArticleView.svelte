@@ -9,14 +9,14 @@
 	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
 	import Dropdown from '~/Dropdown.svelte';
 	import {getService} from '~/services/service';
-	import {MediaType} from '../media';
+	import {MediaType, type ArticleMedia} from '../media';
 	import GalleryThumbnail from './GalleryThumbnail.svelte';
 	import GalleryImage from './GalleryImage.svelte';
 	import {type ArticleAction, getGenericActions} from '~/services/actions';
 
 	let {
 		timelineProps,
-		articleProps,
+		articleProps: _articleProps,
 		actualArticleProps,
 		modal = $bindable(),
 		rootArticle,
@@ -42,7 +42,7 @@
 			return [icons, dropdown];
 		}, [[], []]);
 
-	let medias = $derived(actualArticleProps.mediaIndex === null
+	let medias: [ArticleMedia, number][] = $derived(actualArticleProps.mediaIndex === null
 		? actualArticle.medias.slice(0, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined)
 			.map((m, i) => [m, i])
 		: [[actualArticle.medias[actualArticleProps.mediaIndex]!, actualArticleProps.mediaIndex]]);
@@ -138,7 +138,7 @@
 						{media}
 						{onMediaClick}
 						{isLoading}
-						ref={mediaRefs[i]}
+						bind:ref={mediaRefs[i]!}
 				/>
 			{:else if !timelineProps.animatedAsGifs && media.mediaType === MediaType.Video}
 				<video

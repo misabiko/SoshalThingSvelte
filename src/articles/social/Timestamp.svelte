@@ -1,7 +1,11 @@
 <script lang='ts'>
 	import {shortTimestamp} from '../index';
 
-	export let date: Date;
+	let {
+		date,
+	}: {
+		date: Date
+	} = $props();
 </script>
 
 <style>

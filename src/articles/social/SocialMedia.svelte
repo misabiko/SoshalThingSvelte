@@ -5,24 +5,38 @@
 	import {faImages} from '@fortawesome/free-solid-svg-icons';
 	import {type ArticleMedia, extensionToMediaType, MediaType} from '../media';
 	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
-	import {derived, type Readable} from 'svelte/store';
+	import {type Readable} from 'svelte/store';
 	import {faCirclePlay} from '@fortawesome/free-regular-svg-icons';
 	import {tick} from 'svelte';
 
-	export let idPair: ArticleIdPair;
+	let {
+		idPair,
+		mediaIndex = null,
+		timelineProps,
+		onMediaClick,
+
+		divRef = $bindable(null),
+		mediaRefs = $bindable([]),
+		loadingStates,
+
+		compact,
+	}: {
+		idPair: ArticleIdPair
+		mediaIndex?: number | null
+		timelineProps: TimelineArticleProps
+		onMediaClick: (index: number) => void
+
+		divRef?: HTMLDivElement | null
+		mediaRefs?: Record<number, HTMLImageElement | HTMLVideoElement>
+		loadingStates: Readable<Record<number, LoadingState>>
+
+		compact: boolean | null
+	} = $props();
 	let article = getReadableArticle(idPair);
 	if ($article.medias.length === 0)
 		throw {message: 'Article has no media', article: $article};
-	export let mediaIndex: number | null = null;
-	export let timelineProps: TimelineArticleProps;
-	export let onMediaClick: (index: number) => void;
-	let showAllMedia = derived(timelineProps.showAllMediaArticles, articles => articles.has($article.idPairStr));
-
-	export let divRef: HTMLDivElement | null = null;
-	export let mediaRefs: Record<number, HTMLImageElement | HTMLVideoElement> = [];
-	export let loadingStates: Readable<Record<number, LoadingState>>;
-
-	export let compact: boolean | null;
+	let showAllMediaArticles = $derived(timelineProps.showAllMediaArticles);
+	let showAllMedia = $derived($showAllMediaArticles.has($article.idPairStr));
 
 	tick().then(() => {
 		const articleMediaEls = divRef?.querySelectorAll('.articleMedia:not(.articleThumbnail)');
@@ -40,11 +54,10 @@
 		}
 	});
 
-	let medias: [ArticleMedia, number][];
-	$: medias = mediaIndex === null
-		? $article.medias.slice(0, !$showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined)
+	let medias: [ArticleMedia, number][] = $derived(mediaIndex === null
+		? $article.medias.slice(0, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : undefined)
 			.map((m, i) => [m, i])
-		: [[$article.medias[mediaIndex]!, mediaIndex]];
+		: [[$article.medias[mediaIndex]!, mediaIndex]]);
 
 	let firstMediaExtension = $article.medias[0]!.src.split('.').at(-1);
 	let isFakeGif = firstMediaExtension && $article.medias[0]!.mediaType === MediaType.Gif && extensionToMediaType(firstMediaExtension) === MediaType.Image;
@@ -133,7 +146,7 @@
 		{#if $loadingStates[index] === LoadingState.NotLoaded}
 			<div class='imagesHolder' class:socialMediaFull={index < timelineProps.fullMedia} style:aspect-ratio={aspectRatio}>
 				<div class='imgPlaceHolder' style:aspect-ratio={1 / (media.ratio ?? 1)} style:display='none'></div>
-				<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
+				<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
 				{#if media.thumbnail}
 					<img
 							class='articleMedia articleThumbnail'
@@ -145,7 +158,7 @@
 			</div>
 		{:else if media.mediaType === MediaType.Image || media.mediaType === MediaType.Gif}
 			<div class='imagesHolder' class:socialMediaFull={index < timelineProps.fullMedia} style:aspect-ratio={aspectRatio}>
-				<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
+				<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
 				<img
 						class='articleMedia'
 						alt={`${$article.idPairStr}/${index}`}
@@ -162,7 +175,7 @@
 				{/if}
 				{#if isLoading}
 					{#if media.thumbnail}
-						<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
+						<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
 						<img
 								class='articleMedia articleThumb'
 								alt={`${$article.idPairStr}/${index}`}
@@ -203,7 +216,7 @@
 		{/if}
 	{/each}
 </div>
-{#if !$showAllMedia && timelineProps.maxMediaCount !== null && $article.medias.length > timelineProps.maxMediaCount}
+{#if !showAllMedia && timelineProps.maxMediaCount !== null && $article.medias.length > timelineProps.maxMediaCount}
 	<div class='moreMedia'>
 		<button class='borderless-button' title='Load more medias' onclick={() => timelineProps.showAllMediaArticles.update(a => {a.add($article.idPairStr); return a;})}>
 			<Fa icon={faImages} size='2x'/>

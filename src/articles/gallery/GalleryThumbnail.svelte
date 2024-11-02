@@ -3,10 +3,17 @@
 	import type {ArticleIdPair} from '../index';
 	import Article from '../index';
 
-	export let actualArticle: Readonly<Article>;
-	export let mediaIndex: number;
-	export let media: ArticleMedia;
-	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number;
+	let {
+		actualArticle,
+		mediaIndex,
+		media,
+		onMediaClick,
+	}: {
+		actualArticle: Readonly<Article>
+		mediaIndex: number
+		media: ArticleMedia
+		onMediaClick: (idPair: ArticleIdPair, index: number) => void
+	} = $props();
 
 	const cropped = !!(media.thumbnail?.offsetX ?? media.thumbnail?.offsetY);
 </script>
@@ -33,7 +40,7 @@
 {#if media.thumbnail}
 	{#if cropped}
 		<div class='articleMediaCrop' style:aspect-ratio={`${media.thumbnail.cropRatio}`}>
-			<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
+			<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
 			<img
 				alt={`${actualArticle.idPair.id}/${mediaIndex} thumbnail`}
 				class='articleThumb articleMedia'
@@ -46,7 +53,7 @@
 			/>
 		</div>
 	{:else}
-		<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
+		<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
 		<img
 			alt={`${actualArticle.idPair.id}/${mediaIndex} thumbnail`}
 			class='articleThumb articleMedia'

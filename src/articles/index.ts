@@ -4,7 +4,7 @@ import type {Readable, Writable} from 'svelte/store';
 import {get} from 'svelte/store';
 import type {ArticleMedia} from './media';
 import type {FilterInstance} from '~/filters';
-import type { LoadingState } from '~/bufferedMediaLoading';
+import type {LoadingState} from '~/bufferedMediaLoading';
 
 export default abstract class Article {
 	static readonly service: string;
@@ -155,7 +155,7 @@ export type ArticleViewProps = {
 	modal: boolean
 	rootArticle: Readonly<Article>
 	actualArticle: Readonly<Article>
-	onMediaClick: (idPair: ArticleIdPair, index: number) => number
+	onMediaClick: (idPair: ArticleIdPair, index: number) => void
 	onLogData: () => void
 	onLogJSON: () => void
 

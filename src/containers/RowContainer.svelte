@@ -3,8 +3,13 @@
 	import type {ContainerProps} from './index';
 	import {articlesWithUniqueKeys} from './index';
 
-	export let containerRef = null;
-	export let props: ContainerProps;
+	let {
+		props,
+		containerRef = $bindable(null),
+	}: {
+		props: ContainerProps
+		containerRef: null | HTMLDivElement
+	} = $props();
 </script>
 
 <style>

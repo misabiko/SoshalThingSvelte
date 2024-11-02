@@ -21,8 +21,7 @@ test('no errors or warnings on boot', async ({page}) => {
 	await page.goto('/');
 
 	expect(messages.errors).toHaveLength(0);
-	//TODO Reactivate warnings check after finishing rune port
-	// expect(messages.warnings).toHaveLength(0);
+	expect(messages.warnings).toHaveLength(0);
 });
 
 test.describe('fullscreen timeline', () => {

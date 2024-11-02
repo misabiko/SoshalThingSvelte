@@ -26,7 +26,8 @@
 
 	let {
 		timelines,
-		timelineViews = {
+		//Can't make reactive state outside, so splitting
+		timelineViews: inputTimelineViews = {
 			[defaultTimelineViewId]: {
 				timelineIds: [],
 				fullscreen: {
@@ -49,12 +50,14 @@
 		favviewerMaximized?: boolean | null
 	} = $props();
 
-	for (const [viewName, view] of Object.entries(timelineViews)) {
+	for (const [viewName, view] of Object.entries(inputTimelineViews)) {
 		if (view.fullscreen.index !== null && !Object.hasOwn(view.timelineIds, view.fullscreen.index)) {
 			console.warn(`TimelineView ${viewName} has invalid fullscreen.index ${view.fullscreen.index}`);
 			view.fullscreen.index = null;
 		}
 	}
+
+	let timelineViews = $state(inputTimelineViews);
 
 	let modalTimeline = $state<TimelineData | null>(null);
 	let modalTimelineActive = $state(false);
@@ -215,7 +218,7 @@
 	{/if}
 	<TimelineContainer
 			bind:timelines
-			bind:timelineView={timelineViews[timelineViewId]}
+			bind:timelineView={timelineViews[timelineViewId]!}
 			bind:modalTimeline
 			bind:modalTimelineActive
 			bind:favviewerHidden

@@ -1,5 +1,29 @@
-import {expect, test} from '@playwright/test';
+import {expect, test, type ConsoleMessage} from '@playwright/test';
 import {loadWithLocalStorage, MAIN_STORAGE_KEY, TIMELINE_STORAGE_KEY} from '../storagesUtils';
+
+test('no errors or warnings on boot', async ({page}) => {
+	const messages = {
+		errors: [] as ConsoleMessage[],
+		warnings: [] as ConsoleMessage[],
+		misc: [] as ConsoleMessage[],
+	};
+
+	page.on('console', msg => {
+		if (msg.type() === 'error') {
+			// console.error(msg.text());
+			messages.errors.push(msg);
+		}else if (msg.type() === 'warning') {
+			// console.warn(msg.text());
+			messages.warnings.push(msg);
+		}else
+			messages.misc.push(msg);
+	});
+	await page.goto('/');
+
+	expect(messages.errors).toHaveLength(0);
+	//TODO Reactivate warnings check after finishing rune port
+	// expect(messages.warnings).toHaveLength(0);
+});
 
 test.describe('fullscreen timeline', () => {
 	test.describe('via search param', () => {

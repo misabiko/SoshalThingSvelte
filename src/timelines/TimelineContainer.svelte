@@ -7,35 +7,46 @@
     import type {ArticleIdPair} from '~/articles';
 	import {updateFullscreenStorage} from '~/storages';
 
-	export let timelines: TimelineCollection = {};
-	export let modalTimeline: TimelineData | null;
-	export let timelineView: TimelineView = {
-		timelineIds: [],
-		fullscreen: {
-			index: null,
-			columnCount: null,
-			container: null,
-		},
-	};
-
-	export let setModalTimeline: (data: TimelineData, width?: number) => void;
-	export let removeTimeline: (id: string) => void;
-	export let initialRefresh: (...refreshingTimelines: TimelineData[]) => void;
-
-	export let favviewerHidden: boolean;
-	export let favviewerMaximized: boolean | null = null;
-	export let showSidebar: boolean;
-	export let modalTimelineActive: boolean;
+	let {
+		timelines = $bindable({}),
+		modalTimeline = $bindable(),
+		timelineView = $bindable({
+			timelineIds: [],
+			fullscreen: {
+				index: null,
+				columnCount: null,
+				container: null,
+			},
+		}),
+		setModalTimeline,
+		removeTimeline,
+		initialRefresh,
+		favviewerHidden = $bindable(),
+		favviewerMaximized = $bindable(null),
+		showSidebar = $bindable(),
+		modalTimelineActive = $bindable(),
+	}: {
+		timelines: TimelineCollection
+		modalTimeline: TimelineData | null
+		timelineView: TimelineView
+		setModalTimeline: (data: TimelineData, width?: number) => void
+		removeTimeline: (id: string) => void
+		initialRefresh: (...refreshingTimelines: TimelineData[]) => void
+		favviewerHidden: boolean
+		favviewerMaximized: boolean | null
+		showSidebar: boolean
+		modalTimelineActive: boolean
+	} = $props();
 
 	const isInjected = getContext('isInjected');
 
-	$: {
+	$effect(() => {
 		for (const id of timelineView.timelineIds)
 			if (!Object.hasOwn(timelines, id))
 				console.error(`Timeline with id "${id}" not found.\nTimeline ids: `, Object.keys(timelines), '\nTimeline View: ', timelineView);
-	}
+	});
 
-	$: {
+	$effect(() => {
 		const newTimelineEndpoints = timelineView.timelineIds.map(id => ({
 			endpoints: timelines[id]!.endpoints,
 			addArticles: (newIdPairs: ArticleIdPair[]) => addArticlesToTimeline(timelines[id]!, ...newIdPairs),
@@ -53,14 +64,14 @@
 			});
 
 		timelineEndpoints.set(newTimelineEndpoints);
-	}
+	});
 
-	$: {
+	$effect(() => {
 		//Workaround for https://github.com/sveltejs/svelte/issues/5268
 		//During Modal's close transition, the child Timeline still calls reactive statements for modalTimeline
 		if (!modalTimelineActive)
 			modalTimeline = null;
-	};
+	});
 
 	onMount(() => {
 		initialRefresh(...[

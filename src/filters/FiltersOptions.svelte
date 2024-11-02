@@ -6,9 +6,14 @@
 	import {getService, getServices} from '~/services/service';
 	import type {Writable} from 'svelte/store';
 
-	export let onInstancesUpdate: (i: FilterInstance[]) => void;
-	export let instances: Writable<FilterInstance[]>;
-	$: onInstancesUpdate($instances);
+	let {
+		onInstancesUpdate,
+		instances,
+	}: {
+		onInstancesUpdate: (i: FilterInstance[]) => void
+		instances: Writable<FilterInstance[]>
+	} = $props();
+	$effect(() => onInstancesUpdate($instances));
 
 	const serviceFilterTypes: {
 		service: string

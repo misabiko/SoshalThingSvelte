@@ -1,17 +1,21 @@
 <script lang='ts'>
-	import {FetchType, type Service} from '~/services/service';
+	import {FetchType, type Service as ServiceType} from '~/services/service';
 	import {fetchExtension} from '~/services/extension';
 
-	export let service: Service;
-	let tabId = service.fetchInfo.tabInfo?.tabId;
+	let {
+		service: Service,
+	}: {
+		service: ServiceType
+	} = $props();
+	let tabId = Service.fetchInfo.tabInfo?.tabId;
 
 	async function getTabId() {
-		if (service.fetchInfo.type !== FetchType.Tab)
-			throw new Error(service.name + ' does not have tab info');
+		if (Service.fetchInfo.type !== FetchType.Tab)
+			throw new Error(Service.name + ' does not have tab info');
 
-		service.fetchInfo.tabInfo.tabId.set(await fetchExtension('getTabId', {
-			url: service.fetchInfo.tabInfo.url,
-			matchUrl: service.fetchInfo.tabInfo.matchUrl,
+		Service.fetchInfo.tabInfo.tabId.set(await fetchExtension('getTabId', {
+			url: Service.fetchInfo.tabInfo.url,
+			matchUrl: Service.fetchInfo.tabInfo.matchUrl,
 		}));
 	}
 
@@ -24,9 +28,9 @@
 	}
 </style>
 
-<h1>{service.name}</h1>
+<h1>{Service.name}</h1>
 
-{#if service.fetchInfo.tabInfo}
+{#if Service.fetchInfo.tabInfo}
 	Tab Id: {$tabId}
 	<br/>
 	<button onclick={getTabId}>
@@ -34,4 +38,4 @@
 	</button>
 	<br/>
 {/if}
-<svelte:component this={service.settings}/>
+<Service.settings />

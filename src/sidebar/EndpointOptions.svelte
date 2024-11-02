@@ -3,7 +3,11 @@
 	import {startAutoRefresh, stopAutoRefresh} from '~/services/endpoints';
 	import type {Writable} from 'svelte/store';
 
-	export let endpoint: Writable<Endpoint>;
+	let {
+		endpoint,
+	}: {
+		endpoint: Writable<Endpoint>
+	} = $props();
 
 	let service = ($endpoint.constructor as typeof Endpoint).service;
 </script>

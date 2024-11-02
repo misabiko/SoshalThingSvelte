@@ -1,26 +1,39 @@
 <script lang='ts'>
-	// noinspection ES6UnusedImports
 	import Fa from 'svelte-fa';
 	import {faAngleDown} from '@fortawesome/free-solid-svg-icons';
-	import {onMount} from 'svelte';
+	import {onMount, type Snippet} from 'svelte';
 
-	export let isActive = false;
-	export let isRight = false;
-	export let triggerClasses = '';
-	export let labelClasses = '';
-	export let labelText = '';
+	let {
+		children,
+		triggerIcon,
+		isActive = false,
+		isRight = false,
+		triggerClasses = '',
+		labelClasses = '',
+		labelText = '',
+	}: {
+		children: Snippet
+		triggerIcon?: Snippet
+		isActive?: boolean
+		isRight?: boolean
+		triggerClasses?: string
+		labelClasses?: string
+		labelText?: string
+	} = $props();
 
-	let triggerRef: HTMLButtonElement | null = null;
+	let triggerRef: HTMLButtonElement | null = $state(null);
 
 	function close(e: MouseEvent) {
 		if (e.button !== 2 && !triggerRef?.contains(e.target as Node))
 			isActive = false;
 	}
 
-	$: if (isActive)
-		document.addEventListener('click', close);
-	else
-		document.removeEventListener('click', close);
+	$effect(() => {
+		if (isActive)
+			document.addEventListener('click', close);
+		else
+			document.removeEventListener('click', close);
+	});
 
 	onMount(() => () => document.removeEventListener('click', close));
 </script>
@@ -86,8 +99,8 @@
 >
 	<div class={`dropdown-trigger ${triggerClasses}`}>
 		<button bind:this={triggerRef} class={`button ${labelClasses}`} onclick={() => isActive = !isActive}>
-			{#if $$slots.triggerIcon}
-				<slot name='triggerIcon'></slot>
+			{#if triggerIcon}
+				 {@render triggerIcon()}
 			{:else}
 				<span>{labelText}</span>
 				<Fa icon={faAngleDown} class='is-small'/>
@@ -96,7 +109,7 @@
 	</div>
 	<div class='dropdown-menu'>
 		<div class='dropdown-content' onauxclick={close}>
-			<slot></slot>
+			{@render children()}
 		</div>
 	</div>
 </div>

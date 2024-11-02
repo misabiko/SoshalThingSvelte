@@ -199,9 +199,11 @@
 			</button>
 		{/if}
 		<Dropdown labelClasses='articleButton borderless-button'>
-			<span slot='triggerIcon' class='icon'>
-				<Fa icon={faEllipsisH}/>
-			</span>
+			{#snippet triggerIcon()}
+				<span class='icon'>
+					<Fa icon={faEllipsisH}/>
+				</span>
+			{/snippet}
 
 			{#each actions[1] as action (action.key)}
 				{#if action.action}

@@ -7,10 +7,10 @@
 
 	type LoadArticleService = Service & {loadArticle: Exclude<Service['loadArticle'], null>};
 	let services = Object.entries(getServices()).filter(([_, s]) => s.loadArticle !== null) as [string, LoadArticleService][];
-	let serviceName = services[0] ? services[0][0] : null;
+	let serviceName = $state(services[0] ? services[0][0] : null);
 
-	let articleId = '';
-	let article: ArticleWithRefs | null = null;
+	let articleId = $state('');
+	let article: ArticleWithRefs | null = $state(null);
 
 	async function loadArticle() {
 		if (serviceName === null)
@@ -23,7 +23,7 @@
 		}
 	}
 
-	let timelineProps: TimelineArticleProps = {
+	let timelineProps: TimelineArticleProps = $state({
 		animatedAsGifs: false,
 		muteVideos: false,
 		compact: false,
@@ -34,15 +34,13 @@
 		maxMediaCount: 4,
 		setModalTimeline: () => {},
 		showAllMediaArticles: writable(new Set()),
-	};
+	});
 
-	let articleProps: ArticleProps | null;
-	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
-	$: article !== null ? {
+	let articleProps: ArticleProps | null = $derived(article !== null ? {
 		...article,
 		filteredOut: false,
 		nonKeepFilters: [],
-	} : null;
+	} : null);
 </script>
 
 <style>

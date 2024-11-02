@@ -190,9 +190,11 @@
 			{/if}
 
 			<Dropdown isRight={true} labelClasses='articleButton'>
-				<span slot='triggerIcon' class='icon darkIcon'>
-					<Fa icon={faEllipsisH} class='level-item'/>
-				</span>
+				{#snippet triggerIcon()}
+					<span class='icon darkIcon'>
+						<Fa icon={faEllipsisH} class='level-item'/>
+					</span>
+				{/snippet}
 
 				{#each actions[1] as action (action.key)}
 					{#if action.action}

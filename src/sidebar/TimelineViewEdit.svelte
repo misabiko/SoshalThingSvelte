@@ -4,11 +4,17 @@
 	import type {TimelineCollection} from '~/timelines';
 	import Dropdown from '../Dropdown.svelte';
 
-	export let timelineViews: Record<string, TimelineView>;
-	export let timelineViewId: string;
-	export let timelines: TimelineCollection;
+	let {
+		timelineViews = $bindable(),
+		timelineViewId = $bindable(),
+		timelines = $bindable(),
+	}: {
+		timelineViews: Record<string, TimelineView>
+		timelineViewId: string
+		timelines: TimelineCollection
+	} = $props();
 
-	let newViewName = '';
+	let newViewName = $state('');
 
 	function addView() {
 		if (newViewName.length === 0 || Object.hasOwn(timelineViews, newViewName))

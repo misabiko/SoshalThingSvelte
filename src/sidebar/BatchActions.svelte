@@ -10,29 +10,35 @@
 	} from '~/articles';
 	import {articleAction, STANDARD_ACTIONS} from '~/services/actions';
 
-	export let timelines: TimelineCollection;
-	export let filterInstances: Writable<FilterInstance[]>;
+	let {
+		timelines,
+		filterInstances = $bindable(),
+	}: {
+		timelines: TimelineCollection
+		filterInstances: Writable<FilterInstance[]>
+	} = $props();
 
-	let timelineId: string = Object.keys(timelines)[0]!;
-	let action = 'markAsRead';
-	let onlyListedArticles = true;
+	let timelineId: string = $state(Object.keys(timelines)[0]!);
+	let action = $state('markAsRead');
+	let onlyListedArticles = $state(true);
 
 	let articleIdPairs: Readable<ArticleIdPair[]> = readonly(timelines[timelineId]!.articles);
 
 	let articlesWithRefs: Readable<ArticleWithRefs[]>;
-	$: articlesWithRefs = derived(
+	//Redo with $derived
+	$effect(() => articlesWithRefs = derived(
 		$articleIdPairs.map(idPair => derived(flatDeriveArticle(idPair), articles => articles[0]!)),
 		articles => articles.map(a => a.getArticleWithRefs()),
-	);
+	));
 
 	let filteredArticles: Readable<ArticleWithRefs[]>;
-	$: filteredArticles = derived(
+	$effect(() => filteredArticles = derived(
 		[articlesWithRefs, filterInstances, timelines[timelineId]!.filters],
 		([articlesWithRefs, filterInstances, filters]) => useFilters(articlesWithRefs, [
 			...filterInstances,
 			...(onlyListedArticles ? filters : []),
 		]),
-	);
+	));
 
 	function doAction() {
 		for (const articleWithRefs of $filteredArticles) {

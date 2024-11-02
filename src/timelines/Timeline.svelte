@@ -23,7 +23,7 @@
 
 	let {
 		timelineId,
-		data,
+		data = $bindable(),
 		fullscreen = $bindable(null),
 		toggleFullscreen = null,
 		removeTimeline,

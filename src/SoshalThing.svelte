@@ -25,8 +25,8 @@
 	};
 
 	let {
-		timelines,
-		//Can't make reactive state outside, so splitting
+		//Can't make reactive state outside, so splitting inputs
+		timelines: inputTimelines,
 		timelineViews: inputTimelineViews = {
 			[defaultTimelineViewId]: {
 				timelineIds: [],
@@ -57,6 +57,7 @@
 		}
 	}
 
+	let timelines = $state(inputTimelines);
 	let timelineViews = $state(inputTimelineViews);
 
 	let modalTimeline = $state<TimelineData | null>(null);

@@ -74,7 +74,13 @@
 				{#if propType.type === 'boolean'}
 					<input
 						type='checkbox'
-						bind:checked={instance.filter.props[propName]}
+						checked={instance.filter.props[propName]}
+						onchange={e => {
+							if (propType.optional && !e.currentTarget.checked)
+								delete $instances[index]!.filter.props[propName];
+							else
+								$instances[index]!.filter.props[propName] = e.currentTarget.checked;
+						}}
 						indeterminate={propType.optional && instance.filter.props[propName] === undefined}
 						required={!propType.optional}
 					/>

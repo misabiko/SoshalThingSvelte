@@ -99,7 +99,7 @@
 		<Modal bind:active={modalTimelineActive} {mountElement}>
 			<Timeline
 				timelineId={null}
-				data={modalTimeline}
+				bind:data={modalTimeline}
 				{setModalTimeline}
 				removeTimeline={() => modalTimeline = null}
 				modal={true}
@@ -115,7 +115,7 @@
 					bind:favviewerHidden
 					bind:favviewerMaximized
 					bind:showSidebar
-					data={timelines[timelineView.timelineIds[timelineView.fullscreen.index]!]!}
+					bind:data={timelines[timelineView.timelineIds[timelineView.fullscreen.index]!]!}
 					{setModalTimeline}
 					bind:fullscreen={timelineView.fullscreen}
 					removeTimeline={() => timelineView.fullscreen.index !== null && removeTimeline(timelineView.timelineIds[timelineView.fullscreen.index]!)}
@@ -127,7 +127,7 @@
 			{:else}
 				<Timeline
 					timelineId={timelineView.timelineIds[timelineView.fullscreen.index]!}
-					data={timelines[timelineView.timelineIds[timelineView.fullscreen.index]!]!}
+					bind:data={timelines[timelineView.timelineIds[timelineView.fullscreen.index]!]!}
 					{setModalTimeline}
 					bind:fullscreen={timelineView.fullscreen}
 					removeTimeline={() => timelineView.fullscreen.index !== null && removeTimeline(timelineView.timelineIds[timelineView.fullscreen.index]!)}
@@ -147,7 +147,7 @@
 					bind:favviewerHidden
 					bind:favviewerMaximized
 					bind:showSidebar
-					data={timelines[id]!}
+					bind:data={timelines[id]!}
 					{setModalTimeline}
 					removeTimeline={() => removeTimeline(id)}
 					toggleFullscreen={() => {timelineView.fullscreen.index = i; updateFullscreenStorage(timelineView.fullscreen);}}
@@ -155,7 +155,7 @@
 			{:else}
 				<Timeline
 					timelineId={id}
-					data={timelines[id]!}
+					bind:data={timelines[id]!}
 					{setModalTimeline}
 					removeTimeline={() => removeTimeline(id)}
 					toggleFullscreen={() => {timelineView.fullscreen.index = i; updateFullscreenStorage(timelineView.fullscreen);}}

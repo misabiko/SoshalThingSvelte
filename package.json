@@ -9,9 +9,9 @@
 		"build:unit": "bun scripts/testbuildscript.ts",
 		"test:e2e": "playwright test",
 		"test:e2e:headed": "playwright test --headed",
-		"test:unit": "bun run build:unit && playwright test -c playwright.config.unit.ts",
-		"test": "bun run test:e2e && bun run test:unit",
-		"serve:test": "bun run build -- --entry ../tests/e2e/entry.ts && bun run serve -- --port 8089",
+		"test:unit": "bun build:unit && playwright test -c playwright.config.unit.ts",
+		"test": "bun test:e2e && bun test:unit",
+		"serve:test": "bun run build --entry ../tests/e2e/entry.ts && bun serve --port 8089",
 		"check": "tsc --noEmit && svelte-check && eslint .",
 		"clean": "rm -rf dist dist-test test-results extension/dist"
 	},

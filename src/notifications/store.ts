@@ -1,5 +1,7 @@
 import {writable} from 'svelte/store';
 
+// TODO Add notification on console errors
+
 export type Notification =
 	{
 		type: 'generic'

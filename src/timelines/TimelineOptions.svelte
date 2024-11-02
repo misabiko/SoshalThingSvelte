@@ -14,13 +14,23 @@
 	import {getService} from '~/services/service';
 	import {get, writable} from 'svelte/store';
 
-	export let timelineId: string | null;
-	export let data: TimelineData;
-	export let fullscreen: FullscreenInfo | null = null;
-	export let removeTimeline: () => void;
-	export let sortOnce: (method: SortMethod, reversed: boolean) => void;
-	export let articleCountLabel: string;
-	export let removeFiltered: () => void;
+	let {
+		timelineId,
+		data = $bindable(),
+		fullscreen = $bindable(null),
+		removeTimeline,
+		sortOnce,
+		articleCountLabel,
+		removeFiltered,
+	}: {
+		timelineId: string | null
+		data: TimelineData
+		fullscreen?: FullscreenInfo | null
+		removeTimeline: () => void
+		sortOnce: (method: SortMethod, reversed: boolean) => void
+		articleCountLabel: string
+		removeFiltered: () => void
+	} = $props();
 
 	function setFullscreenContainer(checked: boolean) {
 		if (fullscreen === null)
@@ -46,6 +56,8 @@
 		updateFullscreenStorage(fullscreen);
 	}
 
+	//https://github.com/sveltejs/svelte/issues/13811
+	// svelte-ignore non_reactive_update
 	enum OptionLayer {
 		// Session = 'session',
 		Timeline = 'timeline',
@@ -57,9 +69,8 @@
 	const template = data.serviceTemplate !== null
 		? getService(data.serviceTemplate.service).timelineTemplates[data.serviceTemplate.templateId]
 		: null;
-	let templateFilters = template?.filters ?? null;
-	if (templateFilters === null && template != null)
-		template.filters = templateFilters = writable(structuredClone(get(data.filters)));
+	if (template != null && template.filters == null)
+		template.filters = writable(structuredClone(get(data.filters)));
 </script>
 
 <style>
@@ -123,11 +134,7 @@
 				{#if fullscreen.container}
 					<select
 							bind:value={fullscreen.container}
-						onchange={() => {
-							if (fullscreen === null)
-								throw new Error('FullscreenInfo is null');
-							updateFullscreenStorage(fullscreen);
-						}}
+						onchange={() => updateFullscreenStorage(fullscreen)}
 					>
 						<option value={ColumnContainer}>Column</option>
 						<option value={RowContainer}>Row</option>
@@ -177,14 +184,14 @@
 								min={1}
 								value={fullscreen.columnCount}
 								onchange={e => {
-									if (fullscreen && e.currentTarget.value) {
+									if (e.currentTarget.value) {
 										fullscreen.columnCount = parseInt(e.currentTarget.value);
 										updateFullscreenStorage(fullscreen);
 									}
 								}}
 						/>
 						<button onclick={() => {
-							if (fullscreen?.columnCount) {
+							if (fullscreen.columnCount) {
 								fullscreen.columnCount++;
 								updateFullscreenStorage(fullscreen);
 							}
@@ -192,7 +199,7 @@
 							+
 						</button>
 						<button onclick={() => {
-							if (fullscreen?.columnCount && fullscreen.columnCount > 1) {
+							if (fullscreen.columnCount && fullscreen.columnCount > 1) {
 								fullscreen.columnCount--;
 								updateFullscreenStorage(fullscreen);
 							}
@@ -367,7 +374,7 @@
 <!--			TODO Have actual session filtersinstance somewhere-->
 <!--			<option value={OptionLayer.Session}>Session</option>-->
 			<option value={OptionLayer.Timeline}>Timeline</option>
-			{#if data.serviceTemplate !== null && templateFilters !== null}
+			{#if data.serviceTemplate !== null && template?.filters != null}
 				<option value={OptionLayer.ServiceTemplate}>Service Template</option>
 			{/if}
 		</select>
@@ -388,7 +395,7 @@
 							throw {message: 'ServiceTemplate is null', data};
 						updateServiceTemplateStorageValue(data.serviceTemplate.service, data.serviceTemplate.templateId, 'filters', instances);
 					}}
-					instances={templateFilters!}
+					instances={template!.filters!}
 				/>
 			{/if}
 		{/key}

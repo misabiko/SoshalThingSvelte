@@ -18,13 +18,13 @@ Hosted on https://soshalthing.com
 ## Usage
 
 ### Dev
-Build with `bun build`
+Build with `bun run build`
 Serve the app  on `localhost:8080` with `bun serve`
 You can pass `--port <port>` to serve over a specific port
 
 Build the extension with `bun build:extension`
 
-Test with `bun test`, it uses the port 8089 by default
+Test with `bun run test`, it uses the port 8089 by default
 
 [//]: # (TODO Fix opening multiple user modal user timelines)
 [//]: # (TODO Finish fixing linting)

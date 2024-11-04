@@ -13,13 +13,13 @@ runs:
       run: bunx playwright install --with-deps
       shell: bash
 
-    - run: bun build
+    - run: bun run build
       shell: bash
 
     - run: bun check
       shell: bash
 
-    - run: bun test
+    - run: bun run test
       shell: bash
     - name: Upload Playwright test results
       uses: actions/upload-artifact@v4

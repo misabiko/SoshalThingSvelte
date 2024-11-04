@@ -16,7 +16,8 @@
 		onMediaClick,
 
 		divRef = $bindable(null),
-		mediaRefs = $bindable(),
+		//TODO Move mediaRefs to articleProps? There should be a different set of mediaRefs for rootArticle and actualArticle (for SocialQuote)
+		mediaRefs = $bindable([]),
 		loadingStates,
 
 		compact,
@@ -27,7 +28,7 @@
 		onMediaClick: (index: number) => void
 
 		divRef?: HTMLDivElement | null
-		mediaRefs: Record<number, HTMLImageElement | HTMLVideoElement>
+		mediaRefs?: Record<number, HTMLImageElement | HTMLVideoElement | undefined>
 		loadingStates: Readable<Record<number, LoadingState>>
 
 		compact: boolean | null

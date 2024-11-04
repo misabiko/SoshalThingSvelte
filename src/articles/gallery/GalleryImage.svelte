@@ -20,7 +20,7 @@
 		media: ArticleMedia
 		onMediaClick: (idPair: ArticleIdPair, index: number) => void
 		isLoading: boolean
-		ref: HTMLImageElement
+		ref: HTMLImageElement | HTMLVideoElement
 	} = $props();
 
 	const cropped = !!(media.offsetX ?? media.offsetY);

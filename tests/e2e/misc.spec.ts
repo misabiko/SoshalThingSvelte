@@ -1,6 +1,7 @@
 import {expect, test, type ConsoleMessage} from '@playwright/test';
 import {loadWithLocalStorage, MAIN_STORAGE_KEY, TIMELINE_STORAGE_KEY} from '../storagesUtils';
 
+//TODO Port to before each test
 test('no errors or warnings on boot', async ({page}) => {
 	const messages = {
 		errors: [] as ConsoleMessage[],

@@ -160,7 +160,7 @@ export type ArticleViewProps = {
 	onLogJSON: () => void
 
 	divRef: HTMLDivElement | null
-	mediaRefs: Record<number, HTMLImageElement | undefined>
+	mediaRefs: Record<number, HTMLImageElement | HTMLVideoElement | undefined>
 	loadingStates: Readable<Record<number, LoadingState>>
 };
 

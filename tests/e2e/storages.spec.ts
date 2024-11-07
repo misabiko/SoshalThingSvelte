@@ -118,6 +118,27 @@ test.describe('timelines', () => {
 		await expect(page.locator('.masonryContainer')).toHaveCount(1);
 	});
 
+	test('fullscreen masonry container', async ({page}) => {
+		await loadWithLocalStorage(page, {
+			[TIMELINE_STORAGE_KEY]: {t1: {
+				endpoints: [{
+					service: 'Dummy',
+					endpointType: 'DummyEndpoint',
+				}],
+			}},
+			[MAIN_STORAGE_KEY]: {
+				fullscreen: {
+					container: 'Masonry',
+				},
+			},
+		});
+
+		await page.getByRole('button', {name: 'Make timeline fullscreen'}).click();
+		// await page.getByRole('button', {name: 'Expand options'}).click();
+
+		await expect(page.locator('.masonryContainer')).toHaveCount(1);
+	});
+
 	test.describe('endpoints', () => {
 		test('without endpoint', async ({page}) => {
 			await loadWithLocalStorage(page, {

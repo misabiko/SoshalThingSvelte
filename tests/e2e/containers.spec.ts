@@ -1,5 +1,5 @@
 import test, {expect} from '@playwright/test';
-import {loadWithLocalStorage, TIMELINE_STORAGE_KEY} from '../storagesUtils';
+import {loadWithLocalStorage, MAIN_STORAGE_KEY, TIMELINE_STORAGE_KEY} from '../storagesUtils';
 
 test.describe('masonry', () => {
 	test('independant columns', async ({page}) => {
@@ -58,10 +58,12 @@ test.describe('masonry', () => {
 							endpointType: 'DummyEndpoint',
 						},
 					],
+				}},
+				[MAIN_STORAGE_KEY]: {
 					fullscreen: {
 						container: 'Masonry',
 					},
-				}},
+				}
 			});
 
 			await page.getByRole('button', {name: 'Make timeline fullscreen'}).click();

@@ -19,10 +19,10 @@ Hosted on https://soshalthing.com
 
 ### Dev
 Build with `bun run build`
-Serve the app  on `localhost:8080` with `bun run serve`
+Serve the app  on `localhost:8080` with `bun serve`
 You can pass `--port <port>` to serve over a specific port
 
-Build the extension with `bun run build:extension`
+Build the extension with `bun build:extension`
 
 Test with `bun run test`, it uses the port 8089 by default
 
@@ -40,4 +40,5 @@ Test with `bun run test`, it uses the port 8089 by default
 [//]: # (TODO "Third-party cookie will be blocked in future Chrome versions as part of Privacy Sandbox.")
 [//]: # (TODO Filter for "article from X service")
 [//]: # (TODO Lint github workflows)
+[//]: # (TODO Cleanup packages)
 [//]: # (TODO Go through project's TODOs)

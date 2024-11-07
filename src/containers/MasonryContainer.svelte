@@ -4,101 +4,135 @@
 	import {getActualArticle, getRootArticle} from '~/articles';
 	import type {ContainerProps} from './index';
 
-	export let containerRef = null;
-	export let props: ContainerProps;
+	let {
+		containerRef = $bindable(null),
+		props,
+	}: {
+		containerRef: null | HTMLDivElement
+		props: ContainerProps
+	} = $props();
+
 	let lastRebalanceTrigger = false;
 	let lastColumnCount = props.columnCount;
 
-	let uniqueArticles: Record<string, {articleProps: ArticleProps, index: number, mediaIndex: number | null}>;
-	$: if (props.separateMedia) {
-		uniqueArticles = Object.fromEntries(props.articles.map((articleProps, index) => [
-			getIdServiceMediaStr(articleProps),
-			{articleProps, index, mediaIndex: articleProps.mediaIndex},
-		]));
-	}else {
-		uniqueArticles = {};
-		const idServiceMedias = new Set<string>();
-		for (const a of props.articles) {
-			let lastSize = idServiceMedias.size;
-			const idServiceMedia = getIdServiceMediaStr(a);
-			idServiceMedias.add(idServiceMedia);
-			if (idServiceMedias.size > lastSize) {
-				uniqueArticles[idServiceMedia] = {articleProps: a, index: lastSize, mediaIndex: 0};
+	let uniqueArticles: Record<string, {
+		articleProps: ArticleProps
+		index: number
+		mediaIndex: number | null
+	}> = $derived.by(() => {
+		if (props.separateMedia) {
+			return Object.fromEntries(props.articles.map((articleProps, index) => [
+				getIdServiceMediaStr(articleProps),
+				{articleProps, index, mediaIndex: articleProps.mediaIndex},
+			]));
+		}else {
+			const uniques: Record<string, {
+				articleProps: ArticleProps
+				index: number
+				mediaIndex: number | null
+			}> = {};
+			const idServiceMedias = new Set<string>();
+			for (const a of props.articles) {
+				let lastSize = idServiceMedias.size;
+				const idServiceMedia = getIdServiceMediaStr(a);
+				idServiceMedias.add(idServiceMedia);
+				if (idServiceMedias.size > lastSize) {
+					uniques[idServiceMedia] = {articleProps: a, index: lastSize, mediaIndex: 0};
+				}
 			}
+
+			return uniques;
 		}
-	}
+	});
 	//TODO Support duplicate articles
 	//Maybe by making a second MasonryContainer which refreshes every column every time
 
-	type Column = {idServiceMedias: string[], ratio: number};
-	let columns: Column[] = [];
+	type Column = {
+		articles: {
+			articleProps: ArticleProps
+			index: number
+			mediaIndex: number | null
+		}[]
+		ratio: number
+	};
+	let columns = $state<Column[]>([]);
 
-	$: if (props.rebalanceTrigger !== lastRebalanceTrigger || props.columnCount !== lastColumnCount) {
-		//TODO Add columnRef array and rebalance by moving overflowing articles
-		columns = [];
-		lastRebalanceTrigger = props.rebalanceTrigger;
-		lastColumnCount = props.columnCount;
-	}
+	$effect(() => {
+		if (props.rebalanceTrigger !== lastRebalanceTrigger || props.columnCount !== lastColumnCount) {
+			//TODO Add columnRef array and rebalance by moving overflowing articles
+			columns = [];
+			lastRebalanceTrigger = props.rebalanceTrigger;
+			lastColumnCount = props.columnCount;
+		}
 
-	$: {
 		if (!columns.length) {
 			columns = makeColumns();
 		}else {
 			const columnsChanged = new Set<number>();
-			const addedArticles: {idServiceMedia: string, index: number}[] = [];
+			const addedArticles: {
+				article: {
+					articleProps: ArticleProps
+					index: number
+					mediaIndex: number | null
+				}
+				index: number
+			}[] = [];
 
 			for (let i = 0; i < columns.length; ++i) {
-				for (let j = 0; j < columns[i]!.idServiceMedias.length;) {
-					if (!uniqueArticles[columns[i]!.idServiceMedias[j]!]) {
-						columns[i]!.idServiceMedias.splice(j, 1);
+				for (let j = 0; j < columns[i]!.articles.length;) {
+					if (!uniqueArticles[getIdServiceMediaStr(columns[i]!.articles[j]!.articleProps)]) {
+						columns[i]!.articles.splice(j, 1);
 						columnsChanged.add(i);
 					}else
 						++j;
 				}
 			}
 
-			for (const [idServiceMedia, {articleProps, index, mediaIndex}] of Object.entries(uniqueArticles)) {
-				if (!columns.some(c => c.idServiceMedias.some(idServiceMedia => {
-					const [_idStr, _service, mediaIndexStr] = idServiceMedia.split('/');
-					if (!mediaIndexStr)
-						throw new Error('Media index not found in idServiceMedia');
-					return getRootArticle(uniqueArticles[idServiceMedia]!.articleProps).idPairStr === getRootArticle(articleProps).idPairStr && [mediaIndexStr === 'null' ? mediaIndex === null : parseInt(mediaIndexStr) === mediaIndex];
+			for (const [_, {articleProps, index, mediaIndex}] of Object.entries(uniqueArticles)) {
+				if (!columns.some(c => c.articles.some(a => {
+					const mediaIndex2 = a.mediaIndex;
+					return getRootArticle(a.articleProps).idPairStr === getRootArticle(articleProps).idPairStr && [mediaIndex2 === null ? mediaIndex === null : mediaIndex2 === mediaIndex];
 				}))) {
-					addedArticles.push({idServiceMedia, index});
+					addedArticles.push({article: {articleProps, index, mediaIndex}, index});
 				}
 			}
 
 			addedArticles.sort((a, b) => a.index - b.index);
-			for (const {idServiceMedia} of addedArticles)
-				columnsChanged.add(addArticle(idServiceMedia));
+			for (const {article} of addedArticles)
+				columnsChanged.add(addArticle(article));
 
 			for (const column of columns)
-				column.idServiceMedias.sort((a, b) => uniqueArticles[a]!.index - uniqueArticles[b]!.index);
+				column.articles.sort((a, b) => a.index - b.index);
 
 			for (const i of columnsChanged.values())
-				columns[i]!.ratio = columns[i]!.idServiceMedias.reduce((acc, curr) => acc + getRatio(uniqueArticles[curr]!.articleProps), 0);
+				columns[i]!.ratio = columns[i]!.articles.reduce((acc, curr) => acc + getRatio(curr.articleProps), 0);
 		}
-	}
+	});
 
 	function makeColumns() {
 		columns = [];
 		for (let i = 0; i < props.columnCount; ++i)
-			columns.push({idServiceMedias: [], ratio: 0});
+			columns.push({
+				articles: [],
+				ratio: 0,
+			});
 
 		const sortedArticles = Object.entries(uniqueArticles);
 		sortedArticles.sort(([_ia, a], [_ib, b]) => a.index - b.index);
-		for (const [idServiceMedia, _] of sortedArticles)
-			addArticle(idServiceMedia);
+		for (const [_, article] of sortedArticles)
+			addArticle(article);
 
 		return columns;
 	}
 
-	function addArticle(idServiceMedia: string): number {
-		if (uniqueArticles[idServiceMedia] === undefined)
-			throw new Error('Article not found in uniqueArticles');
+	function addArticle(article: {
+		articleProps: ArticleProps
+		index: number
+		mediaIndex: number | null
+	}): number {
 		const smallestIndex = columns.reduce((acc, curr, currIndex) => curr.ratio < columns[acc]!.ratio ? currIndex : acc, 0);
-		columns[smallestIndex]!.idServiceMedias.push(idServiceMedia);
-		columns[smallestIndex]!.ratio += getRatio(uniqueArticles[idServiceMedia].articleProps);
+		columns[smallestIndex]!.articles.push(article);
+		columns[smallestIndex]!.ratio += getRatio(article.articleProps);
 		return smallestIndex;
 	}
 
@@ -141,10 +175,10 @@
 		<div class='masonryColumn' style:width={props.columnCount > 1 ? (100 / props.columnCount) + '%' : undefined}>
 <!--		<span>Ratio: {column.ratio}</span>-->
 <!--		TODO Find a way to share key among multiple columns?-->
-			{#each column.idServiceMedias as idServiceMedia (idServiceMedia)}
+			{#each column.articles as article (getIdServiceMediaStr(article.articleProps))}
 				<ArticleComponent
 					view={props.articleView}
-					articleProps={uniqueArticles[idServiceMedia]!.articleProps}
+					articleProps={article.articleProps}
 					timelineProps={props.timelineArticleProps}
 				/>
 			{/each}

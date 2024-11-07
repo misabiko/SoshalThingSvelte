@@ -6,14 +6,21 @@
 	import {updateTimelinesStorageSortInfo} from '~/storages';
 	import type {Writable} from 'svelte/store';
 
-	export let timelineId: string | null;
-	export let sortInfo: SortInfo;
-	export let articlesOrder: Writable<null | string[]>;
-	$: {
+	let {
+		timelineId,
+		sortInfo = $bindable(),
+		articlesOrder,
+		sortOnce,
+	}: {
+		timelineId: string | null
+		sortInfo: SortInfo
+		articlesOrder: Writable<null | string[]>
+		sortOnce: (method: SortMethod, reversed: boolean) => void
+	} = $props();
+	$effect(() => {
 		if (timelineId !== null)
 			updateTimelinesStorageSortInfo(timelineId, sortInfo);
-	}
-	export let sortOnce: (method: SortMethod, reversed: boolean) => void;
+	});
 
 	//[ServiceName, MethodName, MethodInfo][]
 	const serviceSortMethods: {
@@ -26,24 +33,20 @@
 		methodInfo: m[1],
 	})));
 
-	let currentMethodName: string;
-	$: {
+	let currentMethodName: string = $derived.by(() => {
 		switch (sortInfo.method) {
 			case null:
-				currentMethodName = 'Unsorted';
-				break;
+				return 'Unsorted';
 			//TODO Check if still complaining once we switch to runes, also https://github.com/sveltejs/svelte/issues/13811
 			// svelte-ignore reactive_declaration_non_reactive_property
-			// eslint-disable-next-line svelte/valid-compile
 			case SortMethod.Custom:
 				if (sortInfo.customMethod === null)
 					throw new Error('Custom sort method is null');
-				currentMethodName = `${sortInfo.customMethod.service} - ${getService(sortInfo.customMethod.service).sortMethods[sortInfo.customMethod.method]!.name}`;
-				break;
+				return `${sortInfo.customMethod.service} - ${getService(sortInfo.customMethod.service).sortMethods[sortInfo.customMethod.method]!.name}`;
 			default:
-				currentMethodName = methodName(sortInfo.method);
+				return methodName(sortInfo.method);
 		}
-	}
+	});
 </script>
 
 <div class='block field has-addons'>

@@ -1,5 +1,29 @@
-import {expect, test} from '@playwright/test';
+import {expect, test, type ConsoleMessage} from '@playwright/test';
 import {loadWithLocalStorage, MAIN_STORAGE_KEY, TIMELINE_STORAGE_KEY} from '../storagesUtils';
+
+//TODO Port to before each test
+test('no errors or warnings on boot', async ({page}) => {
+	const messages = {
+		errors: [] as ConsoleMessage[],
+		warnings: [] as ConsoleMessage[],
+		misc: [] as ConsoleMessage[],
+	};
+
+	page.on('console', msg => {
+		if (msg.type() === 'error') {
+			// console.error(msg.text());
+			messages.errors.push(msg);
+		}else if (msg.type() === 'warning') {
+			// console.warn(msg.text());
+			messages.warnings.push(msg);
+		}else
+			messages.misc.push(msg);
+	});
+	await page.goto('/');
+
+	expect(messages.errors).toHaveLength(0);
+	expect(messages.warnings).toHaveLength(0);
+});
 
 test.describe('fullscreen timeline', () => {
 	test.describe('via search param', () => {
@@ -104,6 +128,8 @@ test.describe('timeline views', () => {
 
 test.describe('autoscroll', () => {
 	test.beforeEach(async ({page}) => {
+		await page.setViewportSize({width: 800, height: 600});
+
 		await loadWithLocalStorage(page, {
 			[TIMELINE_STORAGE_KEY]: {t1: {
 				endpoints: [
@@ -121,7 +147,7 @@ test.describe('autoscroll', () => {
 		const box = await container.boundingBox();
 		if (box === null)
 			throw new Error('No bounding box');
-		expect((await container.evaluate(c => c.scrollHeight) - box.height)).toBeGreaterThan(500);
+		expect((await container.evaluate(c => c.scrollHeight) - box.height), 'should have at least 500 height before doing scroll tests').toBeGreaterThan(500);
 	});
 
 	test('scroll bounces from top', async ({page}) => {

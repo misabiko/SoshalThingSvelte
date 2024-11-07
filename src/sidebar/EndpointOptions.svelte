@@ -3,7 +3,11 @@
 	import {startAutoRefresh, stopAutoRefresh} from '~/services/endpoints';
 	import type {Writable} from 'svelte/store';
 
-	export let endpoint: Writable<Endpoint>;
+	let {
+		endpoint,
+	}: {
+		endpoint: Writable<Endpoint>
+	} = $props();
 
 	let service = ($endpoint.constructor as typeof Endpoint).service;
 </script>
@@ -28,8 +32,11 @@
 			<button class='button' onclick={() => startAutoRefresh($endpoint.name)}>
 				Auto refresh
 			</button>
+			<!-- TODO Use seconds or minutes (or dynamic thing) -->
 			<input class='input' type='number' bind:value={$endpoint.autoRefreshInterval}/>
+			<!-- TODO Don't wrap unit on next line -->
 			<button class='button is-static'>ms</button>
+			<!-- TODO Show timer until next auto refresh (updated every few seconds) -->
 		{/if}
 	</div>
 </div>

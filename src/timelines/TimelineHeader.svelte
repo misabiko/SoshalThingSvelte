@@ -15,20 +15,37 @@
 	import {RefreshType} from '~/services/endpoints';
 	import {updateMaximized} from '~/storages';
 
-	export let data: TimelineData;
-	export let favviewerButtons: boolean;
-	export let favviewerHidden: boolean;
-	export let favviewerMaximized: boolean | null = null;
-	export let fullscreen: FullscreenInfo | null = null;
-	export let articleCountLabel: string;
-	export let availableRefreshTypes: Readonly<Set<RefreshType>>;
-	export let containerRebalance: boolean;
-	export let showSidebar: boolean;
-	export let showOptions: boolean;
-	export let toggleFullscreen: (() => void) | null = null;
-	export let shuffle: () => void;
-	export let autoscroll: () => void;
-	export let refresh: (refreshType: RefreshType) => void;
+	let {
+		data = $bindable(),
+		favviewerButtons = $bindable(),
+		favviewerHidden = $bindable(),
+		favviewerMaximized = $bindable(null),
+		fullscreen = null,
+		articleCountLabel,
+		availableRefreshTypes,
+		containerRebalance = $bindable(),
+		showSidebar = $bindable(),
+		showOptions = $bindable(),
+		toggleFullscreen = null,
+		shuffle,
+		autoscroll,
+		refresh,
+	}: {
+		data: TimelineData
+		favviewerButtons: boolean
+		favviewerHidden: boolean
+		favviewerMaximized?: boolean | null
+		fullscreen?: FullscreenInfo | null
+		articleCountLabel: string
+		availableRefreshTypes: Readonly<Set<RefreshType>>
+		containerRebalance: boolean
+		showSidebar: boolean
+		showOptions: boolean
+		toggleFullscreen?: (() => void) | null
+		shuffle: () => void
+		autoscroll: () => void
+		refresh: (refreshType: RefreshType) => void
+	} = $props();
 </script>
 
 <style>
@@ -119,7 +136,7 @@
 		<button class='borderless-button' title='Shuffle' onclick={shuffle}>
 			<Fa icon={faRandom} size='lg'/>
 		</button>
-		{#if data.container === MasonryContainer}
+		{#if data.container === MasonryContainer || fullscreen?.container === MasonryContainer}
 			<button class='borderless-button' title='Organize Container'
 					onclick={() => containerRebalance = !containerRebalance}>
 				<Fa icon={faScaleBalanced} size='lg'/>

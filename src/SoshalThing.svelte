@@ -24,37 +24,49 @@
 		return this.toString();
 	};
 
-	export let timelines: TimelineCollection = {};
-	export let timelineViews: Record<string, TimelineView> = {
-		[defaultTimelineViewId]: {
-			timelineIds: [],
-			fullscreen: {
-				index: null,
-				columnCount: null,
-				container: null,
+	let {
+		//Can't make reactive state outside, so splitting inputs
+		timelines: inputTimelines,
+		timelineViews: inputTimelineViews = {
+			[defaultTimelineViewId]: {
+				timelineIds: [],
+				fullscreen: {
+					index: null,
+					columnCount: null,
+					container: null,
+				},
 			},
 		},
-	};
-	for (const [viewName, view] of Object.entries(timelineViews)) {
+		timelineViewId = defaultTimelineViewId,
+		isInjected = true,
+		favviewerHidden = $bindable(false),
+		favviewerMaximized = $bindable(null),
+	}: {
+		timelines: TimelineCollection
+		timelineViews?: Record<string, TimelineView>
+		timelineViewId?: string
+		isInjected?: boolean
+		favviewerHidden?: boolean
+		favviewerMaximized?: boolean | null
+	} = $props();
+
+	for (const [viewName, view] of Object.entries(inputTimelineViews)) {
 		if (view.fullscreen.index !== null && !Object.hasOwn(view.timelineIds, view.fullscreen.index)) {
 			console.warn(`TimelineView ${viewName} has invalid fullscreen.index ${view.fullscreen.index}`);
 			view.fullscreen.index = null;
 		}
 	}
 
-	export let timelineViewId: string = defaultTimelineViewId;
-	export let isInjected = true;
-	export let favviewerHidden = false;
-	export let favviewerMaximized: boolean | null = null;
+	let timelines = $state(inputTimelines);
+	let timelineViews = $state(inputTimelineViews);
 
-	let modalTimeline: TimelineData | null = null;
-	let modalTimelineActive = false;
+	let modalTimeline = $state<TimelineData | null>(null);
+	let modalTimelineActive = $state(false);
 
-	let batchActionFilters: Writable<FilterInstance[]> = writable([]);
+	const batchActionFilters: Writable<FilterInstance[]> = writable([]);
 
 	setContext('isInjected', isInjected);
-	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-	let showSidebar = !isInjected && favviewerMaximized !== true;
+	let showSidebar = $state(!isInjected && favviewerMaximized !== true);
 
 	function addTimeline(data: TimelineData) {
 		let idNum = 0;
@@ -197,7 +209,7 @@
 	</div>
 	{#if showSidebar}
 		<Sidebar
-				bind:batchActionFilters
+				{batchActionFilters}
 				bind:timelineViewId
 				bind:timelineViews
 				bind:timelines
@@ -207,7 +219,7 @@
 	{/if}
 	<TimelineContainer
 			bind:timelines
-			bind:timelineView={timelineViews[timelineViewId]}
+			bind:timelineView={timelineViews[timelineViewId]!}
 			bind:modalTimeline
 			bind:modalTimelineActive
 			bind:favviewerHidden

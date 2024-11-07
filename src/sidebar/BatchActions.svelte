@@ -3,36 +3,39 @@
 	import FiltersOptions from '../filters/FiltersOptions.svelte';
 	import {type FilterInstance, useFilters} from '~/filters';
 	import type {TimelineCollection} from '~/timelines';
-	import {derived, type Readable, readonly, type Writable} from 'svelte/store';
+	import {derived as storeDerived, type Readable, readonly, type Writable} from 'svelte/store';
 	import {
 		type ArticleIdPair,
 		type ArticleWithRefs, flatDeriveArticle, getRootArticle,
 	} from '~/articles';
 	import {articleAction, STANDARD_ACTIONS} from '~/services/actions';
 
-	export let timelines: TimelineCollection;
-	export let filterInstances: Writable<FilterInstance[]>;
+	let {
+		timelines,
+		filterInstances = $bindable(),
+	}: {
+		timelines: TimelineCollection
+		filterInstances: Writable<FilterInstance[]>
+	} = $props();
 
-	let timelineId: string = Object.keys(timelines)[0]!;
-	let action = 'markAsRead';
-	let onlyListedArticles = true;
+	let timelineId: string = $state(Object.keys(timelines)[0]!);
+	let action = $state('markAsRead');
+	let onlyListedArticles = $state(true);
 
-	let articleIdPairs: Readable<ArticleIdPair[]> = readonly(timelines[timelineId]!.articles);
+	let articleIdPairs: Readable<ArticleIdPair[]> = $derived(readonly(timelines[timelineId]!.articles));
 
-	let articlesWithRefs: Readable<ArticleWithRefs[]>;
-	$: articlesWithRefs = derived(
-		$articleIdPairs.map(idPair => derived(flatDeriveArticle(idPair), articles => articles[0]!)),
+	let articlesWithRefs: Readable<ArticleWithRefs[]> = $derived(storeDerived(
+		$articleIdPairs.map(idPair => storeDerived(flatDeriveArticle(idPair), articles => articles[0]!)),
 		articles => articles.map(a => a.getArticleWithRefs()),
-	);
+	));
 
-	let filteredArticles: Readable<ArticleWithRefs[]>;
-	$: filteredArticles = derived(
+	let filteredArticles: Readable<ArticleWithRefs[]> = $derived(storeDerived(
 		[articlesWithRefs, filterInstances, timelines[timelineId]!.filters],
 		([articlesWithRefs, filterInstances, filters]) => useFilters(articlesWithRefs, [
 			...filterInstances,
 			...(onlyListedArticles ? filters : []),
 		]),
-	);
+	));
 
 	function doAction() {
 		for (const articleWithRefs of $filteredArticles) {

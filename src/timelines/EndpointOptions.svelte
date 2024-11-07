@@ -12,27 +12,34 @@
 	} from '~/services/endpoints';
 	import {updateTimelinesStorageEndpoints} from '~/storages';
 	import {getRootArticle} from '~/articles';
+	import {untrack} from 'svelte';
 
-	export let timelineId: string | null;
-	export let data: TimelineData;
+	let {
+		timelineId,
+		data = $bindable(),
+	}: {
+		timelineId: string | null
+		data: TimelineData
+	} = $props();
 
 	let newEndpointServices = Object.values(getServices()).filter(s => Object.values(s.endpointConstructors).length > 0);
 	if (!newEndpointServices[0])
 		throw new Error('No services with endpoints');
-	let newEndpointService: string = newEndpointServices[0].name;
-	let newEndpoint: string = Object.values(newEndpointServices[0]?.endpointConstructors)[0]!.name;
-	$: {
-		if (!Object.hasOwn(getService(newEndpointService).endpointConstructors, newEndpoint))
-			newEndpoint = Object.values(getService(newEndpointService).endpointConstructors)[0]!.name;
-	}
-	let params = Object.fromEntries(getService(newEndpointService).endpointConstructors[newEndpoint]!.paramTemplate);
+	let newEndpointServiceName: string = $state(newEndpointServices[0].name);
+	let newEndpointService = $derived(getService(newEndpointServiceName));
+	let newEndpoint: string = $state(Object.values(newEndpointServices[0]?.endpointConstructors ?? {})[0]!.name);
+
+	if (!Object.hasOwn(getService(untrack(() => newEndpointServiceName)).endpointConstructors, untrack(() => newEndpoint)))
+		newEndpoint = Object.values(untrack(() => newEndpointService.endpointConstructors))[0]!.name;
+
+	let params = $state(Object.fromEntries(untrack(() => newEndpointService).endpointConstructors[untrack(() => newEndpoint)]!.paramTemplate));
 	function updateParams() {
-		params = Object.fromEntries(getService(newEndpointService).endpointConstructors[newEndpoint]!.paramTemplate);
+		params = Object.fromEntries(newEndpointService.endpointConstructors[newEndpoint]!.paramTemplate);
 	}
 
 	function addEndpoint() {
 		data.endpoints.push({
-			endpoint: getService(newEndpointService).endpointConstructors[newEndpoint]!.constructor(params),
+			endpoint: newEndpointService.endpointConstructors[newEndpoint]!.constructor(params),
 			refreshTypes: everyRefreshType,
 			filters: [],
 		});
@@ -130,10 +137,11 @@
 	{#each data.endpoints as timelineEndpoint, i}
 		{@const endpoint = timelineEndpoint.endpoint ?? get(endpoints[timelineEndpoint.name]!)}
 		{@const endpointRefreshTypes = get(endpoint.refreshTypes)}
+		{@const MenuComponent = endpoint.menuComponent}
 		<li>
 			<h2>{endpoint.name}</h2>
 			{#if endpoint.menuComponent}
-				<svelte:component this={endpoint.menuComponent} {endpoint} timeline={data}/>
+				<MenuComponent {endpoint} timeline={data}/>
 			{/if}
 			{#each [...everyRefreshType].filter(rt => endpointRefreshTypes.has(rt)) as refreshType (refreshType)}
 				<label>
@@ -156,13 +164,13 @@
 </ul>
 
 {#if newEndpointServices.length > 0}
-	<select bind:value={newEndpointService} onchange={updateParams}>
+	<select bind:value={newEndpointServiceName} onchange={updateParams}>
 		{#each newEndpointServices as service}
 			<option value={service.name}>{service.name}</option>
 		{/each}
 	</select>
 	<select bind:value={newEndpoint} onchange={updateParams}>
-		{#each Object.values(getService(newEndpointService).endpointConstructors) as endpoint}
+		{#each Object.values(newEndpointService.endpointConstructors) as endpoint}
 			<option value={endpoint.name}>{endpoint.name}</option>
 		{/each}
 	</select>

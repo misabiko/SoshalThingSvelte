@@ -4,8 +4,13 @@
 	import Fa from 'svelte-fa';
 	import {faCircleXmark} from '@fortawesome/free-solid-svg-icons';
 
-	export let data: Notification;
-	export let id: string;
+	let {
+		data,
+		id,
+	}: {
+		data: Notification
+		id: string
+	} = $props();
 </script>
 
 <style>

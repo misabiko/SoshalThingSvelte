@@ -8,17 +8,31 @@
 	import type {TimelineArticleProps} from '../index';
 	import {getReadableArticle, getService} from '~/services/service';
 	import {type ArticleAction, getGenericActions} from '~/services/actions';
+	import {SvelteSet} from 'svelte/reactivity';
 
-	export let idPair: ArticleIdPair;
+	let {
+		idPair,
+		repost = null,
+		isQuoted = false,
+		modal = $bindable(),
+		timelineProps,
+		onLogData,
+		onLogJSON,
+
+		compact = $bindable(),
+	}: {
+		idPair: ArticleIdPair
+		repost?: Article | null
+		isQuoted?: boolean
+		modal: boolean
+		timelineProps: TimelineArticleProps
+		onLogData: () => void
+		onLogJSON: () => void
+
+		compact: boolean | null
+	} = $props();
+
 	let article = getReadableArticle(idPair);
-	export let repost: Article | null = null;
-	export let isQuoted = false;
-	export let modal: boolean;
-	export let timelineProps: TimelineArticleProps;
-	export let onLogData: () => void;
-	export let onLogJSON: () => void;
-
-	export let compact: boolean | null;
 
 	const genericActions = getGenericActions($article);
 	genericActions.push({
@@ -70,15 +84,13 @@
 			return [icons, dropdown];
 		}, [[], []]);
 
-	let hoveredActions = new Set<string>();
+	const hoveredActions = new SvelteSet<string>();
 
 	function updateActionHover(key: string, hovered: boolean) {
 		if (hovered)
 			hoveredActions.add(key);
 		else
 			hoveredActions.delete(key);
-
-		hoveredActions = hoveredActions;
 	}
 
 	let status: string | null = null;
@@ -131,7 +143,7 @@
 					{@const disabled = action.disabled ? action.disabled($article) : false}
 					{@const actioned = action.actioned($article)}
 					{@const isHovered = hoveredActions.has(action.key)}
-					<!-- svelte-ignore a11y-mouse-events-have-key-events -->
+					<!-- svelte-ignore a11y_mouse_events_have_key_events -->
 					<button
 							class='articleButton borderless-button'
 							class:actioned
@@ -154,7 +166,7 @@
 				{:else}
 					{@const count = action.count ? action.count($article) ?? 0 : 0}
 					{@const isHovered = hoveredActions.has(action.key)}
-					<!-- svelte-ignore a11y-mouse-events-have-key-events -->
+					<!-- svelte-ignore a11y_mouse_events_have_key_events -->
 					<a
 							class='articleButton borderless-button'
 							title={action.name}
@@ -187,9 +199,11 @@
 			</button>
 		{/if}
 		<Dropdown labelClasses='articleButton borderless-button'>
-			<span slot='triggerIcon' class='icon'>
-				<Fa icon={faEllipsisH}/>
-			</span>
+			{#snippet triggerIcon()}
+				<span class='icon'>
+					<Fa icon={faEllipsisH}/>
+				</span>
+			{/snippet}
 
 			{#each actions[1] as action (action.key)}
 				{#if action.action}

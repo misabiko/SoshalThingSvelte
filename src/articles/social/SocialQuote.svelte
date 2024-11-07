@@ -4,28 +4,40 @@
 	import SocialNav from './SocialNav.svelte';
 	import SocialMedia from './SocialMedia.svelte';
 	import {getReadableArticle} from '~/services/service';
-	import {derived, type Readable, writable, type Writable} from 'svelte/store';
+	import {type Readable, writable, type Writable} from 'svelte/store';
 	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
 
-	export let idPair: ArticleIdPair;
-	export let timelineProps: TimelineArticleProps;
-	export let filteredOut: boolean;
-	export let modal: boolean;
-	export let compact: boolean | null;
-	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number;
-	export let onLogData: () => void;
-	export let onLogJSON: () => void;
+	let {
+		idPair,
+		timelineProps,
+		filteredOut,
+		modal,
+		compact = $bindable(),
+		onMediaClick,
+		onLogData,
+		onLogJSON,
+	}: {
+		idPair: ArticleIdPair
+		timelineProps: TimelineArticleProps
+		filteredOut: boolean
+		modal: boolean
+		compact: boolean | null
+		onMediaClick: (idPair: ArticleIdPair, index: number) => void
+		onLogData: () => void
+		onLogJSON: () => void
+	} = $props();
 
 	let article: Readable<Article> = getReadableArticle(idPair);
 
-	let showAllMedia = derived(timelineProps.showAllMediaArticles, articles => articles.has($article.idPairStr));
+	let showAllMediaArticles = $derived(timelineProps.showAllMediaArticles);
+	let showAllMedia = $derived($showAllMediaArticles.has($article.idPairStr));
 
 	let loadingStates: Writable<Record<number, LoadingState>> = writable({});
-	$: {
+	$effect(() => {
 		$loadingStates = [];
-		for (let mediaIndex = 0; mediaIndex < Math.min($article.medias.length, !$showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : Infinity); ++mediaIndex)
+		for (let mediaIndex = 0; mediaIndex < Math.min($article.medias.length, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : Infinity); ++mediaIndex)
 			$loadingStates[mediaIndex] = loadingStore.getLoadingState($article.idPair, mediaIndex, timelineProps.shouldLoadMedia);
-	}
+	});
 </script>
 
 <style>

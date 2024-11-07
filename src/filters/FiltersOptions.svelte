@@ -6,9 +6,14 @@
 	import {getService, getServices} from '~/services/service';
 	import type {Writable} from 'svelte/store';
 
-	export let onInstancesUpdate: (i: FilterInstance[]) => void;
-	export let instances: Writable<FilterInstance[]>;
-	$: onInstancesUpdate($instances);
+	let {
+		onInstancesUpdate,
+		instances,
+	}: {
+		onInstancesUpdate: (i: FilterInstance[]) => void
+		instances: Writable<FilterInstance[]>
+	} = $props();
+	$effect(() => onInstancesUpdate($instances));
 
 	const serviceFilterTypes: {
 		service: string
@@ -69,7 +74,13 @@
 				{#if propType.type === 'boolean'}
 					<input
 						type='checkbox'
-						bind:checked={instance.filter.props[propName]}
+						checked={instance.filter.props[propName]}
+						onchange={e => {
+							if (propType.optional && !e.currentTarget.checked)
+								delete $instances[index]!.filter.props[propName];
+							else
+								$instances[index]!.filter.props[propName] = e.currentTarget.checked;
+						}}
 						indeterminate={propType.optional && instance.filter.props[propName] === undefined}
 						required={!propType.optional}
 					/>

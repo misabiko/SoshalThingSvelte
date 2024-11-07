@@ -26,23 +26,34 @@
 	import LoadArticle from './LoadArticle.svelte';
 	import type {Writable} from 'svelte/store';
 
+	//https://github.com/sveltejs/svelte/issues/13811
+	// svelte-ignore non_reactive_update
 	enum SidebarMenu {
 		TimelineEdit,
 		BatchActions,
 		Undoables,
 	}
 
-	let menu: Component | SidebarMenu | null = null;
+	let Menu = $state<Component | SidebarMenu | null>(null);
 
-	export let setModalTimeline: (data: TimelineData, width?: number) => void;
-	export let addTimeline: (data: TimelineData) => void;
-	export let timelines: TimelineCollection;
-	export let batchActionFilters: Writable<FilterInstance[]>;
-	export let timelineViews: Record<string, TimelineView>;
-	export let timelineViewId: string;
+	let {
+		setModalTimeline,
+		addTimeline,
+		timelines = $bindable(),
+		batchActionFilters,
+		timelineViews = $bindable(),
+		timelineViewId = $bindable(),
+	}: {
+		setModalTimeline: (data: TimelineData, width?: number) => void
+		addTimeline: (data: TimelineData) => void
+		timelines: TimelineCollection
+		batchActionFilters: Writable<FilterInstance[]>
+		timelineViews: Record<string, TimelineView>
+		timelineViewId: string
+	} = $props();
 
 	function toggleSidebarMenu(newMenu: Component | SidebarMenu) {
-		menu = menu === newMenu ? null : newMenu;
+		Menu = Menu === newMenu ? null : newMenu;
 	}
 
 	const buttons: {icon: IconDefinition, menu: Component | SidebarMenu, title: string}[] = [
@@ -101,9 +112,9 @@
 </style>
 
 <nav id='sidebar'>
-	{#if menu !== null}
+	{#if Menu !== null}
 		<div class='sidebarMenu'>
-			{#if menu === SidebarMenu.TimelineEdit}
+			{#if Menu === SidebarMenu.TimelineEdit}
 				<section>
 					<h1>Add new timeline</h1>
 					<TimelineEditMenu
@@ -119,26 +130,26 @@
 						bind:timelines
 					/>
 				</section>
-			{:else if menu === SidebarMenu.BatchActions}
+			{:else if Menu === SidebarMenu.BatchActions}
 				<section>
 					<BatchActions
 						bind:filterInstances={batchActionFilters}
 						{timelines}
 					/>
 				</section>
-			{:else if menu === SidebarMenu.Undoables}
+			{:else if Menu === SidebarMenu.Undoables}
 				<Undoables
 					{setModalTimeline}
 				/>
 			{:else}
-				<svelte:component this={menu}/>
+				<Menu/>
 			{/if}
 		</div>
 	{/if}
 	<div id='sidebarButtons'>
 		<div>
-			{#if menu !== null}
-				<button class='borderless-button' title='Expand sidebar' onclick={() => menu = null}>
+			{#if Menu !== null}
+				<button class='borderless-button' title='Expand sidebar' onclick={() => Menu = null}>
 					<Fa icon={faAngleDoubleLeft} size='2x'/>
 				</button>
 			{/if}

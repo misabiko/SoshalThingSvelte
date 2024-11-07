@@ -7,12 +7,21 @@
 	import {faCirclePlay} from '@fortawesome/free-regular-svg-icons';
 	import Fa from 'svelte-fa';
 
-	export let actualArticle: Readonly<Article>;
-	export let mediaIndex: number;
-	export let media: ArticleMedia;
-	export let onMediaClick: (idPair: ArticleIdPair, index: number) => number;
-	export let isLoading: boolean;
-	export let ref;
+	let {
+		actualArticle,
+		mediaIndex,
+		media,
+		onMediaClick,
+		isLoading,
+		ref = $bindable(),
+	}: {
+		actualArticle: Readonly<Article>
+		mediaIndex: number
+		media: ArticleMedia
+		onMediaClick: (idPair: ArticleIdPair, index: number) => void
+		isLoading: boolean
+		ref: HTMLImageElement | HTMLVideoElement
+	} = $props();
 
 	const cropped = !!(media.offsetX ?? media.offsetY);
 
@@ -51,7 +60,7 @@
 
 {#if cropped}
 	<div class='articleMediaCrop' style:aspect-ratio={`${media.cropRatio}`}>
-		<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
+		<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
 		<img
 			alt={`${actualArticle.idPair.id}/${mediaIndex}`}
 			class='articleMedia'
@@ -80,7 +89,7 @@
 		{/if}
 	</div>
 {:else}
-	<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
+	<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
 	<img
 		alt={`${actualArticle.idPair.id}/${mediaIndex}`}
 		class='articleMedia'

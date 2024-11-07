@@ -466,31 +466,31 @@ function parseFilters(storageFilters: FilterInstance[]) {
 	return filters;
 }
 
-function parseFullscreenInfo(fullscreen?: boolean | number | FullscreenInfoStorage): FullscreenInfo {
-	if (!fullscreen && fullscreen !== 0)
-		fullscreen = {
-			index: null,
-			columnCount: null,
-			container: null,
+function parseFullscreenInfo(fullscreenInfoStorage?: boolean | number | FullscreenInfoStorage): FullscreenInfo {
+	if (typeof fullscreenInfoStorage === 'object')
+		return {
+			index: fullscreenInfoStorage.index ?? null,
+			columnCount: fullscreenInfoStorage.columnCount ?? null,
+			container: fullscreenInfoStorage.container ? parseContainer(fullscreenInfoStorage.container) : null,
 		};
-	else if (fullscreen === true)
-		fullscreen = {
+	else if (fullscreenInfoStorage === true)
+		return {
 			index: 0,
 			columnCount: null,
 			container: null,
 		};
-	else if (typeof fullscreen === 'number')
-		fullscreen = {
-			index: fullscreen,
+	else if (typeof fullscreenInfoStorage === 'number')
+		return {
+			index: fullscreenInfoStorage,
 			columnCount: null,
 			container: null,
 		};
-
-	const containerString = fullscreen.container as string | undefined;
-	if (containerString)
-		(fullscreen as FullscreenInfo).container = parseContainer(containerString);
-
-	return fullscreen;
+	else
+		return {
+			index: null,
+			columnCount: null,
+			container: null,
+		};
 }
 
 type MainStorageParsed = {

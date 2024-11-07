@@ -3,9 +3,16 @@
 	import type {TimelineData} from '~/timelines';
 	import {getServices} from '~/services/service';
 
-	export let setModalTimeline: (data: TimelineData, width?: number) => void;
-	export let addTimeline: (data: TimelineData) => void;
+	let {
+		setModalTimeline,
+		addTimeline,
+	}: {
+		setModalTimeline: (data: TimelineData, width?: number) => void
+		addTimeline: (data: TimelineData) => void
+	} = $props();
 
+	//https://github.com/sveltejs/svelte/issues/13811
+	// svelte-ignore non_reactive_update
 	enum TimelineAddTypes {
 		Empty,
 		//TODO Get timeline templates from services (like TwitterUserMedia)
@@ -13,31 +20,29 @@
 	}
 
 	//TODO Should be a store
-	let timelineAddType = TimelineAddTypes.Empty;
-	let addDisabled = false;
-	$: {
+	let timelineAddType = $state(TimelineAddTypes.Empty);
+	let addDisabled = $derived.by(() => {
 		switch (timelineAddType) {
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			case TimelineAddTypes.User:
 				try {
-					addDisabled = !username.length || !JSON.parse(username)?.name?.length;
+					return !username.length || !JSON.parse(username)?.name?.length;
 					//TODO Debug why prefix is ignored
 					// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				}catch (_e) {
-					addDisabled = true;
+					return true;
 				}
-				break;
 			default:
-				addDisabled = false;
-				break;
+				return false;
 		}
-	}
+	});
 
-	let title = '';
-	let username = '';
+	let title = $state('');
+	let username = $state('');
 	let userServices = Object.entries(getServices()).filter(([_, s]) => s.userEndpoint !== null);
 	if (userServices[0] === undefined)
 		throw new Error('No user services available');
-	let userService = userServices[0][0];
+	let userService = $state(userServices[0][0]);
 
 	function getTimelineData() {
 		switch (timelineAddType) {

@@ -45,6 +45,8 @@ const SveltePlugin: esbuild.Plugin = {
 					filename,
 					dev: process.env.NODE_ENV === 'development',
 					css: 'injected',
+					//TODO Active full runes
+					// runes: true,
 				});
 				const contents = js.code + '//# sourceMappingURL=' + js.map.toUrl();
 

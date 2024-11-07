@@ -63,7 +63,7 @@ test.describe('masonry', () => {
 					fullscreen: {
 						container: 'Masonry',
 					},
-				}
+				},
 			});
 
 			await page.getByRole('button', {name: 'Make timeline fullscreen'}).click();

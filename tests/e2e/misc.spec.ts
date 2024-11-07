@@ -128,6 +128,8 @@ test.describe('timeline views', () => {
 
 test.describe('autoscroll', () => {
 	test.beforeEach(async ({page}) => {
+		await page.setViewportSize({width: 800, height: 600});
+
 		await loadWithLocalStorage(page, {
 			[TIMELINE_STORAGE_KEY]: {t1: {
 				endpoints: [
@@ -145,7 +147,7 @@ test.describe('autoscroll', () => {
 		const box = await container.boundingBox();
 		if (box === null)
 			throw new Error('No bounding box');
-		expect((await container.evaluate(c => c.scrollHeight) - box.height)).toBeGreaterThan(500);
+		expect((await container.evaluate(c => c.scrollHeight) - box.height), 'should have at least 500 height before doing scroll tests').toBeGreaterThan(500);
 	});
 
 	test('scroll bounces from top', async ({page}) => {

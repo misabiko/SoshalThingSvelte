@@ -31,4 +31,42 @@ test.describe('masonry', () => {
 				if (j !== 0)
 					await expect(column.nth(i).locator(`.articleParagraph >> text=bleh${j}`)).toHaveCount(1);
 	});
+
+	test.describe('balance button', () => {
+		test('available on normal container', async ({page}) => {
+			await loadWithLocalStorage(page, {
+				[TIMELINE_STORAGE_KEY]: {t1: {
+					endpoints: [
+						{
+							service: 'Dummy',
+							endpointType: 'DummyEndpoint',
+						},
+					],
+					container: 'Masonry',
+				}},
+			});
+
+			await expect(page.getByRole('button', {name: 'Organize Container'})).toBeVisible();
+		});
+
+		test('available on fullscreen container', async ({page}) => {
+			await loadWithLocalStorage(page, {
+				[TIMELINE_STORAGE_KEY]: {t1: {
+					endpoints: [
+						{
+							service: 'Dummy',
+							endpointType: 'DummyEndpoint',
+						},
+					],
+					fullscreen: {
+						container: 'Masonry',
+					},
+				}},
+			});
+
+			await page.getByRole('button', {name: 'Make timeline fullscreen'}).click();
+
+			await expect(page.getByRole('button', {name: 'Organize Container'})).toBeVisible();
+		});
+	});
 });

@@ -1,9 +1,9 @@
-import {type EndpointConstructorInfo, LoadableEndpoint, RefreshType} from '~/services/endpoints';
-import {PixivService} from '~/services/pixiv/service';
-import type {ArticleWithRefs} from '~/articles';
-import {getCachedArticlesStorage, getMarkedAsReadStorage} from '~/storages/serviceCache';
-import type {CachedPixivArticle} from '~/services/pixiv/article';
-import {illustToArticle, Mode, type PixivResponseWithPage} from '~/services/pixiv/endpoints/index';
+import { type EndpointConstructorInfo, LoadableEndpoint, RefreshType } from '~/services/endpoints';
+import { PixivService } from '~/services/pixiv/service';
+import type { ArticleWithRefs } from '~/articles';
+import { getCachedArticlesStorage, getMarkedAsReadStorage } from '~/storages/serviceCache';
+import type { CachedPixivArticle } from '~/services/pixiv/article';
+import { illustToArticle, Mode, type PixivResponseWithPage } from '~/services/pixiv/endpoints/index';
 
 export default class DiscoveryEndpoint extends LoadableEndpoint {
 	readonly name = 'Pixiv Discovery Endpoint';
@@ -29,7 +29,7 @@ export default class DiscoveryEndpoint extends LoadableEndpoint {
 		const url = new URL('https://www.pixiv.net/ajax/discovery/artworks?limit=60&lang=en');
 		url.searchParams.set('p', (this.currentPage + 1).toString());
 		url.searchParams.set('mode', this.mode);
-		const response: DiscoveryAPIResponse = await PixivService.fetch(url.toString(), {headers: {Accept: 'application/json'}});
+		const response: DiscoveryAPIResponse = await PixivService.fetch(url.toString(), { headers: { Accept: 'application/json' } });
 
 		const markedAsReadStorage = getMarkedAsReadStorage(PixivService);
 		const cachedArticlesStorage = getCachedArticlesStorage<CachedPixivArticle>(PixivService);

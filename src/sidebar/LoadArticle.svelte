@@ -1,11 +1,11 @@
 <script lang='ts'>
-	import {getService, getServices, type Service} from '~/services/service';
+	import { getService, getServices, type Service } from '~/services/service';
 	import ArticleComponent from '../articles/ArticleComponent.svelte';
 	import SocialArticleView from '../articles/social/SocialArticleView.svelte';
-	import type {ArticleProps, ArticleWithRefs, TimelineArticleProps} from '~/articles';
-	import {writable} from 'svelte/store';
+	import type { ArticleProps, ArticleWithRefs, TimelineArticleProps } from '~/articles';
+	import { writable } from 'svelte/store';
 
-	type LoadArticleService = Service & {loadArticle: Exclude<Service['loadArticle'], null>};
+	type LoadArticleService = Service & { loadArticle: Exclude<Service['loadArticle'], null> };
 	let services = Object.entries(getServices()).filter(([_, s]) => s.loadArticle !== null) as [string, LoadArticleService][];
 	let serviceName = $state(services[0] ? services[0][0] : null);
 

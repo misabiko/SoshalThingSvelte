@@ -11,7 +11,7 @@ import {
 	type PixivResponse,
 	type PixivResponseWithWorks,
 } from './index';
-import {getService, registerEndpointConstructor} from '../../service';
+import { getService, registerEndpointConstructor } from '../../service';
 
 export default class UserPageEndpoint extends PageEndpoint {
 	readonly name = 'User Endpoint';
@@ -86,7 +86,7 @@ export class UserAPIEndpoint extends LoadableEndpoint {
 			const url = new URL(`https://www.pixiv.net/ajax/user/${this.userId}/profile/all`);
 			url.searchParams.set('lang', 'en`');
 
-			const listResponse: UserListAjaxResponse = await PixivService.fetch(url.toString(), {headers: {Accept: 'application/json'}});
+			const listResponse: UserListAjaxResponse = await PixivService.fetch(url.toString(), { headers: { Accept: 'application/json' } });
 
 			const workIds = [];
 			workIds.push(...[...Object.keys(listResponse.body.illusts)].map(id => parseInt(id)));
@@ -109,7 +109,7 @@ export class UserAPIEndpoint extends LoadableEndpoint {
 			url.searchParams.set('is_first_page', (this.currentPage === 0 ? 1 : 0).toString());
 			url.searchParams.set('lang', 'en');
 
-			const response: PixivResponseWithWorks = await PixivService.fetch(url.toString(), {headers: {Accept: 'application/json'}});
+			const response: PixivResponseWithWorks = await PixivService.fetch(url.toString(), { headers: { Accept: 'application/json' } });
 			if (response.error) {
 				console.error('Failed to fetch', response);
 				return [];
@@ -149,8 +149,8 @@ export function getUserId(): number {
 }
 
 type UserListAjaxResponse = PixivResponse<{
-	illusts: {[id: string]: null}
-	manga: {[id: string]: null}
+	illusts: { [id: string]: null }
+	manga: { [id: string]: null }
 	novels: []
 	mangaSeries: [
 		{

@@ -1,6 +1,6 @@
 <script lang='ts'>
-	import {type Readable, readonly} from 'svelte/store';
-	import {derived as storeDerived, get} from 'svelte/store';
+	import { type Readable, readonly } from 'svelte/store';
+	import { derived as storeDerived, get } from 'svelte/store';
 	import {
 		type ArticleIdPair,
 		type ArticleProps,
@@ -10,16 +10,16 @@
 		getActualArticleRefs,
 		getIdServiceMediaStr,
 	} from '~/articles';
-	import {getRootArticle, idPairEqual} from '~/articles';
-	import {fetchArticle, getWritableArticle} from '~/services/service';
-	import {addArticlesToTimeline, type FullscreenInfo, type TimelineData} from './index';
-	import {type FilterInstance, keepArticle} from '~/filters';
-	import {compare, SortMethod} from '~/sorting';
-	import type {ContainerProps} from '~/containers';
+	import { getRootArticle, idPairEqual } from '~/articles';
+	import { fetchArticle, getWritableArticle } from '~/services/service';
+	import { addArticlesToTimeline, type FullscreenInfo, type TimelineData } from './index';
+	import { type FilterInstance, keepArticle } from '~/filters';
+	import { compare, SortMethod } from '~/sorting';
+	import type { ContainerProps } from '~/containers';
 	import TimelineHeader from './TimelineHeader.svelte';
 	import TimelineOptions from './TimelineOptions.svelte';
-	import {endpoints, refreshEndpoint, refreshEndpointName, RefreshType} from '~/services/endpoints';
-	import {loadingStore} from '~/bufferedMediaLoading';
+	import { endpoints, refreshEndpoint, refreshEndpointName, RefreshType } from '~/services/endpoints';
+	import { loadingStore } from '~/bufferedMediaLoading';
 
 	let {
 		timelineId,
@@ -144,7 +144,7 @@
 				}
 				case 'repost': {
 					const splitReposted = addPropsRoot(articleWithRefs.reposted, index, filters);
-					const {filteredOut, nonKeepFilters} = useFilters(articleWithRefs, index, filters);
+					const { filteredOut, nonKeepFilters } = useFilters(articleWithRefs, index, filters);
 					return splitReposted.map(reposted => ({
 						type: 'reposts',
 						reposts: [articleWithRefs.article],
@@ -166,7 +166,7 @@
 	}
 
 	function addProps(articleWithRefs: ArticleWithRefs, index: number, filters: FilterInstance[]): ArticleProps {
-		const {filteredOut, nonKeepFilters} = useFilters(articleWithRefs, index, filters);
+		const { filteredOut, nonKeepFilters } = useFilters(articleWithRefs, index, filters);
 
 		switch (articleWithRefs.type) {
 			case 'normal':
@@ -194,7 +194,7 @@
 					mediaIndex: null,
 				} as ArticleProps;
 			case 'reposts':
-				throw {message: 'Reposts should come from the timeline and not articles themselves', articleWithRefs};
+				throw { message: 'Reposts should come from the timeline and not articles themselves', articleWithRefs };
 		}
 	}
 
@@ -209,7 +209,7 @@
 
 		const filteredOut = !!nonKeepFilters.length;
 
-		return {filteredOut, nonKeepFilters};
+		return { filteredOut, nonKeepFilters };
 	}
 
 	let articleCountLabel: string = $derived.by(() => {
@@ -250,7 +250,7 @@
 				else {
 					const mediaCount = Math.min(actualArticleProps.article.medias.length, !$showAllMediaArticles.has(article.idPairStr) && data.maxMediaCount !== null ? data.maxMediaCount : Infinity);
 					for (let mediaIndex = 0; mediaIndex < mediaCount; ++mediaIndex)
-						toRequest.push({idPair: article.idPair, mediaIndex});
+						toRequest.push({ idPair: article.idPair, mediaIndex });
 				}
 			}
 
@@ -341,7 +341,7 @@
 		window.addEventListener(
 			'mousedown',
 			stopScroll,
-			{once: true},
+			{ once: true },
 		);
 	}
 
@@ -373,7 +373,7 @@
 		//Setting reversed otherwise the timeline will reverse the order again
 		data.sortInfo.reversed = false;
 		data.articlesOrder.set(get(articles)
-			.sort(compare({method, reversed, customMethod: null}))
+			.sort(compare({ method, reversed, customMethod: null }))
 			.map(getIdServiceMediaStr));
 	}
 

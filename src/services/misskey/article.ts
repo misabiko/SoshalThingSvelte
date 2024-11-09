@@ -1,12 +1,12 @@
-import type {ArticleAuthor, ArticleWithRefs} from '~/articles';
-import Article, {getRootArticle} from '~/articles';
-import type {ArticleRefIdPair} from '~/articles';
-import type {ArticleMedia} from '~/articles/media';
-import {getRatio, MediaLoadType, MediaType} from '~/articles/media';
+import type { ArticleAuthor, ArticleWithRefs } from '~/articles';
+import Article, { getRootArticle } from '~/articles';
+import type { ArticleRefIdPair } from '~/articles';
+import type { ArticleMedia } from '~/articles/media';
+import { getRatio, MediaLoadType, MediaType } from '~/articles/media';
 import * as mfm from 'mfm-js';
-import {MisskeyService} from './service';
-import type {entities} from 'misskey-js';
-import type {MfmNode} from 'mfm-js';
+import { MisskeyService } from './service';
+import type { entities } from 'misskey-js';
+import type { MfmNode } from 'mfm-js';
 
 export default class MisskeyArticle extends Article {
 	static service = 'Misskey';

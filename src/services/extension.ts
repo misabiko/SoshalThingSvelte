@@ -1,5 +1,5 @@
-import {writable} from 'svelte/store';
-import {MAIN_STORAGE_KEY} from '~/storages';
+import { writable } from 'svelte/store';
+import { MAIN_STORAGE_KEY } from '~/storages';
 
 export type ExtensionContext =
 	| {

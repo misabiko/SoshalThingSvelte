@@ -1,4 +1,4 @@
-import {loadMainStorage} from '~/storages';
+import { loadMainStorage } from '~/storages';
 
 //Websocket no-connection error is not catcheable, and will be flagged as extension error no matter what, so better to make ws opt-in
 //https://stackoverflow.com/a/31003057/2692695
@@ -26,7 +26,7 @@ export function sendRequest<T>(request: string, body: any): Promise<T> {
 	if (websocket === null)
 		throw new Error('Websocket not initialized');
 
-	websocket.send(JSON.stringify({request, body}));
+	websocket.send(JSON.stringify({ request, body }));
 
 	return new Promise((resolve, reject) => {
 		const timeoutId = setTimeout(() => reject(new Error("Remote page didn't respond in 10 seconds.")), 10000);

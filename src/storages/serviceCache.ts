@@ -1,7 +1,7 @@
-import {loadMainStorage, MAIN_STORAGE_KEY} from './index';
-import {derived, get} from 'svelte/store';
-import {getService, type Service} from '~/services/service';
-import {getServices} from '~/services/service';
+import { loadMainStorage, MAIN_STORAGE_KEY } from './index';
+import { derived, get } from 'svelte/store';
+import { getService, type Service } from '~/services/service';
+import { getServices } from '~/services/service';
 import type Article from '../articles';
 
 //const LOCAL_CACHE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Cache';
@@ -24,12 +24,12 @@ type SessionCacheStorage = {
 // }
 
 export function updateMarkAsReadStorage() {
-	const {markAsReadLocal} = loadMainStorage();
+	const { markAsReadLocal } = loadMainStorage();
 	const storageType = (markAsReadLocal ? localStorage : sessionStorage);
 	const item = storageType.getItem(MAIN_STORAGE_KEY);
 	const rawSessionCacheStorage: Partial<SessionCacheStorage> | null = item !== null ? JSON.parse(item) : null;
 
-	const sessionCacheStorage: SessionCacheStorage = rawSessionCacheStorage === null ? {services: {}} : {
+	const sessionCacheStorage: SessionCacheStorage = rawSessionCacheStorage === null ? { services: {} } : {
 		...rawSessionCacheStorage,
 		services: rawSessionCacheStorage.services ??{},
 	};
@@ -59,7 +59,7 @@ export function updateCachedArticlesStorage(service?: string) {
 	const item = sessionStorage.getItem(MAIN_STORAGE_KEY);
 	let storage = item !== null ? JSON.parse(item) : null;
 	if (storage === null)
-		storage = {services: {}};
+		storage = { services: {} };
 	else if (storage.services === undefined)
 		storage.services = {};
 
@@ -87,7 +87,7 @@ export function updateCachedArticlesStorage(service?: string) {
 }
 
 export function getMarkedAsReadStorage(service: Service<any>): string[] {
-	const {markAsReadLocal} = loadMainStorage();
+	const { markAsReadLocal } = loadMainStorage();
 	const item = (markAsReadLocal ? localStorage : sessionStorage).getItem(MAIN_STORAGE_KEY);
 	const parsed: Partial<SessionCacheStorage> | null = item !== null ? JSON.parse(item) : null;
 	if (parsed?.services === undefined)

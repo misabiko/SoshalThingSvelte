@@ -1,5 +1,5 @@
 import type PixivArticle from './article';
-import type {CachedPixivArticle} from './article';
+import type { CachedPixivArticle } from './article';
 import {
 	type FetchingService,
 	FetchType, getService,
@@ -9,7 +9,7 @@ import {
 	registerService,
 	type Service,
 } from '../service';
-import {get, type Writable} from 'svelte/store';
+import { get, type Writable } from 'svelte/store';
 import {
 	type ArticleIdPair,
 	type ArticleWithRefs,
@@ -17,21 +17,21 @@ import {
 	getActualArticle,
 	getRootArticle,
 } from '~/articles';
-import {STANDARD_ACTIONS} from '../actions';
-import {getServiceStorage} from '~/storages';
-import {faFaceSmile} from '@fortawesome/free-solid-svg-icons';
-import type {Filter} from '~/filters';
+import { STANDARD_ACTIONS } from '../actions';
+import { getServiceStorage } from '~/storages';
+import { faFaceSmile } from '@fortawesome/free-solid-svg-icons';
+import type { Filter } from '~/filters';
 import ServiceSettings from './ServiceSettings.svelte';
-import {updateCachedArticlesStorage} from '~/storages/serviceCache';
+import { updateCachedArticlesStorage } from '~/storages/serviceCache';
 import MasonryContainer from '~/containers/MasonryContainer.svelte';
-import {SortMethod} from '~/sorting';
+import { SortMethod } from '~/sorting';
 import type {
 	AIType,
 	BookmarkData, ExtraData,
 	Illust,
 	IllustType, ZoneConfig,
 } from '~/services/pixiv/endpoints';
-import {getRatio, MediaLoadType} from '~/articles/media';
+import { getRatio, MediaLoadType } from '~/articles/media';
 
 export const PixivService: PixivServiceType = {
 	...newFetchingService({

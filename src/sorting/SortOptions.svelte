@@ -1,10 +1,10 @@
 <script lang='ts'>
-	import {methodName, type SortInfo, SortMethod} from './index';
+	import { methodName, type SortInfo, SortMethod } from './index';
 	import Dropdown from '../Dropdown.svelte';
-	import {directionLabel, genericSortMethods} from './index';
-	import {getService, getServices, type SortMethodInfo} from '~/services/service';
-	import {updateTimelinesStorageSortInfo} from '~/storages';
-	import type {Writable} from 'svelte/store';
+	import { directionLabel, genericSortMethods } from './index';
+	import { getService, getServices, type SortMethodInfo } from '~/services/service';
+	import { updateTimelinesStorageSortInfo } from '~/storages';
+	import type { Writable } from 'svelte/store';
 
 	let {
 		timelineId,

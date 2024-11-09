@@ -1,15 +1,15 @@
 import './services/**/service.ts';
 import './services/**/*.endpoint.ts';
-import {mount} from 'svelte';
+import { mount } from 'svelte';
 
-import {getServices} from './services/service';
+import { getServices } from './services/service';
 console.debug('Loaded services and endpoints:', Object.fromEntries(Object.values(getServices()).map(service => [service.name, Object.keys(service.endpointConstructors)])));
 
 import SoshalThing from './SoshalThing.svelte';
-import {loadMainStorage, loadTimelines} from './storages';
-import {defaultTimelineViewId, type FullscreenInfo, type TimelineView} from './timelines';
+import { loadMainStorage, loadTimelines } from './storages';
+import { defaultTimelineViewId, type FullscreenInfo, type TimelineView } from './timelines';
 
-const {timelineIds, fullscreen, timelineViews, currentTimelineViewId} = loadMainStorage();
+const { timelineIds, fullscreen, timelineViews, currentTimelineViewId } = loadMainStorage();
 const timelines = loadTimelines();
 
 const searchParams = new URLSearchParams(location.search);

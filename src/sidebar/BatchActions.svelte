@@ -1,14 +1,14 @@
 <script lang='ts'>
 	//TODO Fix/Test BatchActions
 	import FiltersOptions from '../filters/FiltersOptions.svelte';
-	import {type FilterInstance, useFilters} from '~/filters';
-	import type {TimelineCollection} from '~/timelines';
-	import {derived as storeDerived, type Readable, readonly, type Writable} from 'svelte/store';
+	import { type FilterInstance, useFilters } from '~/filters';
+	import type { TimelineCollection } from '~/timelines';
+	import { derived as storeDerived, type Readable, readonly, type Writable } from 'svelte/store';
 	import {
 		type ArticleIdPair,
 		type ArticleWithRefs, flatDeriveArticle, getRootArticle,
 	} from '~/articles';
-	import {articleAction, STANDARD_ACTIONS} from '~/services/actions';
+	import { articleAction, STANDARD_ACTIONS } from '~/services/actions';
 
 	let {
 		timelines,

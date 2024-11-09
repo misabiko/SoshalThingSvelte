@@ -1,13 +1,13 @@
 <script lang='ts'>
-	import {type ArticleIdPair, type ArticleViewProps, getActualArticleRefs} from './index';
-	import {getWritableArticle, toggleMarkAsRead} from '~/services/service';
-	import {getActualArticle} from '../articles';
-	import type {ArticleProps, TimelineArticleProps} from './index';
-	import {type Component, onDestroy, tick} from 'svelte';
-	import {getRootArticle} from './index';
+	import { type ArticleIdPair, type ArticleViewProps, getActualArticleRefs } from './index';
+	import { getWritableArticle, toggleMarkAsRead } from '~/services/service';
+	import { getActualArticle } from '../articles';
+	import type { ArticleProps, TimelineArticleProps } from './index';
+	import { type Component, onDestroy, tick } from 'svelte';
+	import { getRootArticle } from './index';
 	import Modal from '../Modal.svelte';
-	import {MediaLoadType} from './media';
-	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
+	import { MediaLoadType } from './media';
+	import { LoadingState, loadingStore } from '~/bufferedMediaLoading';
 
 	let {
 		articleProps,

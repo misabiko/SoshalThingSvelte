@@ -1,11 +1,11 @@
-import {DummyService} from './service';
+import { DummyService } from './service';
 import DummyArticle from './article';
-import {getMarkedAsReadStorage} from '~/storages/serviceCache';
-import {Endpoint, RefreshType} from '../endpoints';
-import type {EndpointConstructorInfo} from '../endpoints';
-import type {ArticleWithRefs} from '~/articles';
-import {getService, registerEndpointConstructor} from '../service';
-import {get} from 'svelte/store';
+import { getMarkedAsReadStorage } from '~/storages/serviceCache';
+import { Endpoint, RefreshType } from '../endpoints';
+import type { EndpointConstructorInfo } from '../endpoints';
+import type { ArticleWithRefs } from '~/articles';
+import { getService, registerEndpointConstructor } from '../service';
+import { get } from 'svelte/store';
 
 export class DummyEndpoint extends Endpoint {
 	readonly name = 'DummyEndpoint';

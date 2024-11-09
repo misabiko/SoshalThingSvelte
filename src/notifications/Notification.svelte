@@ -1,8 +1,8 @@
 <script lang='ts'>
-	import type {Notification} from './store';
-	import {notifications} from './store';
+	import type { Notification } from './store';
+	import { notifications } from './store';
 	import Fa from 'svelte-fa';
-	import {faCircleXmark} from '@fortawesome/free-solid-svg-icons';
+	import { faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 
 	let {
 		data,

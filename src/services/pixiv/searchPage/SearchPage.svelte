@@ -1,13 +1,13 @@
 <script lang='ts'>
-	import {defaultTimeline, defaultTimelineViewId, type TimelineCollection, type TimelineView} from '~/timelines';
-	import {Mode} from '~/services/pixiv/endpoints';
-	import {SearchAPIEndpoint} from '~/services/pixiv/endpoints/search.endpoint';
-	import {getCurrentPage} from '~/services/pixiv/endpoints';
-	import {everyRefreshType} from '~/services/endpoints';
+	import { defaultTimeline, defaultTimelineViewId, type TimelineCollection, type TimelineView } from '~/timelines';
+	import { Mode } from '~/services/pixiv/endpoints';
+	import { SearchAPIEndpoint } from '~/services/pixiv/endpoints/search.endpoint';
+	import { getCurrentPage } from '~/services/pixiv/endpoints';
+	import { everyRefreshType } from '~/services/endpoints';
 	import portal from '~/usePortal';
-	import {loadMainStorage} from '~/storages';
+	import { loadMainStorage } from '~/storages';
 	import SoshalThing from '~/SoshalThing.svelte';
-	import {PixivService} from '~/services/pixiv/service';
+	import { PixivService } from '~/services/pixiv/service';
 
 	const query = window.location.pathname.split('/')[3];
 	if (!query)

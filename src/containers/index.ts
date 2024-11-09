@@ -1,5 +1,5 @@
-import {type ArticleProps, type ArticleViewProps, type TimelineArticleProps, getIdServiceMediaStr} from '~/articles';
-import type {Component} from 'svelte';
+import { type ArticleProps, type ArticleViewProps, type TimelineArticleProps, getIdServiceMediaStr } from '~/articles';
+import type { Component } from 'svelte';
 
 export type ContainerProps = {
 	articles: ArticleProps[]

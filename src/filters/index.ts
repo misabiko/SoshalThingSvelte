@@ -1,7 +1,7 @@
-import {type ArticleWithRefs, getRootArticle} from '~/articles';
-import {articleWithRefToArray} from '~/articles';
-import {getService} from '~/services/service';
-import {type ArticleMedia, MediaType} from '~/articles/media';
+import { type ArticleWithRefs, getRootArticle } from '~/articles';
+import { articleWithRefToArray } from '~/articles';
+import { getService } from '~/services/service';
+import { type ArticleMedia, MediaType } from '~/articles/media';
 
 //TODO Filter groups and boolean filters
 

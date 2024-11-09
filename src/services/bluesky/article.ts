@@ -1,7 +1,7 @@
-import Article, {type ArticleAuthor, type ArticleRefIdPair, type ArticleWithRefs} from '~/articles';
-import type {ArticleMedia} from '~/articles/media';
-import {getRatio, MediaLoadType, MediaType} from '~/articles/media';
-import {AppBskyEmbedImages, type AppBskyFeedDefs, AppBskyFeedPost} from '@atproto/api';
+import Article, { type ArticleAuthor, type ArticleRefIdPair, type ArticleWithRefs } from '~/articles';
+import type { ArticleMedia } from '~/articles/media';
+import { getRatio, MediaLoadType, MediaType } from '~/articles/media';
+import { AppBskyEmbedImages, type AppBskyFeedDefs, AppBskyFeedPost } from '@atproto/api';
 
 export default class BlueskyArticle extends Article {
 	static service = 'Bluesky';

@@ -1,7 +1,7 @@
 <script lang='ts'>
 	//https://github.com/c0bra/svelma/blob/master/src/components/Modal/Modal.svelte
 	//https://svelte.dev/examples/modal
-	import {onDestroy, type Snippet} from 'svelte';
+	import { onDestroy, type Snippet } from 'svelte';
 
 	let {
 		active = $bindable(),

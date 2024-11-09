@@ -1,5 +1,5 @@
-import {expect, test} from '@playwright/test';
-import {generateId, notifications} from '~/notifications/store';
+import { expect, test } from '@playwright/test';
+import { generateId, notifications } from '~/notifications/store';
 
 test.describe('notifications', () => {
 	test('without adding notification', () => {
@@ -11,7 +11,7 @@ test.describe('notifications', () => {
 		let ids: string[] = [];
 		notifications.subscribe(value => ids = Object.keys(value));
 		for (let i = 0; i < 3; ++i)
-			notifications.notify({type: 'generic', text: 'text ' + i});
+			notifications.notify({ type: 'generic', text: 'text ' + i });
 
 		expect(generateId()).toEqual('Generated3');
 		expect(ids).toEqual([

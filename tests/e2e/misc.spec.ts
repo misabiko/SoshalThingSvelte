@@ -1,8 +1,8 @@
-import {expect, test, type ConsoleMessage} from '@playwright/test';
-import {loadWithLocalStorage, MAIN_STORAGE_KEY, TIMELINE_STORAGE_KEY} from '../storagesUtils';
+import { expect, test, type ConsoleMessage } from '@playwright/test';
+import { loadWithLocalStorage, MAIN_STORAGE_KEY, TIMELINE_STORAGE_KEY } from '../storagesUtils';
 
 //TODO Port to before each test
-test('no errors or warnings on boot', async ({page}) => {
+test('no errors or warnings on boot', async ({ page }) => {
 	const messages = {
 		errors: [] as ConsoleMessage[],
 		warnings: [] as ConsoleMessage[],
@@ -27,7 +27,7 @@ test('no errors or warnings on boot', async ({page}) => {
 
 test.describe('fullscreen timeline', () => {
 	test.describe('via search param', () => {
-		test('empty param', async ({page}) => {
+		test('empty param', async ({ page }) => {
 			await loadWithLocalStorage(page, {
 				[TIMELINE_STORAGE_KEY]: {t1: {}, t2: {}, t3: {}},
 			});
@@ -38,7 +38,7 @@ test.describe('fullscreen timeline', () => {
 			await expect(timeline).toHaveClass(/fullscreenTimeline/);
 		});
 
-		test('true', async ({page}) => {
+		test('true', async ({ page }) => {
 			await loadWithLocalStorage(page, {
 				[TIMELINE_STORAGE_KEY]: {t1: {}, t2: {}, t3: {}},
 			});
@@ -49,7 +49,7 @@ test.describe('fullscreen timeline', () => {
 			await expect(timeline).toHaveClass(/fullscreenTimeline/);
 		});
 
-		test('num', async ({page}) => {
+		test('num', async ({ page }) => {
 			await loadWithLocalStorage(page, {
 				[TIMELINE_STORAGE_KEY]: {t1: {}, t2: {}, t3: {}},
 			});
@@ -61,7 +61,7 @@ test.describe('fullscreen timeline', () => {
 		});
 	});
 
-	test('setting timeline fullscreen retains order', async ({page}) => {
+	test('setting timeline fullscreen retains order', async ({ page }) => {
 		await loadWithLocalStorage(page, {
 			[TIMELINE_STORAGE_KEY]: {
 				Timeline1: {title: 'Timeline1'},
@@ -79,7 +79,7 @@ test.describe('fullscreen timeline', () => {
 				.toHaveText('Timeline' + i, {timeout: 500});
 	});
 
-	test('removing main timeline retains order', async ({page}) => {
+	test('removing main timeline retains order', async ({ page }) => {
 		await loadWithLocalStorage(page, {
 			[TIMELINE_STORAGE_KEY]: {
 				Timeline1: {title: 'Timeline1'},
@@ -102,7 +102,7 @@ test.describe('fullscreen timeline', () => {
 });
 
 test.describe('timeline views', () => {
-	test('via search param', async ({page}) => {
+	test('via search param', async ({ page }) => {
 		await loadWithLocalStorage(page, {
 			[TIMELINE_STORAGE_KEY]: {
 				'Timeline 1': {title: 'Timeline 1'},
@@ -127,8 +127,8 @@ test.describe('timeline views', () => {
 });
 
 test.describe('autoscroll', () => {
-	test.beforeEach(async ({page}) => {
-		await page.setViewportSize({width: 800, height: 600});
+	test.beforeEach(async ({ page }) => {
+		await page.setViewportSize({ width: 800, height: 600 });
 
 		await loadWithLocalStorage(page, {
 			[TIMELINE_STORAGE_KEY]: {t1: {
@@ -150,7 +150,7 @@ test.describe('autoscroll', () => {
 		expect((await container.evaluate(c => c.scrollHeight) - box.height), 'should have at least 500 height before doing scroll tests').toBeGreaterThan(500);
 	});
 
-	test('scroll bounces from top', async ({page}) => {
+	test('scroll bounces from top', async ({ page }) => {
 		const container = page.locator('.articlesContainer').first();
 
 		const scrollTop = await container.evaluate(c => c.scrollTop = 10);
@@ -162,7 +162,7 @@ test.describe('autoscroll', () => {
 		expect(await container.evaluate(c => c.scrollTop)).toBeGreaterThan(scrollTop);
 	});
 
-	test('scroll bounces from bottom', async ({page}) => {
+	test('scroll bounces from bottom', async ({ page }) => {
 		const container = page.locator('.articlesContainer').first();
 
 		const scrollTop = await container.evaluate(c => c.scrollTop = c.scrollHeight - 10);
@@ -174,7 +174,7 @@ test.describe('autoscroll', () => {
 		expect(await container.evaluate(c => c.scrollTop)).toBeLessThan(scrollTop);
 	});
 
-	test('scroll downward by default', async ({page}) => {
+	test('scroll downward by default', async ({ page }) => {
 		const container = page.locator('.articlesContainer').first();
 
 		//Scrolling halfway, so it doesn't bounce from top on first frame
@@ -187,7 +187,7 @@ test.describe('autoscroll', () => {
 		expect(await container.evaluate(c => c.scrollTop)).toBeGreaterThan(scrollTop);
 	});
 
-	test('scroll flips every click', async ({page}) => {
+	test('scroll flips every click', async ({ page }) => {
 		const container = page.locator('.articlesContainer').first();
 
 		//Scrolling halfway so, it doesn't bounce from top on first frame

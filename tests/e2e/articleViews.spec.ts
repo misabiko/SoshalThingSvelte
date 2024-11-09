@@ -1,8 +1,8 @@
-import test, {expect} from '@playwright/test';
-import {loadWithLocalStorage, TIMELINE_STORAGE_KEY} from '../storagesUtils';
+import test, { expect } from '@playwright/test';
+import { loadWithLocalStorage, TIMELINE_STORAGE_KEY } from '../storagesUtils';
 
 test.describe('SocialArticleView', () => {
-	test('like feedback', async ({page}) => {
+	test('like feedback', async ({ page }) => {
 		await loadWithLocalStorage(page, {
 			[TIMELINE_STORAGE_KEY]: {t1: {
 				endpoints: [
@@ -19,7 +19,7 @@ test.describe('SocialArticleView', () => {
 		await expect(page.locator('article button[title = "Like"]').first()).toHaveClass(/actioned/);
 	});
 
-	test('repost feedback', async ({page}) => {
+	test('repost feedback', async ({ page }) => {
 		await loadWithLocalStorage(page, {
 			[TIMELINE_STORAGE_KEY]: {t1: {
 				title: 'Timeline',

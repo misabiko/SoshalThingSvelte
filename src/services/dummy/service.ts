@@ -1,8 +1,8 @@
-import {get} from 'svelte/store';
-import {getWritableArticle, newService, registerService, type Service} from '../service';
+import { get } from 'svelte/store';
+import { getWritableArticle, newService, registerService, type Service } from '../service';
 import type DummyArticle from './article';
-import type {ArticleIdPair} from '~/articles';
-import {STANDARD_ACTIONS} from '../actions';
+import type { ArticleIdPair } from '~/articles';
+import { STANDARD_ACTIONS } from '../actions';
 
 export const DummyService: Service<DummyArticle> = newService({
 	name: 'Dummy',
@@ -10,12 +10,12 @@ export const DummyService: Service<DummyArticle> = newService({
 		[STANDARD_ACTIONS.like.key]: {
 			...STANDARD_ACTIONS.like,
 			action: toggleLike,
-			actioned(article) {return article.liked;},
+			actioned(article) { return article.liked; },
 		},
 		[STANDARD_ACTIONS.repost.key]: {
 			...STANDARD_ACTIONS.repost,
 			action: repost,
-			actioned(article) {return article.reposted;},
+			actioned(article) { return article.reposted; },
 		},
 	},
 });

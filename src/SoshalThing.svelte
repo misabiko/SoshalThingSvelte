@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import './partialGlobal.css';
-	import {setContext} from 'svelte';
+	import { setContext } from 'svelte';
 	import Sidebar from './sidebar/Sidebar.svelte';
 	import {
 		addArticlesToTimeline,
@@ -10,15 +10,15 @@
 		type TimelineView,
 	} from './timelines';
 	import TimelineContainer from './timelines/TimelineContainer.svelte';
-	import {notifications} from './notifications/store';
+	import { notifications } from './notifications/store';
 	import Notification from './notifications/Notification.svelte';
-	import {Endpoint, endpoints, refreshEndpoint, refreshEndpointName, RefreshType} from './services/endpoints';
-	import type {FilterInstance} from './filters';
-	import {getRootArticle} from './articles';
-	import {updateTimelinesStorage} from '~/storages';
-	import {get, type Writable, writable} from 'svelte/store';
-	import {FetchType, getService} from './services/service';
-	import {fetchExtension} from './services/extension';
+	import { Endpoint, endpoints, refreshEndpoint, refreshEndpointName, RefreshType } from './services/endpoints';
+	import type { FilterInstance } from './filters';
+	import { getRootArticle } from './articles';
+	import { updateTimelinesStorage } from '~/storages';
+	import { get, type Writable, writable } from 'svelte/store';
+	import { FetchType, getService } from './services/service';
+	import { fetchExtension } from './services/extension';
 
 	(BigInt.prototype as any).toJSON = function () {
 		return this.toString();

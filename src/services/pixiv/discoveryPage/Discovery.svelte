@@ -1,12 +1,12 @@
 <script lang='ts'>
-	import {defaultTimeline, defaultTimelineViewId, type TimelineCollection, type TimelineView} from '~/timelines';
+	import { defaultTimeline, defaultTimelineViewId, type TimelineCollection, type TimelineView } from '~/timelines';
 	import DiscoveryEndpoint from '~/services/pixiv/endpoints/discovery.endpoint';
-	import {getCurrentPage, Mode} from '~/services/pixiv/endpoints';
-	import {everyRefreshType} from '~/services/endpoints';
+	import { getCurrentPage, Mode } from '~/services/pixiv/endpoints';
+	import { everyRefreshType } from '~/services/endpoints';
 	import portal from '~/usePortal';
-	import {loadMainStorage} from '~/storages';
+	import { loadMainStorage } from '~/storages';
 	import SoshalThing from '~/SoshalThing.svelte';
-	import {PixivService} from '~/services/pixiv/service';
+	import { PixivService } from '~/services/pixiv/service';
 
 	const searchParams = new URLSearchParams(window.location.search);
 	const mode = searchParams.get('mode') as Mode | null ?? Mode.All;
@@ -83,7 +83,7 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions a11y_click_events_have_key_events -->
 <a
-		use:portal={{target: activatorMount}}
+		use:portal={{ target: activatorMount }}
 		id='favvieweractivator'
 		class={activatorMount.children[0]!.className}
 		onclick={() => favviewerHidden = !favviewerHidden}

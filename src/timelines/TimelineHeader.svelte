@@ -11,9 +11,9 @@
 		faSyncAlt,
 	} from '@fortawesome/free-solid-svg-icons';
 	import MasonryContainer from '../containers/MasonryContainer.svelte';
-	import type {FullscreenInfo, TimelineData} from './index';
-	import {RefreshType} from '~/services/endpoints';
-	import {updateMaximized} from '~/storages';
+	import type { FullscreenInfo, TimelineData } from './index';
+	import { RefreshType } from '~/services/endpoints';
+	import { updateMaximized } from '~/storages';
 
 	let {
 		data = $bindable(),

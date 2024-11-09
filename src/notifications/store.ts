@@ -1,4 +1,4 @@
-import {writable} from 'svelte/store';
+import { writable } from 'svelte/store';
 
 //TODO +1 Add notification on console errors
 
@@ -16,7 +16,7 @@ export type Notification =
 		text: string
 	};
 
-const {subscribe, update} = writable<{[id: string]: Notification}>({});
+const { subscribe, update } = writable<{ [id: string]: Notification }>({});
 let ids: string[];
 subscribe(value => ids = Object.keys(value));
 

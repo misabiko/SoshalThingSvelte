@@ -1,10 +1,10 @@
 import type Article from './articles';
-import type {ArticleIdPair} from './articles';
-import {getWritableArticle} from './services/service';
-import {get, writable} from 'svelte/store';
+import type { ArticleIdPair } from './articles';
+import { getWritableArticle } from './services/service';
+import { get, writable } from 'svelte/store';
 
 function hash(idPair: ArticleIdPair, mediaIndex: number) {
-	return JSON.stringify({...idPair, mediaIndex});
+	return JSON.stringify({ ...idPair, mediaIndex });
 }
 
 type LoadingInfo = {
@@ -21,7 +21,7 @@ export enum LoadingState {
 }
 
 export const loadingStore = (() => {
-	const {subscribe, update} = writable<LoadingInfo>({
+	const { subscribe, update } = writable<LoadingInfo>({
 		loadings: new Set<string>(),
 		queue: [],
 	});
@@ -59,9 +59,9 @@ export const loadingStore = (() => {
 			});
 			return LoadingState.Loading;
 		},
-		requestLoads(...medias: {idPair: ArticleIdPair, mediaIndex: number}[]) {
+		requestLoads(...medias: { idPair: ArticleIdPair, mediaIndex: number }[]) {
 			const validMedias = medias
-				.filter(({idPair, mediaIndex}) => {
+				.filter(({ idPair, mediaIndex }) => {
 					const idPairStr = hash(idPair, mediaIndex);
 					if (localLoadings.has(idPairStr) || localQueue.includes(idPairStr))
 						return false;
@@ -72,7 +72,7 @@ export const loadingStore = (() => {
 
 			if (validMedias.length) {
 				update(store => {
-					for (const {idPair, mediaIndex} of validMedias) {
+					for (const { idPair, mediaIndex } of validMedias) {
 						const idPairStr = hash(idPair, mediaIndex);
 						if (localLoadings.has(idPairStr) || localQueue.includes(idPairStr))
 							continue;

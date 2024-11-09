@@ -1,10 +1,10 @@
-import {Endpoint, type EndpointConstructorInfo, RefreshType} from '~/services/endpoints';
-import type {ArticleWithRefs} from '~/articles';
-import {getServiceStorage} from '~/storages';
-import {BlueskyService} from '~/services/bluesky/service';
-import {registerEndpointConstructor} from '~/services/service';
-import {parseFeedViewPost} from '~/services/bluesky/article';
-import {getMarkedAsReadStorage} from '~/storages/serviceCache';
+import { Endpoint, type EndpointConstructorInfo, RefreshType } from '~/services/endpoints';
+import type { ArticleWithRefs } from '~/articles';
+import { getServiceStorage } from '~/storages';
+import { BlueskyService } from '~/services/bluesky/service';
+import { registerEndpointConstructor } from '~/services/service';
+import { parseFeedViewPost } from '~/services/bluesky/article';
+import { getMarkedAsReadStorage } from '~/storages/serviceCache';
 
 //TODO Rename to FollowingFeed
 export class TimelineEndpoint extends Endpoint {
@@ -22,15 +22,15 @@ export class TimelineEndpoint extends Endpoint {
 
 	async refresh(refreshType: RefreshType): Promise<ArticleWithRefs[]> {
 		//TODO Move login to service
-		const {identifier, password} = getServiceStorage(BlueskyService.name);
+		const { identifier, password } = getServiceStorage(BlueskyService.name);
 		await BlueskyService.agent.login({
 			identifier,
 			password,
 		});
-		const {data} = await BlueskyService.agent.getTimeline({
+		const { data } = await BlueskyService.agent.getTimeline({
 			cursor: refreshType === RefreshType.LoadBottom ? this.cursor ?? undefined : undefined,
 		});
-		const {feed, cursor} = data;
+		const { feed, cursor } = data;
 		if (!!this.cursor != !!cursor)
 			this.refreshTypes.update(r => {
 				//if (cursor === null)

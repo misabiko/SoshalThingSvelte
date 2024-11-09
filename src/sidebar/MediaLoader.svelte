@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import {loadingStore} from '~/bufferedMediaLoading';
+	import { loadingStore } from '~/bufferedMediaLoading';
 
 	let queueLength = $derived($loadingStore.queue.length);
 </script>

@@ -1,4 +1,4 @@
-import {parseArgs} from 'util';
+import { parseArgs } from 'util';
 import path from 'path';
 
 const args = parseArgs({

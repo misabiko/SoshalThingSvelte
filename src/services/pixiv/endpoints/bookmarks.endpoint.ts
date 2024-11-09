@@ -1,10 +1,10 @@
-import {type EndpointConstructorInfo, LoadableEndpoint, PageEndpoint, RefreshType} from '../../endpoints';
-import type {ArticleWithRefs} from '~/articles';
-import {PixivService} from '../service';
-import PixivArticle, {type CachedPixivArticle} from '../article';
-import type {PixivUser} from '../article';
-import {getCachedArticlesStorage, getMarkedAsReadStorage} from '~/storages/serviceCache';
-import {getWritableArticle, registerEndpointConstructor} from '../../service';
+import { type EndpointConstructorInfo, LoadableEndpoint, PageEndpoint, RefreshType } from '../../endpoints';
+import type { ArticleWithRefs } from '~/articles';
+import { PixivService } from '../service';
+import PixivArticle, { type CachedPixivArticle } from '../article';
+import type { PixivUser } from '../article';
+import { getCachedArticlesStorage, getMarkedAsReadStorage } from '~/storages/serviceCache';
+import { getWritableArticle, registerEndpointConstructor } from '../../service';
 import {
 	getUserUrl, illustToArticle,
 	parseThumbnail, type PixivResponseWithWorks,
@@ -43,15 +43,15 @@ export default class BookmarkPageEndpoint extends PageEndpoint {
 	async refresh(refreshType: RefreshType): Promise<ArticleWithRefs[]> {
 		if (refreshType === RefreshType.Refresh && this.articleIdPairs.length) {
 			const url = new URL(`https://www.pixiv.net/ajax/user/${this.user.id}/profile/illusts`);
-			for (const {id} of this.articleIdPairs)
+			for (const { id } of this.articleIdPairs)
 				url.searchParams.append('ids[]', id.toString());
 			url.searchParams.set('work_category', 'illust');
 			url.searchParams.set('is_first_page', this.hostPage.toString());
 			url.searchParams.set('lang', 'en`');
 
-			const response: PixivResponseWithWorks = await PixivService.fetch(url.toString(), {headers: {Accept: 'application/json'}});
+			const response: PixivResponseWithWorks = await PixivService.fetch(url.toString(), { headers: { Accept: 'application/json' } });
 			for (const work of Object.values(response.body.works))
-				getWritableArticle<PixivArticle>({id: parseInt(work.id), service: PixivService.name}).update(a => {
+				getWritableArticle<PixivArticle>({ id: parseInt(work.id), service: PixivService.name }).update(a => {
 					a.creationTime = new Date(work.createDate);
 					return a;
 				});
@@ -106,7 +106,7 @@ export class BookmarkAPIEndpoint extends LoadableEndpoint {
 		url.searchParams.set('offset', (this.currentPage * 48).toString());
 		url.searchParams.set('rest', this.r18 ? 'hide' : 'show');
 
-		const response: PixivResponseWithWorks = await PixivService.fetch(url.toString(), {headers: {Accept: 'application/json'}});
+		const response: PixivResponseWithWorks = await PixivService.fetch(url.toString(), { headers: { Accept: 'application/json' } });
 		if (response.error) {
 			console.error('Failed to fetch', response);
 			return [];

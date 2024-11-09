@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import {endpoints} from '~/services/endpoints';
+	import { endpoints } from '~/services/endpoints';
 	import EndpointOptions from './EndpointOptions.svelte';
 
 	console.log('endpoints:', endpoints);

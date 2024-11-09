@@ -3,10 +3,10 @@ import '~/services/pixiv/endpoints/user.endpoint';
 import '~/services/pixiv/endpoints/ranking.endpoint';
 import '~/services/pixiv/endpoints/top.endpoint';
 import '~/services/pixiv/endpoints/discovery.endpoint';
-import {mount} from 'svelte';
+import { mount } from 'svelte';
 
 import UserArtworksPage from './UserArtworksPage.svelte';
-import {tryInject} from '~/services/extension';
+import { tryInject } from '~/services/extension';
 import UserBookmarksPage from './UserBookmarksPage.svelte';
 
 const path = window.location.pathname.split('/');
@@ -29,7 +29,7 @@ if (path.length === 4 || path[4] === 'illustrations' || path[4] === 'artworks') 
 			if (!target)
 				throw new Error("Couldn't find ul's parent");
 
-			mount(UserArtworksPage, {target, anchor: ul});
+			mount(UserArtworksPage, { target, anchor: ul });
 		});
 }else if (path[4] === 'bookmarks') {
 	tryInject(() => {
@@ -45,6 +45,6 @@ if (path.length === 4 || path[4] === 'illustrations' || path[4] === 'artworks') 
 			if (!target)
 				throw new Error("Couldn't find ul");
 
-			mount(UserBookmarksPage, {target, anchor});
+			mount(UserBookmarksPage, { target, anchor });
 		});
 }

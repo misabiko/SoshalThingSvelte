@@ -1,19 +1,19 @@
 import type Article from '~/articles';
-import type {ArticleRefIdPair} from '~/articles';
-import type {ArticleAuthor} from '~/articles';
-import type {ArticleId, ArticleIdPair, ArticleWithRefs, ArticleProps} from '~/articles';
-import {articleWithRefToArray, getRootArticle} from '~/articles';
-import {get, type Readable, readonly, type Writable} from 'svelte/store';
-import {writable} from 'svelte/store';
-import {updateCachedArticlesStorage, updateMarkAsReadStorage} from '~/storages/serviceCache';
-import type {Endpoint, EndpointConstructorInfo} from './endpoints';
-import {undoables} from '~/undo';
-import type {Filter, FilterInfo} from '~/filters';
-import type {ArticleAction} from './actions';
-import {fetchExtension} from './extension';
-import type {Component} from 'svelte';
-import type {TimelineTemplate} from '~/timelines';
-import {getServiceStorage} from '~/storages';
+import type { ArticleRefIdPair } from '~/articles';
+import type { ArticleAuthor } from '~/articles';
+import type { ArticleId, ArticleIdPair, ArticleWithRefs, ArticleProps } from '~/articles';
+import { articleWithRefToArray, getRootArticle } from '~/articles';
+import { get, type Readable, readonly, type Writable } from 'svelte/store';
+import { writable } from 'svelte/store';
+import { updateCachedArticlesStorage, updateMarkAsReadStorage } from '~/storages/serviceCache';
+import type { Endpoint, EndpointConstructorInfo } from './endpoints';
+import { undoables } from '~/undo';
+import type { Filter, FilterInfo } from '~/filters';
+import type { ArticleAction } from './actions';
+import { fetchExtension } from './extension';
+import type { Component } from 'svelte';
+import type { TimelineTemplate } from '~/timelines';
+import { getServiceStorage } from '~/storages';
 
 const services: {[name: string]: Service<any>} = {};
 

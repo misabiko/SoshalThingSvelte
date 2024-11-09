@@ -1,6 +1,6 @@
 <script lang='ts'>
-	import {FetchType, type Service as ServiceType} from '~/services/service';
-	import {fetchExtension} from '~/services/extension';
+	import { FetchType, type Service as ServiceType } from '~/services/service';
+	import { fetchExtension } from '~/services/extension';
 
 	let {
 		service: Service,

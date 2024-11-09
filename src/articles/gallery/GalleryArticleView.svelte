@@ -1,18 +1,18 @@
 <script lang='ts'>
-	import type {ArticleViewProps} from '../index';
+	import type { ArticleViewProps } from '../index';
 	import Fa from 'svelte-fa';
 	import {
 		faExpandArrowsAlt,
 		faExternalLinkAlt,
 		faEllipsisH, faImages,
 	} from '@fortawesome/free-solid-svg-icons';
-	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
+	import { LoadingState, loadingStore } from '~/bufferedMediaLoading';
 	import Dropdown from '~/Dropdown.svelte';
-	import {getService} from '~/services/service';
-	import {MediaType, type ArticleMedia} from '../media';
+	import { getService } from '~/services/service';
+	import { MediaType, type ArticleMedia } from '../media';
 	import GalleryThumbnail from './GalleryThumbnail.svelte';
 	import GalleryImage from './GalleryImage.svelte';
-	import {type ArticleAction, getGenericActions} from '~/services/actions';
+	import { type ArticleAction, getGenericActions } from '~/services/actions';
 
 	let {
 		timelineProps,

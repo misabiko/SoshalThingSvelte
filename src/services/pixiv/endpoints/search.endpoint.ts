@@ -1,7 +1,7 @@
-import {type EndpointConstructorInfo, LoadableEndpoint, RefreshType} from '../../endpoints';
-import type {ArticleWithRefs} from '~/articles';
-import {PixivService} from '../service';
-import {getCachedArticlesStorage, getMarkedAsReadStorage} from '~/storages/serviceCache';
+import { type EndpointConstructorInfo, LoadableEndpoint, RefreshType } from '../../endpoints';
+import type { ArticleWithRefs } from '~/articles';
+import { PixivService } from '../service';
+import { getCachedArticlesStorage, getMarkedAsReadStorage } from '~/storages/serviceCache';
 import {
 	type ExtraData,
 	type Illust,
@@ -9,7 +9,7 @@ import {
 	type PixivResponse,
 	type TagTranslation, type ZoneConfig,
 } from './index';
-import {registerEndpointConstructor} from '../../service';
+import { registerEndpointConstructor } from '../../service';
 
 // export default class SearchPageEndpoint extends PageEndpoint {
 // 	readonly name = 'User Endpoint';

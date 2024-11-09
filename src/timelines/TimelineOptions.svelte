@@ -4,15 +4,15 @@
 	import MasonryContainer from '~/containers/MasonryContainer.svelte';
 	import SocialArticleView from '~/articles/social/SocialArticleView.svelte';
 	import GalleryArticleView from '~/articles/gallery/GalleryArticleView.svelte';
-	import type {TimelineData} from './index';
+	import type { TimelineData } from './index';
 	import FiltersOptions from '~/filters/FiltersOptions.svelte';
 	import SortOptions from '~/sorting/SortOptions.svelte';
-	import type {SortMethod} from '~/sorting';
-	import type {FullscreenInfo} from './index';
-	import {updateFullscreenStorage, updateServiceTemplateStorageValue, updateTimelinesStorageValue} from '~/storages';
+	import type { SortMethod } from '~/sorting';
+	import type { FullscreenInfo } from './index';
+	import { updateFullscreenStorage, updateServiceTemplateStorageValue, updateTimelinesStorageValue } from '~/storages';
 	import EndpointOptions from '~/timelines/EndpointOptions.svelte';
-	import {getService} from '~/services/service';
-	import {get, writable} from 'svelte/store';
+	import { getService } from '~/services/service';
+	import { get, writable } from 'svelte/store';
 
 	let {
 		timelineId,
@@ -392,7 +392,7 @@
 				<FiltersOptions
 					onInstancesUpdate={instances => {
 						if (data.serviceTemplate === null)
-							throw {message: 'ServiceTemplate is null', data};
+							throw { message: 'ServiceTemplate is null', data };
 						updateServiceTemplateStorageValue(data.serviceTemplate.service, data.serviceTemplate.templateId, 'filters', instances);
 					}}
 					instances={template!.filters!}

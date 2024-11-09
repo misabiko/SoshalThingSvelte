@@ -1,7 +1,7 @@
-import {expect, test} from '@playwright/test';
-import {loadWithLocalStorage, TIMELINE_STORAGE_KEY} from '../storagesUtils';
+import { expect, test } from '@playwright/test';
+import { loadWithLocalStorage, TIMELINE_STORAGE_KEY } from '../storagesUtils';
 
-test.skip('modal timeline is full height', async ({page}) => {
+test.skip('modal timeline is full height', async ({ page }) => {
 	//TODO Open modal timeline
 
 	const modalContent = page.locator('.modal-content');
@@ -10,7 +10,7 @@ test.skip('modal timeline is full height', async ({page}) => {
 	expect(await modalContent.evaluate(e => e.scrollHeight - e.clientHeight)).toStrictEqual(0);
 });
 
-test('filtering modal article disables it', async ({page}) => {
+test('filtering modal article disables it', async ({ page }) => {
 	await loadWithLocalStorage(page, {
 		[TIMELINE_STORAGE_KEY]: {
 			t1: {
@@ -41,7 +41,7 @@ test('filtering modal article disables it', async ({page}) => {
 });
 
 test.describe('user timeline modal', () => {
-	test.beforeEach(async ({page}) => {
+	test.beforeEach(async ({ page }) => {
 		await loadWithLocalStorage(page, {
 			[TIMELINE_STORAGE_KEY]: {
 				t1: {
@@ -56,15 +56,15 @@ test.describe('user timeline modal', () => {
 		});
 	});
 
-	test('opening modal user timeline', async ({page}) => {
+	test('opening modal user timeline', async ({ page }) => {
 		await page.locator('article .names').filter({hasText: 'DummyAuthor0 @dummy0'}).first().click();
 		const modalTimeline = page.locator('.modal .timeline');
 		await expect(modalTimeline.locator('.timelineHeader')).toHaveText('DummyAuthor0');
 		await expect(modalTimeline.locator('article')).toContainText('DummyAuthor0');
 	});
 
-	test('opening different modal user timeline', async ({page}) => {
-		await page.locator('article .names').filter({hasText: 'DummyAuthor0 @dummy0'}).first().click();
+	test('opening different modal user timeline', async ({ page }) => {
+		await page.locator('article .names').filter({ hasText: 'DummyAuthor0 @dummy0' }).first().click();
 		const modalTimeline = page.locator('.modal .timeline');
 		await expect(modalTimeline.locator('.timelineHeader')).toHaveText('DummyAuthor0');
 		await expect(modalTimeline.locator('article')).toContainText('DummyAuthor0');

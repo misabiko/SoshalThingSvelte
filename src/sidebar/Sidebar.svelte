@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import Fa from 'svelte-fa';
-	import {faNewspaper, type IconDefinition} from '@fortawesome/free-solid-svg-icons';
+	import { faNewspaper, type IconDefinition } from '@fortawesome/free-solid-svg-icons';
 	import {
 		faAngleDoubleLeft,
 		faB,
@@ -10,21 +10,21 @@
 		faRotateLeft,
 		faSpinner,
 	} from '@fortawesome/free-solid-svg-icons';
-	import {faGithub} from '@fortawesome/free-brands-svg-icons';
+	import { faGithub } from '@fortawesome/free-brands-svg-icons';
 	import MediaLoader from './MediaLoader.svelte';
 	import Undoables from './Undoables.svelte';
 	import Endpoints from './Endpoints.svelte';
-	import type {Component} from 'svelte';
+	import type { Component } from 'svelte';
 	import SettingsMenu from './SettingsMenu.svelte';
 	import TimelineEditMenu from './TimelineEditMenu.svelte';
 	import BatchActions from './BatchActions.svelte';
-	import type {TimelineCollection, TimelineData, TimelineView} from '~/timelines';
-	import type {FilterInstance} from '~/filters';
-	import {faTableColumns} from '@fortawesome/free-solid-svg-icons/faTableColumns';
+	import type { TimelineCollection, TimelineData, TimelineView } from '~/timelines';
+	import type { FilterInstance } from '~/filters';
+	import { faTableColumns } from '@fortawesome/free-solid-svg-icons/faTableColumns';
 	import TimelineViewEdit from './TimelineViewEdit.svelte';
-	import {updateMainStorage} from '~/storages';
+	import { updateMainStorage } from '~/storages';
 	import LoadArticle from './LoadArticle.svelte';
-	import type {Writable} from 'svelte/store';
+	import type { Writable } from 'svelte/store';
 
 	//https://github.com/sveltejs/svelte/issues/13811
 	//svelte-ignore non_reactive_update
@@ -153,7 +153,7 @@
 					<Fa icon={faAngleDoubleLeft} size='2x'/>
 				</button>
 			{/if}
-			{#each buttons as {icon, menu, title}}
+			{#each buttons as { icon, menu, title }}
 				<button class='borderless-button' {title} onclick={() => toggleSidebarMenu(menu)}>
 					<Fa icon={icon} size='2x'/>
 				</button>

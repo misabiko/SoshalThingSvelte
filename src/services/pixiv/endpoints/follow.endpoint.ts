@@ -1,15 +1,15 @@
-import {type EndpointConstructorInfo, LoadableEndpoint, PageEndpoint, RefreshType} from '../../endpoints';
-import type {ArticleWithRefs} from '~/articles';
-import {PixivService} from '../service';
-import {getCachedArticlesStorage, getMarkedAsReadStorage} from '~/storages/serviceCache';
-import type {CachedPixivArticle, PixivUser} from '../article';
+import { type EndpointConstructorInfo, LoadableEndpoint, PageEndpoint, RefreshType } from '../../endpoints';
+import type { ArticleWithRefs } from '~/articles';
+import { PixivService } from '../service';
+import { getCachedArticlesStorage, getMarkedAsReadStorage } from '~/storages/serviceCache';
+import type { CachedPixivArticle, PixivUser } from '../article';
 import {
 	getCurrentPage,
 	getUserUrl,
 	parseThumbnail,
 	illustToArticle, type PixivResponseWithPage,
 } from './index';
-import {registerEndpointConstructor} from '../../service';
+import { registerEndpointConstructor } from '../../service';
 
 export class FollowPageEndpoint extends PageEndpoint {
 	readonly name = 'Follow Endpoint';

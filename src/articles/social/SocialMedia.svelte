@@ -1,12 +1,12 @@
 <script lang='ts'>
-	import type {ArticleIdPair, TimelineArticleProps} from '../index';
-	import {getReadableArticle, getWritableArticle} from '~/services/service';
+	import type { ArticleIdPair, TimelineArticleProps } from '../index';
+	import { getReadableArticle, getWritableArticle } from '~/services/service';
 	import Fa from 'svelte-fa';
-	import {faImages} from '@fortawesome/free-solid-svg-icons';
-	import {type ArticleMedia, extensionToMediaType, MediaType} from '../media';
-	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
-	import {faCirclePlay} from '@fortawesome/free-regular-svg-icons';
-	import {tick} from 'svelte';
+	import { faImages } from '@fortawesome/free-solid-svg-icons';
+	import { type ArticleMedia, extensionToMediaType, MediaType } from '../media';
+	import { LoadingState, loadingStore } from '~/bufferedMediaLoading';
+	import { faCirclePlay } from '@fortawesome/free-regular-svg-icons';
+	import { tick } from 'svelte';
 
 	let {
 		idPair,
@@ -34,7 +34,7 @@
 	} = $props();
 	let article = getReadableArticle(idPair);
 	if ($article.medias.length === 0)
-		throw {message: 'Article has no media', article: $article};
+		throw { message: 'Article has no media', article: $article };
 	let showAllMediaArticles = $derived(timelineProps.showAllMediaArticles);
 	let showAllMedia = $derived($showAllMediaArticles.has($article.idPairStr));
 
@@ -194,7 +194,7 @@
 					controls
 					preload='auto'
 					muted={timelineProps.muteVideos}
-					onclick={e => {e.preventDefault(); onMediaClick(index);}}
+					onclick={e => { e.preventDefault(); onMediaClick(index); }}
 					bind:this={mediaRefs[index]}
 			>
 				<source src={media.src} type='video/mp4'/>
@@ -208,7 +208,7 @@
 					loop
 					muted
 					preload='auto'
-					onclick={e => {e.preventDefault(); onMediaClick(index);}}
+					onclick={e => { e.preventDefault(); onMediaClick(index); }}
 					bind:this={mediaRefs[index]}
 			>
 				<source src={media.src} type='video/mp4'/>
@@ -218,7 +218,7 @@
 </div>
 {#if !showAllMedia && timelineProps.maxMediaCount !== null && $article.medias.length > timelineProps.maxMediaCount}
 	<div class='moreMedia'>
-		<button class='borderless-button' title='Load more medias' onclick={() => timelineProps.showAllMediaArticles.update(a => {a.add($article.idPairStr); return a;})}>
+		<button class='borderless-button' title='Load more medias' onclick={() => timelineProps.showAllMediaArticles.update(a => { a.add($article.idPairStr); return a; })}>
 			<Fa icon={faImages} size='2x'/>
 		</button>
 	</div>

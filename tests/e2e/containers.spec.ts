@@ -1,8 +1,8 @@
-import test, {expect} from '@playwright/test';
-import {loadWithLocalStorage, MAIN_STORAGE_KEY, TIMELINE_STORAGE_KEY} from '../storagesUtils';
+import test, { expect } from '@playwright/test';
+import { loadWithLocalStorage, MAIN_STORAGE_KEY, TIMELINE_STORAGE_KEY } from '../storagesUtils';
 
 test.describe('masonry', () => {
-	test('independant columns', async ({page}) => {
+	test('independant columns', async ({ page }) => {
 		await loadWithLocalStorage(page, {
 			[TIMELINE_STORAGE_KEY]: {t1: {
 				endpoints: [
@@ -33,7 +33,7 @@ test.describe('masonry', () => {
 	});
 
 	test.describe('balance button', () => {
-		test('available on normal container', async ({page}) => {
+		test('available on normal container', async ({ page }) => {
 			await loadWithLocalStorage(page, {
 				[TIMELINE_STORAGE_KEY]: {t1: {
 					endpoints: [
@@ -46,10 +46,10 @@ test.describe('masonry', () => {
 				}},
 			});
 
-			await expect(page.getByRole('button', {name: 'Organize Container'})).toBeVisible();
+			await expect(page.getByRole('button', { name: 'Organize Container' })).toBeVisible();
 		});
 
-		test('available on fullscreen container', async ({page}) => {
+		test('available on fullscreen container', async ({ page }) => {
 			await loadWithLocalStorage(page, {
 				[TIMELINE_STORAGE_KEY]: {t1: {
 					endpoints: [
@@ -66,9 +66,9 @@ test.describe('masonry', () => {
 				},
 			});
 
-			await page.getByRole('button', {name: 'Make timeline fullscreen'}).click();
+			await page.getByRole('button', { name: 'Make timeline fullscreen' }).click();
 
-			await expect(page.getByRole('button', {name: 'Organize Container'})).toBeVisible();
+			await expect(page.getByRole('button', { name: 'Organize Container' })).toBeVisible();
 		});
 	});
 });

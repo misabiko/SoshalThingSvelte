@@ -1,10 +1,10 @@
-import {type EndpointConstructorInfo, LoadableEndpoint, RefreshType} from '~/services/endpoints';
-import type {ArticleWithRefs} from '~/articles';
-import {getService, registerEndpointConstructor} from '~/services/service';
-import {getCachedArticlesStorage, getMarkedAsReadStorage} from '~/storages/serviceCache';
-import {PixivService} from '~/services/pixiv/service';
-import PixivArticle, {type CachedPixivArticle} from '~/services/pixiv/article';
-import {type ArticleMedia, MediaLoadType, MediaType} from '~/articles/media';
+import { type EndpointConstructorInfo, LoadableEndpoint, RefreshType } from '~/services/endpoints';
+import type { ArticleWithRefs } from '~/articles';
+import { getService, registerEndpointConstructor } from '~/services/service';
+import { getCachedArticlesStorage, getMarkedAsReadStorage } from '~/storages/serviceCache';
+import { PixivService } from '~/services/pixiv/service';
+import PixivArticle, { type CachedPixivArticle } from '~/services/pixiv/article';
+import { type ArticleMedia, MediaLoadType, MediaType } from '~/articles/media';
 
 export class RankingAPIEndpoint extends LoadableEndpoint {
 	readonly name = 'Pixiv Ranking API Endpoint';

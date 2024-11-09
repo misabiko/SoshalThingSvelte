@@ -1,7 +1,7 @@
 <script lang='ts'>
-	import {get} from 'svelte/store';
-	import {addArticles, getService, getServices} from '~/services/service';
-	import {type TimelineData, type TimelineEndpoint} from './index';
+	import { get } from 'svelte/store';
+	import { addArticles, getService, getServices } from '~/services/service';
+	import { type TimelineData, type TimelineEndpoint } from './index';
 	import {
 		addEndpointArticlesToTimeline, Endpoint,
 		endpoints,
@@ -10,9 +10,9 @@
 		LoadablePageEndpoint,
 		RefreshType,
 	} from '~/services/endpoints';
-	import {updateTimelinesStorageEndpoints} from '~/storages';
-	import {getRootArticle} from '~/articles';
-	import {untrack} from 'svelte';
+	import { updateTimelinesStorageEndpoints } from '~/storages';
+	import { getRootArticle } from '~/articles';
+	import { untrack } from 'svelte';
 
 	let {
 		timelineId,

@@ -5,17 +5,17 @@ import {
 	type TimelineEndpoint,
 	type TimelineView,
 } from '~/timelines';
-import type {Component} from 'svelte';
+import type { Component } from 'svelte';
 import ColumnContainer from '~/containers/ColumnContainer.svelte';
 import RowContainer from '~/containers/RowContainer.svelte';
 import MasonryContainer from '~/containers/MasonryContainer.svelte';
 import SocialArticleView from '~/articles/social/SocialArticleView.svelte';
 import GalleryArticleView from '~/articles/gallery/GalleryArticleView.svelte';
-import {getService, getServices} from '~/services/service';
-import {defaultFilterInstances, type FilterInstance, genericFilterTypes} from '~/filters';
-import type {SortInfo} from '~/sorting';
-import {SortMethod} from '~/sorting';
-import {defaultTimeline} from '~/timelines';
+import { getService, getServices } from '~/services/service';
+import { defaultFilterInstances, type FilterInstance, genericFilterTypes } from '~/filters';
+import type { SortInfo } from '~/sorting';
+import { SortMethod } from '~/sorting';
+import { defaultTimeline } from '~/timelines';
 import {
 	addEndpoint,
 	Endpoint,
@@ -23,11 +23,11 @@ import {
 	RefreshType,
 	startAutoRefresh,
 } from '~/services/endpoints';
-import type {EndpointConstructorParams} from '~/services/endpoints';
-import {derived, get} from 'svelte/store';
-import type {ArticleViewProps} from '~/articles';
-import type {ActualContainerProps} from '~/containers';
-import type {RecursivePartial} from '~/utils';
+import type { EndpointConstructorParams } from '~/services/endpoints';
+import { derived, get } from 'svelte/store';
+import type { ArticleViewProps } from '~/articles';
+import type { ActualContainerProps } from '~/containers';
+import type { RecursivePartial } from '~/utils';
 
 export const MAIN_STORAGE_KEY = 'SoshalThingSvelte';
 export const TIMELINE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Timelines';
@@ -141,7 +141,7 @@ export function updateMaximized(maximized: boolean) {
 }
 
 export function updateFullscreenStorage(fullscreen: FullscreenInfo) {
-	const stringified: any = {...fullscreen};
+	const stringified: any = { ...fullscreen };
 	if (stringified.container)
 		stringified.container = stringified.container.name;
 
@@ -381,7 +381,7 @@ function endpointsToStorage(timelineEndpoints: TimelineEndpoint[]): EndpointStor
 				refreshTypes: e.refreshTypes,
 			};
 		})
-		.map(({endpoint, filters, refreshTypes}) => ({
+		.map(({ endpoint, filters, refreshTypes }) => ({
 			service: (endpoint.constructor as typeof Endpoint).service,
 			endpointType: (endpoint.constructor as typeof Endpoint).constructorInfo.name,
 			params: endpoint.params ?? undefined,

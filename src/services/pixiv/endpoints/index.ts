@@ -1,8 +1,8 @@
-import type {ArticleWithRefs} from '~/articles';
-import type {CachedPixivArticle, PixivUser} from '../article';
+import type { ArticleWithRefs } from '~/articles';
+import type { CachedPixivArticle, PixivUser } from '../article';
 import PixivArticle from '../article';
-import {type ArticleMedia, MediaLoadType, MediaType} from '~/articles/media';
-import {avatarHighRes} from '~/services/pixiv/endpoints/bookmarks.endpoint';
+import { type ArticleMedia, MediaLoadType, MediaType } from '~/articles/media';
+import { avatarHighRes } from '~/services/pixiv/endpoints/bookmarks.endpoint';
 
 export function getThumbnailId(element: Element): number | null {
 	const anchors = element.querySelectorAll('a');

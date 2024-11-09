@@ -1,14 +1,14 @@
-import type {ArticleIdPair} from '~/articles';
-import {fetchArticle, getService, getWritableArticle, toggleMarkAsRead} from './service';
+import type { ArticleIdPair } from '~/articles';
+import { fetchArticle, getService, getWritableArticle, toggleMarkAsRead } from './service';
 import {
 	faUpRightFromSquare,
 	type IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
-import {faHeart as faHeartReg} from '@fortawesome/free-regular-svg-icons';
-import {faEye, faEyeSlash, faHeart, faRetweet} from '@fortawesome/free-solid-svg-icons';
+import { faHeart as faHeartReg } from '@fortawesome/free-regular-svg-icons';
+import { faEye, faEyeSlash, faHeart, faRetweet } from '@fortawesome/free-solid-svg-icons';
 import type Article from '../articles';
-import {loadingStore} from '~/bufferedMediaLoading';
-import {get} from 'svelte/store';
+import { loadingStore } from '~/bufferedMediaLoading';
+import { get } from 'svelte/store';
 
 export type ArticleAction<A extends Article = Article> = (
 	| (
@@ -90,7 +90,7 @@ export const STANDARD_ACTIONS = {
 			},
 		},
 	},
-} satisfies {[key: string]: StandardAction<Article>};
+} satisfies { [key: string]: StandardAction<Article> };
 
 export function articleAction(actionName: string, idPair: ArticleIdPair) {
 	switch (actionName) {

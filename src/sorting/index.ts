@@ -1,6 +1,6 @@
-import type {ArticleProps, ArticleWithRefs} from '~/articles';
-import {getRootArticle} from '~/articles';
-import {getService} from '~/services/service';
+import type { ArticleProps, ArticleWithRefs } from '~/articles';
+import { getRootArticle } from '~/articles';
+import { getService } from '~/services/service';
 
 export type SortInfo = {
 	method: SortMethod | null

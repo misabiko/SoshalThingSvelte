@@ -1,12 +1,12 @@
 <script lang='ts'>
-	import Article, {type ArticleIdPair, type TimelineArticleProps} from '../index';
+	import Article, { type ArticleIdPair, type TimelineArticleProps } from '../index';
 	import Timestamp from './Timestamp.svelte';
 	import SocialNav from './SocialNav.svelte';
 	import SocialMedia from './SocialMedia.svelte';
-	import {getReadableArticle} from '~/services/service';
-	import {type Readable} from 'svelte/store';
-	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
-	import {tick} from 'svelte';
+	import { getReadableArticle } from '~/services/service';
+	import { type Readable } from 'svelte/store';
+	import { LoadingState, loadingStore } from '~/bufferedMediaLoading';
+	import { tick } from 'svelte';
 
 	let {
 		idPair,

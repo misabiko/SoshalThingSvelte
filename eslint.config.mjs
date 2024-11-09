@@ -102,15 +102,15 @@ export default tseslint.config(
 					default: {before: false},
 				},
 			}],
-			'@stylistic/object-curly-spacing': ['warn', 'never'],
-			//TODO Retry spaces inside braces later
-			'@stylistic/block-spacing': ['warn', 'never'],
+			//There's some cases when I prefer without space, but definitely should add them in imports
+			'@stylistic/object-curly-spacing': 'off',
+			'@stylistic/block-spacing': 'off',
 			//TODO Add exceptions for single line
 			'@stylistic/comma-dangle': ['warn', 'always-multiline'],
 			'@stylistic/eol-last': ['warn', 'never'],
-			'@stylistic/no-multiple-empty-lines': ['warn', {max: 2}],
-			'@stylistic/max-statements-per-line': ['warn', {max: 2}],
-			'@stylistic/brace-style': ['warn', '1tbs', {allowSingleLine: true}],
+			'@stylistic/no-multiple-empty-lines': ['warn', { max: 2 }],
+			'@stylistic/max-statements-per-line': ['warn', { max: 2 }],
+			'@stylistic/brace-style': ['warn', '1tbs', { allowSingleLine: true }],
 			'@stylistic/arrow-parens': ['warn', 'as-needed'],
 			'@stylistic/space-infix-ops': 'off',
 			'@stylistic/no-tabs': 'off',
@@ -151,7 +151,7 @@ export default tseslint.config(
 			'@typescript-eslint/consistent-indexed-object-style': 'off',
 			//Having the type is still a good hint
 			'@typescript-eslint/no-redundant-type-constituents': 'off',
-			//TODO Make a nice convenient Error class
+			//TODO +1 Make a nice convenient Error class
 			'@typescript-eslint/only-throw-error': 'off',
 			'@typescript-eslint/prefer-promise-reject-errors': 'off',
 			'@typescript-eslint/no-explicit-any': 'off',
@@ -189,7 +189,7 @@ export default tseslint.config(
 					quoted: false,
 				},
 			}],
-			//TODO Some way to track issues via comments
+			//TODO +1 Some way to track issues via comments
 			//https://github.com/sveltejs/eslint-plugin-svelte/issues/818
 			//https://github.com/sveltejs/eslint-plugin-svelte/pull/816
 			'prefer-const': 'off',

@@ -1,7 +1,7 @@
 <script lang='ts'>
 	import Fa from 'svelte-fa';
-	import {faAngleDown} from '@fortawesome/free-solid-svg-icons';
-	import {onMount, type Snippet} from 'svelte';
+	import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
+	import { onMount, type Snippet } from 'svelte';
 
 	let {
 		children,

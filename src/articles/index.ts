@@ -1,10 +1,10 @@
-import type {TimelineData} from '~/timelines';
-import {getService, getWritableArticle} from '~/services/service';
-import type {Readable, Writable} from 'svelte/store';
-import {get} from 'svelte/store';
-import type {ArticleMedia} from './media';
-import type {FilterInstance} from '~/filters';
-import type {LoadingState} from '~/bufferedMediaLoading';
+import type { TimelineData } from '~/timelines';
+import { getService, getWritableArticle } from '~/services/service';
+import type { Readable, Writable } from 'svelte/store';
+import { get } from 'svelte/store';
+import type { ArticleMedia } from './media';
+import type { FilterInstance } from '~/filters';
+import type { LoadingState } from '~/bufferedMediaLoading';
 
 export default abstract class Article {
 	static readonly service: string;
@@ -122,7 +122,7 @@ export type ArticleWithRefs<Extra extends object = object> = Readonly<(
 		quoted: NonRepostArticleWithRefs<Extra>
 	}
 ) & Extra>;
-type NonRepostArticleWithRefs<Extra extends object = object> = Exclude<ArticleWithRefs<Extra>, {type: 'repost' | 'reposts'}>;
+type NonRepostArticleWithRefs<Extra extends object = object> = Exclude<ArticleWithRefs<Extra>, { type: 'repost' | 'reposts' }>;
 
 export type DerivedArticleWithRefs = Readonly<
 	| {
@@ -140,7 +140,7 @@ export type DerivedArticleWithRefs = Readonly<
 		quoted: NonRepostDerivedArticleWithRefs
 	}
 >;
-type NonRepostDerivedArticleWithRefs = Exclude<DerivedArticleWithRefs, {type: 'repost' | 'reposts'}>;
+type NonRepostDerivedArticleWithRefs = Exclude<DerivedArticleWithRefs, { type: 'repost' | 'reposts' }>;
 
 export type ArticleProps = ArticleWithRefs<{
 	filteredOut: boolean

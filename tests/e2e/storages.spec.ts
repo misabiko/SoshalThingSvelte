@@ -1,8 +1,8 @@
-import {expect, test} from '@playwright/test';
-import {MAIN_STORAGE_KEY, TIMELINE_STORAGE_KEY, loadWithLocalStorage, clearLocalStorages} from '../storagesUtils';
+import { expect, test } from '@playwright/test';
+import { MAIN_STORAGE_KEY, TIMELINE_STORAGE_KEY, loadWithLocalStorage, clearLocalStorages } from '../storagesUtils';
 
 test.describe('app options', () => {
-	test('fullscreen undefined', async ({page}) => {
+	test('fullscreen undefined', async ({ page }) => {
 		await loadWithLocalStorage(page, {
 			[MAIN_STORAGE_KEY]: {},
 			[TIMELINE_STORAGE_KEY]: {
@@ -14,7 +14,7 @@ test.describe('app options', () => {
 		await expect(page.locator('.fullscreenTimeline')).toHaveCount(0);
 	});
 
-	test('fullscreen true', async ({page}) => {
+	test('fullscreen true', async ({ page }) => {
 		await loadWithLocalStorage(page, {
 			[MAIN_STORAGE_KEY]: {
 				fullscreen: true,
@@ -28,7 +28,7 @@ test.describe('app options', () => {
 		await expect(timeline).toHaveCount(1);
 		await expect(timeline).toHaveClass(/fullscreenTimeline/);
 	});
-	test('fullscreen false', async ({page}) => {
+	test('fullscreen false', async ({ page }) => {
 		await loadWithLocalStorage(page, {
 			[MAIN_STORAGE_KEY]: {
 				fullscreen: false,
@@ -42,15 +42,15 @@ test.describe('app options', () => {
 		await expect(page.locator('.fullscreenTimeline')).toHaveCount(0);
 	});
 
-	test('fullscreen index', async ({page}) => {
+	test('fullscreen index', async ({ page }) => {
 		await loadWithLocalStorage(page, {
 			[MAIN_STORAGE_KEY]: {
 				fullscreen: 1,
 			},
 			[TIMELINE_STORAGE_KEY]: {
-				Timeline1: {title: 'Timeline 1'},
-				Timeline2: {title: 'Timeline 2'},
-				Timeline3: {title: 'Timeline 3'},
+				Timeline1: { title: 'Timeline 1' },
+				Timeline2: { title: 'Timeline 2' },
+				Timeline3: { title: 'Timeline 3' },
 			},
 		});
 
@@ -60,15 +60,15 @@ test.describe('app options', () => {
 		await expect(timeline.locator('.timelineLeftHeader strong')).toHaveText('Timeline 2');
 	});
 
-	test('timelineIds', async ({page}) => {
+	test('timelineIds', async ({ page }) => {
 		await loadWithLocalStorage(page, {
 			[MAIN_STORAGE_KEY]: {
 				timelineIds: ['Timeline1', 'Timeline3'],
 			},
 			[TIMELINE_STORAGE_KEY]: {
-				Timeline1: {title: 'Timeline 1'},
-				Timeline2: {title: 'Timeline 2'},
-				Timeline3: {title: 'Timeline 3'},
+				Timeline1: { title: 'Timeline 1' },
+				Timeline2: { title: 'Timeline 2' },
+				Timeline3: { title: 'Timeline 3' },
 			},
 		});
 
@@ -80,31 +80,31 @@ test.describe('app options', () => {
 });
 
 test.describe('timelines', () => {
-	test("no storage doesn't add any timelines", async ({page}) => {
+	test("no storage doesn't add any timelines", async ({ page }) => {
 		await clearLocalStorages(page, [TIMELINE_STORAGE_KEY]);
 
 		await expect(page.locator('.timeline')).toHaveCount(0);
 	});
 
-	test('empty objects add empty timelines', async ({page}) => {
-		await loadWithLocalStorage(page, {[TIMELINE_STORAGE_KEY]: {t1: {}, t2: {}, t3: {}, t4: {}}});
+	test('empty objects add empty timelines', async ({ page }) => {
+		await loadWithLocalStorage(page, { [TIMELINE_STORAGE_KEY]: { t1: {}, t2: {}, t3: {}, t4: {} } });
 
 		await expect(page.locator('.timeline')).toHaveCount(4);
 	});
 
-	test('title', async ({page}) => {
+	test('title', async ({ page }) => {
 		const title = 'Timeline Title';
 
 		await loadWithLocalStorage(page, {
 			[TIMELINE_STORAGE_KEY]: {
-				[title]: {title},
+				[title]: { title },
 			},
 		});
 
 		await expect(page.locator('.timelineLeftHeader strong')).toHaveText(title);
 	});
 
-	test('masonry container', async ({page}) => {
+	test('masonry container', async ({ page }) => {
 		await loadWithLocalStorage(page, {
 			[TIMELINE_STORAGE_KEY]: {t1: {
 				container: 'Masonry',
@@ -118,7 +118,7 @@ test.describe('timelines', () => {
 		await expect(page.locator('.masonryContainer')).toHaveCount(1);
 	});
 
-	test('fullscreen masonry container', async ({page}) => {
+	test('fullscreen masonry container', async ({ page }) => {
 		await loadWithLocalStorage(page, {
 			[TIMELINE_STORAGE_KEY]: {t1: {
 				endpoints: [{
@@ -133,21 +133,21 @@ test.describe('timelines', () => {
 			},
 		});
 
-		await page.getByRole('button', {name: 'Make timeline fullscreen'}).click();
+		await page.getByRole('button', { name: 'Make timeline fullscreen' }).click();
 		//await page.getByRole('button', {name: 'Expand options'}).click();
 
 		await expect(page.locator('.masonryContainer')).toHaveCount(1);
 	});
 
 	test.describe('endpoints', () => {
-		test('without endpoint', async ({page}) => {
+		test('without endpoint', async ({ page }) => {
 			await loadWithLocalStorage(page, {
-				[TIMELINE_STORAGE_KEY]: {t1: {}},
+				[TIMELINE_STORAGE_KEY]: { t1: {} },
 			});
 
 			await page.click('.timeline .timelineButtons button[title = "Expand options"]');
 
-			const endpointOptionGroup = page.locator('.timelineOptions section', {hasText: 'Endpoints'});
+			const endpointOptionGroup = page.locator('.timelineOptions section', { hasText: 'Endpoints' });
 
 			await expect(endpointOptionGroup.locator('ul > *')).toHaveCount(0);
 
@@ -156,7 +156,7 @@ test.describe('timelines', () => {
 			await expect(page.locator('.sidebarMenu')).toHaveText('No endpoints currently');
 		});
 
-		test('with endpoints', async ({page}) => {
+		test('with endpoints', async ({ page }) => {
 			await loadWithLocalStorage(page, {
 				[TIMELINE_STORAGE_KEY]: {t1: {
 					endpoints: [
@@ -177,7 +177,7 @@ test.describe('timelines', () => {
 
 			await page.click('.timeline .timelineButtons button[title = "Expand options"]');
 
-			const endpointOptionGroup = page.locator('.timelineOptions section', {hasText: 'Endpoints'});
+			const endpointOptionGroup = page.locator('.timelineOptions section', { hasText: 'Endpoints' });
 
 			const endpointList = endpointOptionGroup.locator('ul > *');
 			await expect(endpointList).toHaveCount(2);
@@ -187,7 +187,7 @@ test.describe('timelines', () => {
 			await expect(page.locator('.sidebarMenu .endpointOptions')).toHaveCount(2);
 		});
 
-		test('with duplicate non-duplicatable endpoints', async ({page}) => {
+		test('with duplicate non-duplicatable endpoints', async ({ page }) => {
 			await loadWithLocalStorage(page, {
 				[TIMELINE_STORAGE_KEY]: {
 					t1: {
@@ -220,7 +220,7 @@ test.describe('timelines', () => {
 			for (const i of [1, 2]) {
 				await page.click(`.timeline:nth-child(${i}) .timelineButtons button[title = "Expand options"]`);
 
-				const endpointOptionGroup = page.locator('.timelineOptions section', {hasText: 'Endpoints'});
+				const endpointOptionGroup = page.locator('.timelineOptions section', { hasText: 'Endpoints' });
 
 				const endpointList = endpointOptionGroup.locator('ul > *');
 				await expect(endpointList).toHaveCount(1);
@@ -236,7 +236,7 @@ test.describe('timelines', () => {
 });
 
 test.describe('cache', () => {
-	test.beforeEach(async ({page}) => {
+	test.beforeEach(async ({ page }) => {
 		await loadWithLocalStorage(page, {
 			[TIMELINE_STORAGE_KEY]: {t1: {
 				endpoints: [
@@ -249,7 +249,7 @@ test.describe('cache', () => {
 		});
 	});
 
-	test('mark as read is properly loaded', async ({page}) => {
+	test('mark as read is properly loaded', async ({ page }) => {
 		const articleLocator = page.locator('article');
 		const articleCount = await articleLocator.count();
 		expect(articleCount).toBeGreaterThan(0);

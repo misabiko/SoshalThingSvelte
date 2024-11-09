@@ -1,7 +1,7 @@
 <script lang='ts'>
-	import {defaultTimeline, newUserTimeline} from '~/timelines';
-	import type {TimelineData} from '~/timelines';
-	import {getServices} from '~/services/service';
+	import { defaultTimeline, newUserTimeline } from '~/timelines';
+	import type { TimelineData } from '~/timelines';
+	import { getServices } from '~/services/service';
 
 	let {
 		setModalTimeline,
@@ -73,13 +73,13 @@
 		<input bind:value={username} name='username'/>
 	{/if}
 	<button
-		onclick={() => {const data = getTimelineData(); if (data) setModalTimeline(data);}}
+		onclick={() => { const data = getTimelineData(); if (data) setModalTimeline(data); }}
 		disabled={addDisabled}
 	>
 		Add Modal Timeline
 	</button>
 	<button
-		onclick={() => {const data = getTimelineData(); if (data) addTimeline(data);}}
+		onclick={() => { const data = getTimelineData(); if (data) addTimeline(data); }}
 		disabled={addDisabled}
 	>
 		Add Timeline

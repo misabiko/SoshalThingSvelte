@@ -1,11 +1,11 @@
 <script lang='ts'>
-	import {addArticlesToTimeline, type TimelineCollection, type TimelineData, type TimelineView} from './index';
+	import { addArticlesToTimeline, type TimelineCollection, type TimelineData, type TimelineView } from './index';
 	import Timeline from './Timeline.svelte';
-	import {getContext, onMount} from 'svelte';
-	import {timelineEndpoints} from '~/services/endpoints';
+	import { getContext, onMount } from 'svelte';
+	import { timelineEndpoints } from '~/services/endpoints';
     import Modal from '~/Modal.svelte';
-    import type {ArticleIdPair} from '~/articles';
-	import {updateFullscreenStorage} from '~/storages';
+    import type { ArticleIdPair } from '~/articles';
+	import { updateFullscreenStorage } from '~/storages';
 
 	let {
 		timelines = $bindable({}),
@@ -150,7 +150,7 @@
 					bind:data={timelines[id]!}
 					{setModalTimeline}
 					removeTimeline={() => removeTimeline(id)}
-					toggleFullscreen={() => {timelineView.fullscreen.index = i; updateFullscreenStorage(timelineView.fullscreen);}}
+					toggleFullscreen={() => { timelineView.fullscreen.index = i; updateFullscreenStorage(timelineView.fullscreen); }}
 				/>
 			{:else}
 				<Timeline
@@ -158,7 +158,7 @@
 					bind:data={timelines[id]!}
 					{setModalTimeline}
 					removeTimeline={() => removeTimeline(id)}
-					toggleFullscreen={() => {timelineView.fullscreen.index = i; updateFullscreenStorage(timelineView.fullscreen);}}
+					toggleFullscreen={() => { timelineView.fullscreen.index = i; updateFullscreenStorage(timelineView.fullscreen); }}
 				/>
 			{/if}
 		{/each}

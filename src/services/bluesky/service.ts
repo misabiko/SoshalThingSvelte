@@ -1,10 +1,10 @@
 import type BlueskyArticle from '~/services/bluesky/article';
-import {getWritableArticle, newService, registerService, type Service} from '~/services/service';
-import {STANDARD_ACTIONS} from '~/services/actions';
-import {get} from 'svelte/store';
-import {type ArticleWithRefs, articleWithRefToArray, getActualArticle, getRootArticle} from '~/articles';
-import type {Filter} from '~/filters';
-import {AtpAgent} from '@atproto/api';
+import { getWritableArticle, newService, registerService, type Service } from '~/services/service';
+import { STANDARD_ACTIONS } from '~/services/actions';
+import { get } from 'svelte/store';
+import { type ArticleWithRefs, articleWithRefToArray, getActualArticle, getRootArticle } from '~/articles';
+import type { Filter } from '~/filters';
+import { AtpAgent } from '@atproto/api';
 
 export const BlueskyService: BlueskyServiceType = {
 	...newService({
@@ -14,7 +14,7 @@ export const BlueskyService: BlueskyServiceType = {
 				...STANDARD_ACTIONS.like,
 				action: async articleIdPair => {
 					const writable = getWritableArticle<BlueskyArticle>(articleIdPair);
-					const {uri, likeURI} = get(writable);
+					const { uri, likeURI } = get(writable);
 					if (likeURI) {
 						await BlueskyService.agent.deleteLike(likeURI);
 						writable.update(article => {
@@ -32,16 +32,16 @@ export const BlueskyService: BlueskyServiceType = {
 						});
 					}
 				},
-				actioned(article) {return article.liked;},
+				actioned(article) { return article.liked; },
 				disabled: null,
-				count(article) {return article.likeCount;},
+				count(article) { return article.likeCount; },
 			},
 			[STANDARD_ACTIONS.repost.key]: {
 				...STANDARD_ACTIONS.repost,
 				togglable: true,
 				action: async articleIdPair => {
 					const writable = getWritableArticle<BlueskyArticle>(articleIdPair);
-					const {uri, repostURI} = get(writable);
+					const { uri, repostURI } = get(writable);
 					if (repostURI) {
 						await BlueskyService.agent.deleteRepost(repostURI);
 						writable.update(article => {
@@ -59,9 +59,9 @@ export const BlueskyService: BlueskyServiceType = {
 						});
 					}
 				},
-				actioned(article) {return article.reposted;},
+				actioned(article) { return article.reposted; },
 				disabled: null,
-				count(article) {return article.repostCount;},
+				count(article) { return article.repostCount; },
 			},
 		},
 		keepArticle(articleWithRefs: ArticleWithRefs, index: number, filter: Filter): boolean {

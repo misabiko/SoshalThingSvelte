@@ -4,30 +4,30 @@ import {
 	type ArticleIdPairStr, type ArticleViewProps,
 	getIdPairStr,
 } from '~/articles';
-import type {Component} from 'svelte';
-import type {FilterInstance} from '~/filters';
-import {SortMethod, type SortInfo} from '~/sorting';
+import type { Component } from 'svelte';
+import type { FilterInstance } from '~/filters';
+import { SortMethod, type SortInfo } from '~/sorting';
 import ColumnContainer from '~/containers/ColumnContainer.svelte';
 import SocialArticleView from '~/articles/social/SocialArticleView.svelte';
-import {defaultFilterInstances} from '~/filters';
-import type {Endpoint, RefreshType} from '~/services/endpoints';
-import {get, type Writable} from 'svelte/store';
-import {writable} from 'svelte/store';
-import {everyRefreshType} from '~/services/endpoints';
+import { defaultFilterInstances } from '~/filters';
+import type { Endpoint, RefreshType } from '~/services/endpoints';
+import { get, type Writable } from 'svelte/store';
+import { writable } from 'svelte/store';
+import { everyRefreshType } from '~/services/endpoints';
 import MasonryContainer from '~/containers/MasonryContainer.svelte';
-import {getService} from '~/services/service';
-import type {ActualContainerProps} from '~/containers';
+import { getService } from '~/services/service';
+import type { ActualContainerProps } from '~/containers';
 
 export type TimelineData = {
 	title: string
-	serviceTemplate: {service: string, templateId: string} | null
+	serviceTemplate: { service: string, templateId: string } | null
 	endpoints: TimelineEndpoint[]
 	//Keeps track of every added articles, so they're not added again once removed
 	addedIdPairs: Writable<Set<ArticleIdPairStr>>
 	//TODO Give timelines a list of article lists
 	articles: Writable<ArticleIdPair[]>
 	articlesOrder: Writable<null | string[]>
-	section: {useSection: boolean, count: number}
+	section: { useSection: boolean, count: number }
 	container: Component<ActualContainerProps, any, any>
 	articleView: Component<ArticleViewProps, any, any>
 	columnCount: number
@@ -85,7 +85,7 @@ export function defaultTimeline(data: TimelineDataPartial): TimelineData {
 		title: 'Timeline',
 		serviceTemplate: null,
 		endpoints: [],
-		section: {useSection: false, count: 100},
+		section: { useSection: false, count: 100 },
 		container: ColumnContainer,
 		articleView: SocialArticleView,
 		columnCount: 1,
@@ -142,7 +142,7 @@ export function addArticlesToTimeline(data: TimelineData, ...articles: ArticleId
 	});
 }
 
-export type TimelineCollection = {[id: string]: TimelineData};
+export type TimelineCollection = { [id: string]: TimelineData };
 
 //Would've wanted to use a symbol, but then we need to stringify in json anyway
 export const defaultTimelineViewId = 'default';

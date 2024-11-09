@@ -1,6 +1,6 @@
-import {getRootArticle, type ArticleWithRefs} from '~/articles';
-import {Endpoint, RefreshType, addEndpointArticlesToTimeline, endpoints} from './endpoints';
-import {addArticles} from './service';
+import { getRootArticle, type ArticleWithRefs } from '~/articles';
+import { Endpoint, RefreshType, addEndpointArticlesToTimeline, endpoints } from './endpoints';
+import { addArticles } from './service';
 
 export default abstract class WebSocketEndpoint extends Endpoint {
 	ws = new WebSocket('ws://localhost:443');

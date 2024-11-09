@@ -1,10 +1,10 @@
 <script lang='ts'>
-	import {type ArticleMedia, extensionToMediaType, MediaType} from '../media';
-	import type {ArticleIdPair} from '../index';
+	import { type ArticleMedia, extensionToMediaType, MediaType } from '../media';
+	import type { ArticleIdPair } from '../index';
 	import Article from '../index';
-	import {loadingStore} from '~/bufferedMediaLoading';
+	import { loadingStore } from '~/bufferedMediaLoading';
 	import GalleryThumbnail from './GalleryThumbnail.svelte';
-	import {faCirclePlay} from '@fortawesome/free-regular-svg-icons';
+	import { faCirclePlay } from '@fortawesome/free-regular-svg-icons';
 	import Fa from 'svelte-fa';
 
 	let {

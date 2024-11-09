@@ -1,10 +1,10 @@
-import {Endpoint, type EndpointConstructorInfo, RefreshType} from '~/services/endpoints';
-import {getService, registerEndpointConstructor} from '~/services/service';
-import {illustToArticle, type PixivResponseWithPage} from '~/services/pixiv/endpoints/index';
-import {getCachedArticlesStorage, getMarkedAsReadStorage} from '~/storages/serviceCache';
-import {PixivService} from '~/services/pixiv/service';
-import {type CachedPixivArticle} from '~/services/pixiv/article';
-import type {ArticleWithRefs} from '~/articles';
+import { Endpoint, type EndpointConstructorInfo, RefreshType } from '~/services/endpoints';
+import { getService, registerEndpointConstructor } from '~/services/service';
+import { illustToArticle, type PixivResponseWithPage } from '~/services/pixiv/endpoints/index';
+import { getCachedArticlesStorage, getMarkedAsReadStorage } from '~/storages/serviceCache';
+import { PixivService } from '~/services/pixiv/service';
+import { type CachedPixivArticle } from '~/services/pixiv/article';
+import type { ArticleWithRefs } from '~/articles';
 
 //TODO Support multiple output lists instead?
 export enum TopOutput {
@@ -29,7 +29,7 @@ export class TopAPIEndpoint extends Endpoint {
 
 	async refresh(_refreshType: RefreshType): Promise<ArticleWithRefs[]> {
 		const response: TopResponse = await getService('Pixiv').fetch('https://www.pixiv.net/ajax/top/illust?mode=all', {
-			headers: {Accept: 'application/json'},
+			headers: { Accept: 'application/json' },
 		});
 
 		if (response.error)

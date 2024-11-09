@@ -1,8 +1,8 @@
-import {writable} from 'svelte/store';
-import type {ArticleIdPair} from './articles';
+import { writable } from 'svelte/store';
+import type { ArticleIdPair } from './articles';
 
 export const undoables = (() => {
-	const {subscribe, update} = writable<Undoable[]>([]);
+	const { subscribe, update } = writable<Undoable[]>([]);
 
 	return {
 		subscribe,

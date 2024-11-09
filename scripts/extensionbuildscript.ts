@@ -1,13 +1,13 @@
-import esbuild, {type BuildOptions} from 'esbuild';
-import {buildOptions, errorHandler} from './buildscript.js';
+import esbuild, { type BuildOptions } from 'esbuild';
+import { buildOptions, errorHandler } from './buildscript.js';
 import fs from 'fs';
 import fastGlob from 'fast-glob';
 
 const outdir = './extension/dist';
 
 const entryPoints = [
-	...fastGlob.globSync('./src/extension/**/entry.ts', {onlyFiles: true}),
-	...fastGlob.globSync('./src/services/**/entry.ts', {onlyFiles: true}),
+	...fastGlob.globSync('./src/extension/**/entry.ts', { onlyFiles: true }),
+	...fastGlob.globSync('./src/services/**/entry.ts', { onlyFiles: true }),
 ];
 
 const extensionBuildOptions: BuildOptions = {

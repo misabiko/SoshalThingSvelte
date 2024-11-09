@@ -1,11 +1,11 @@
-import type {EndpointConstructorInfo} from '../../endpoints';
-import {Endpoint, RefreshType} from '../../endpoints';
-import type {ArticleWithRefs} from '~/articles';
+import type { EndpointConstructorInfo } from '../../endpoints';
+import { Endpoint, RefreshType } from '../../endpoints';
+import type { ArticleWithRefs } from '~/articles';
 import type * as Misskey from 'misskey-js';
-import {fromAPI} from '../article';
-import {getMarkedAsReadStorage} from '~/storages/serviceCache';
-import {MisskeyService} from '../service';
-import {registerEndpointConstructor} from '../../service';
+import { fromAPI } from '../article';
+import { getMarkedAsReadStorage } from '~/storages/serviceCache';
+import { MisskeyService } from '../service';
+import { registerEndpointConstructor } from '../../service';
 
 export class TimelineEndpoint extends Endpoint {
 	readonly name = 'Timeline Endpoint';

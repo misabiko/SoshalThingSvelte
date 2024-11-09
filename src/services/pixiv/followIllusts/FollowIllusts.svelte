@@ -5,13 +5,13 @@
 		type TimelineCollection,
 		type TimelineView,
 	} from '~/timelines';
-	import {defaultTimeline} from '~/timelines';
-	import {loadMainStorage} from '~/storages';
-	import {everyRefreshType} from '~/services/endpoints';
+	import { defaultTimeline } from '~/timelines';
+	import { loadMainStorage } from '~/storages';
+	import { everyRefreshType } from '~/services/endpoints';
 	import portal from '~/usePortal';
-	import {FollowAPIEndpoint} from '~/services/pixiv/endpoints/follow.endpoint';
-	import {getCurrentPage} from '~/services/pixiv/endpoints';
-	import {PixivService} from '~/services/pixiv/service';
+	import { FollowAPIEndpoint } from '~/services/pixiv/endpoints/follow.endpoint';
+	import { getCurrentPage } from '~/services/pixiv/endpoints';
+	import { PixivService } from '~/services/pixiv/service';
 
 	const timelines: TimelineCollection = {
 		Follows: defaultTimeline({
@@ -85,7 +85,7 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions a11y_click_events_have_key_events -->
 <a
-	use:portal={{target: activatorMount}}
+	use:portal={{ target: activatorMount }}
 	id='favvieweractivator'
 	class={activatorMount.children[0]!.className}
 	onclick={() => favviewerHidden = !favviewerHidden}

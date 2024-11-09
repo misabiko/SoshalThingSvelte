@@ -1,8 +1,8 @@
 <script lang='ts'>
 	import ArticleComponent from '~/articles/ArticleComponent.svelte';
-	import {type ArticleProps, getIdServiceMediaStr} from '~/articles';
-	import {getActualArticle, getRootArticle} from '~/articles';
-	import type {ContainerProps} from './index';
+	import { type ArticleProps, getIdServiceMediaStr } from '~/articles';
+	import { getActualArticle, getRootArticle } from '~/articles';
+	import type { ContainerProps } from './index';
 
 	let {
 		containerRef = $bindable(null),

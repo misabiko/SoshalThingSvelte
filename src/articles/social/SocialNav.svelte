@@ -4,11 +4,11 @@
 		faEllipsisH, faExpandAlt, faSpinner, faGripVertical, faEllipsisVertical, faUpRightFromSquare,
 	} from '@fortawesome/free-solid-svg-icons';
 	import Dropdown from '../../Dropdown.svelte';
-	import Article, {type ArticleIdPair} from '../../articles';
-	import type {TimelineArticleProps} from '../index';
-	import {getReadableArticle, getService} from '~/services/service';
-	import {type ArticleAction, getGenericActions} from '~/services/actions';
-	import {SvelteSet} from 'svelte/reactivity';
+	import Article, { type ArticleIdPair } from '../../articles';
+	import type { TimelineArticleProps } from '../index';
+	import { getReadableArticle, getService } from '~/services/service';
+	import { type ArticleAction, getGenericActions } from '~/services/actions';
+	import { SvelteSet } from 'svelte/reactivity';
 
 	let {
 		idPair,

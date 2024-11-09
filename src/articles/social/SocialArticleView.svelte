@@ -1,12 +1,12 @@
 <script lang='ts'>
-	import Article, {getRootArticle} from '~/articles';
-	import type {ArticleViewProps} from '../index';
-	import type {ArticleProps} from '../index';
-	import {shortTimestamp} from '../index';
+	import Article, { getRootArticle } from '~/articles';
+	import type { ArticleViewProps } from '../index';
+	import type { ArticleProps } from '../index';
+	import { shortTimestamp } from '../index';
 	import SocialMedia from './SocialMedia.svelte';
 	import SocialNav from './SocialNav.svelte';
 	import Timestamp from './Timestamp.svelte';
-	import {newUserTimeline} from '~/timelines';
+	import { newUserTimeline } from '~/timelines';
 	import SocialQuote from '~/articles/social/SocialQuote.svelte';
 
 	let {
@@ -152,7 +152,7 @@
 	<div class='repostLabel'>
 		{#if articleProps.type === 'reposts' && rootArticle.author}
 			{@const timestamp = rootArticle.creationTime && (' - ' + shortTimestamp(rootArticle.creationTime))}
-			<a href={rootArticle.author.url} target='_blank' rel='noreferrer' onclick={e => {e.preventDefault(); onUsernameClick(rootArticle);}}>
+			<a href={rootArticle.author.url} target='_blank' rel='noreferrer' onclick={e => { e.preventDefault(); onUsernameClick(rootArticle); }}>
 				{#if articleProps.reposts.length > 1}
 					{articleProps.reposts.map(r => r.author?.name).filter(n => n).join(', ')} reposted{timestamp}
 				{:else}
@@ -181,7 +181,7 @@
 						href={actualArticle.author?.url}
 						target='_blank'
 						rel='noreferrer'
-						onclick={e => {e.preventDefault(); onUsernameClick(actualArticle);}}
+						onclick={e => { e.preventDefault(); onUsernameClick(actualArticle); }}
 					>
 						<strong>{ actualArticle.author?.name }</strong>
 						<small>@{ actualArticle.author?.username }</small>

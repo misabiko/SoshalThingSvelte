@@ -1,10 +1,10 @@
 <script lang='ts'>
-	import {type Filter, type FilterInfo, type FilterInstance, getFilterName} from './index';
+	import { type Filter, type FilterInfo, type FilterInstance, getFilterName } from './index';
 	import Dropdown from '../Dropdown.svelte';
-	import {genericFilterTypes} from './index';
-	import {defaultFilter} from './index';
-	import {getService, getServices} from '~/services/service';
-	import type {Writable} from 'svelte/store';
+	import { genericFilterTypes } from './index';
+	import { defaultFilter } from './index';
+	import { getService, getServices } from '~/services/service';
+	import type { Writable } from 'svelte/store';
 
 	let {
 		onInstancesUpdate,

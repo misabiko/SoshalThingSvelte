@@ -1,8 +1,8 @@
-import {expect, test} from '@playwright/test';
-import {loadWithLocalStorage, TIMELINE_STORAGE_KEY} from '../storagesUtils';
+import { expect, test } from '@playwright/test';
+import { loadWithLocalStorage, TIMELINE_STORAGE_KEY } from '../storagesUtils';
 
 test.describe('mark as read', () => {
-	test.beforeEach(async ({page}) => {
+	test.beforeEach(async ({ page }) => {
 		await loadWithLocalStorage(page, {
 			[TIMELINE_STORAGE_KEY]: {t1: {
 				endpoints: [
@@ -22,7 +22,7 @@ test.describe('mark as read', () => {
 		});
 	});
 
-	test('mark as read', async ({page}) => {
+	test('mark as read', async ({ page }) => {
 		const articleLocator = page.locator('article');
 		const articleCount = await articleLocator.count();
 		expect(articleCount).toBeGreaterThan(0);
@@ -33,7 +33,7 @@ test.describe('mark as read', () => {
 	});
 });
 
-test('missing optional props field should be added', async ({page}) => {
+test('missing optional props field should be added', async ({ page }) => {
 	page.on('pageerror', msg => {
 		throw msg;
 	});

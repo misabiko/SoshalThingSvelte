@@ -17,13 +17,13 @@ export class TimelineEndpoint extends Endpoint {
 		super(new Set([RefreshType.Refresh]));
 
 		//TODO Fetch from localStorage
-		// import('../../../../credentials.json')
-		// 	.then(({misskey}) => {
-		// 		this.cli = new Misskey.api.APIClient({
-		// 			origin: misskey.origin,
-		// 			credential: misskey.access,
-		// 		});
-		// 	});
+		//import('../../../../credentials.json')
+		//	.then(({misskey}) => {
+		//		this.cli = new Misskey.api.APIClient({
+		//			origin: misskey.origin,
+		//			credential: misskey.access,
+		//		});
+		//	});
 	}
 
 

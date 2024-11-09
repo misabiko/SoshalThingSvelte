@@ -33,9 +33,9 @@ export class TimelineEndpoint extends Endpoint {
 		const {feed, cursor} = data;
 		if (!!this.cursor != !!cursor)
 			this.refreshTypes.update(r => {
-				// if (cursor === null)
-				// 	r.delete(RefreshType.LoadBottom);
-				// else
+				//if (cursor === null)
+				//	r.delete(RefreshType.LoadBottom);
+				//else
 				r.add(RefreshType.LoadBottom);
 				return r;
 			});

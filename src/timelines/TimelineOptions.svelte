@@ -57,9 +57,9 @@
 	}
 
 	//https://github.com/sveltejs/svelte/issues/13811
-	// svelte-ignore non_reactive_update
+	//svelte-ignore non_reactive_update
 	enum OptionLayer {
-		// Session = 'session',
+		//Session = 'session',
 		Timeline = 'timeline',
 		//Fullscreen = 'fullscreen',
 		ServiceTemplate = 'serviceTemplate',
@@ -383,7 +383,7 @@
 				<FiltersOptions
 					onInstancesUpdate={instances => {
 						if (timelineId !== null)
-						// 	throw {message: 'TimelineId is null', data};
+						//throw {message: 'TimelineId is null', data};
 							updateTimelinesStorageValue(timelineId, 'filters', instances);
 					}}
 					instances={data.filters}

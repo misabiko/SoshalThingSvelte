@@ -16,7 +16,7 @@ if (loadMainStorage().useWebSocket) {
 		//TODO Make service agnostic
 		console.debug('Connected service to websocket');
 		websocket.send(JSON.stringify({
-			// status: 'initService' would probably be cleaner
+			//status: 'initService' would probably be cleaner
 			initService: true,
 		}));
 	});

@@ -150,7 +150,7 @@ type RankingResponse =
 			illust_page_count: string
 			user_name: string
 			profile_img: string
-			// illust_content_type: {}
+			//illust_content_type: {}
 			illust_series: boolean
 			illust_id: number
 			width: number

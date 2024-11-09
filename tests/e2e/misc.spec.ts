@@ -11,10 +11,10 @@ test('no errors or warnings on boot', async ({page}) => {
 
 	page.on('console', msg => {
 		if (msg.type() === 'error') {
-			// console.error(msg.text());
+			//console.error(msg.text());
 			messages.errors.push(msg);
 		}else if (msg.type() === 'warning') {
-			// console.warn(msg.text());
+			//console.warn(msg.text());
 			messages.warnings.push(msg);
 		}else
 			messages.misc.push(msg);

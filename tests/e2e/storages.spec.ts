@@ -134,7 +134,7 @@ test.describe('timelines', () => {
 		});
 
 		await page.getByRole('button', {name: 'Make timeline fullscreen'}).click();
-		// await page.getByRole('button', {name: 'Expand options'}).click();
+		//await page.getByRole('button', {name: 'Expand options'}).click();
 
 		await expect(page.locator('.masonryContainer')).toHaveCount(1);
 	});

@@ -66,9 +66,9 @@ export default class BlueskyArticle extends Article {
 }
 
 export type BlueskyAuthor = ArticleAuthor;
-// export interface BlueskyAuthor extends ArticleAuthor {
+//export interface BlueskyAuthor extends ArticleAuthor {
 //
-// }
+//}
 
 type BlueskyParams = {
 	type: 'post'

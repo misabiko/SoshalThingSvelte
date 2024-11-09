@@ -51,7 +51,7 @@ test('missing optional props field should be added', async ({page}) => {
 					filter: {
 						type: 'repost',
 						service: null,
-						// 	no `props: {byUsername}`
+						//no `props: {byUsername}`
 					},
 					enabled: true,
 					inverted: false,

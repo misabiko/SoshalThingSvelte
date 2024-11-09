@@ -25,7 +25,7 @@ if (path.length === 4 || path[4] === 'illustrations' || path[4] === 'artworks') 
 		return thumbnail?.parentElement?.parentElement?.parentElement?.parentElement?.parentElement?.parentElement?.parentElement?.parentElement ?? null;
 	})
 		.then(ul => {
-			const target = ul.parentElement/* as HTMLUListElement | null*/;
+			const target = ul.parentElement/*as HTMLUListElement | null*/;
 			if (!target)
 				throw new Error("Couldn't find ul's parent");
 

@@ -177,7 +177,7 @@ export function loadTimelines(): TimelineCollection {
 				endpoints.push(endpoint);
 		}
 
-		defaulted.filters = parseFilters(defaulted.filters/* ?? []*/);
+		defaulted.filters = parseFilters(defaulted.filters/*?? []*/);
 
 		//TODO Try to avoid defaulted, while passing tests
 		const timeline = defaultTimeline({

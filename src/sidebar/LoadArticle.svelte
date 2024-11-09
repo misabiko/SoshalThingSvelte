@@ -37,7 +37,7 @@
 	});
 
 	//TODO should use Timeline's addProps to convert recursively
-	// @ts-expect-error Will fix later, article typing might change anyway
+	//@ts-expect-error Will fix later, article typing might change anyway
 	let articleProps: ArticleProps | null = $derived(article !== null ? {
 		...article,
 		filteredOut: false,

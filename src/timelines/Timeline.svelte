@@ -199,7 +199,7 @@
 	}
 
 	function useFilters(articleWithRefs: ArticleWithRefs, index: number, filters: FilterInstance[]) {
-		// const filteredOut =  !filters.every(f => !f.enabled || ((keepArticle(articleWithRefs, index, f.filter) ?? !f.inverted) !== f.inverted));
+		//const filteredOut =  !filters.every(f => !f.enabled || ((keepArticle(articleWithRefs, index, f.filter) ?? !f.inverted) !== f.inverted));
 		//Caching filters for debugging, could return to boolean later
 		const nonKeepFilters = [];
 		for (const instance of filters) {
@@ -307,13 +307,13 @@
 
 			let currentIndex = articleIndex.length, randomIndex;
 
-			// While there remain elements to shuffle...
+			//While there remain elements to shuffle...
 			while (currentIndex != 0) {
-				// Pick a remaining element...
+				//Pick a remaining element...
 				randomIndex = Math.floor(Math.random() * currentIndex);
 				currentIndex--;
 
-				// And swap it with the current element.
+				//And swap it with the current element.
 				[articleIndex[currentIndex], articleIndex[randomIndex]] = [
 					articleIndex[randomIndex]!, articleIndex[currentIndex]!];
 			}

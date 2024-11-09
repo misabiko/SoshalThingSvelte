@@ -12,7 +12,7 @@
 	} = $props();
 
 	//https://github.com/sveltejs/svelte/issues/13811
-	// svelte-ignore non_reactive_update
+	//svelte-ignore non_reactive_update
 	enum TimelineAddTypes {
 		Empty,
 		//TODO Get timeline templates from services (like TwitterUserMedia)
@@ -23,12 +23,12 @@
 	let timelineAddType = $state(TimelineAddTypes.Empty);
 	let addDisabled = $derived.by(() => {
 		switch (timelineAddType) {
-			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Will add more types, eventually
+			//eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Will add more types, eventually
 			case TimelineAddTypes.User:
 				try {
 					return !username.length || !JSON.parse(username)?.name?.length;
 					//TODO Debug why prefix is ignored
-					// eslint-disable-next-line @typescript-eslint/no-unused-vars
+					//eslint-disable-next-line @typescript-eslint/no-unused-vars
 				}catch (_e) {
 					return true;
 				}

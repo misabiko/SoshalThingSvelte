@@ -32,7 +32,7 @@ export type TimelineData = {
 	articleView: Component<ArticleViewProps, any, any>
 	columnCount: number
 	rtl: boolean
-	// TODO Add option to set flex-grow: 1 instead of fixed width
+	//TODO Add option to set flex-grow: 1 instead of fixed width
 	width: number
 	filters: Writable<FilterInstance[]>
 	sortInfo: SortInfo

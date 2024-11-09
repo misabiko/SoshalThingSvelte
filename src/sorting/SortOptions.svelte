@@ -38,7 +38,7 @@
 			case null:
 				return 'Unsorted';
 			//TODO Check if still complaining once we switch to runes, also https://github.com/sveltejs/svelte/issues/13811
-			// svelte-ignore reactive_declaration_non_reactive_property
+			//svelte-ignore reactive_declaration_non_reactive_property
 			case SortMethod.Custom:
 				if (sortInfo.customMethod === null)
 					throw new Error('Custom sort method is null');

@@ -27,7 +27,7 @@
 	import type {Writable} from 'svelte/store';
 
 	//https://github.com/sveltejs/svelte/issues/13811
-	// svelte-ignore non_reactive_update
+	//svelte-ignore non_reactive_update
 	enum SidebarMenu {
 		TimelineEdit,
 		BatchActions,

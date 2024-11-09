@@ -15,7 +15,7 @@ const SveltePlugin: esbuild.Plugin = {
 	name: 'svelte',
 	setup(build) {
 		build.onLoad({filter: /\.svelte$/}, async args => {
-			// Load the file from the file system
+			//Load the file from the file system
 			const source = await fs.readFile(args.path, 'utf8');
 			const filename = path.relative(process.cwd(), args.path);
 
@@ -39,7 +39,7 @@ const SveltePlugin: esbuild.Plugin = {
 				return {text: `${message} (${code})`, location};
 			};
 
-			// Convert Svelte syntax to JavaScript
+			//Convert Svelte syntax to JavaScript
 			try {
 				const {js, warnings} = svelte.compile(preprocessed, {
 					filename,

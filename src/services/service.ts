@@ -17,7 +17,7 @@ import {getServiceStorage} from '~/storages';
 
 const services: {[name: string]: Service<any>} = {};
 
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- might be undefined in tests
+//eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- might be undefined in tests
 if (globalThis.window) {
 	(globalThis.window as any).soshalthing ??= {};
 	(globalThis.window as any).soshalthing.services = services;
@@ -177,8 +177,8 @@ export function getReadableArticle<T extends Article = Article>(idPair: ArticleI
 
 export async function fetchArticle(idPair: ArticleIdPair) {
 	const service = services[idPair.service] as unknown as Service & FetchingService;
-	// if (service.fetchArticle === undefined)
-	// 	return;
+	//if (service.fetchArticle === undefined)
+	//	return;
 
 	if (service.fetchedArticles.has(idPair.id))
 		return;
@@ -255,7 +255,7 @@ export function newService<A extends Article = Article>(data: Partial<Service<A>
 				const response = await fetchExtension('extensionFetch', {
 					soshalthing: true,
 					//TODO Use Content-Type to determine fetchJson or fetchText
-					// request: 'fetchText',
+					//request: 'fetchText',
 					fetch: url,
 					fetchOptions: init,
 				});

@@ -162,7 +162,7 @@ export function getGenericActions(article: Article): ArticleAction[] {
 				},
 			},
 		});
-	if ('fetchArticle' in getService(article.idPair.service)/* && !article.fetched*/)
+	if ('fetchArticle' in getService(article.idPair.service)/*&& !article.fetched*/)
 		genericActions.push({
 			action: (idPair: ArticleIdPair) => fetchArticle(idPair),
 			actionedName: 'Re-Fetch Article',

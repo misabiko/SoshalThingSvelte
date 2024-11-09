@@ -2,7 +2,7 @@
 	import {PixivService} from './service';
 	import {getServiceStorage, setServiceStorage} from '~/storages';
 
-	const pixivStorage = getServiceStorage(PixivService.name)/* ?? ''*/;
+	const pixivStorage = getServiceStorage(PixivService.name)/*?? ''*/;
 </script>
 
 <!-- Get from document.getElementsByTagname('meta')[global].content thing -->

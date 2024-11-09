@@ -300,7 +300,7 @@ export type TimelineArticleProps = {
 	animatedAsGifs: boolean
 	muteVideos: boolean
 	compact: boolean
-	// If true, the media stays full even when compact is true
+	//If true, the media stays full even when compact is true
 	fullMedia: number
 	hideQuoteMedia: boolean
 	hideText: boolean

@@ -8,6 +8,7 @@ import svelteParser from 'svelte-eslint-parser';
 import stylistic from '@stylistic/eslint-plugin';
 import svelteConfig from './svelte.config.js';
 
+//TODO Export eslint config to separate repo
 export default tseslint.config(
 	{
 		ignores: [
@@ -89,9 +90,7 @@ export default tseslint.config(
 				showAllMediaArticles: Set<string>
 			}>;*/
 			'@stylistic/no-mixed-spaces-and-tabs': ['warn', 'smart-tabs'],
-			// '@stylistic/spaced-comment': ['warn', 'never'],
-			//TODO Debug crash with index.html
-			'@stylistic/spaced-comment': 'off',
+			'@stylistic/spaced-comment': ['warn', 'never'],
 			'@stylistic/keyword-spacing': ['warn', {
 				before: true,
 				after: true,

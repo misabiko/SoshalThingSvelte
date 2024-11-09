@@ -167,9 +167,6 @@ export default tseslint.config(
 			'@typescript-eslint/no-confusing-void-expression': 'off',
 			'@typescript-eslint/no-floating-promises': 'off',
 
-			//TODO Temp
-			// '@typescript-eslint/no-unnecessary-condition': 'off',
-
 			'prefer-const': ['warn', {
 				destructuring: 'all',
 			}],

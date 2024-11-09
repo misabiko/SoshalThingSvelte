@@ -27,6 +27,7 @@ import type {EndpointConstructorParams} from '~/services/endpoints';
 import {derived, get} from 'svelte/store';
 import type {ArticleViewProps} from '~/articles';
 import type {ActualContainerProps} from '~/containers';
+import type {RecursivePartial} from '~/utils';
 
 export const MAIN_STORAGE_KEY = 'SoshalThingSvelte';
 export const TIMELINE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Timelines';
@@ -445,12 +446,13 @@ function sortInfoToStorage(sortInfo: SortInfo): TimelineStorage['sortInfo'] {
 	}
 }
 
-function parseFilters(storageFilters: FilterInstance[]) {
+function parseFilters(storageFilters: RecursivePartial<FilterInstance>[]) {
 	const filters: FilterInstance[] = [];
 
 	for (const instance of storageFilters) {
+		if (instance.filter?.type == undefined)
+			throw new Error('FilterInstance.filter.type is required');
 		instance.filter.service ??= null;
-		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 		instance.filter.props ??= {};
 
 		if (instance.filter.service === null && !Object.hasOwn(genericFilterTypes, instance.filter.type))
@@ -460,7 +462,7 @@ function parseFilters(storageFilters: FilterInstance[]) {
 		else if (instance.filter.service !== null && !Object.hasOwn(getService(instance.filter.service).filterTypes, instance.filter.type))
 			console.error(`Service "${instance.filter.service}" doesn't have filter "${instance.filter.type}".`, instance);
 		else
-			filters.push(instance);
+			filters.push(instance as FilterInstance);
 	}
 
 	return filters;

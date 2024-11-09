@@ -23,7 +23,7 @@
 	let timelineAddType = $state(TimelineAddTypes.Empty);
 	let addDisabled = $derived.by(() => {
 		switch (timelineAddType) {
-			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Will add more types, eventually
 			case TimelineAddTypes.User:
 				try {
 					return !username.length || !JSON.parse(username)?.name?.length;

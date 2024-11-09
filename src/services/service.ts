@@ -17,7 +17,7 @@ import {getServiceStorage} from '~/storages';
 
 const services: {[name: string]: Service<any>} = {};
 
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- might be undefined in tests
 if (globalThis.window) {
 	(globalThis.window as any).soshalthing ??= {};
 	(globalThis.window as any).soshalthing.services = services;

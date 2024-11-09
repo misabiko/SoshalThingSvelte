@@ -123,8 +123,8 @@
 <div class='galleryArticle' bind:this={divRef}>
 	<div>
 		{#each medias as [media, i] (i)}
-			{@const isLoading = $loadingStates[i] === LoadingState.Loading}
-			{#if $loadingStates[i] === LoadingState.NotLoaded}
+			{@const isLoading = loadingStates[i] === LoadingState.Loading}
+			{#if loadingStates[i] === LoadingState.NotLoaded}
 				<GalleryThumbnail
 						{actualArticle}
 						mediaIndex={i}

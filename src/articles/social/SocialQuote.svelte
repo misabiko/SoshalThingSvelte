@@ -4,8 +4,9 @@
 	import SocialNav from './SocialNav.svelte';
 	import SocialMedia from './SocialMedia.svelte';
 	import {getReadableArticle} from '~/services/service';
-	import {type Readable, writable, type Writable} from 'svelte/store';
+	import {type Readable} from 'svelte/store';
 	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
+	import {tick} from 'svelte';
 
 	let {
 		idPair,
@@ -32,11 +33,11 @@
 	let showAllMediaArticles = $derived(timelineProps.showAllMediaArticles);
 	let showAllMedia = $derived($showAllMediaArticles.has($article.idPairStr));
 
-	let loadingStates: Writable<Record<number, LoadingState>> = writable({});
-	$effect(() => {
-		$loadingStates = [];
+	let loadingStates: Record<number, LoadingState> = $state({});
+	tick().then(() => {
+		loadingStates = [];
 		for (let mediaIndex = 0; mediaIndex < Math.min($article.medias.length, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : Infinity); ++mediaIndex)
-			$loadingStates[mediaIndex] = loadingStore.getLoadingState($article.idPair, mediaIndex, timelineProps.shouldLoadMedia);
+			loadingStates[mediaIndex] = loadingStore.getLoadingState($article.idPair, mediaIndex, timelineProps.shouldLoadMedia);
 	});
 </script>
 

@@ -5,7 +5,6 @@
 	import {faImages} from '@fortawesome/free-solid-svg-icons';
 	import {type ArticleMedia, extensionToMediaType, MediaType} from '../media';
 	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
-	import {type Readable} from 'svelte/store';
 	import {faCirclePlay} from '@fortawesome/free-regular-svg-icons';
 	import {tick} from 'svelte';
 
@@ -29,7 +28,7 @@
 
 		divRef?: HTMLDivElement | null
 		mediaRefs?: Record<number, HTMLImageElement | HTMLVideoElement | undefined>
-		loadingStates: Readable<Record<number, LoadingState>>
+		loadingStates: Record<number, LoadingState>
 
 		compact: boolean | null
 	} = $props();
@@ -142,9 +141,9 @@
 
 <div class='socialMedia' class:socialMediaCompact={compact ?? timelineProps.compact} bind:this={divRef}>
 	{#each medias as [media, index] (index)}
-		{@const isLoading = $loadingStates[index] === LoadingState.Loading}
+		{@const isLoading = loadingStates[index] === LoadingState.Loading}
 		{@const aspectRatio = 1 / (media.ratio ?? 1)}
-		{#if $loadingStates[index] === LoadingState.NotLoaded}
+		{#if loadingStates[index] === LoadingState.NotLoaded}
 			<div class='imagesHolder' class:socialMediaFull={index < timelineProps.fullMedia} style:aspect-ratio={aspectRatio}>
 				<div class='imgPlaceHolder' style:aspect-ratio={1 / (media.ratio ?? 1)} style:display='none'></div>
 				<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->

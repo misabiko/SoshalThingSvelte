@@ -161,7 +161,7 @@ export type ArticleViewProps = {
 
 	divRef: HTMLDivElement | null
 	mediaRefs: Record<number, HTMLImageElement | HTMLVideoElement | undefined>
-	loadingStates: Readable<Record<number, LoadingState>>
+	loadingStates: Record<number, LoadingState>
 };
 
 export function getIdPairStr(ArticleIdPair: ArticleIdPair): ArticleIdPairStr {

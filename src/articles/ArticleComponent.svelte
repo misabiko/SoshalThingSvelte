@@ -8,7 +8,6 @@
 	import Modal from '../Modal.svelte';
 	import {MediaLoadType} from './media';
 	import {LoadingState, loadingStore} from '~/bufferedMediaLoading';
-	import {writable, type Writable} from 'svelte/store';
 
 	let {
 		articleProps,
@@ -31,16 +30,14 @@
 
 	let divRef = $state<HTMLDivElement | null>(null);
 	let mediaRefs = $state<Record<number, HTMLImageElement | undefined>>({});
-	//TODO Try porting loadingStates to runes with a svelte.ts file
-	// svelte-ignore non_reactive_update
-	let loadingStates: Writable<Record<number, LoadingState>> = writable({});
-	$effect(() => {
-		$loadingStates = [];
+	let loadingStates: Record<number, LoadingState> = $state({});
+	tick().then(() => {
+		loadingStates = [];
 		if (actualArticleProps.mediaIndex === null) {
 			for (let mediaIndex = 0; mediaIndex < Math.min(actualArticle.medias.length, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : Infinity); ++mediaIndex)
-				$loadingStates[mediaIndex] = loadingStore.getLoadingState(actualArticle.idPair, mediaIndex, timelineProps.shouldLoadMedia);
+				loadingStates[mediaIndex] = loadingStore.getLoadingState(actualArticle.idPair, mediaIndex, timelineProps.shouldLoadMedia);
 		}else
-			$loadingStates[actualArticleProps.mediaIndex] = loadingStore.getLoadingState(actualArticle.idPair, actualArticleProps.mediaIndex, timelineProps.shouldLoadMedia);
+			loadingStates[actualArticleProps.mediaIndex] = loadingStore.getLoadingState(actualArticle.idPair, actualArticleProps.mediaIndex, timelineProps.shouldLoadMedia);
 	});
 
 	tick().then(() => {

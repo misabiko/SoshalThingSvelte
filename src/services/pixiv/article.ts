@@ -42,11 +42,8 @@ export default class PixivArticle extends Article {
 		super.update(newArticle);
 
 		this.liked ||= newArticle.liked;
-		//Probably simplifiable
-		if (this.bookmarked === null)
+		if (!this.bookmarked)
 			this.bookmarked = newArticle.bookmarked;
-		else
-			this.bookmarked ||= newArticle.bookmarked;
 	}
 }
 

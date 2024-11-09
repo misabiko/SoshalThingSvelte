@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs from 'fs/promises';
 import esbuild, {type BuildOptions} from 'esbuild';
 import * as svelte from 'svelte/compiler';
 import {sveltePreprocess} from 'svelte-preprocess';
@@ -16,7 +16,7 @@ const SveltePlugin: esbuild.Plugin = {
 	setup(build) {
 		build.onLoad({filter: /\.svelte$/}, async args => {
 			// Load the file from the file system
-			const source = await fs.promises.readFile(args.path, 'utf8');
+			const source = await fs.readFile(args.path, 'utf8');
 			const filename = path.relative(process.cwd(), args.path);
 
 			const {code: preprocessed} = await svelte.preprocess(source, sveltePreprocess(), {filename});
@@ -45,8 +45,6 @@ const SveltePlugin: esbuild.Plugin = {
 					filename,
 					dev: process.env.NODE_ENV === 'development',
 					css: 'injected',
-					//TODO Active full runes
-					// runes: true,
 				});
 				const contents = js.code + '//# sourceMappingURL=' + js.map.toUrl();
 
@@ -67,16 +65,16 @@ const SveltePlugin: esbuild.Plugin = {
 	},
 };
 
-const outdir = './dist';
-
-
 const args = parseArgs({
 	args: Bun.argv,
 	options: {
 		entry: {
 			type: 'string',
-			short: 'e',
 			default: '../src/entry.ts',
+		},
+		outdir: {
+			type: 'string',
+			default: './dist',
 		},
 	},
 	strict: true,
@@ -86,22 +84,24 @@ const args = parseArgs({
 export const buildOptions: BuildOptions = {
 	entryPoints: [path.join(dirname(fileURLToPath(import.meta.url)), args.values.entry)],
 	bundle: true,
-	outdir,
+	outdir: args.values.outdir,
 	mainFields: ['svelte', 'browser', 'module', 'main', 'exports'],
-	// logLevel: `debug`,
 	minify: false, //so the resulting code is easier to understand
 	sourcemap: 'inline',
 	splitting: true,
 	write: true,
 	format: 'esm',
-	// watch: process.argv.includes('--watch'),
 	plugins: [
+		//TODO Use esbuild-svelte
 		SveltePlugin,
 		//To glob service imports
 		EsbuildPluginImportGlob(),
 	],
-	//TODO I feel like I should get a better global dev flag, maybe when we switch to bun
-	conditions: process.env.NODE_ENV === 'development' ? ['development'] : [],
+	conditions: [
+		//TODO I feel like I should get a better global dev flag, maybe when we switch to bun
+		process.env.NODE_ENV === 'development' ? 'development' : 'production',
+		'svelte',
+	],
 };
 
 export const errorHandler = (error: any, location: string | undefined = undefined) => {
@@ -110,8 +110,8 @@ export const errorHandler = (error: any, location: string | undefined = undefine
 };
 
 //make sure the directory exists before stuff gets put into it
-if (!fs.existsSync(outdir))
-	fs.mkdirSync(outdir);
+if (!(await fs.exists(args.values.outdir)))
+	await fs.mkdir(args.values.outdir);
 
 esbuild
 	.build(buildOptions)
@@ -130,4 +130,4 @@ for (const file of [
 	'index.html',
 	'global.css',
 ])
-	fs.copyFileSync('./static/' + file, './dist/' + file);
+	await fs.copyFile(path.join('./static/', file), path.join(args.values.outdir, file));

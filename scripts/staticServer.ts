@@ -1,12 +1,16 @@
 import {parseArgs} from 'util';
+import path from 'path';
 
 const args = parseArgs({
 	args: Bun.argv,
 	options: {
 		port: {
 			type: 'string',
-			short: 'p',
 			default: '8080',
+		},
+		dist: {
+			type: 'string',
+			default: './dist',
 		},
 	},
 	strict: true,
@@ -20,7 +24,7 @@ const server = Bun.serve({
 		if (pathname === '/')
 			pathname = '/index.html';
 
-		return new Response(Bun.file('dist' + pathname));
+		return new Response(Bun.file(path.join(args.values.dist, pathname)));
 	},
 });
 

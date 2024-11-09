@@ -90,7 +90,8 @@ export default tseslint.config(
 				showAllMediaArticles: Set<string>
 			}>;*/
 			'@stylistic/no-mixed-spaces-and-tabs': ['warn', 'smart-tabs'],
-			'@stylistic/spaced-comment': ['warn', 'never'],
+			//TODO Add custom spaced-comment rule allowing tab indents, or just flagging single spaces
+			'@stylistic/spaced-comment': 'off',
 			'@stylistic/keyword-spacing': ['warn', {
 				before: true,
 				after: true,

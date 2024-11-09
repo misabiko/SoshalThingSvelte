@@ -26,17 +26,12 @@ Build the extension with `bun build:extension`
 
 Test with `bun run test`, it uses the port 8089 by default
 
-[//]: # (TODO +2 Fix svelte-fa)
-[//]: # (    or replace with @fortawesome/svelte-fontawesome)
-[//]: # (TODO +1 Add extension popup to inject soshal)
-[//]: # (TODO +1 Make eslint work for svelte files scripts)
-[//]: # (TODO +1 Persist auto refresh)
-[//]: # (TODO Activate rune mode)
-[//]: # (TODO Rename favviewer to injected)
-[//]: # (TODO Add "one time endpoints" to timeline options)
-[//]: # (TODO Print vscode's problems)
-[//]: # (TODO "Third-party cookie will be blocked in future Chrome versions as part of Privacy Sandbox.")
-[//]: # (TODO Filter for "article from X service")
-[//]: # (TODO Lint github workflows)
-[//]: # (TODO Cleanup packages)
-[//]: # (TODO Go through project's TODOs)
+<!--TODO +1 Add extension popup to inject soshal-->
+<!--TODO +1 Persist auto refresh-->
+<!--TODO +1 "Third-party cookie will be blocked in future Chrome versions as part of Privacy Sandbox."-->
+<!--TODO Fix typescript parse errors in svelte template-->
+<!--TODO Rename favviewer to injected-->
+<!--TODO Add "one time endpoints" to timeline options-->
+<!--TODO Filter for "article from X service"-->
+<!--TODO Lint github workflows (https://ota-meshi.github.io/eslint-plugin-yml/)-->
+<!--TODO Go through project's TODOs-->

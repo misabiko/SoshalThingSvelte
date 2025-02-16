@@ -181,7 +181,7 @@
 	}
 
 	/* TODO Confirm that all variables are defined */
-	.soshalthing.injected {
+	div.soshalthing.injected {
 		/* Inheriting generics.sass's html */
 		background-color: var(--body-background-color);
 		-moz-osx-font-smoothing: grayscale;
@@ -196,7 +196,7 @@
 		line-height: var(--body-line-height);
 	}
 
-	:global(.soshalthing.injected button.delete) {
+	:global(div.soshalthing.injected button.delete) {
 		padding: 0;
 	}
 </style>

@@ -61,7 +61,7 @@
 <svelte:head>
 	{#if favviewerHidden}
 		<style>
-			.soshalthing.injected {
+			div.soshalthing.injected {
 				display: none;
 			}
 		</style>

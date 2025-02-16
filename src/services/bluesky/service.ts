@@ -65,7 +65,7 @@ export const BlueskyService: BlueskyServiceType = {
 			},
 		},
 		keepArticle(articleWithRefs: ArticleWithRefs, index: number, filter: Filter): boolean {
-			//TODO Label filter
+			//TODO Label +1 filter
 			switch (filter.type) {
 				case 'liked':
 					return (articleWithRefToArray(articleWithRefs) as BlueskyArticle[])
@@ -177,7 +177,7 @@ export const BlueskyService: BlueskyServiceType = {
 	agent: new AtpAgent({
 		service: 'https://bsky.social',
 		//persistSession(evt: AtpSessionEvent, sess?: AtpSessionData) {
-		//	//TODO Look into persistSession
+		//	//TODO +1 Look into persistSession
 		//	console.log('Persisting session', evt, sess);
 		//}
 	}),

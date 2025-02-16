@@ -29,6 +29,8 @@ import type { ArticleViewProps } from '~/articles';
 import type { ActualContainerProps } from '~/containers';
 import type { RecursivePartial } from '~/utils';
 
+//TODO Try SQLite
+
 export const MAIN_STORAGE_KEY = 'SoshalThingSvelte';
 export const TIMELINE_STORAGE_KEY = MAIN_STORAGE_KEY + ' Timelines';
 

@@ -182,7 +182,7 @@ export function newUserTimeline(serviceName: string, author: ArticleAuthor): Tim
 			filters: [],
 		}],
 		filters: [
-			//TODO Store user timeline filters dynamically
+			//TODO +1 Store user timeline filters dynamically
 			// ...defaultFilterInstances,
 			// {
 			// 	filter: {

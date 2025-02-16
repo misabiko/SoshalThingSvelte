@@ -34,4 +34,7 @@ Test with `bun run test`, it uses the port 8089 by default
 <!--TODO Add "one time endpoints" to timeline options-->
 <!--TODO Filter for "article from X service"-->
 <!--TODO Lint github workflows (https://ota-meshi.github.io/eslint-plugin-yml/)-->
+<!--TODO Sensitive media blur-->
+<!--TODO Sensitive media filter-->
+<!--TODO Bluesky mark replies + reply filter-->
 <!--TODO Go through project's TODOs-->

@@ -4,5 +4,11 @@
 		"a11y_no_noninteractive_element_interactions": "ignore"
 	},
 	"eslint.enable": true,
-	"eslint.validate": ["javascript", "typescript", "svelte"]
+	"eslint.validate": [
+		"javascript",
+		"typescript",
+		"svelte"
+	],
+	"todo-tree.tree.showBadges": false,
+	"todo-tree.tree.showCountsInTree": true
 }

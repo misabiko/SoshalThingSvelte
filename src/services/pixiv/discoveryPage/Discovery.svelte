@@ -64,7 +64,8 @@
 				overflow-y: auto;
 			}
 
-			#root {
+			/*TODO Reuse css for pixiv stuff*/
+			body, #root {
 				overflow-y: hidden;
 				max-height: 100vh;
 			}

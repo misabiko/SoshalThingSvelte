@@ -66,7 +66,7 @@
 				overflow-y: auto;
 			}
 
-			#root {
+			body, #root {
 				overflow-y: hidden;
 				max-height: 100vh;
 			}

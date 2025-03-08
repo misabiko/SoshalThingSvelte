@@ -31,7 +31,7 @@ export const loadingStore = (() => {
 	return {
 		subscribe,
 		requestLoad(idPair: ArticleIdPair, mediaIndex: number) {
-			if (get(getWritableArticle(idPair)).medias[mediaIndex]!.loaded)
+			if (get(getWritableArticle(idPair)).medias[mediaIndex]!.loaded !== false)
 				return LoadingState.Loaded;
 
 			const key = hash(idPair, mediaIndex);
@@ -90,7 +90,7 @@ export const loadingStore = (() => {
 				});
 			}
 		},
-		getLoadingState(idPair: ArticleIdPair, mediaIndex: number, request = false): LoadingState {
+		getLoadingState(idPair: ArticleIdPair, mediaIndex: number): LoadingState {
 			const idPairStr = hash(idPair, mediaIndex);
 			if (localLoadings.has(idPairStr))
 				return LoadingState.Loading;
@@ -100,9 +100,7 @@ export const loadingStore = (() => {
 			const loaded = get(getWritableArticle(idPair)).medias[mediaIndex]!.loaded;
 			if (loaded === undefined || loaded)
 				return LoadingState.Loaded;
-			else if (request) {
-				return this.requestLoad(idPair, mediaIndex);
-			}else
+			else
 				return LoadingState.NotLoaded;
 		},
 		mediaLoaded(idPair: ArticleIdPair, mediaIndex: number) {

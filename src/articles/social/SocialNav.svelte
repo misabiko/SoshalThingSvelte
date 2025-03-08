@@ -9,6 +9,7 @@
 	import { getReadableArticle, getService } from '~/services/service';
 	import { type ArticleAction, getGenericActions } from '~/services/actions';
 	import { SvelteSet } from 'svelte/reactivity';
+	import {LoadingState} from '~/bufferedMediaLoading';
 
 	let {
 		idPair,
@@ -18,6 +19,7 @@
 		timelineProps,
 		onLogData,
 		onLogJSON,
+		loadingStates,
 
 		compact = $bindable(),
 	}: {
@@ -28,6 +30,7 @@
 		timelineProps: TimelineArticleProps
 		onLogData: () => void
 		onLogJSON: () => void
+		loadingStates: Record<number, LoadingState>
 
 		compact: boolean | null
 	} = $props();
@@ -244,6 +247,9 @@
 					Log Json Data
 				</button>
 			{/if}
+			<span class='dropdown-item'>
+				Status: {loadingStates[0]}
+			</span>
 		</Dropdown>
 	</div>
 	{#if status !== null}

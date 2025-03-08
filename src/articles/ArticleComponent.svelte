@@ -30,14 +30,16 @@
 
 	let divRef = $state<HTMLDivElement | null>(null);
 	let mediaRefs = $state<Record<number, HTMLImageElement | undefined>>({});
-	let loadingStates: Record<number, LoadingState> = $state({});
-	tick().then(() => {
-		loadingStates = [];
+	let loadingStates = $derived.by<Record<number, LoadingState>>(() => {
+		const r: Record<number, LoadingState> = {};
 		if (actualArticleProps.mediaIndex === null) {
-			for (let mediaIndex = 0; mediaIndex < Math.min(actualArticle.medias.length, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : Infinity); ++mediaIndex)
-				loadingStates[mediaIndex] = loadingStore.getLoadingState(actualArticle.idPair, mediaIndex, timelineProps.shouldLoadMedia);
+			const mediaCount = Math.min(actualArticle.medias.length, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : Infinity);
+			for (let i = 0; i < mediaCount; ++i)
+				r[i] = loadingStore.getLoadingState(actualArticle.idPair, i);
 		}else
-			loadingStates[actualArticleProps.mediaIndex] = loadingStore.getLoadingState(actualArticle.idPair, actualArticleProps.mediaIndex, timelineProps.shouldLoadMedia);
+			r[actualArticleProps.mediaIndex] = loadingStore.getLoadingState(actualArticle.idPair, actualArticleProps.mediaIndex);
+
+		return r;
 	});
 
 	tick().then(() => {
@@ -147,7 +149,7 @@
 				{onMediaClick}
 				bind:divRef
 				bind:mediaRefs
-				bind:loadingStates
+				{loadingStates}
 			/>
 		</article>
 	</Modal>

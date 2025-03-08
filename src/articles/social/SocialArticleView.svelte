@@ -22,7 +22,7 @@
 
 		divRef = $bindable(),
 		mediaRefs = $bindable(),
-		loadingStates = $bindable(),
+		loadingStates,
 	}: ArticleViewProps = $props();
 
 	//TODO Propagate article compact to the timeline
@@ -220,6 +220,7 @@
 				repost={articleProps.type === 'reposts' ? rootArticle : undefined}
 				{onLogData}
 				{onLogJSON}
+				{loadingStates}
 				bind:compact
 			/>
 		</div>

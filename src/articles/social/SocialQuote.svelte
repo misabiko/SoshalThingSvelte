@@ -33,11 +33,12 @@
 	let showAllMediaArticles = $derived(timelineProps.showAllMediaArticles);
 	let showAllMedia = $derived($showAllMediaArticles.has($article.idPairStr));
 
-	let loadingStates: Record<number, LoadingState> = $state({});
-	tick().then(() => {
-		loadingStates = [];
-		for (let mediaIndex = 0; mediaIndex < Math.min($article.medias.length, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : Infinity); ++mediaIndex)
-			loadingStates[mediaIndex] = loadingStore.getLoadingState($article.idPair, mediaIndex, timelineProps.shouldLoadMedia);
+	let loadingStates: Record<number, LoadingState> = $derived.by(() => {
+		const r: Record<number, LoadingState> = {};
+		const mediaCount = Math.min($article.medias.length, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : Infinity);
+		for (let i = 0; i < mediaCount; ++i)
+			r[i] = loadingStore.getLoadingState($article.idPair, i);
+		return r;
 	});
 </script>
 
@@ -112,6 +113,7 @@
 			{modal}
 			{onLogData}
 			{onLogJSON}
+			{loadingStates}
 			bind:compact
 	/>
 </div>

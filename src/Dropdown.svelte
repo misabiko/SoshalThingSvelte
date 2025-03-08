@@ -72,6 +72,7 @@
 		line-height: 1.5;
 		padding: 0.375rem 1rem;
 		position: relative;
+		text-align: center;
 	}
 
 	:global(.dropdown-item:hover) {

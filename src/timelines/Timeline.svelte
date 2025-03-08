@@ -245,7 +245,7 @@
 						let article = get(articleStore);
 						const mediaCount = Math.min(actualArticleProps.article.medias.length, !$showAllMediaArticles.has(article.idPairStr) && data.maxMediaCount !== null ? data.maxMediaCount : Infinity);
 						for (let i = 0; i < mediaCount; ++i)
-							loadingStore.getLoadingState(article.idPair, i, data.shouldLoadMedia);
+							loadingStore.requestLoad(article.idPair, i);
 					}));
 				else {
 					const mediaCount = Math.min(actualArticleProps.article.medias.length, !$showAllMediaArticles.has(article.idPairStr) && data.maxMediaCount !== null ? data.maxMediaCount : Infinity);

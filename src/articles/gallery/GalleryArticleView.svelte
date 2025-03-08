@@ -27,7 +27,7 @@
 
 		divRef = $bindable(),
 		mediaRefs = $bindable(),
-		loadingStates = $bindable(),
+		loadingStates,
 	}: ArticleViewProps = $props();
 	let showAllMediaArticles = $derived(timelineProps.showAllMediaArticles);
 	let showAllMedia = $derived($showAllMediaArticles.has(rootArticle.idPairStr));

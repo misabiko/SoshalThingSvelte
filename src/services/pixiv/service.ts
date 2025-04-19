@@ -25,12 +25,6 @@ import ServiceSettings from './ServiceSettings.svelte';
 import { updateCachedArticlesStorage } from '~/storages/serviceCache';
 import MasonryContainer from '~/containers/MasonryContainer.svelte';
 import { SortMethod } from '~/sorting';
-import type {
-	AIType,
-	BookmarkData, ExtraData,
-	Illust,
-	IllustType, ZoneConfig,
-} from '~/services/pixiv/endpoints';
 import { getRatio, MediaLoadType } from '~/articles/media';
 
 export const PixivService: PixivServiceType = {
@@ -145,7 +139,7 @@ export const PixivService: PixivServiceType = {
 				},
 			},
 			isOnDomain: globalThis.window.location.hostname.endsWith('pixiv.net'),
-			keepArticle(articleWithRefs: ArticleWithRefs, index: number, filter: Filter): boolean {
+			keepArticle(articleWithRefs: ArticleWithRefs, _index: number, filter: Filter): boolean {
 				switch (filter.type) {
 					case 'bookmarked':
 						return (articleWithRefToArray(articleWithRefs) as PixivArticle[])
@@ -321,24 +315,23 @@ export const PixivService: PixivServiceType = {
 		}),
 		async fetchArticle(store: Writable<PixivArticle>) {
 			const article = get(store);
-			const htmlPage: string = await PixivService.fetch(`https://www.pixiv.net/en/artworks/${article.id}`, {headers: {Accept: 'text/html'}});
-			const doc = new DOMParser().parseFromString(htmlPage, 'text/html');
-			const preloadData = doc.querySelector('meta[name="preload-data"]')?.getAttribute('content');
-			if (!preloadData)
-				throw {message: 'No preload data', doc};
-			const preloadDataJson: PreloadData = JSON.parse(preloadData);
-			logPreloadDataTypes(preloadDataJson);
+			// const htmlPage: string = await PixivService.fetch(`https://www.pixiv.net/en/artworks/${article.id}`, {headers: {Accept: 'text/html'}});
+			// const doc = new DOMParser().parseFromString(htmlPage, 'text/html');
+
+			// const nextDataRaw = doc.querySelector('script[id="__NEXT_DATA__"]')?.textContent;
+			// if (!nextDataRaw)
+			// 	throw new Error('No __NEXT_DATA__ script to get article info');
+			// const nextData: PixivNextData = JSON.parse(nextDataRaw);
+
 			//TODO Try loading jpg and then png, instead of fetching through api
 			const pagesJson: PagesResponse = await PixivService.fetch(`https://www.pixiv.net/ajax/illust/${article.id}/pages`, {headers: {Accept: 'application/json'}});
 
 			store.update(a => {
-				const illust = preloadDataJson.illust[article.id];
-				if (!illust)
-					throw new Error('Illust not found in preload data');
-				a.liked = illust.likeData;
-				a.bookmarked = illust.bookmarkData !== null;
-				a.likeCount = illust.likeCount;
-				a.bookmarkCount = illust.bookmarkCount;
+				//TODO Find new way to get like and bookmark data
+				// a.liked = illust.likeData;
+				// a.bookmarked = illust.bookmarkData !== null;
+				// a.likeCount = illust.likeCount;
+				// a.bookmarkCount = illust.bookmarkCount;
 
 				for (let i = 0; i < a.medias.length; ++i) {
 					const page = pagesJson.body[i];
@@ -366,7 +359,8 @@ export const PixivService: PixivServiceType = {
 					};
 				}
 
-				a.rawSource.push(preloadDataJson/*, pagesJson*/);
+				//TODO Replace array with Map to overwrite existing data
+				// a.rawSource.push(nextData, /* pagesJson */);
 				a.fetched = true;
 				PixivService.fetchedArticles.delete(article.idPair.id);
 
@@ -434,294 +428,516 @@ type BookmarkResponse = {
 	}
 };
 
-export type PreloadData = {
-	timestamp: string
-	illust: Record<string, PreloadIllust>
-	user: Record<string, PreloadUser>
+//Instead of preload data, pixiv artwork pages now have a script with id __NEXT_DATA__ and type application/json
+type _PixivNextData = {
+	props: {
+		pageProps: {
+			forceLegacyNonResponsivePage: boolean
+			meta: {
+				title: string
+				description: string
+				canonical: string
+				ogp: {
+					title: string
+					type: string
+					image: string
+					description: string
+				}
+				twitter: {
+					card: string
+					site: string
+					url: string
+					title: string
+					description: string
+					'app:name:iphone': string
+					'app:id:iphone': string
+					'app:url:iphone': string
+					'app:name:ipad': string
+					'app:id:ipad': string
+					'app:url:ipad': string
+					'app:name:googleplay': string
+					'app:id:googleplay': string
+					'app:url:googleplay': string
+					image: string
+				}
+				alternateLanguages: {
+					ja: string
+					en: string
+				}
+				referrerContentOrigin: boolean
+				ratingContent: string
+				robots: boolean
+				oembedJsonUrl: string
+			}
+			lang: string
+			isLoggedIn: boolean
+			gaUserData: {
+				login: boolean
+				userAgent: string
+				gender: number
+				userId: string
+				illustUploadFlg: string
+				premium: boolean
+				lang: string
+				abTestDeviceId: number
+				premiumRegisterFirstMonthFreeCampaign: boolean
+			}
+			forceTheme: null
+			serverSerializedPreloadedState: string
+			dehydratedState: {
+				mutations: any[]
+				queries: any[]
+			}
+			_sentryTraceData: string
+			_sentryBaggage: string
+		}
+	}
+	page: string
+	query: {
+		id: string
+	}
+	buildId: string
+	assetPrefix: string
+	isFallback: boolean
+	isExperimentalCompile: boolean
+	dynamicIds: number[]
+	gip: boolean
+	scriptLoader: any[]
 };
 
-export type PreloadIllust = {
-	illustId: string
-	illustTitle: string
-	illustComment: string
-	id: string
-	title: string
-	description: string
-	illustType: IllustType
-	createDate: string
-	uploadDate: string
-	restrict: 0 | 1
-	xRestrict: 0 | 1
-	sl: number
-	urls: {
-		mini: string
-		thumb: string
-		small: string
-		regular: string
-		original: string
+//Parsed version of serverSerializedPreloadedState, not really any useful info
+type _ServerSerializedPreloadedState = {
+	ads: { config: object, flags: object }
+	api: {
+		token: string
+		services: {
+			booth: string
+			sketch: string
+			vroidHub: string
+			accounts: string
+		}
+		language: string
 	}
-	tags: {
-		authorId: string
-		isLocked: boolean
+	booth: { items: object }
+	feedback: { open: boolean, page: string }
+	isDevelopment: boolean
+	meta: {
+		config: {
+			Illust: object
+			IllustUnlisted: object
+			IllustSeries: object
+			Profile: object
+			Novel: object
+			NovelUnlisted: object
+			NovelSeriesContent: object
+			NovelSeries: object
+			NovelSeriesGlossaryDetail: object
+			Search: object
+			Dashboard: object
+			Preview: object
+			FollowLatest: object
+			Discovery: object
+			UserEvents: object
+			About: object
+			Top: { default: { title: string, description: boolean } }
+		}
+		error: boolean
+		lang: string
+	}
+	misc: {
+		consent: { gdpr: boolean }
+		policyRevision: boolean
+		grecaptcha: {
+			recaptchaEnterpriseScoreSiteKey: string
+		}
+		info: {
+			id: string
+			title: string
+			createDate: string
+		}
+		isSmartphone: boolean
+		oneSignalAppId: string
+	}
+	mute: { tags: [], userIds: [], modal: { items: [] } }
+	search: {
+		tag: {
+			tagData: object
+			translation: object
+			loaded: { tag_search: string }
+		}
+		work: { works: object, popular: object, relatedTags: object }
+	}
+	tag: {
+		popular: {
+			illust: { all: [], r18: [] }
+			novel: { all: [], r18: [] }
+			manga: { all: [], r18: [] }
+		}
+		recommend: { illust: { all: [], r18: [] } }
+		recommendBy: { illust: { all: [], r18: [] } }
+		loaded: { search_suggestion: { all: string, r18: string } }
+		myFavorite: []
+		genre: { manga: { all: [], r18: [] } }
+		randomSeed: number
+	}
+	task: { busy: object }
+	test: {
+		ab: {
+			commission_send_and_accept_confirmation: boolean
+			ab_touch_manga_new_viewer: boolean
+			novel_12th_premium_covers: boolean
+			novel_reading_status: boolean
+			novel_upload_next_js: boolean
+			novel_mod_next_js: boolean
+			novel_reserve_mod_next_js: boolean
+			posted_novel_cover_edit: boolean
+			premium_campaign_spring_2025: boolean
+			premium_campaign_spring_2025_banner: boolean
+			premium_dmm_lp_update_202502: boolean
+			www_tags_link_to_en_dic: boolean
+			www_illust_edit_next_js_desktop: boolean
+			www_illust_reserve_edit_next_js_desktop: boolean
+			www_illust_reupload_next_js_desktop: boolean
+			next_js_cardiac_transplant: boolean
+		}
+		toggle: {
+			toggle_accounts_mail_reauthentication_always_available: boolean
+			toggle_commission_limitation_countermeasure_202403: boolean
+			toggle_commission_lp_renewal: boolean
+			toggle_commission_coupon: boolean
+			toggle_commission_request_draft: boolean
+			toggle_enquete: boolean
+			toggle_enquete_target_user: boolean
+			toggle_manga_thumbnail_crop: boolean
+			toggle_novel_reading_status_show_release_modal: boolean
+			toggle_novel_reading_status_read_next_novel: boolean
+			toggle_premium_contract_update_retry_from_api: boolean
+			toggle_premium_error_next_js: boolean
+			toggle_premium_direct_overseas_users_to_gmo_flow: boolean
+			toggle_premium_edit_term_next_js: boolean
+			toggle_save_feedback: boolean
+			toggle_mybestpixiv_release: boolean
+			toggle_new_logo_2025: boolean
+		}
+	}
+	thumbnail: {
+		illust: object
+		novel: object
+		drafts: {
+			illust: object
+			novel: object
+		}
+		series: {
+			manga: object
+			novel: object
+		}
+	}
+	userData: {
+		pAbDId: number
+		self: {
+			id: string
+			pixivId: string
+			name: string
+			profileImg: string
+			profileImgBig: string
+			premium: boolean
+			xRestrict: number
+			adult: boolean
+			illustCreator: boolean
+			novelCreator: boolean
+			hideAiWorks: boolean
+			readingStatusEnabled: boolean
+			illustMaskRules: []
+			location: string
+			isSensitiveViewable: boolean
+		}
+		users: object
+		follow: object
+		mypixiv: object
+		block: object
+		acceptRequest: object
+		subscribedReopenNotification: object
+		loaded: { self: string }
+	}
+	webpush: { pixivWebpushPermission: null }
+	work: {
+		bookmark: {
+			bookmark: { illust: object, novel: object }
+			bookmarkable: { illust: object, novel: object }
+			manualBookmarks: { illust: null, novel: null }
+		}
+		booth: {
+			widget: object
+			items: object
+			workBoothIds: { illust: object, novel: object }
+		}
+		contest: {
+			banners: { illust: object, novel: object }
+			data: { illust: object, novel: object }
+		}
+		request: { data: { illust: object, novel: object } }
+		data: {
+			secret: { illust: object, novel: object }
+			illust: object
+			novel: object
+			seriesContent: { illust: object, novel: object }
+		}
+		discovery: { illust: object, novel: object }
+		like: { illust: object, novel: object }
+		noLogin: { illust: object, novel: object }
+		poll: { illust: object, novel: object }
+		promotion: {
+			comic: { illust: object, novel: object }
+			fanbox: { illust: object, novel: object }
+		}
+		recommend: { illust: object, novel: object }
+		response: {
+			outData: {
+				illust: { items: object, references: object }
+				novel: { items: object, references: object }
+			}
+			inData: {
+				illust: { items: object, references: object, count: object }
+				novel: { items: object, references: object, count: object }
+			}
+		}
+		sensitiveVisibility: { illust: object, novel: object }
+		series: {
+			series: {
+				byId: { illust: object, novel: object }
+				detailById: { manga: object, novel: object }
+				content: { illust: object, novel: object }
+				contentTitles: { manga: object, novel: object }
+				glossary: { manga: object, novel: object }
+			}
+			seriesEditor: {
+				novel: {
+					seriesContentsById: object
+					nonSeriesWorks: { works: object, hasMore: boolean }
+					deletedWorks: object
+					ordersByDesc: []
+					editFirstOrder: 1
+					unsaved: false
+					validationMessages: {
+						title: []
+						caption: []
+						xRestrict: []
+						aiType: []
+						genre: []
+						cover: []
+					}
+					seriesContentCount: 0
+				}
+			}
+			watch: { manga: object, novel: object }
+			notify: { manga: object, novel: object }
+		}
+		spoiler: { illust: object, novel: object }
 		tags: {
-			tag: string
-			locked: boolean
-			deletable: boolean
-			userId: string
-			userName: string
-			romaji?: string
-			translation?: Record<string, string>
-		}[]
-		writable: boolean
-	}
-	alt: string
-	userId: string
-	userName: string
-	userAccount: string
-	userIllusts: Record<string, (Omit<Illust,
-	| 'urls'
-	| 'profileImageUrl'
-	> & {
-		profileImageUrl?: string
-	}) | null>
-	likeData: boolean
-	width: number
-	height: number
-	pageCount: number
-	bookmarkCount: number
-	likeCount: number
-	commentCount: number
-	responseCount: number
-	viewCount: number
-	bookStyle: string
-	isHowto: boolean
-	isOriginal: boolean
-	imageResponseOutData: unknown[]
-	imageResponseData: unknown[]
-	imageResponseCount: number
-	pollData: null | {
-		question: string
-		choices:
-		{
-			id: number
-			text: string
-			count: number
-		}[]
-		selectedValue: null | unknown
-		total: number
-	}
-	seriesNavData: null | {
-		seriesType: string
-		seriesId: string
-		title: string
-		order: number
-		isWatched: boolean
-		isNotifying: boolean
-		prev: {
-			id: string
-			title: string
-			order: number
+			byId: { illust: object, novel: object }
+			history: { illust: object, novel: object }
 		}
-		next: {
-			id: string
-			title: string
-			order: number
+		userWorks: object
+		youtube: { workYoutubeIds: { illust: object, novel: object } }
+		newPost: {
+			illust: { entries: [], lastId: '0' }
+			r18_illust: { entries: [], lastId: '0' }
+			manga: { entries: [], lastId: '0' }
+			r18_manga: { entries: [], lastId: '0' }
+			novel: { entries: [], lastId: '0' }
+			r18_novel: { entries: [], lastId: '0' }
 		}
 	}
-	descriptionBoothId: null | unknown
-	descriptionYoutubeId: null | unknown
-	comicPromotion: null | unknown
-	fanboxPromotion: null | unknown
-	contestBanners: unknown[]
-	isBookmarkable: boolean
-	bookmarkData: BookmarkData | null
-	contestData: null | unknown
-	zoneConfig: ZoneConfig & {
-		responsive: {url: string}
-		rectangle: {url: string}
-		expandedFooter: {url: string}
-		relatedworks: {url: string}
+	pageCommission: {
+		requests: object
+		userList: object
+		userListDesktop: object
+		paymentServiceStatus: []
+		page: {
+			manageRequests: {
+				info: null
+				requestList: null
+				recentUpdate: null
+			}
+			managePlanSettingsEdit: null
+			managePlanSettingsNew: null
+			requestsDetails: {
+				requestThread: null
+				creator: null
+				recommendedUserIds: null
+				inProgressRequestIds: null
+				completeRequestIds: null
+				confettiModalStatus: {
+					inProgressFan: false
+					inProgressCreator: false
+					completeFanOrCollaborateUser: false
+				}
+				alreadyRequestCollaborate: null
+				platformFeeCampaignLabel: null
+				eligibleCampaignList: null
+				isUnlisted: false
+				ogp: object
+				locationMask: false
+			}
+			requestSend: {
+				creator: null
+				plan: null
+				planCoverImage: {
+					selectableIllustsId: []
+					fetchRanges: [[0, 24]]
+				}
+				inProgressRequestIds: []
+				completeRequestIds: []
+				recommendedTags: []
+				ogp: object
+				progressCampaignList: []
+				locationMask: false
+			}
+			requestLegal: null
+			request: null
+			requestCreatorRecommendPost: {
+				illust: object
+				manga: object
+				ugoira: object
+				novels: object
+			}
+			requestCreators: {
+				illust: object
+				manga: object
+				ugoira: object
+				novels: object
+			}
+			requestInProgress: {
+				all: object
+				illust: object
+				manga: object
+				ugoira: object
+				novels: object
+			}
+			requestComplete: {
+				illust: object
+				manga: object
+				ugoira: object
+				novels: object
+			}
+			requestAbout: null
+			manageSales: null
+			manageTransfer: null
+			manageTransferSettings: null
+			manageLegalSettings: null
+			managePayment: null
+		}
 	}
-	extraData: ExtraData
-	titleCaptionTranslation: {
-		workTitle: string | null
-		workCaption: string | null
+	pageNovelEditorsPicks: { data: [] }
+	premium: { freeCampaign: true }
+	illust: {
+		page: {
+			currentPage: 1
+			pages: object
+			hasBookmarked: false
+			expanded: false
+			openViewer: 'close'
+		}
 	}
-	isUnlisted: boolean
-	request: null | {
+	illustSeries: {
+		series: object
+		seriesEditData: object
+		userAllMangaWorkIds: []
+		loaded: { userAllMangaWorkIds: 'waiting' }
+	}
+	pageFollowLatest: {
+		followUserWorks: object
+		mypixivUserWorks: object
+		folderTags: { follow: null, mypixiv: null }
+	}
+	tagTranslationSuggestion: { isModalOpen: false }
+	ssr: {
+		time: 1745100193696
+		location: {
+			host: string
+			href: string
+			origin: string
+			search: string
+		}
+	}
+	recommendUsers: {
+		analizedUserId: null
+		users: null
+		seedUserId: null
+		followedUserIds: []
+		usersWithoutUserId: []
+	}
+	profile: {
+		bookmarks: {
+			bookmarkWorks: object
+			bookmarkTags: { illust: object, novel: object }
+			bookmarkTagRenaming: { isInProgress: false }
+		}
+		external: { sketch: object, vroidHub: object, enabled: object }
+		pickup: { pickup: object, pickupEditor: { unsaved: false } }
+		series: object
+		tag: { workTags: object, frequentTags: object, bookmarkTags: object }
+		uploadComplete: object
+		userList: {
+			following: object
+			mypixiv: object
+			followers: object
+			folder: { tags: [] }
+			workData: object
+		}
+		work: { works: object, filtered: object }
+		requests: { postWorkIds: object, plans: object }
 		request: {
-			requestId: string
-			requestStatus: string
-			requestProposal: {
-				requestOriginalProposal: string
-				requestOriginalProposalLang: string
-				requestTranslationProposal: {
-					requestProposal: string
-					requestProposalLang: string
-				}[]
-			}
-			requestTags: string[]
-			requestAdultFlg: boolean
-			requestPrice: number
-			role: string
-			postWork: null | unknown
-			plan: {
-				currentPlanId: null | unknown
-				planId: string
-				creatorUserI: string
-				planAcceptRequestFlg: boolean
-				planStandardPrice: number
-				planTitle: {
-					planOriginalTitle: string
-					planOriginalTitleLang: string
-					planTranslationTitle: unknown[]
-				}
-				planDescription: {
-					planOriginalDescription: string
-					planOriginalDescriptionHtml: string
-					planOriginalLang: string
-					planTranslationDescription: Record<string, {
-						planDescription: string
-						planDescriptionHtml: string
-						planLang: string
-					}>
-				}
-				planAcceptAdultFlg: boolean
-				planAcceptAnonymousFlg: boolean
-				planAcceptIllustFlg: boolean
-				planAcceptUgoiraFlg: boolean
-				planAcceptMangaFlg: boolean
-				planAcceptNovelFlg: boolean
-				planCoverImage: null | unknown
-				planAiType: AIType
-			}
+			tabStatus: object
+			page: { request: null, requestSent: null }
 		}
-		creator: {
-			userId: string
-			userName: string
-			profileImg: string
-		}
-		fan: {
-			userId: string
-			userName: string
-			profileImg: string
-		}
-		collaborateStatus: {
-			collaborating: boolean
-			collaborateAnonymousFlg: boolean
-			collaboratedCnt: number
-			userSamples: unknown[]
-		}
-		editable: boolean
+		shouldShowSensitiveNotice: { shouldShowSensitiveNotice: object }
 	}
-	commentOff: 0 | 1
-	aiType: AIType
-	reuploadDate: string | null
-	locationMask: boolean
+	pageDashboard: {
+		home: {
+			achievement: null
+			contests: []
+			hotWorks: { today: null }
+			recentUploadWorks: []
+			userCountSummary: object
+			yearBestWork: { work: null }
+			todayAnniversary: null
+		}
+		works: {
+			userWorks: []
+			userSeries: []
+			userDrafts: []
+			userReservedWorks: []
+		}
+		reactions: { recentUploadWorks: { illust: object, novel: object } }
+		loaded: {
+			reactions: string
+			works: string
+			worksUpToDate: string
+			home: string
+		}
+	}
+	pageTop: { illust: object, novel: object, manga: object }
+	readingStatus: {
+		novel: object
+		manga: object
+		novelSeries: object
+		mangaSeries: object
+		visibleReadingProgressBar: false
+	}
+	street: {
+		main: []
+		discover: []
+		recommend_tags: null
+		forYou: []
+		latest: { data: null, isLoading: true }
+		subColumn: []
+		loadCount: { main: 1, discover: 1 }
+		contentIndex: 0
+		isNewUserToStreet: false
+		uninterestedContent: null
+	}
+	spa: true
+	page: object
+	router: { location: null }
 };
-
-export type PreloadUser = {
-	userId: string
-	name: string
-	image: string
-	imageBig: string
-	premium: boolean
-	isFollowed: boolean
-	isMypixiv: boolean
-	isBlocking: boolean
-	background: null | {
-		repeat: null | unknown
-		color: null | unknown
-		url: string
-		isPrivate: boolean
-	}
-	sketchLiveId: null | unknown
-	partial: number
-	acceptRequest: boolean
-	sketchLives: unknown[]
-	commission: null | {
-		acceptRequest: boolean
-		isSubscribedReopenNotification: boolean
-	}
-};
-
-//Temp function to find unknown types
-export function logPreloadDataTypes(data: PreloadData) {
-	for (const illust of Object.values(data.illust)) {
-		if (illust.imageResponseOutData.length > 0)
-			console.log(
-				'PreloadData.Illust.imageResponseOutData',
-				typeof (illust.imageResponseOutData[0]),
-				illust.imageResponseOutData[0],
-			);
-		if (illust.imageResponseData.length > 0)
-			console.log(
-				'PreloadData.Illust.imageResponseData',
-				typeof (illust.imageResponseData[0]),
-				illust.imageResponseData[0],
-			);
-		if (illust.descriptionBoothId !== null && illust.descriptionBoothId !== undefined)
-			console.log(
-				'PreloadData.Illust.descriptionBoothId',
-				typeof (illust.descriptionBoothId),
-				illust.descriptionBoothId,
-			);
-		if (illust.descriptionYoutubeId !== null && illust.descriptionYoutubeId !== undefined)
-			console.log(
-				'PreloadData.Illust.descriptionYoutubeId',
-				typeof (illust.descriptionYoutubeId),
-				illust.descriptionYoutubeId,
-			);
-		if (illust.comicPromotion !== null && illust.comicPromotion !== undefined)
-			console.log(
-				'PreloadData.Illust.comicPromotion',
-				typeof (illust.comicPromotion),
-				illust.comicPromotion,
-			);
-		if (illust.fanboxPromotion !== null && illust.fanboxPromotion !== undefined)
-			console.log(
-				'PreloadData.Illust.fanboxPromotion',
-				typeof (illust.fanboxPromotion),
-				illust.fanboxPromotion,
-			);
-		if (illust.contestBanners.length > 0)
-			console.log(
-				'PreloadData.Illust.contestBanners',
-				typeof (illust.contestBanners[0]),
-				illust.contestBanners[0],
-			);
-		if (illust.contestData !== null && illust.contestData !== undefined)
-			console.log(
-				'PreloadData.Illust.contestData',
-				typeof (illust.contestData),
-				illust.contestData,
-			);
-	}
-
-	for (const user of Object.values(data.user)) {
-		if (user.background?.color !== null && user.background?.color !== undefined)
-			console.log(
-				'PreloadData.User.background.color',
-				typeof (user.background.color),
-				user.background.color,
-			);
-		if (user.background?.repeat !== null && user.background?.repeat !== undefined)
-			console.log(
-				'PreloadData.User.background.repeat',
-				typeof (user.background.repeat),
-				user.background.repeat,
-			);
-		if (user.sketchLiveId !== null && user.sketchLiveId !== undefined)
-			console.log(
-				'PreloadData.User.sketchLiveId',
-				typeof (user.sketchLiveId),
-				user.sketchLiveId,
-			);
-		if (user.sketchLives.length > 0)
-			console.log(
-				'PreloadData.User.sketchLives',
-				typeof (user.sketchLives[0]),
-				user.sketchLives[0],
-			);
-	}
-}

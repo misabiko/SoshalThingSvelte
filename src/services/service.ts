@@ -200,7 +200,11 @@ export async function fetchArticle(idPair: ArticleIdPair) {
 	++service.fetchedArticleQueue;
 
 	const store = getWritableArticle(idPair);
-	await service.fetchArticle(store);
+	try {
+		await service.fetchArticle(store);
+	}catch (e) {
+		console.error(e);
+	}
 }
 
 export interface FetchingService<A extends Article = Article> {

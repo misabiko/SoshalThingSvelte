@@ -8,7 +8,7 @@ export default class PixivArticle extends Article {
 	likeCount: number | null = null;
 	bookmarkCount: number | null = null;
 
-	//TODO Add tags
+	//TODO +1 Add tags
 
 	constructor(
 		readonly id: number,

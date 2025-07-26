@@ -314,3 +314,32 @@ export function newFetchingService<A extends Article = Article>(
 		...data,
 	};
 }
+
+export function tagFilterInfo(): Record<string, FilterInfo> {
+	return {
+		tags: {
+			type: 'tags',
+			name: 'With tags',
+			invertedName: 'Without tags',
+			props: {
+				tags: {
+					type: 'string[]',
+					optional: false,
+				},
+			},
+		},
+	};
+}
+
+export function tagKeepArticle<A extends Article>(filter: Filter, articles: A[], getter: (a: A) => string[] | null): boolean {
+	if (filter.props.tags?.length)
+		return articles.some(a => filter.props.tags?.split(' ').every((t: string) => {
+			const tags = getter(a);
+			if (tags == null)
+				return false;
+			else
+				return tags.includes(t);
+		}));
+	else
+		return false;
+}

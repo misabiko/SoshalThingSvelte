@@ -8,6 +8,8 @@ import {
 	newService,
 	registerService,
 	type Service,
+	tagFilterInfo,
+	tagKeepArticle,
 } from '../service';
 import { get, type Writable } from 'svelte/store';
 import {
@@ -187,6 +189,8 @@ export const PixivService: PixivServiceType = {
 								throw new Error('Unknown comparator: ' + filter.props.compare.comparator);
 						}
 					}
+					case 'tags':
+						return tagKeepArticle(filter, articleWithRefToArray(articleWithRefs) as PixivArticle[], (a: PixivArticle) => a.tags);
 					default:
 						throw new Error('Unknown filter type: ' + filter.type);
 				}
@@ -248,6 +252,7 @@ export const PixivService: PixivServiceType = {
 						},
 					},
 				},
+				...tagFilterInfo(),
 			},
 			defaultFilter(filterType: string): Filter {
 				switch (filterType) {
@@ -383,6 +388,7 @@ export const PixivService: PixivServiceType = {
 					liked: a.liked || undefined,
 					likeCount: a.likeCount ?? undefined,
 					bookmarkCount: a.bookmarkCount ?? undefined,
+					tags: a.tags,
 				};
 			}
 		}

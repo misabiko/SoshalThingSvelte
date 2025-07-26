@@ -8,8 +8,6 @@ export default class PixivArticle extends Article {
 	likeCount: number | null = null;
 	bookmarkCount: number | null = null;
 
-	//TODO +1 Add tags
-
 	constructor(
 		readonly id: number,
 		medias: ArticleMedia[],
@@ -21,6 +19,7 @@ export default class PixivArticle extends Article {
 		public liked: boolean,
 		public bookmarked: boolean | null,
 		fetched: boolean,
+		readonly tags: string[] | null,
 	) {
 		super({
 			id,
@@ -57,4 +56,5 @@ export type CachedPixivArticle = {
 	liked?: boolean
 	likeCount?: number
 	bookmarkCount?: number
+	tags?: string[] | null
 };

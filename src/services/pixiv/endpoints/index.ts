@@ -72,6 +72,7 @@ export function parseThumbnail(element: Element, markedAsReadStorage: string[], 
 			liked,
 			bookmarked,
 			cached?.medias !== undefined,
+			null,
 		),
 	};
 }
@@ -278,6 +279,7 @@ export function illustToArticle(illust: Illust, markedAsReadStorage: string[], c
 			liked,
 			bookmarked,
 			cached?.medias !== undefined,
+			illust.tags,
 		),
 	};
 }

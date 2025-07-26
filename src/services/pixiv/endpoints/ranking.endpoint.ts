@@ -97,6 +97,7 @@ export class RankingAPIEndpoint extends LoadableEndpoint {
 					liked,
 					c.is_bookmarked,
 					cached?.medias !== undefined,
+					c.tags,
 				),
 			} satisfies ArticleWithRefs;
 		});

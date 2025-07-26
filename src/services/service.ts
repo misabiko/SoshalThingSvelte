@@ -14,6 +14,7 @@ import { fetchExtension } from './extension';
 import type { Component } from 'svelte';
 import type { TimelineTemplate } from '~/timelines';
 import { getServiceStorage } from '~/storages';
+import type BlueskyArticle from '~/services/bluesky/article';
 
 const services: {[name: string]: Service<any>} = {};
 
@@ -342,4 +343,23 @@ export function tagKeepArticle<A extends Article>(filter: Filter, articles: A[],
 		}));
 	else
 		return false;
+}
+
+export function numberCompareKeepArticle(filter: Filter, value: number | null): boolean {
+	if (value === null)
+		return false;
+	switch (filter.props.compare.comparator) {
+		case '=':
+			return value === filter.props.compare.value;
+		case '>':
+			return value > filter.props.compare.value;
+		case '>=':
+			return value >= filter.props.compare.value;
+		case '<':
+			return value < filter.props.compare.value;
+		case '<=':
+			return value <= filter.props.compare.value;
+		default:
+			throw new Error('Unknown comparator: ' + filter.props.compare.comparator);
+	}
 }

@@ -5,7 +5,7 @@ import {
 	FetchType, getService,
 	getWritableArticle,
 	newFetchingService,
-	newService,
+	newService, numberCompareKeepArticle,
 	registerService,
 	type Service,
 	tagFilterInfo,
@@ -152,42 +152,11 @@ export const PixivService: PixivServiceType = {
 					//TODO Option to include null or not
 					case 'likes': {
 						const likeCount = (getRootArticle(articleWithRefs) as PixivArticle).likeCount;
-						if (likeCount === null)
-							return false;
-
-						switch (filter.props.compare.comparator) {
-							case '=':
-								return likeCount === filter.props.compare.value;
-							case '>':
-								return likeCount > filter.props.compare.value;
-							case '>=':
-								return likeCount >= filter.props.compare.value;
-							case '<':
-								return likeCount < filter.props.compare.value;
-							case '<=':
-								return likeCount <= filter.props.compare.value;
-							default:
-								throw new Error('Unknown comparator: ' + filter.props.compare.comparator);
-						}
+						return numberCompareKeepArticle(filter, likeCount);
 					}
 					case 'bookmarks': {
 						const bookmarkCount = (getRootArticle(articleWithRefs) as PixivArticle).bookmarkCount;
-						if (bookmarkCount === null)
-							return false;
-						switch (filter.props.compare.comparator) {
-							case '=':
-								return bookmarkCount === filter.props.compare.value;
-							case '>':
-								return bookmarkCount > filter.props.compare.value;
-							case '>=':
-								return bookmarkCount >= filter.props.compare.value;
-							case '<':
-								return bookmarkCount < filter.props.compare.value;
-							case '<=':
-								return bookmarkCount <= filter.props.compare.value;
-							default:
-								throw new Error('Unknown comparator: ' + filter.props.compare.comparator);
-						}
+						return numberCompareKeepArticle(filter, bookmarkCount);
 					}
 					case 'tags':
 						return tagKeepArticle(filter, articleWithRefToArray(articleWithRefs) as PixivArticle[], (a: PixivArticle) => a.tags);

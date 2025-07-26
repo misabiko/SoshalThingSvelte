@@ -1,5 +1,11 @@
 import type BlueskyArticle from '~/services/bluesky/article';
-import { getWritableArticle, newService, registerService, type Service } from '~/services/service';
+import {
+	getWritableArticle,
+	newService,
+	numberCompareKeepArticle,
+	registerService,
+	type Service
+} from '~/services/service';
 import { STANDARD_ACTIONS } from '~/services/actions';
 import { get } from 'svelte/store';
 import { type ArticleWithRefs, articleWithRefToArray, getActualArticle, getRootArticle } from '~/articles';
@@ -73,43 +79,12 @@ export const BlueskyService: BlueskyServiceType = {
 				case 'reposted':
 					return (articleWithRefToArray(articleWithRefs) as BlueskyArticle[])
 						.some(a => a.reposted);
-				//TODO Add filter templates
 				case 'likes': {
 					const likeCount = (getRootArticle(articleWithRefs) as BlueskyArticle).likeCount;
-					if (likeCount === null)
-						return false;
-					switch (filter.props.compare.comparator) {
-						case '=':
-							return likeCount === filter.props.compare.value;
-						case '>':
-							return likeCount > filter.props.compare.value;
-						case '>=':
-							return likeCount >= filter.props.compare.value;
-						case '<':
-							return likeCount < filter.props.compare.value;
-						case '<=':
-							return likeCount <= filter.props.compare.value;
-						default:
-							throw new Error('Unknown comparator: ' + filter.props.compare.comparator);
-					}
+					return numberCompareKeepArticle(filter, likeCount);
 				}case 'reposts': {
 					const repostCount = (getRootArticle(articleWithRefs) as BlueskyArticle).repostCount;
-					if (repostCount === null)
-						return false;
-					switch (filter.props.compare.comparator) {
-						case '=':
-							return repostCount === filter.props.compare.value;
-						case '>':
-							return repostCount > filter.props.compare.value;
-						case '>=':
-							return repostCount >= filter.props.compare.value;
-						case '<':
-							return repostCount < filter.props.compare.value;
-						case '<=':
-							return repostCount <= filter.props.compare.value;
-						default:
-							throw new Error('Unknown comparator: ' + filter.props.compare.comparator);
-					}
+					return numberCompareKeepArticle(filter, repostCount);
 				}default:
 					throw new Error('Unknown filter type: ' + filter.type);
 			}

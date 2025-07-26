@@ -29,6 +29,7 @@ type GenericFilter =
 	| 'noRef'
 	| 'selfRepost'
 	| 'selfQuote'
+	| 'authorUsername'
 	| 'repost'
 	//TODO Test quote filter
 	| 'quote'
@@ -128,6 +129,17 @@ export const genericFilterTypes: Record<GenericFilter, FilterInfo<GenericFilter>
 		name: 'Self quote',
 		invertedName: 'Not a self quote',
 		props: {},
+	},
+	authorUsername: {
+		type: 'authorUsername',
+		name: 'By author username',
+		invertedName: 'Not by author username',
+		props: {
+			username: {
+				type: 'string',
+				optional: false,
+			},
+		},
 	},
 	interval: {
 		type: 'interval',
@@ -258,6 +270,11 @@ function keepArticleGeneric(articleWithRefs: ArticleWithRefs, index: number, fil
 				return articleWithRefs.article.author?.username === articleWithRefs.quoted.article.author?.username;
 
 			return false;
+		case 'authorUsername':
+			if (!filter.props.username)
+				return false;
+			else
+				return getRootArticle(articleWithRefs).author?.username === filter.props.username;
 		case 'interval':
 			if (index < filter.props.offset)
 				return filter.props.includeOffset;

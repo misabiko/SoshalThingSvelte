@@ -7,7 +7,7 @@
 	import { getRootArticle } from './index';
 	import Modal from '../Modal.svelte';
 	import { MediaLoadType } from './media';
-	import { LoadingState, loadingStore } from '~/bufferedMediaLoading';
+	import {getLoadingState, LoadingState, loadingStore} from '~/bufferedMediaLoading';
 
 	let {
 		articleProps,
@@ -35,9 +35,9 @@
 		if (actualArticleProps.mediaIndex === null) {
 			const mediaCount = Math.min(actualArticle.medias.length, !showAllMedia && timelineProps.maxMediaCount !== null ? timelineProps.maxMediaCount : Infinity);
 			for (let i = 0; i < mediaCount; ++i)
-				r[i] = loadingStore.getLoadingState(actualArticle.idPair, i);
+				r[i] = getLoadingState($loadingStore, actualArticle.idPair, i);
 		}else
-			r[actualArticleProps.mediaIndex] = loadingStore.getLoadingState(actualArticle.idPair, actualArticleProps.mediaIndex);
+			r[actualArticleProps.mediaIndex] = getLoadingState($loadingStore, actualArticle.idPair, actualArticleProps.mediaIndex);
 
 		return r;
 	});

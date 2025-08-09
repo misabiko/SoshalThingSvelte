@@ -91,17 +91,7 @@ export const loadingStore = (() => {
 			}
 		},
 		getLoadingState(idPair: ArticleIdPair, mediaIndex: number): LoadingState {
-			const idPairStr = hash(idPair, mediaIndex);
-			if (localLoadings.has(idPairStr))
-				return LoadingState.Loading;
-			if (localQueue.includes(idPairStr))
-				return LoadingState.NotLoaded;
-
-			const loaded = get(getWritableArticle(idPair)).medias[mediaIndex]!.loaded;
-			if (loaded === undefined || loaded)
-				return LoadingState.Loaded;
-			else
-				return LoadingState.NotLoaded;
+			return getLoadingState({ loadings: localLoadings, queue: localQueue }, idPair, mediaIndex);
 		},
 		mediaLoaded(idPair: ArticleIdPair, mediaIndex: number) {
 			update(store => {
@@ -178,3 +168,17 @@ export const loadingStore = (() => {
 		},
 	};
 })();
+
+export function getLoadingState(loadingInfo: LoadingInfo, idPair: ArticleIdPair, mediaIndex: number): LoadingState {
+	const idPairStr = hash(idPair, mediaIndex);
+	if (loadingInfo.loadings.has(idPairStr))
+		return LoadingState.Loading;
+	if (loadingInfo.queue.includes(idPairStr))
+		return LoadingState.NotLoaded;
+
+	const loaded = get(getWritableArticle(idPair)).medias[mediaIndex]!.loaded;
+	if (loaded === undefined || loaded)
+		return LoadingState.Loaded;
+	else
+		return LoadingState.NotLoaded;
+}

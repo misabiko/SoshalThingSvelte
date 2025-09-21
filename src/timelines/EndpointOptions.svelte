@@ -158,6 +158,8 @@
 				<button onclick={() => loadRandomPage(timelineEndpoint)}>Load Random</button>
 			{/if}
 
+			<button onclick={() => console.log(endpoint)}>Log Endpoint</button>
+
 			<button onclick={() => removeEndpoint(i)}>Remove</button>
 		</li>
 	{/each}

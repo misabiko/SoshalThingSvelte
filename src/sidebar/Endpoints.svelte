@@ -2,7 +2,9 @@
 	import { endpoints } from '~/services/endpoints';
 	import EndpointOptions from './EndpointOptions.svelte';
 
-	console.log('endpoints:', endpoints);
+	// console.log('endpoints:', endpoints);
+
+	//TODO Include timeline endpoints
 </script>
 
 <section>

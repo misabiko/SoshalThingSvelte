@@ -7,7 +7,8 @@ import { getCachedArticlesStorage, getMarkedAsReadStorage } from '~/storages/ser
 import { getWritableArticle, registerEndpointConstructor } from '../../service';
 import {
 	getUserUrl, illustToArticle,
-	parseThumbnail, type PixivResponseWithWorks,
+	parseThumbnail, type PixivResponse, type PixivResponseWithWorks,
+	type PixivWorksBody,
 } from './index';
 
 export default class BookmarkPageEndpoint extends PageEndpoint {
@@ -106,11 +107,13 @@ export class BookmarkAPIEndpoint extends LoadableEndpoint {
 		url.searchParams.set('offset', (this.currentPage * 48).toString());
 		url.searchParams.set('rest', this.r18 ? 'hide' : 'show');
 
-		const response: PixivResponseWithWorks = await PixivService.fetch(url.toString(), { headers: { Accept: 'application/json' } });
+		const response: BookmarkAPIResponse = await PixivService.fetch(url.toString(), { headers: { Accept: 'application/json' } });
 		if (response.error) {
 			console.error('Failed to fetch', response);
 			return [];
 		}
+
+		this.lastPage = Math.ceil(response.body.total / 48);
 
 		const markedAsReadStorage = getMarkedAsReadStorage(PixivService);
 		const cachedArticlesStorage = getCachedArticlesStorage<CachedPixivArticle>(PixivService);
@@ -141,3 +144,7 @@ registerEndpointConstructor(BookmarkAPIEndpoint);
 export function avatarHighRes(url: string): string {
 	return url.replace(/_\d+\.(\w{3,4})$/, '_170.$1');
 }
+
+type BookmarkAPIResponse = PixivResponse<PixivWorksBody & {
+	total: number
+}>;

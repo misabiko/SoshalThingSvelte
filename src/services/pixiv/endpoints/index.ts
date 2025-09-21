@@ -117,9 +117,10 @@ export type PixivResponseWithPage<Page> = PixivResponse<{
 	zoneConfig: ZoneConfig
 }>;
 
-export type PixivResponseWithWorks = PixivResponse<{
+export type PixivResponseWithWorks = PixivResponse<PixivWorksBody>;
+
+export type PixivWorksBody = {
 	works: Record<string, Illust>
-}> & {
 	zoneConfig: ZoneConfig
 	extraData: ExtraData
 };

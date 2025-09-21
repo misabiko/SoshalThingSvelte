@@ -2,25 +2,38 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"type": "npm",
-			"script": "build",
+			"label": "build",
+			"type": "shell",
+			"command": "bun",
+			"args": ["run", "scripts/buildscript.ts"],
 			"group": {
 				"kind": "build"
 			},
-			"label": "npm: build",
-			"detail": "node scripts/buildscript.js",
-			"problemMatcher": "$esbuild"
+			"problemMatcher": "$esbuild",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared"
+			}
 		},
 		{
-			"type": "npm",
-			"script": "build:extension",
+			"label": "build:extension",
+			"type": "shell",
+			"command": "bun",
+			"args": ["run", "build:extension"],
 			"group": {
 				"kind": "build",
 				"isDefault": true
 			},
-			"label": "npm: build:extension",
-			"detail": "npm run build:extension",
-			"problemMatcher": "$esbuild"
+			"detail": "bun run build:extension",
+			"problemMatcher": "$esbuild",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared"
+			}
 		}
 	]
 }

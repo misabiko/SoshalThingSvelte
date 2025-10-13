@@ -33,7 +33,7 @@ export type Undoable = {
 	//Supposed to be called only in this file
 	undo: () => void
 	redo: () => void
-	//TODO Remove undid, and on undo, remove undoable from stack and add togglable command on top
+	//TODO +1 Remove undid, and on undo, remove undoable from stack and add togglable command on top
 	undid: boolean
 	text: string
 	articleIdPair: ArticleIdPair

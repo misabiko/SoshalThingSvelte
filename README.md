@@ -26,15 +26,14 @@ Build the extension with `bun build:extension`
 
 Test with `bun run test`, it uses the port 8089 by default
 
-<!--TODO +1 Add extension popup to inject soshal-->
+<!--TODO +2 Add extension popup to inject soshal-->
 <!--TODO +1 Persist auto refresh-->
-<!--TODO +1 "Third-party cookie will be blocked in future Chrome versions as part of Privacy Sandbox."-->
-<!--TODO Fix typescript parse errors in svelte template-->
-<!--TODO Rename favviewer to injected-->
-<!--TODO Add "one time endpoints" to timeline options-->
-<!--TODO Filter for "article from X service"-->
+<!--TODO +2 "Third-party cookie will be blocked in future Chrome versions as part of Privacy Sandbox."-->
+<!--TODO +1 Fix typescript parse errors in svelte template-->
+<!--TODO +1 Rename favviewer to injected-->
+<!--TODO +1 Add "one time endpoints" to timeline options-->
+<!--TODO +1 Filter for "article from X service"-->
 <!--TODO Lint github workflows (https://ota-meshi.github.io/eslint-plugin-yml/)-->
-<!--TODO Sensitive media blur-->
-<!--TODO +1 Sensitive media filter-->
+<!--TODO +2 Sensitive media blur-->
+<!--TODO +2 Sensitive media filter-->
 <!--TODO Bluesky mark replies + reply filter-->
-<!--TODO Go through project's TODOs-->

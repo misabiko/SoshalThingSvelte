@@ -115,7 +115,7 @@
 		<button class='button red-button' onclick={removeTimeline}>
 			Remove timeline
 		</button>
-		<!-- TODO Temporary until we use article lists as first class citizens -->
+		<!-- TODO +1 Temporary until we use article lists as first class citizens -->
 		<button class='button' onclick={clearArticles}>
 			Clear articles
 		</button>

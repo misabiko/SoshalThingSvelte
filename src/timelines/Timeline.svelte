@@ -79,6 +79,7 @@
 		if (data.hideFilteredOutArticles)
 			articleProps = articleProps.filter(a => !a.filteredOut);
 
+		//TODO +2 Test and fix bluesky merge reposts
 		if (data.mergeReposts) {
 			let merged: ArticleProps[] = [];
 			for (const a of articleProps) {

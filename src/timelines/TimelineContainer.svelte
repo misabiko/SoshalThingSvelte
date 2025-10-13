@@ -92,7 +92,7 @@
 	}
 </style>
 
-<!--TODO id → class, to have multiple favviewer per page-->
+<!--TODO +2 id → class, to have multiple favviewer per page-->
 <div id='timelineContainer'>
 	{#if modalTimeline !== null}
 	<!-- TODO Find way to get specific parent soshalthing -->

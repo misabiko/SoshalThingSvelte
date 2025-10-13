@@ -24,7 +24,7 @@ export type TimelineData = {
 	endpoints: TimelineEndpoint[]
 	//Keeps track of every added articles, so they're not added again once removed
 	addedIdPairs: Writable<Set<ArticleIdPairStr>>
-	//TODO Give timelines a list of article lists
+	//TODO +3 Give timelines a list of article lists
 	articles: Writable<ArticleIdPair[]>
 	articlesOrder: Writable<null | string[]>
 	section: { useSection: boolean, count: number }
@@ -115,7 +115,7 @@ export function defaultTimeline(data: TimelineDataPartial): TimelineData {
 		addedIdPairs: writable(new Set([...data.articles ?? []].map(getIdPairStr))),
 		articles: writable(data.articles ?? []),
 		articlesOrder: writable(data.articlesOrder ?? null),
-		//TODO Reconsider copying template filters once we actually have layered settings
+		//TODO +1 Reconsider copying template filters once we actually have layered settings
 		filters: writable(data.filters ?? structuredClone((template.filters ? get(template.filters) : undefined) ?? defaultFilterInstances)),
 		showAllMediaArticles: writable(data.showAllMediaArticles ?? new Set()),
 	};

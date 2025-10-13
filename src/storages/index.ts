@@ -504,7 +504,7 @@ type MainStorageParsed = {
 	fullscreen: FullscreenInfo
 	maximized: boolean
 	markAsReadLocal: boolean
-	//TODO Add UI setting for websocket
+	//TODO -1 Add UI setting for websocket
 	useWebSocket: boolean
 };
 

@@ -26,7 +26,7 @@ if (globalThis.window) {
 
 export interface Service<A extends Article = Article> {
 	readonly name: string
-	//TODO Consider replacing Record with Map to preserve key type
+	//TODO +1 Consider replacing Record with Map to preserve key type
 	readonly articles: Record<string, [Writable<A>, ArticleRefIdPair | null]>
 	readonly endpointConstructors: Record<string, EndpointConstructorInfo>
 	userEndpoint: ((author: ArticleAuthor) => Endpoint) | null

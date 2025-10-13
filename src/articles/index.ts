@@ -33,7 +33,7 @@ export default abstract class Article {
 		textHtml?: string
 		url?: string
 		medias: ArticleMedia[]
-		//TODO Remove markedAsRead from Article
+		//TODO +3 Remove markedAsRead from Article
 		markedAsRead?: boolean
 		markedAsReadStorage: string[]
 		refs?: ArticleRefIdPair | null

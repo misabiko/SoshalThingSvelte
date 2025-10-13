@@ -89,7 +89,7 @@ export function fromAPI(
 		id: note.user.id,
 		name: note.user.name ?? note.user.username,
 		username: note.user.username,
-		//TODO Allow null avatarUrl
+		//TODO +2 Allow null avatarUrl
 		avatarUrl: note.user.avatarUrl ?? '',
 		//TODO Use host
 		url: `https://misskey.io/@${note.user.username}`,

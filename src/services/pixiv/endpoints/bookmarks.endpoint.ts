@@ -11,6 +11,8 @@ import {
 	type PixivWorksBody,
 } from './index';
 
+//TODO +2 Index bookmarks to storage and offer as separate endpoint to filter/search through whole list
+
 export default class BookmarkPageEndpoint extends PageEndpoint {
 	readonly name = 'Bookmark Endpoint';
 	static service = PixivService.name;

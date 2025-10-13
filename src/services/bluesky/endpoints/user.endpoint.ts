@@ -24,7 +24,7 @@ export class UserEndpoint extends Endpoint {
 	}
 
 	async refresh(refreshType: RefreshType): Promise<ArticleWithRefs[]> {
-		//TODO Move login to service
+		//TODO +1 Move login to service
 		const { identifier, password } = getServiceStorage(BlueskyService.name);
 		await BlueskyService.agent.login({
 			identifier,

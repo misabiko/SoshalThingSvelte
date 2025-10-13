@@ -64,9 +64,9 @@ test('missing optional props field should be added', async ({ page }) => {
 });
 
 test.skip('repost by username', async () => {
-	//TODO
+	//TODO repost by username test
 });
 
 test.skip('quote by username', async () => {
-	//TODO
+	//TODO quote by username test
 });

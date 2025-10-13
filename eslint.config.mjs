@@ -8,7 +8,7 @@ import svelteParser from 'svelte-eslint-parser';
 import stylistic from '@stylistic/eslint-plugin';
 import svelteConfig from './svelte.config.js';
 
-//TODO Export eslint config to separate repo
+//TODO +3 Export eslint config to separate repo
 export default tseslint.config(
 	{
 		ignores: [
@@ -189,7 +189,7 @@ export default tseslint.config(
 					quoted: false,
 				},
 			}],
-			//TODO +1 Some way to track issues via comments
+			//TODO +3 Some way to track issues via comments
 			//https://github.com/sveltejs/eslint-plugin-svelte/issues/818
 			//https://github.com/sveltejs/eslint-plugin-svelte/pull/816
 			'prefer-const': 'off',

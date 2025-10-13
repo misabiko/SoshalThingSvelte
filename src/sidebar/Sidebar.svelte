@@ -65,7 +65,9 @@
 		{icon: faB, menu: SidebarMenu.BatchActions, title: 'Batch actions'},
 	];
 
-	//TODO Add article list menu
+	//TODO +2 Add article list menu
+	//TODO +2 Add storage mark as read list
+	//	While article lists aren't in yet, otherwise convert mark as read list to article list
 </script>
 
 <style>

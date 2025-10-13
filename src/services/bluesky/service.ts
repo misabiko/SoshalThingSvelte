@@ -152,7 +152,7 @@ export const BlueskyService: BlueskyServiceType = {
 	agent: new AtpAgent({
 		service: 'https://bsky.social',
 		//persistSession(evt: AtpSessionEvent, sess?: AtpSessionData) {
-		//	//TODO +1 Look into persistSession
+		//	//TODO +2 Look into persistSession
 		//	console.log('Persisting session', evt, sess);
 		//}
 	}),

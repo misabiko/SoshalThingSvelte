@@ -6,7 +6,7 @@ import { registerEndpointConstructor } from '~/services/service';
 import { parseFeedViewPost } from '~/services/bluesky/article';
 import { getMarkedAsReadStorage } from '~/storages/serviceCache';
 
-//TODO Rename to FollowingFeed
+//TODO +1 Rename to FollowingFeed
 export class TimelineEndpoint extends Endpoint {
 	readonly name = 'Timeline';
 	static service = BlueskyService.name;
@@ -21,7 +21,7 @@ export class TimelineEndpoint extends Endpoint {
 	}
 
 	async refresh(refreshType: RefreshType): Promise<ArticleWithRefs[]> {
-		//TODO Move login to service
+		//TODO +1 Move login to service
 		const { identifier, password } = getServiceStorage(BlueskyService.name);
 		await BlueskyService.agent.login({
 			identifier,

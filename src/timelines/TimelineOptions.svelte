@@ -22,6 +22,7 @@
 		sortOnce,
 		articleCountLabel,
 		removeFiltered,
+		clearArticles,
 	}: {
 		timelineId: string | null
 		data: TimelineData
@@ -30,6 +31,7 @@
 		sortOnce: (method: SortMethod, reversed: boolean) => void
 		articleCountLabel: string
 		removeFiltered: () => void
+		clearArticles: () => void
 	} = $props();
 
 	function setFullscreenContainer(checked: boolean) {
@@ -112,6 +114,10 @@
 		</label>
 		<button class='button red-button' onclick={removeTimeline}>
 			Remove timeline
+		</button>
+		<!-- TODO Temporary until we use article lists as first class citizens -->
+		<button class='button' onclick={clearArticles}>
+			Clear articles
 		</button>
 	</section>
 	<section>

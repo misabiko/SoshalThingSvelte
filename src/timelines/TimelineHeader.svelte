@@ -106,6 +106,7 @@
 				<button class='borderless-button' title='Show Sidebar' onclick={() => showSidebar = !showSidebar}>
 					<Fa icon={faEllipsisV} size='lg'/>
 				</button>
+				<!-- TODO Undo last action -->
 			</div>
 		{/if}
 	</div>

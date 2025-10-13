@@ -377,6 +377,11 @@
 			.map(getIdServiceMediaStr));
 	}
 
+	//TODO Temporary until we use article lists as first class citizens
+	function clearArticles() {
+		data.articles.set([]);
+	}
+
 	function removeFiltered() {
 		//TODO Prevent articles from just being added back
 		data.articles.set(
@@ -464,6 +469,7 @@
 				{removeTimeline}
 				{articleCountLabel}
 				{removeFiltered}
+				{clearArticles}
 		/>
 	{/if}
 	{#if $filteredArticles.length}

@@ -34,6 +34,7 @@ export type TimelineData = {
 	rtl: boolean
 	//TODO Add option to set flex-grow: 1 instead of fixed width
 	width: number
+	//TODO +2 Add separate filter for RefreshType.Start, filter pixiv bookmarks but only on first load
 	filters: Writable<FilterInstance[]>
 	sortInfo: SortInfo
 	animatedAsGifs: boolean

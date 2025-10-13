@@ -16,27 +16,17 @@
 		"clean": "rm -rf dist dist-test test-results extension/dist"
 	},
 	"devDependencies": {
-		"@eslint/js": "^9.14.0",
-		"@html-eslint/eslint-plugin": "^0.27.0",
-		"@html-eslint/parser": "^0.27.0",
 		"@playwright/test": "^1.48.2",
-		"@stylistic/eslint-plugin": "^2.10.1",
 		"@tsconfig/svelte": "^5.0.4",
 		"@types/chrome": "^0.0.280",
 		"@types/express": "^5.0.0",
-		"@typescript-eslint/eslint-plugin": "^8.13.0",
-		"@typescript-eslint/parser": "^8.13.0",
 		"esbuild-plugin-import-glob": "^0.1.1",
-		"eslint": "^9.14.0",
-		"eslint-plugin-svelte": "^2.46.0",
 		"fast-glob": "^3.3.2",
-		"globals": "^15.12.0",
 		"svelte": "^5.1.13",
 		"svelte-check": "^4.0.6",
-		"svelte-eslint-parser": "^0.43.0",
 		"svelte-preprocess": "^6.0.3",
 		"typescript": "^5.6.3",
-		"typescript-eslint": "^8.13.0"
+		"@misabiko/eslint-config": "github:misabiko/eslint-config"
 	},
 	"dependencies": {
 		"@atproto/api": "^0.13.15",
